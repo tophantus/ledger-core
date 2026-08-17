@@ -1,0 +1,29 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 011-add-account-ledger-account
+      author: tu
+
+      changes:
+
+        - addColumn:
+            tableName: accounts
+            columns:
+              - column:
+                  name: ledger_account_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: accounts
+            baseColumnNames: ledger_account_id
+            referencedTableName: ledger_accounts
+            referencedColumnNames: id
+            constraintName: fk_accounts_ledger_account
+            onDelete: RESTRICT
+
+        - addUniqueConstraint:
+            tableName: accounts
+            columnNames: ledger_account_id
+            constraintName: uk_accounts_ledger_account_id
