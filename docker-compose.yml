@@ -1,0 +1,76 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: ledgercore-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ledgercore
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - ledgercore-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d ledgercore"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:8-alpine
+    container_name: ledgercore-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - ledgercore-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redisinsight:
+    container_name: ledgercore-redisinsight
+    image: redis/redisinsight:latest
+    ports:
+      - "5540:5540"
+    networks:
+      - ledgercore-network
+    volumes:
+      - redisinsight_data:/db
+    restart: unless-stopped
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: ledgercore-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@ledgercore.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - ledgercore-network
+
+volumes:
+  postgres_data:
+  redis_data:
+  pgadmin_data:
+  redisinsight_data:
+
+networks:
+  ledgercore-network:
+    driver: bridge

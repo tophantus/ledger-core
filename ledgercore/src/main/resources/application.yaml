@@ -1,0 +1,43 @@
+spring:
+  application:
+    name: lotusplus
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ledgercore
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
+
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      timeout: 3000ms
+
+  cache:
+    type: redis
+
+redisson:
+  address: redis://localhost:6379
+
+server:
+  port: 8080
+
+logging:
+  level:
+    com.example.lotusplus.common.lock: DEBUG
+    org.hibernate.SQL: INFO
+    org.hibernate.orm.jdbc.bind: TRACE
