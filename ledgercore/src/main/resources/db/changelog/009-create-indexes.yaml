@@ -1,0 +1,55 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 006-create-indexes
+      author: tu
+
+      changes:
+
+        - createIndex:
+            tableName: accounts
+            indexName: idx_accounts_user_id
+            columns:
+              - column:
+                  name: user_id
+
+        - createIndex:
+            tableName: accounts
+            indexName: idx_accounts_status
+            columns:
+              - column:
+                  name: status
+
+        - createIndex:
+            tableName: transactions
+            indexName: idx_transactions_status_created_at
+            columns:
+              - column:
+                  name: status
+              - column:
+                  name: created_at
+
+        - createIndex:
+            tableName: transactions
+            indexName: idx_transactions_type_created_at
+            columns:
+              - column:
+                  name: type
+              - column:
+                  name: created_at
+
+        - createIndex:
+            tableName: ledger_entries
+            indexName: idx_ledger_entries_transaction_id
+            columns:
+              - column:
+                  name: transaction_id
+
+        - createIndex:
+            tableName: ledger_entries
+            indexName: idx_ledger_entries_account_created_at
+            columns:
+              - column:
+                  name: ledger_account_id
+              - column:
+                  name: created_at

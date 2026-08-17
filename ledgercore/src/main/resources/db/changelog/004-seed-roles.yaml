@@ -1,0 +1,15 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 004-seed-roles
+      author: tu
+
+      changes:
+
+        - sql:
+            sql: |
+              INSERT INTO roles (id, name, description, created_at)
+              VALUES
+                (gen_random_uuid(), 'CUSTOMER', 'Bank customer', NOW()),
+                (gen_random_uuid(), 'STAFF', 'Bank staff', NOW()),
+                (gen_random_uuid(), 'ADMIN', 'System administrator', NOW());
