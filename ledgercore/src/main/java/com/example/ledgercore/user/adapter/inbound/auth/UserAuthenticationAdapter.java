@@ -42,7 +42,7 @@ public class UserAuthenticationAdapter
     }
 
     @Override
-    public UUID createUser(
+    public Optional<UserAuthenticationInfo> createUser(
             CreateUserData data
     ) {
         return createUserUseCase.execute(

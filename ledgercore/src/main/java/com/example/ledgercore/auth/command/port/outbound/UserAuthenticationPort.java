@@ -13,7 +13,7 @@ public interface UserAuthenticationPort {
             UUID userId
     );
 
-    UUID createUser(
+    Optional<UserAuthenticationInfo> createUser(
             CreateUserData data
     );
 

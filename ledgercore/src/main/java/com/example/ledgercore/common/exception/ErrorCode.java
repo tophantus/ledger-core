@@ -24,6 +24,36 @@ public enum ErrorCode {
             HttpStatus.CONFLICT
     ),
 
+    INVALID_CREDENTIALS(
+            "AUTH_001",
+            "Invalid credentials",
+            HttpStatus.UNAUTHORIZED
+    ),
+
+    USER_NOT_ACTIVE(
+            "AUTH_002",
+            "User is not active",
+            HttpStatus.FORBIDDEN
+    ),
+
+    INVALID_OTP(
+            "AUTH_003",
+            "Invalid OTP",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    OTP_EXPIRED(
+            "AUTH_004",
+            "OTP has expired",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    OTP_ALREADY_VERIFIED(
+            "AUTH_005",
+            "OTP has already been verified",
+            HttpStatus.BAD_REQUEST
+    ),
+
     INTERNAL_ERROR(
             "SYSTEM_001",
             "Internal server error",
