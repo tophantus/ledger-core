@@ -1,4 +1,4 @@
-package com.example.ledgercore.otp.adapter.outbound;
+package com.example.ledgercore.auth.adapter.outbound;
 
 import com.example.ledgercore.auth.command.port.outbound.OtpVerificationPort;
 import com.example.ledgercore.otp.command.dto.SendOtpCommand;
