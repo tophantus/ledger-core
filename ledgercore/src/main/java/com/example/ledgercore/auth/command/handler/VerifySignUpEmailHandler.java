@@ -35,17 +35,17 @@ public class VerifySignUpEmailHandler implements VerifyEmailUseCase {
         switch (result.status()) {
             case INVALID ->
                     throw new BusinessException(
-                            ErrorCode.INVALID_OTP
+                            ErrorCode.INVALID_VERIFICATION_CODE
                     );
 
             case EXPIRED ->
                     throw new BusinessException(
-                            ErrorCode.OTP_EXPIRED
+                            ErrorCode.VERIFICATION_CODE_EXPIRED
                     );
 
             case ALREADY_VERIFIED ->
                     throw new BusinessException(
-                            ErrorCode.OTP_ALREADY_VERIFIED
+                            ErrorCode.VERIFICATION_ALREADY_COMPLETED
                     );
 
             case VERIFIED -> {

@@ -1,18 +1,7 @@
 package com.example.ledgercore.auth.adapter.inbound.rest;
 
-import com.example.ledgercore.auth.command.dto.LoginCommand;
-import com.example.ledgercore.auth.command.dto.LogoutCommand;
-import com.example.ledgercore.auth.command.dto.LogoutResponse;
-import com.example.ledgercore.auth.command.dto.RefreshTokenCommand;
-import com.example.ledgercore.auth.command.dto.SignUpCommand;
-import com.example.ledgercore.auth.command.dto.SignUpResponse;
-import com.example.ledgercore.auth.command.dto.TokenResponse;
-import com.example.ledgercore.auth.command.dto.VerifyEmailCommand;
-import com.example.ledgercore.auth.command.port.inbound.LoginUseCase;
-import com.example.ledgercore.auth.command.port.inbound.LogoutUseCase;
-import com.example.ledgercore.auth.command.port.inbound.RefreshTokenUseCase;
-import com.example.ledgercore.auth.command.port.inbound.SignUpUseCase;
-import com.example.ledgercore.auth.command.port.inbound.VerifyEmailUseCase;
+import com.example.ledgercore.auth.command.dto.*;
+import com.example.ledgercore.auth.command.port.inbound.*;
 import com.example.ledgercore.common.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -31,6 +20,7 @@ public class AuthController {
 
     private final SignUpUseCase signUpUseCase;
     private final VerifyEmailUseCase verifyEmailUseCase;
+    private final ResendVerificationCodeUseCase resendVerificationCodeUseCase;
     private final LoginUseCase loginUseCase;
     private final RefreshTokenUseCase refreshTokenUseCase;
     private final LogoutUseCase logoutUseCase;
@@ -69,6 +59,24 @@ public class AuthController {
                 ApiResponse.success(
                         response,
                         "OTP verified successfully"
+                )
+        );
+    }
+
+    @PostMapping("/verify-email/resend")
+    @Operation(
+            summary = "Resend email verification code",
+            description = "Resend the verification code to the user's email"
+    )
+    public ResponseEntity<ApiResponse<Void>> resendVerificationCode(
+            @RequestBody ResendVerificationCodeCommand command
+    ) {
+        resendVerificationCodeUseCase.execute(command);
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        null,
+                        "Verification code sent successfully"
                 )
         );
     }

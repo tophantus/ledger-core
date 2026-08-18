@@ -24,6 +24,12 @@ public enum ErrorCode {
             HttpStatus.CONFLICT
     ),
 
+    USER_ALREADY_ACTIVE(
+            "USER_003",
+            "User is already active",
+            HttpStatus.CONFLICT
+    ),
+
     INVALID_CREDENTIALS(
             "AUTH_001",
             "Invalid credentials",
@@ -36,21 +42,21 @@ public enum ErrorCode {
             HttpStatus.FORBIDDEN
     ),
 
-    INVALID_OTP(
+    INVALID_VERIFICATION_CODE(
             "AUTH_003",
-            "Invalid OTP",
+            "Invalid verification code",
             HttpStatus.BAD_REQUEST
     ),
 
-    OTP_EXPIRED(
+    VERIFICATION_CODE_EXPIRED(
             "AUTH_004",
-            "OTP has expired",
+            "Verification code has expired",
             HttpStatus.BAD_REQUEST
     ),
 
-    OTP_ALREADY_VERIFIED(
+    VERIFICATION_ALREADY_COMPLETED(
             "AUTH_005",
-            "OTP has already been verified",
+            "Email has already been verified",
             HttpStatus.BAD_REQUEST
     ),
 
