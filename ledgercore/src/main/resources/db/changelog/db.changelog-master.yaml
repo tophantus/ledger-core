@@ -29,3 +29,5 @@ databaseChangeLog:
       file: db/changelog/014-create-refresh-tokens.yaml
   - include:
       file: db/changelog/015-create-otp-challenges.yaml
+  - include:
+      file: db/changelog/016-create-outbox-events.yaml
