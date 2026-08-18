@@ -2,16 +2,16 @@ package com.example.ledgercore.auth.command.port.outbound;
 
 import java.util.UUID;
 
-public interface OtpVerificationPort {
+public interface EmailVerificationPort {
 
-    void sendSignupOtp(
+    void sendVerificationCode(
             UUID userId,
             String destination
     );
 
-    VerificationResult verifySignupOtp(
+    VerificationResult verifyEmail(
             UUID userId,
-            String otp
+            String code
     );
 
     record VerificationResult(
