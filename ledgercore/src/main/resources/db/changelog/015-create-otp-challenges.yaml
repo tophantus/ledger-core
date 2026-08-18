@@ -1,0 +1,164 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 015-create-otp-challenges
+      author: tu
+
+      changes:
+
+        - createTable:
+            tableName: otp_challenges
+            columns:
+
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_otp_challenges
+                    nullable: false
+
+              - column:
+                  name: subject_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: reference_id
+                  type: UUID
+
+              - column:
+                  name: purpose
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: channel
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: destination
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: otp_hash
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: status
+                  type: VARCHAR(20)
+                  defaultValue: PENDING
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: attempts
+                  type: INTEGER
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: expires_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: verified_at
+                  type: TIMESTAMP WITH TIME ZONE
+
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+        - sql:
+            sql: >
+              ALTER TABLE otp_challenges
+              ADD CONSTRAINT chk_otp_challenges_purpose
+              CHECK (
+                purpose IN (
+                  'SIGNUP',
+                  'RESET_PASSWORD',
+                  'CONFIRM_TRANSFER',
+                  'CHANGE_EMAIL',
+                  'CHANGE_PHONE',
+                  'TWO_FACTOR_AUTH'
+                )
+              );
+
+        - sql:
+            sql: >
+              ALTER TABLE otp_challenges
+              ADD CONSTRAINT chk_otp_challenges_channel
+              CHECK (
+                channel IN (
+                  'EMAIL',
+                  'SMS'
+                )
+              );
+
+        - sql:
+            sql: >
+              ALTER TABLE otp_challenges
+              ADD CONSTRAINT chk_otp_challenges_status
+              CHECK (
+                status IN (
+                  'PENDING',
+                  'VERIFIED',
+                  'EXPIRED',
+                  'LOCKED'
+                )
+              );
+
+        - sql:
+            sql: >
+              ALTER TABLE otp_challenges
+              ADD CONSTRAINT chk_otp_challenges_attempts
+              CHECK (
+                attempts >= 0
+              );
+
+        - createIndex:
+            tableName: otp_challenges
+            indexName: idx_otp_challenges_subject_id
+            columns:
+              - column:
+                  name: subject_id
+
+        - createIndex:
+            tableName: otp_challenges
+            indexName: idx_otp_challenges_reference_id
+            columns:
+              - column:
+                  name: reference_id
+
+        - createIndex:
+            tableName: otp_challenges
+            indexName: idx_otp_challenges_expires_at
+            columns:
+              - column:
+                  name: expires_at
+
+        - createIndex:
+            tableName: otp_challenges
+            indexName: idx_otp_challenges_lookup
+            columns:
+              - column:
+                  name: subject_id
+              - column:
+                  name: reference_id
+              - column:
+                  name: purpose
+              - column:
+                  name: status

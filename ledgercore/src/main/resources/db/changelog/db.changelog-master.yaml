@@ -27,3 +27,5 @@ databaseChangeLog:
       file: db/changelog/013-remove-username-unique.yaml
   - include:
       file: db/changelog/014-create-refresh-tokens.yaml
+  - include:
+      file: db/changelog/015-create-otp-challenges.yaml
