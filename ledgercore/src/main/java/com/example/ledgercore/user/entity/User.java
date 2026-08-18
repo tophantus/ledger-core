@@ -78,4 +78,13 @@ public class User {
     protected void preUpdate() {
         updatedAt = Instant.now();
     }
+
+    public boolean isActive() {
+        return this.status == UserStatus.ACTIVE && verifiedAt != null;
+    }
+
+    public void activate() {
+        this.status = UserStatus.ACTIVE;
+        this.verifiedAt = Instant.now();
+    }
 }

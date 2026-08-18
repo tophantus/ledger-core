@@ -18,6 +18,11 @@ public enum ErrorCode {
             HttpStatus.NOT_FOUND
     ),
 
+    EMAIL_ALREADY_EXISTS(
+            "USER_002",
+            "Email already exists",
+            HttpStatus.CONFLICT
+    ),
 
     INTERNAL_ERROR(
             "SYSTEM_001",

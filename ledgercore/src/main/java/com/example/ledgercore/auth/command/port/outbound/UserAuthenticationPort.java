@@ -5,11 +5,6 @@ import java.util.Set;
 import java.util.UUID;
 
 public interface UserAuthenticationPort {
-
-    Optional<UserAuthenticationInfo> findByUsername(
-            String username
-    );
-
     Optional<UserAuthenticationInfo> findByEmail(
             String email
     );
