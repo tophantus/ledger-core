@@ -6,6 +6,7 @@ public record SignUpResponse(
         UUID userId,
         String username,
         String email,
+        boolean active,
         String message
 ) {
 }

@@ -9,8 +9,20 @@ public interface OtpVerificationPort {
             String destination
     );
 
-    void verifySignupOtp(
+    VerificationResult verifySignupOtp(
             UUID userId,
             String otp
     );
+
+    record VerificationResult(
+            Status status
+    ) {
+    }
+
+    enum Status {
+        VERIFIED,
+        INVALID,
+        EXPIRED,
+        ALREADY_VERIFIED
+    }
 }

@@ -27,7 +27,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     private final SecureRandom secureRandom;
 
     @Override
-    public String issue(UUID userId) {
+    public IssuedRefreshToken issue(UUID userId) {
         String rawToken = generateToken();
 
         RefreshToken refreshToken = RefreshToken.builder()
@@ -41,11 +41,14 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
         refreshTokenRepository.save(refreshToken);
 
-        return rawToken;
+        return new IssuedRefreshToken(
+                userId,
+                rawToken
+        );
     }
 
     @Override
-    public String rotate(String rawToken) {
+    public IssuedRefreshToken rotate(String rawToken) {
         RefreshToken currentToken = findValidToken(rawToken);
 
         String newRawToken = generateToken();
@@ -66,7 +69,10 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
         refreshTokenRepository.save(currentToken);
 
-        return newRawToken;
+        return new IssuedRefreshToken(
+                currentToken.getUserId(),
+                newRawToken
+        );
     }
 
     @Override

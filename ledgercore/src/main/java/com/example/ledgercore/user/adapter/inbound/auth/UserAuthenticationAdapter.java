@@ -42,7 +42,7 @@ public class UserAuthenticationAdapter
     }
 
     @Override
-    public UUID createUser(
+    public Optional<UserAuthenticationInfo> createUser(
             CreateUserData data
     ) {
         return createUserUseCase.execute(
@@ -51,7 +51,7 @@ public class UserAuthenticationAdapter
                         data.email(),
                         data.passwordHash()
                 )
-        );
+        ).map(this::toAuthenticationInfo);
     }
 
     @Override

@@ -4,11 +4,17 @@ import java.util.UUID;
 
 public interface RefreshTokenService {
 
-    String issue(UUID userId);
+    IssuedRefreshToken issue(UUID userId);
 
-    String rotate(String rawToken);
+    IssuedRefreshToken rotate(String rawToken);
 
     void revoke(String rawToken);
 
     void revokeAll(UUID userId);
+
+    record IssuedRefreshToken(
+            UUID userId,
+            String token
+    ) {
+    }
 }
