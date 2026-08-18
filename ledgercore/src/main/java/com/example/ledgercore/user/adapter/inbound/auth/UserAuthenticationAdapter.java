@@ -51,7 +51,7 @@ public class UserAuthenticationAdapter
                         data.email(),
                         data.passwordHash()
                 )
-        );
+        ).map(this::toAuthenticationInfo);
     }
 
     @Override

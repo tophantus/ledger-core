@@ -28,7 +28,6 @@ public class JwtServiceImpl implements JwtService {
     @Override
     public String generateAccessToken(
             UUID userId,
-            String username,
             Set<String> roles
     ) {
         Instant now = Instant.now();
@@ -38,7 +37,6 @@ public class JwtServiceImpl implements JwtService {
 
         return Jwts.builder()
                 .subject(userId.toString())
-                .claim("username", username)
                 .claim("roles", roles)
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(expiration))
@@ -61,12 +59,6 @@ public class JwtServiceImpl implements JwtService {
         return UUID.fromString(
                 parseClaims(token).getSubject()
         );
-    }
-
-    @Override
-    public String extractUsername(String token) {
-        return parseClaims(token)
-                .get("username", String.class);
     }
 
     @Override

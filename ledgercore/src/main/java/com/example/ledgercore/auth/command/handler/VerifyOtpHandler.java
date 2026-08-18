@@ -69,7 +69,6 @@ public class VerifyOtpHandler implements VerifyOtpUseCase {
         String accessToken =
                 jwtService.generateAccessToken(
                         user.userId(),
-                        user.email(),
                         user.roles()
                 );
 

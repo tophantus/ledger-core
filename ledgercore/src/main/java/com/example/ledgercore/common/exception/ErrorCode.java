@@ -54,6 +54,18 @@ public enum ErrorCode {
             HttpStatus.BAD_REQUEST
     ),
 
+    UNAUTHORIZED(
+            "AUTH_006",
+            "Authentication is required",
+            HttpStatus.UNAUTHORIZED
+    ),
+
+    ACCESS_DENIED(
+            "AUTH_007",
+            "Access denied",
+            HttpStatus.FORBIDDEN
+    ),
+
     INTERNAL_ERROR(
             "SYSTEM_001",
             "Internal server error",

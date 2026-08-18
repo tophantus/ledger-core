@@ -53,7 +53,6 @@ public class LoginHandler implements LoginUseCase {
         String accessToken =
                 jwtService.generateAccessToken(
                         user.userId(),
-                        user.email(),
                         user.roles()
                 );
 

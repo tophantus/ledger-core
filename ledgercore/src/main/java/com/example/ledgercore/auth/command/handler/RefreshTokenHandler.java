@@ -37,7 +37,6 @@ public class RefreshTokenHandler
         String accessToken =
                 jwtService.generateAccessToken(
                         user.userId(),
-                        user.email(),
                         user.roles()
                 );
 
