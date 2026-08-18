@@ -47,12 +47,13 @@ public class SendOtpHandler implements SendOtpUseCase {
                 )
                 .build();
 
-        otpCommandRepository.save(challenge);
+        OtpChallenge savedOtp = otpCommandRepository.save(challenge);
 
         otpSenderPort.send(
-                command.purpose(),
-                command.channel(),
-                command.destination(),
+                savedOtp.getId(),
+                savedOtp.getPurpose(),
+                savedOtp.getChannel(),
+                savedOtp.getDestination(),
                 otp
         );
     }
