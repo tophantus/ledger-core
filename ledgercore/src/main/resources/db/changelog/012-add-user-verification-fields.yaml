@@ -1,0 +1,49 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 012-add-user-verification
+      author: tu
+
+      changes:
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: verified_at
+                  type: TIMESTAMP WITH TIME ZONE
+
+        - sql:
+            sql: >
+              UPDATE users
+              SET verified_at = created_at
+              WHERE status = 'ACTIVE'
+                AND verified_at IS NULL;
+
+        - dropDefaultValue:
+            tableName: users
+            columnName: status
+            columnDataType: VARCHAR(20)
+
+        - sql:
+            sql: >
+              ALTER TABLE users
+              DROP CONSTRAINT IF EXISTS chk_users_status;
+
+        - addDefaultValue:
+            tableName: users
+            columnName: status
+            columnDataType: VARCHAR(20)
+            defaultValue: PENDING_VERIFICATION
+
+        - sql:
+            sql: >
+              ALTER TABLE users
+              ADD CONSTRAINT chk_users_status
+              CHECK (
+                status IN (
+                  'PENDING_VERIFICATION',
+                  'ACTIVE',
+                  'BLOCKED',
+                  'CLOSED'
+                )
+              );

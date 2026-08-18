@@ -1,0 +1,11 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 013-remove-username-unique
+      author: tu
+
+      changes:
+        - sql:
+            sql: >
+              ALTER TABLE users
+              DROP CONSTRAINT uk_users_username;

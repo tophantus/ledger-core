@@ -36,6 +36,15 @@ redisson:
 server:
   port: 8080
 
+jwt:
+  app: ledgercore
+  secret: ${JWT_SECRET}
+  access-token-expiration: 15m
+
+  refresh-token:
+      expiration: 30d
+
+
 logging:
   level:
     com.example.lotusplus.common.lock: DEBUG

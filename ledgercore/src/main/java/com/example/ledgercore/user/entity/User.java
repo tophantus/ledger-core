@@ -49,6 +49,9 @@ public class User {
     @Builder.Default
     private UserStatus status = UserStatus.ACTIVE;
 
+    @Column(name = "verified_at")
+    private Instant verifiedAt;
+
     @OneToMany(
             mappedBy = "user",
             fetch = FetchType.LAZY,
