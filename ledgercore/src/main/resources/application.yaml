@@ -1,6 +1,9 @@
 spring:
   application:
     name: lotusplus
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.security.autoconfigure.UserDetailsServiceAutoConfiguration
 
   datasource:
     url: jdbc:postgresql://localhost:5432/ledgercore
