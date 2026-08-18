@@ -72,6 +72,18 @@ public enum ErrorCode {
             HttpStatus.FORBIDDEN
     ),
 
+    VERIFICATION_RATE_LIMITED(
+            "AUTH_008",
+            "Too many verification code requests",
+            HttpStatus.TOO_MANY_REQUESTS
+    ),
+
+    VERIFICATION_CODE_COOLDOWN(
+            "AUTH_009",
+            "Please wait before requesting another verification code",
+            HttpStatus.TOO_MANY_REQUESTS
+    ),
+
     INTERNAL_ERROR(
             "SYSTEM_001",
             "Internal server error",
