@@ -1,8 +1,8 @@
 package com.example.ledgercore.auth.command.handler;
 
 import com.example.ledgercore.auth.command.dto.TokenResponse;
-import com.example.ledgercore.auth.command.dto.VerifyOtpCommand;
-import com.example.ledgercore.auth.command.port.inbound.VerifyOtpUseCase;
+import com.example.ledgercore.auth.command.dto.VerifyEmailCommand;
+import com.example.ledgercore.auth.command.port.inbound.VerifyEmailUseCase;
 import com.example.ledgercore.auth.command.port.outbound.OtpVerificationPort;
 import com.example.ledgercore.auth.command.port.outbound.UserAuthenticationPort;
 import com.example.ledgercore.auth.service.JwtService;
@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class VerifySignUpOtpHandler implements VerifyOtpUseCase {
+public class VerifySignUpEmailHandler implements VerifyEmailUseCase {
 
     private final OtpVerificationPort otpVerificationPort;
     private final UserAuthenticationPort userAuthenticationPort;
@@ -24,7 +24,7 @@ public class VerifySignUpOtpHandler implements VerifyOtpUseCase {
 
     @Override
     @Transactional
-    public TokenResponse execute(VerifyOtpCommand command) {
+    public TokenResponse execute(VerifyEmailCommand command) {
 
         OtpVerificationPort.VerificationResult result =
                 otpVerificationPort.verifySignupOtp(
