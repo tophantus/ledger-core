@@ -3,7 +3,7 @@ package com.example.ledgercore.auth.command.handler;
 import com.example.ledgercore.auth.command.dto.TokenResponse;
 import com.example.ledgercore.auth.command.dto.VerifyEmailCommand;
 import com.example.ledgercore.auth.command.port.inbound.VerifyEmailUseCase;
-import com.example.ledgercore.auth.command.port.outbound.OtpVerificationPort;
+import com.example.ledgercore.auth.command.port.outbound.EmailVerificationPort;
 import com.example.ledgercore.auth.command.port.outbound.UserAuthenticationPort;
 import com.example.ledgercore.auth.service.JwtService;
 import com.example.ledgercore.auth.service.RefreshTokenService;
@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class VerifySignUpEmailHandler implements VerifyEmailUseCase {
 
-    private final OtpVerificationPort otpVerificationPort;
+    private final EmailVerificationPort emailVerificationPort;
     private final UserAuthenticationPort userAuthenticationPort;
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
@@ -26,8 +26,8 @@ public class VerifySignUpEmailHandler implements VerifyEmailUseCase {
     @Transactional
     public TokenResponse execute(VerifyEmailCommand command) {
 
-        OtpVerificationPort.VerificationResult result =
-                otpVerificationPort.verifySignupOtp(
+        EmailVerificationPort.VerificationResult result =
+                emailVerificationPort.verifyEmail(
                         command.userId(),
                         command.otp()
                 );
@@ -35,17 +35,17 @@ public class VerifySignUpEmailHandler implements VerifyEmailUseCase {
         switch (result.status()) {
             case INVALID ->
                     throw new BusinessException(
-                            ErrorCode.INVALID_OTP
+                            ErrorCode.INVALID_VERIFICATION_CODE
                     );
 
             case EXPIRED ->
                     throw new BusinessException(
-                            ErrorCode.OTP_EXPIRED
+                            ErrorCode.VERIFICATION_CODE_EXPIRED
                     );
 
             case ALREADY_VERIFIED ->
                     throw new BusinessException(
-                            ErrorCode.OTP_ALREADY_VERIFIED
+                            ErrorCode.VERIFICATION_ALREADY_COMPLETED
                     );
 
             case VERIFIED -> {

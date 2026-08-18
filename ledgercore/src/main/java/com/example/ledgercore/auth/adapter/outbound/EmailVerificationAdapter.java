@@ -1,6 +1,6 @@
 package com.example.ledgercore.auth.adapter.outbound;
 
-import com.example.ledgercore.auth.command.port.outbound.OtpVerificationPort;
+import com.example.ledgercore.auth.command.port.outbound.EmailVerificationPort;
 import com.example.ledgercore.otp.command.dto.SendOtpCommand;
 import com.example.ledgercore.otp.command.dto.VerifyOtpCommand;
 import com.example.ledgercore.otp.command.port.inbound.SendOtpUseCase;
@@ -15,14 +15,14 @@ import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
-public class OtpVerificationAdapter
-        implements OtpVerificationPort {
+public class EmailVerificationAdapter
+        implements EmailVerificationPort {
 
     private final SendOtpUseCase sendOtpUseCase;
     private final VerifyOtpUseCase verifyOtpUseCase;
 
     @Override
-    public void sendSignupOtp(
+    public void sendVerificationCode(
             UUID userId,
             String destination
     ) {
@@ -38,16 +38,16 @@ public class OtpVerificationAdapter
     }
 
     @Override
-    public VerificationResult verifySignupOtp(
+    public VerificationResult verifyEmail(
             UUID userId,
-            String otp
+            String code
     ) {
         OtpStatus result = verifyOtpUseCase.execute(
                 new VerifyOtpCommand(
                         userId,
                         null,
                         OtpPurpose.SIGNUP,
-                        otp
+                        code
                 )
         );
 

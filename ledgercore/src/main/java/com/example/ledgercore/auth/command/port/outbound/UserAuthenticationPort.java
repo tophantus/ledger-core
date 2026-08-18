@@ -19,6 +19,11 @@ public interface UserAuthenticationPort {
 
     void activateUser(UUID userId);
 
+    void updatePassword(
+            UUID userId,
+            String passwordHash
+    );
+
     record UserAuthenticationInfo(
             UUID userId,
             String username,
