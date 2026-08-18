@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class VerifyOtpHandler implements VerifyOtpUseCase {
+public class VerifySignUpOtpHandler implements VerifyOtpUseCase {
 
     private final OtpVerificationPort otpVerificationPort;
     private final UserAuthenticationPort userAuthenticationPort;
