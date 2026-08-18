@@ -7,12 +7,12 @@ import com.example.ledgercore.auth.command.dto.RefreshTokenCommand;
 import com.example.ledgercore.auth.command.dto.SignUpCommand;
 import com.example.ledgercore.auth.command.dto.SignUpResponse;
 import com.example.ledgercore.auth.command.dto.TokenResponse;
-import com.example.ledgercore.auth.command.dto.VerifyOtpCommand;
+import com.example.ledgercore.auth.command.dto.VerifyEmailCommand;
 import com.example.ledgercore.auth.command.port.inbound.LoginUseCase;
 import com.example.ledgercore.auth.command.port.inbound.LogoutUseCase;
 import com.example.ledgercore.auth.command.port.inbound.RefreshTokenUseCase;
 import com.example.ledgercore.auth.command.port.inbound.SignUpUseCase;
-import com.example.ledgercore.auth.command.port.inbound.VerifyOtpUseCase;
+import com.example.ledgercore.auth.command.port.inbound.VerifyEmailUseCase;
 import com.example.ledgercore.common.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final SignUpUseCase signUpUseCase;
-    private final VerifyOtpUseCase verifyOtpUseCase;
+    private final VerifyEmailUseCase verifyEmailUseCase;
     private final LoginUseCase loginUseCase;
     private final RefreshTokenUseCase refreshTokenUseCase;
     private final LogoutUseCase logoutUseCase;
@@ -54,16 +54,16 @@ public class AuthController {
         );
     }
 
-    @PostMapping("/verify-otp")
+    @PostMapping("/verify-email")
     @Operation(
-            summary = "Verify signup OTP",
-            description = "Verify the OTP and activate the user account"
+            summary = "Verify email",
+            description = "Verify the email verification OTP and activate the user account"
     )
     public ResponseEntity<ApiResponse<TokenResponse>> verifyOtp(
-            @RequestBody VerifyOtpCommand command
+            @RequestBody VerifyEmailCommand command
     ) {
         TokenResponse response =
-                verifyOtpUseCase.execute(command);
+                verifyEmailUseCase.execute(command);
 
         return ResponseEntity.ok(
                 ApiResponse.success(
