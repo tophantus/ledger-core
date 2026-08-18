@@ -1,9 +1,10 @@
-package com.example.ledgercore.user.adapter.inbound.auth;
+package com.example.ledgercore.auth.adapter.outbound;
 
 import com.example.ledgercore.auth.command.port.outbound.UserAuthenticationPort;
 import com.example.ledgercore.user.command.dto.ActivateUserCommand;
 import com.example.ledgercore.user.command.dto.CreateUserCommand;
 import com.example.ledgercore.user.command.port.inbound.ActivateUserUseCase;
+import com.example.ledgercore.user.command.port.inbound.ChangePasswordUseCase;
 import com.example.ledgercore.user.command.port.inbound.CreateUserUseCase;
 import com.example.ledgercore.user.query.dto.UserAuthenticationResponse;
 import com.example.ledgercore.user.query.port.inbound.GetUserAuthenticationUseCase;
@@ -20,6 +21,7 @@ public class UserAuthenticationAdapter
 
     private final CreateUserUseCase createUserUseCase;
     private final ActivateUserUseCase activateUserUseCase;
+    private final ChangePasswordUseCase changePasswordUseCase;
     private final GetUserAuthenticationUseCase
             getUserAuthenticationUseCase;
 
@@ -60,6 +62,17 @@ public class UserAuthenticationAdapter
     ) {
         activateUserUseCase.execute(
                 new ActivateUserCommand(userId)
+        );
+    }
+
+    @Override
+    public void updatePassword(
+            UUID userId,
+            String passwordHash
+    ) {
+        changePasswordUseCase.execute(
+                userId,
+                passwordHash
         );
     }
 

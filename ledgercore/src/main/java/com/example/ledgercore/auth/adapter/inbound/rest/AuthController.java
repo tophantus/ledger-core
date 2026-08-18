@@ -2,11 +2,14 @@ package com.example.ledgercore.auth.adapter.inbound.rest;
 
 import com.example.ledgercore.auth.command.dto.*;
 import com.example.ledgercore.auth.command.port.inbound.*;
+import com.example.ledgercore.auth.security.AuthPrincipal;
 import com.example.ledgercore.common.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,6 +24,7 @@ public class AuthController {
     private final SignUpUseCase signUpUseCase;
     private final VerifyEmailUseCase verifyEmailUseCase;
     private final ResendVerificationCodeUseCase resendVerificationCodeUseCase;
+    private final UpdatePasswordUseCase updatePasswordUseCase;
     private final LoginUseCase loginUseCase;
     private final RefreshTokenUseCase refreshTokenUseCase;
     private final LogoutUseCase logoutUseCase;
@@ -77,6 +81,28 @@ public class AuthController {
                 ApiResponse.success(
                         null,
                         "Verification code sent successfully"
+                )
+        );
+    }
+
+    @PostMapping("/change-password")
+    @Operation(
+            summary = "Change password",
+            description = "Change the password of the authenticated user"
+    )
+    public ResponseEntity<ApiResponse<Void>> changePassword(
+            @AuthenticationPrincipal AuthPrincipal principal,
+            @Valid @RequestBody UpdatePasswordCommand command
+    ) {
+        updatePasswordUseCase.execute(
+                principal.getUserId(),
+                command
+        );
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        null,
+                        "Password changed successfully"
                 )
         );
     }

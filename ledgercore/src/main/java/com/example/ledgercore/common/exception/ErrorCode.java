@@ -84,6 +84,18 @@ public enum ErrorCode {
             HttpStatus.TOO_MANY_REQUESTS
     ),
 
+    INVALID_CURRENT_PASSWORD(
+            "AUTH_010",
+            "Current password is incorrect",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    PASSWORD_SAME_AS_CURRENT(
+            "AUTH_011",
+            "New password must be different from current password",
+            HttpStatus.BAD_REQUEST
+    ),
+
     INTERNAL_ERROR(
             "SYSTEM_001",
             "Internal server error",
