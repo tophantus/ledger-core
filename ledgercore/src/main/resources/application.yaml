@@ -48,6 +48,11 @@ jwt:
       expiration: 30d
 
 
+security:
+  encryption:
+    key: ${ENCRYPTION_KEY}
+
+
 logging:
   level:
     com.example.lotusplus.common.lock: DEBUG
