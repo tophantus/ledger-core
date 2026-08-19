@@ -1,7 +1,9 @@
 package com.example.ledgercore.auth.command.handler;
 
 import com.example.ledgercore.auth.command.dto.LoginCommand;
+import com.example.ledgercore.auth.command.dto.LoginResponse;
 import com.example.ledgercore.auth.command.dto.TokenResponse;
+import com.example.ledgercore.auth.command.enums.LoginStatus;
 import com.example.ledgercore.auth.command.port.inbound.LoginUseCase;
 import com.example.ledgercore.auth.command.port.outbound.UserAuthenticationPort;
 import com.example.ledgercore.auth.service.JwtService;
@@ -24,7 +26,7 @@ public class LoginHandler implements LoginUseCase {
 
     @Override
     @Transactional
-    public TokenResponse execute(LoginCommand command) {
+    public LoginResponse execute(LoginCommand command) {
 
         UserAuthenticationPort.UserAuthenticationInfo user =
                 userAuthenticationPort
@@ -35,18 +37,20 @@ public class LoginHandler implements LoginUseCase {
                                 )
                         );
 
-        if (!user.active()) {
-            throw new BusinessException(
-                    ErrorCode.USER_NOT_ACTIVE
-            );
-        }
-
         if (!passwordService.matches(
                 command.password(),
                 user.passwordHash()
         )) {
             throw new BusinessException(
                     ErrorCode.INVALID_CREDENTIALS
+            );
+        }
+
+        if (!user.active()) {
+            return new LoginResponse(
+                    LoginStatus.EMAIL_NOT_VERIFIED,
+                    null,
+                    user.userId()
             );
         }
 
@@ -61,9 +65,13 @@ public class LoginHandler implements LoginUseCase {
                         .issue(user.userId())
                         .token();
 
-        return new TokenResponse(
-                accessToken,
-                refreshToken
+        return new LoginResponse(
+                LoginStatus.AUTHENTICATED,
+                new TokenResponse(
+                        accessToken,
+                        refreshToken
+                ),
+                user.userId()
         );
     }
 }

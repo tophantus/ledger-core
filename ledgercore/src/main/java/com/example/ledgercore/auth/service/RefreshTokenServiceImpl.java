@@ -3,6 +3,8 @@ package com.example.ledgercore.auth.service;
 import com.example.ledgercore.auth.config.RefreshTokenProperties;
 import com.example.ledgercore.auth.entity.RefreshToken;
 import com.example.ledgercore.auth.repository.RefreshTokenRepository;
+import com.example.ledgercore.common.exception.BusinessException;
+import com.example.ledgercore.common.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -96,14 +98,14 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
         RefreshToken refreshToken = findToken(rawToken);
 
         if (refreshToken.isRevoked()) {
-            throw new IllegalArgumentException(
-                    "Refresh token has been revoked"
+            throw new BusinessException(
+                    ErrorCode.REFRESH_TOKEN_REVOKED
             );
         }
 
         if (refreshToken.isExpired()) {
-            throw new IllegalArgumentException(
-                    "Refresh token has expired"
+            throw new BusinessException(
+                    ErrorCode.REFRESH_TOKEN_EXPIRED
             );
         }
 
@@ -116,8 +118,8 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
         return refreshTokenRepository
                 .findByTokenHash(tokenHash)
                 .orElseThrow(() ->
-                        new IllegalArgumentException(
-                                "Invalid refresh token"
+                        new BusinessException(
+                                ErrorCode.INVALID_REFRESH_TOKEN
                         )
                 );
     }

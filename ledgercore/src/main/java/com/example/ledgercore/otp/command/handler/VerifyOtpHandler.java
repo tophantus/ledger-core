@@ -29,8 +29,8 @@ public class VerifyOtpHandler implements VerifyOtpUseCase {
                 otpCommandRepository.findLatest(
                         command.subjectId(),
                         command.referenceId(),
-                        command.purpose(),
-                        OtpStatus.PENDING
+                        command.purpose().name(),
+                        OtpStatus.PENDING.name()
                 ).orElse(null);
 
         if (challenge == null) {

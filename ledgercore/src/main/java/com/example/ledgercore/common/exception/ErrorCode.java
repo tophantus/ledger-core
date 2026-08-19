@@ -72,26 +72,44 @@ public enum ErrorCode {
             HttpStatus.FORBIDDEN
     ),
 
-    VERIFICATION_RATE_LIMITED(
+    INVALID_REFRESH_TOKEN(
             "AUTH_008",
+            "Invalid refresh token",
+            HttpStatus.UNAUTHORIZED
+    ),
+
+    REFRESH_TOKEN_REVOKED(
+            "AUTH_009",
+            "Refresh token has been revoked",
+            HttpStatus.UNAUTHORIZED
+    ),
+
+    REFRESH_TOKEN_EXPIRED(
+            "AUTH_010",
+            "Refresh token has expired",
+            HttpStatus.UNAUTHORIZED
+    ),
+
+    VERIFICATION_RATE_LIMITED(
+            "AUTH_011",
             "Too many verification code requests",
             HttpStatus.TOO_MANY_REQUESTS
     ),
 
     VERIFICATION_CODE_COOLDOWN(
-            "AUTH_009",
+            "AUTH_012",
             "Please wait before requesting another verification code",
             HttpStatus.TOO_MANY_REQUESTS
     ),
 
     INVALID_CURRENT_PASSWORD(
-            "AUTH_010",
+            "AUTH_013",
             "Current password is incorrect",
             HttpStatus.BAD_REQUEST
     ),
 
     PASSWORD_SAME_AS_CURRENT(
-            "AUTH_011",
+            "AUTH_014",
             "New password must be different from current password",
             HttpStatus.BAD_REQUEST
     ),

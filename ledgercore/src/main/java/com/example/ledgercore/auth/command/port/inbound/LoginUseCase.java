@@ -1,9 +1,9 @@
 package com.example.ledgercore.auth.command.port.inbound;
 
 import com.example.ledgercore.auth.command.dto.LoginCommand;
-import com.example.ledgercore.auth.command.dto.TokenResponse;
+import com.example.ledgercore.auth.command.dto.LoginResponse;
 
 public interface LoginUseCase {
 
-    TokenResponse execute(LoginCommand command);
+    LoginResponse execute(LoginCommand command);
 }
