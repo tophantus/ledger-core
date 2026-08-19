@@ -43,9 +43,9 @@ public enum ErrorCode {
             HttpStatus.CONFLICT
     ),
 
-    ACCOUNT_ALREADY_SUSPENDED(
+    ACCOUNT_ALREADY_BLOCKED(
             "ACCOUNT_003",
-            "Account is already suspended",
+            "Account is already blocked",
             HttpStatus.CONFLICT
     ),
 

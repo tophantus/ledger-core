@@ -1,7 +1,7 @@
 package com.example.ledgercore.account.command.handler;
 
-import com.example.ledgercore.account.command.dto.SuspendAccountCommand;
-import com.example.ledgercore.account.command.port.inbound.SuspendAccountUseCase;
+import com.example.ledgercore.account.command.dto.BlockAccountCommand;
+import com.example.ledgercore.account.command.port.inbound.BlockAccountUseCase;
 import com.example.ledgercore.account.command.repository.AccountCommandRepository;
 import com.example.ledgercore.account.entity.Account;
 import com.example.ledgercore.account.enums.AccountStatus;
@@ -13,13 +13,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class SuspendAccountHandler implements SuspendAccountUseCase {
+public class BlockAccountHandler implements BlockAccountUseCase {
 
     private final AccountCommandRepository accountCommandRepository;
 
     @Override
     @Transactional
-    public void execute(SuspendAccountCommand command) {
+    public void execute(BlockAccountCommand command) {
         Account account = accountCommandRepository.findById(command.accountId())
                 .orElseThrow(() ->
                         new BusinessException(ErrorCode.ACCOUNT_NOT_FOUND)
@@ -29,11 +29,11 @@ public class SuspendAccountHandler implements SuspendAccountUseCase {
             throw new BusinessException(ErrorCode.ACCOUNT_ALREADY_CLOSED);
         }
 
-        if (account.getStatus() == AccountStatus.SUSPENDED) {
-            throw new BusinessException(ErrorCode.ACCOUNT_ALREADY_SUSPENDED);
+        if (account.getStatus() == AccountStatus.BLOCKED) {
+            throw new BusinessException(ErrorCode.ACCOUNT_ALREADY_BLOCKED);
         }
 
-        account.setStatus(AccountStatus.SUSPENDED);
+        account.setStatus(AccountStatus.BLOCKED);
 
         accountCommandRepository.save(account);
     }
