@@ -22,25 +22,11 @@ public class LedgerEntry {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(
-            name = "transaction_id",
-            nullable = false,
-            foreignKey = @ForeignKey(
-                    name = "fk_ledger_entries_transaction"
-            )
-    )
-    private MoneyTransaction transaction;
+    @Column(name = "transaction_id", nullable = false)
+    private UUID transactionId;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(
-            name = "ledger_account_id",
-            nullable = false,
-            foreignKey = @ForeignKey(
-                    name = "fk_ledger_entries_ledger_account"
-            )
-    )
-    private LedgerAccount ledgerAccount;
+    @Column(name = "ledger_account_id", nullable = false)
+    private UUID ledgerAccountId;
 
     @Enumerated(EnumType.STRING)
     @Column(

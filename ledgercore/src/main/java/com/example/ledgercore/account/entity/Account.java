@@ -31,13 +31,8 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(
-            name = "user_id",
-            nullable = false,
-            foreignKey = @ForeignKey(name = "fk_accounts_user")
-    )
-    private User user;
+    @Column(name = "user_id", nullable = false)
+    private UUID userId;
 
     @Column(name = "account_no", nullable = false, length = 30)
     private String accountNo;
@@ -69,14 +64,8 @@ public class Account {
     @Column(nullable = false)
     private Instant updatedAt;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(
-            name = "ledger_account_id",
-            foreignKey = @ForeignKey(
-                    name = "fk_accounts_ledger_account"
-            )
-    )
-    private LedgerAccount ledgerAccount;
+    @Column(name = "ledger_account_id", nullable = false)
+    private UUID ledgerAccountId;
 
     @PrePersist
     protected void prePersist() {
