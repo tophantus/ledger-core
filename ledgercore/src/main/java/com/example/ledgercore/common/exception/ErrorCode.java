@@ -30,6 +30,37 @@ public enum ErrorCode {
             HttpStatus.CONFLICT
     ),
 
+
+    ACCOUNT_NOT_FOUND(
+            "ACCOUNT_001",
+            "Account not found",
+            HttpStatus.NOT_FOUND
+    ),
+
+    ACCOUNT_ALREADY_ACTIVE(
+            "ACCOUNT_002",
+            "Account is already active",
+            HttpStatus.CONFLICT
+    ),
+
+    ACCOUNT_ALREADY_SUSPENDED(
+            "ACCOUNT_003",
+            "Account is already suspended",
+            HttpStatus.CONFLICT
+    ),
+
+    ACCOUNT_ALREADY_CLOSED(
+            "ACCOUNT_004",
+            "Account is already closed",
+            HttpStatus.CONFLICT
+    ),
+
+    ACCOUNT_BALANCE_NOT_ZERO(
+            "ACCOUNT_005",
+            "Account balance must be zero before closing",
+            HttpStatus.CONFLICT
+    ),
+
     INVALID_CREDENTIALS(
             "AUTH_001",
             "Invalid credentials",
