@@ -53,11 +53,12 @@ public class SecurityConfig {
                                 ).permitAll()
 
                                 .requestMatchers(
-                                        "/api/auth/sign-up",
-                                        "/api/auth/verify-otp",
-                                        "/api/auth/login",
-                                        "/api/auth/refresh",
-                                        "/api/auth/logout"
+                                        "/api/v1/auth/sign-up",
+                                        "/api/v1/auth/verify-email",
+                                        "/api/v1/auth/verify-email/resend",
+                                        "/api/v1/auth/login",
+                                        "/api/v1/auth/refresh",
+                                        "/api/v1/auth/logout"
                                 ).permitAll()
 
                                 .anyRequest()

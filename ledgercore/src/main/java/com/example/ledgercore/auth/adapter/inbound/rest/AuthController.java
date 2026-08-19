@@ -112,10 +112,10 @@ public class AuthController {
             summary = "Login",
             description = "Authenticate user and issue access and refresh tokens"
     )
-    public ResponseEntity<ApiResponse<TokenResponse>> login(
+    public ResponseEntity<ApiResponse<LoginResponse>> login(
             @RequestBody LoginCommand command
     ) {
-        TokenResponse response =
+        LoginResponse response =
                 loginUseCase.execute(command);
 
         return ResponseEntity.ok(

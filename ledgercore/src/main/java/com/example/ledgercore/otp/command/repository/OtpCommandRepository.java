@@ -12,22 +12,23 @@ import java.util.UUID;
 public interface OtpCommandRepository
         extends JpaRepository<OtpChallenge, UUID> {
 
-    @Query("""
-        SELECT o
-        FROM OtpChallenge o
-        WHERE o.subjectId = :subjectId
+    @Query(value = """
+        SELECT *
+        FROM otp_challenges
+        WHERE subject_id = :subjectId
           AND (
-                (:referenceId IS NULL AND o.referenceId IS NULL)
-                OR o.referenceId = :referenceId
+                (:referenceId IS NULL AND reference_id IS NULL)
+                OR reference_id = :referenceId
               )
-          AND o.purpose = :purpose
-          AND o.status = :status
-        ORDER BY o.createdAt DESC
-        """)
+          AND purpose = :purpose
+          AND status = :status
+        ORDER BY created_at DESC
+        LIMIT 1
+        """, nativeQuery = true)
     Optional<OtpChallenge> findLatest(
             UUID subjectId,
             UUID referenceId,
-            OtpPurpose purpose,
-            OtpStatus status
+            String purpose,
+            String status
     );
 }
