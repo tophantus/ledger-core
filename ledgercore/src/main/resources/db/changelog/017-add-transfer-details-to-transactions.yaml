@@ -1,0 +1,79 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 017-add-transfer-details-to-transactions
+      author: tu
+
+      changes:
+
+        - addColumn:
+            tableName: transactions
+            columns:
+
+              - column:
+                  name: source_account_id
+                  type: UUID
+
+              - column:
+                  name: destination_account_id
+                  type: UUID
+
+              - column:
+                  name: amount
+                  type: NUMERIC(19,4)
+
+              - column:
+                  name: currency
+                  type: VARCHAR(3)
+
+        - addForeignKeyConstraint:
+            baseTableName: transactions
+            baseColumnNames: source_account_id
+            referencedTableName: accounts
+            referencedColumnNames: id
+            constraintName: fk_transactions_source_account
+
+        - addForeignKeyConstraint:
+            baseTableName: transactions
+            baseColumnNames: destination_account_id
+            referencedTableName: accounts
+            referencedColumnNames: id
+            constraintName: fk_transactions_destination_account
+
+        - addNotNullConstraint:
+            tableName: transactions
+            columnName: source_account_id
+            columnDataType: UUID
+
+        - addNotNullConstraint:
+            tableName: transactions
+            columnName: destination_account_id
+            columnDataType: UUID
+
+        - addNotNullConstraint:
+            tableName: transactions
+            columnName: amount
+            columnDataType: NUMERIC(19,4)
+
+        - addNotNullConstraint:
+            tableName: transactions
+            columnName: currency
+            columnDataType: VARCHAR(3)
+
+        - sql:
+            sql: >
+              ALTER TABLE transactions
+              ADD CONSTRAINT chk_transactions_amount
+              CHECK (amount > 0);
+
+        - sql:
+            sql: >
+              ALTER TABLE transactions
+              ADD CONSTRAINT chk_transactions_different_accounts
+              CHECK (source_account_id <> destination_account_id);
+
+        - sql:
+            sql: >
+              ALTER TABLE transactions
+              ADD CONSTRAINT chk_transactions_currency
+              CHECK (currency IN ('VND', 'USD'));

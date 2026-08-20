@@ -5,6 +5,7 @@ import com.example.ledgercore.transaction.enums.TransactionType;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -40,6 +41,22 @@ public class MoneyTransaction {
     @Column(nullable = false, length = 20)
     @Builder.Default
     private TransactionStatus status = TransactionStatus.PENDING;
+
+    @Column(name = "source_account_id", nullable = false)
+    private UUID sourceAccountId;
+
+    @Column(name = "destination_account_id", nullable = false)
+    private UUID destinationAccountId;
+
+    @Column(
+            nullable = false,
+            precision = 19,
+            scale = 4
+    )
+    private BigDecimal amount;
+
+    @Column(nullable = false, length = 3)
+    private String currency;
 
     @Column(length = 500)
     private String description;
