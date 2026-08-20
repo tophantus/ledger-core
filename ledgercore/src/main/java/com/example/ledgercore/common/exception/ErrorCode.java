@@ -61,6 +61,63 @@ public enum ErrorCode {
             HttpStatus.CONFLICT
     ),
 
+
+    ACCOUNT_INSUFFICIENT_BALANCE(
+            "ACCOUNT_006",
+            "Account has insufficient balance",
+            HttpStatus.CONFLICT
+    ),
+
+    // Transaction
+
+    TRANSACTION_NOT_FOUND(
+            "TRANSACTION_001",
+            "Transaction not found",
+            HttpStatus.NOT_FOUND
+    ),
+
+    TRANSACTION_REFERENCE_ALREADY_EXISTS(
+            "TRANSACTION_002",
+            "Transaction reference already exists",
+            HttpStatus.CONFLICT
+    ),
+
+    SAME_ACCOUNT_TRANSFER(
+            "TRANSACTION_003",
+            "Source and destination accounts must be different",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    TRANSACTION_CURRENCY_MISMATCH(
+            "TRANSACTION_004",
+            "Source and destination account currencies must match",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    INVALID_TRANSFER_AMOUNT(
+            "TRANSACTION_005",
+            "Transfer amount must be greater than zero",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    INVALID_TRANSACTION_STATUS(
+            "TRANSACTION_006",
+            "Transaction is not in a valid state for this operation",
+            HttpStatus.CONFLICT
+    ),
+
+    TRANSACTION_ALREADY_COMPLETED(
+            "TRANSACTION_007",
+            "Transaction has already been completed",
+            HttpStatus.CONFLICT
+    ),
+
+    TRANSACTION_ALREADY_FAILED(
+            "TRANSACTION_008",
+            "Transaction has already failed",
+            HttpStatus.CONFLICT
+    ),
+
     INVALID_CREDENTIALS(
             "AUTH_001",
             "Invalid credentials",
