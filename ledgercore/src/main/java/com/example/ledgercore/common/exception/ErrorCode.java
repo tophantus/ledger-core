@@ -124,6 +124,12 @@ public enum ErrorCode {
             HttpStatus.CONFLICT
     ),
 
+    INVALID_DEPOSIT_AMOUNT(
+            "TRANSACTION_009",
+            "Deposit amount must be greater than zero",
+            HttpStatus.BAD_REQUEST
+    ),
+
     INVALID_CREDENTIALS(
             "AUTH_001",
             "Invalid credentials",
