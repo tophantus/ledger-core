@@ -32,7 +32,7 @@ public class TransferMoneyHandler implements TransferMoneyUseCase {
             UUID userId,
             TransferMoneyCommand command
     ) {
-        validateAccounts(command);
+        validateAmount(command);
 
         MoneyTransaction existingTransaction =
                 transactionCommandRepository
@@ -50,26 +50,32 @@ public class TransferMoneyHandler implements TransferMoneyUseCase {
                 accountTransferPort.getTransferInfo(
                         userId,
                         command.sourceAccountId(),
-                        command.destinationAccountId()
+                        command.destinationAccountNo()
                 );
 
-        validateTransfer(command, transferInfo);
+        validateTransfer(
+                command,
+                transferInfo
+        );
 
         MoneyTransaction transaction =
-                createTransaction(command);
+                createTransaction(
+                        command,
+                        transferInfo
+                );
 
         transactionCommandRepository.save(transaction);
 
         accountTransferPort.transfer(
-                command.sourceAccountId(),
-                command.destinationAccountId(),
+                transferInfo.sourceAccountId(),
+                transferInfo.destinationAccountId(),
                 command.amount()
         );
 
         ledgerTransferPort.recordTransfer(
                 transaction.getId(),
-                command.sourceAccountId(),
-                command.destinationAccountId(),
+                transferInfo.sourceAccountId(),
+                transferInfo.destinationAccountId(),
                 command.amount(),
                 command.currency()
         );
@@ -79,14 +85,12 @@ public class TransferMoneyHandler implements TransferMoneyUseCase {
         return toResponse(transaction);
     }
 
-    private void validateAccounts(
+    private void validateAmount(
             TransferMoneyCommand command
     ) {
-        if (command.sourceAccountId()
-                .equals(command.destinationAccountId())) {
-
+        if (command.amount().signum() <= 0) {
             throw new BusinessException(
-                    ErrorCode.SAME_ACCOUNT_TRANSFER
+                    ErrorCode.INVALID_TRANSFER_AMOUNT
             );
         }
     }
@@ -105,15 +109,15 @@ public class TransferMoneyHandler implements TransferMoneyUseCase {
 
     private void validateTransfer(
             TransferMoneyCommand command,
-            AccountTransferPort.TransferAccountInfo info
+            AccountTransferPort.TransferAccountInfo transferInfo
     ) {
-        if (!info.currency().equals(command.currency())) {
+        if (!transferInfo.currency().equals(command.currency())) {
             throw new BusinessException(
                     ErrorCode.TRANSACTION_CURRENCY_MISMATCH
             );
         }
 
-        if (info.sourceBalance()
+        if (transferInfo.sourceBalance()
                 .compareTo(command.amount()) < 0) {
 
             throw new BusinessException(
@@ -123,14 +127,17 @@ public class TransferMoneyHandler implements TransferMoneyUseCase {
     }
 
     private MoneyTransaction createTransaction(
-            TransferMoneyCommand command
+            TransferMoneyCommand command,
+            AccountTransferPort.TransferAccountInfo transferInfo
     ) {
         return MoneyTransaction.builder()
                 .reference(command.reference())
                 .type(TransactionType.TRANSFER)
                 .status(TransactionStatus.PENDING)
-                .sourceAccountId(command.sourceAccountId())
-                .destinationAccountId(command.destinationAccountId())
+                .sourceAccountId(transferInfo.sourceAccountId())
+                .destinationAccountId(
+                        transferInfo.destinationAccountId()
+                )
                 .amount(command.amount())
                 .currency(command.currency())
                 .description(command.description())
