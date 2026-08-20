@@ -16,4 +16,14 @@ public interface AccountQueryRepository extends JpaRepository<Account, UUID> {
             UUID userId,
             AccountStatus status
     );
+
+    Optional<Account> findByIdAndUserId(
+            UUID id,
+            UUID userId
+    );
+
+    boolean existsByIdAndUserId(
+            UUID id,
+            UUID userId
+    );
 }
