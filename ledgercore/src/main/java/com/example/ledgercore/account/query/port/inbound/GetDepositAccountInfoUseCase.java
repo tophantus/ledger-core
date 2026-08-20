@@ -1,12 +1,12 @@
 package com.example.ledgercore.account.query.port.inbound;
 
-import com.example.ledgercore.account.query.dto.DepositAccountInfo;
+import com.example.ledgercore.account.query.dto.AccountDepositInfo;
 
 import java.util.UUID;
 
 public interface GetDepositAccountInfoUseCase {
 
-    DepositAccountInfo execute(
+    AccountDepositInfo execute(
             UUID accountId
     );
 }
