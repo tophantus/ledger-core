@@ -25,6 +25,10 @@ public class ActivateAccountHandler implements ActivateAccountUseCase {
                         new BusinessException(ErrorCode.ACCOUNT_NOT_FOUND)
                 );
 
+        if (!account.getUserId().equals(command.userId())) {
+            throw new BusinessException(ErrorCode.ACCESS_DENIED);
+        }
+
         if (account.getStatus() == AccountStatus.CLOSED) {
             throw new BusinessException(ErrorCode.ACCOUNT_ALREADY_CLOSED);
         }

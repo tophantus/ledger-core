@@ -74,11 +74,15 @@ public class AccountController {
             description = "Get an account by account ID"
     )
     public ResponseEntity<ApiResponse<AccountResponse>> getAccount(
+            @AuthenticationPrincipal AuthPrincipal principal,
             @PathVariable UUID accountId
     ) {
         AccountResponse response =
                 getAccountUseCase.execute(
-                        new GetAccountQuery(accountId)
+                        new GetAccountQuery(
+                                principal.getUserId(),
+                                accountId
+                        )
                 );
 
         return ResponseEntity.ok(
@@ -95,11 +99,15 @@ public class AccountController {
             description = "Get an account by its account number"
     )
     public ResponseEntity<ApiResponse<AccountResponse>> getAccountByAccountNo(
+            @AuthenticationPrincipal AuthPrincipal principal,
             @PathVariable String accountNo
     ) {
         AccountResponse response =
                 getAccountByAccountNoUseCase.execute(
-                        new GetAccountByAccountNoQuery(accountNo)
+                        new GetAccountByAccountNoQuery(
+                                principal.getUserId(),
+                                accountNo
+                        )
                 );
 
         return ResponseEntity.ok(
@@ -139,10 +147,14 @@ public class AccountController {
             description = "Block an active bank account"
     )
     public ResponseEntity<ApiResponse<Void>> blockAccount(
+            @AuthenticationPrincipal AuthPrincipal principal,
             @PathVariable UUID accountId
     ) {
         blockAccountUseCase.execute(
-                new BlockAccountCommand(accountId)
+                new BlockAccountCommand(
+                        principal.getUserId(),
+                        accountId
+                )
         );
 
         return ResponseEntity.ok(
@@ -159,10 +171,14 @@ public class AccountController {
             description = "Activate a blocked bank account"
     )
     public ResponseEntity<ApiResponse<Void>> activateAccount(
+            @AuthenticationPrincipal AuthPrincipal principal,
             @PathVariable UUID accountId
     ) {
         activateAccountUseCase.execute(
-                new ActivateAccountCommand(accountId)
+                new ActivateAccountCommand(
+                        principal.getUserId(),
+                        accountId
+                )
         );
 
         return ResponseEntity.ok(
@@ -179,10 +195,14 @@ public class AccountController {
             description = "Close a bank account with zero balance"
     )
     public ResponseEntity<ApiResponse<Void>> closeAccount(
+            @AuthenticationPrincipal AuthPrincipal principal,
             @PathVariable UUID accountId
     ) {
         closeAccountUseCase.execute(
-                new CloseAccountCommand(accountId)
+                new CloseAccountCommand(
+                        principal.getUserId(),
+                        accountId
+                )
         );
 
         return ResponseEntity.ok(
