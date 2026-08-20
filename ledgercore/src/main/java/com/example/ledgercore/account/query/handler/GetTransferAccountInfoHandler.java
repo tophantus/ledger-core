@@ -2,7 +2,7 @@ package com.example.ledgercore.account.query.handler;
 
 import com.example.ledgercore.account.entity.Account;
 import com.example.ledgercore.account.enums.AccountStatus;
-import com.example.ledgercore.account.query.dto.TransferAccountInfo;
+import com.example.ledgercore.account.query.dto.AccountTransferInfo;
 import com.example.ledgercore.account.query.port.inbound.GetTransferAccountInfoUseCase;
 import com.example.ledgercore.account.query.repository.AccountQueryRepository;
 import com.example.ledgercore.common.exception.BusinessException;
@@ -22,7 +22,7 @@ public class GetTransferAccountInfoHandler
 
     @Override
     @Transactional(readOnly = true)
-    public TransferAccountInfo execute(
+    public AccountTransferInfo execute(
             UUID userId,
             UUID sourceAccountId,
             String destinationAccountNo
@@ -57,7 +57,7 @@ public class GetTransferAccountInfoHandler
             );
         }
 
-        return new TransferAccountInfo(
+        return new AccountTransferInfo(
                 sourceAccount.getId(),
                 destinationAccount.getId(),
                 sourceAccount.getCurrency(),
