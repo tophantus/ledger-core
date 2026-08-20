@@ -2,7 +2,7 @@ package com.example.ledgercore.account.query.handler;
 
 import com.example.ledgercore.account.entity.Account;
 import com.example.ledgercore.account.enums.AccountStatus;
-import com.example.ledgercore.account.query.dto.DepositAccountInfo;
+import com.example.ledgercore.account.query.dto.AccountDepositInfo;
 import com.example.ledgercore.account.query.port.inbound.GetDepositAccountInfoUseCase;
 import com.example.ledgercore.account.query.repository.AccountQueryRepository;
 import com.example.ledgercore.common.exception.BusinessException;
@@ -22,7 +22,7 @@ public class GetDepositAccountInfoHandler
 
     @Override
     @Transactional(readOnly = true)
-    public DepositAccountInfo execute(
+    public AccountDepositInfo execute(
             UUID accountId
     ) {
         Account account =
@@ -40,7 +40,7 @@ public class GetDepositAccountInfoHandler
             );
         }
 
-        return new DepositAccountInfo(
+        return new AccountDepositInfo(
                 account.getId(),
                 account.getCurrency()
         );
