@@ -42,10 +42,10 @@ public class MoneyTransaction {
     @Builder.Default
     private TransactionStatus status = TransactionStatus.PENDING;
 
-    @Column(name = "source_account_id", nullable = false)
+    @Column(name = "source_account_id")
     private UUID sourceAccountId;
 
-    @Column(name = "destination_account_id", nullable = false)
+    @Column(name = "destination_account_id")
     private UUID destinationAccountId;
 
     @Column(

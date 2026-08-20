@@ -1,0 +1,17 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 018-allow-null-transaction-account-references
+      author: tu
+
+      changes:
+
+        - dropNotNullConstraint:
+            tableName: transactions
+            columnName: source_account_id
+            columnDataType: UUID
+
+        - dropNotNullConstraint:
+            tableName: transactions
+            columnName: destination_account_id
+            columnDataType: UUID
