@@ -13,8 +13,9 @@ public record TransferMoneyCommand(
         @NotNull
         UUID sourceAccountId,
 
-        @NotNull
-        UUID destinationAccountId,
+        @NotBlank
+        @Size(max = 30)
+        String destinationAccountNo,
 
         @NotNull
         @DecimalMin(value = "0.0001")
