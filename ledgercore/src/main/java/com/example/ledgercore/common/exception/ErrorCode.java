@@ -68,6 +68,12 @@ public enum ErrorCode {
             HttpStatus.CONFLICT
     ),
 
+    ACCOUNT_NOT_ACTIVE(
+            "ACCOUNT_007",
+            "Account is not active",
+            HttpStatus.CONFLICT
+    ),
+
     // Transaction
 
     TRANSACTION_NOT_FOUND(
