@@ -27,6 +27,10 @@ public class GetAccountByAccountNoHandler
                         new BusinessException(ErrorCode.ACCOUNT_NOT_FOUND)
                 );
 
+        if (!account.getUserId().equals(query.userId())) {
+            throw new BusinessException(ErrorCode.ACCESS_DENIED);
+        }
+
         return toResponse(account);
     }
 
