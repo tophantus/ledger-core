@@ -11,6 +11,11 @@ public interface AccountTransferPort {
             UUID destinationAccountId
     );
 
+    void verifySourceAccountAccess(
+            UUID userId,
+            UUID sourceAccountId
+    );
+
     void transfer(
             UUID sourceAccountId,
             UUID destinationAccountId,
