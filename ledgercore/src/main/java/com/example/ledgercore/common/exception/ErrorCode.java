@@ -74,6 +74,20 @@ public enum ErrorCode {
             HttpStatus.CONFLICT
     ),
 
+    // Ledger
+
+    LEDGER_ACCOUNT_NOT_FOUND(
+            "LEDGER_001",
+            "Ledger account not found",
+            HttpStatus.NOT_FOUND
+    ),
+
+    LEDGER_ACCOUNT_NOT_ACTIVE(
+            "LEDGER_002",
+            "Ledger account is not active",
+            HttpStatus.CONFLICT
+    ),
+
     // Transaction
 
     TRANSACTION_NOT_FOUND(

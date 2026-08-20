@@ -35,3 +35,5 @@ databaseChangeLog:
       file: db/changelog/017-add-transfer-details-to-transactions.yaml
   - include:
       file: db/changelog/018-allow-null-transaction-account-references.yaml
+  - include:
+      file: db/changelog/019-seed-system-ledger-accounts.yaml
