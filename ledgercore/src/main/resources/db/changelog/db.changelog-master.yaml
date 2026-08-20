@@ -33,3 +33,5 @@ databaseChangeLog:
       file: db/changelog/016-create-outbox-events.yaml
   - include:
       file: db/changelog/017-add-transfer-details-to-transactions.yaml
+  - include:
+      file: db/changelog/018-allow-null-transaction-account-references.yaml
