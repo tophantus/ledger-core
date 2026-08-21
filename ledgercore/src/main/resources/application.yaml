@@ -20,6 +20,22 @@ spring:
         format_sql: true
     show-sql: true
 
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: rabbitmq
+    password: rabbitmq
+    publisher-confirm-type: correlated
+    publisher-returns: true
+    virtual-host: /
+
+    connection-timeout: 5s
+
+    listener:
+      simple:
+        acknowledge-mode: auto
+        default-requeue-rejected: false
+
   liquibase:
     enabled: true
     change-log: classpath:db/changelog/db.changelog-master.yaml

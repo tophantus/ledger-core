@@ -65,11 +65,32 @@ services:
     networks:
       - ledgercore-network
 
+  rabbitmq:
+    image: rabbitmq:4-management
+    container_name: ledgercore-rabbitmq
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: rabbitmq
+      RABBITMQ_DEFAULT_PASS: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - ledgercore-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
 volumes:
   postgres_data:
   redis_data:
   pgadmin_data:
   redisinsight_data:
+  rabbitmq_data:
 
 networks:
   ledgercore-network:

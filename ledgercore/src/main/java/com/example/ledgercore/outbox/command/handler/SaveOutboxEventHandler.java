@@ -1,7 +1,8 @@
-package com.example.ledgercore.outbox.service;
+package com.example.ledgercore.outbox.command.handler;
 
+import com.example.ledgercore.outbox.command.port.inbound.SaveOutboxEventUseCase;
+import com.example.ledgercore.outbox.command.repository.OutboxEventCommandRepository;
 import com.example.ledgercore.outbox.entity.OutboxEvent;
-import com.example.ledgercore.outbox.repository.OutboxEventRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -11,12 +12,14 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class OutboxService {
+public class SaveOutboxEventHandler
+        implements SaveOutboxEventUseCase {
 
-    private final OutboxEventRepository outboxEventRepository;
+    private final OutboxEventCommandRepository outboxEventCommandRepository;
     private final ObjectMapper objectMapper;
 
-    public UUID save(
+    @Override
+    public UUID execute(
             String aggregateType,
             UUID aggregateId,
             String eventType,
@@ -29,7 +32,7 @@ public class OutboxService {
                 .payload(serialize(payload))
                 .build();
 
-        return outboxEventRepository
+        return outboxEventCommandRepository
                 .save(event)
                 .getId();
     }
