@@ -8,7 +8,11 @@ public interface AccountTransferPort {
     TransferAccountInfo getTransferInfo(
             UUID userId,
             UUID sourceAccountId,
-            String destinationAccountNo
+            UUID destinationAccountId
+    );
+
+    UUID getAccountIdByAccountNo(
+            String accountNo
     );
 
     void verifySourceAccountAccess(

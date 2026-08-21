@@ -9,6 +9,6 @@ public interface GetTransferAccountInfoUseCase {
     AccountTransferInfo execute(
             UUID userId,
             UUID sourceAccountId,
-            String destinationAccountNo
+            UUID destinationAccountId
     );
 }

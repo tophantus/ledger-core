@@ -25,7 +25,7 @@ public class GetTransferAccountInfoHandler
     public AccountTransferInfo execute(
             UUID userId,
             UUID sourceAccountId,
-            String destinationAccountNo
+            UUID destinationAccountId
     ) {
         Account sourceAccount = accountQueryRepository
                 .findByIdAndUserId(sourceAccountId, userId)
@@ -34,18 +34,10 @@ public class GetTransferAccountInfoHandler
                 ));
 
         Account destinationAccount = accountQueryRepository
-                .findByAccountNo(destinationAccountNo)
+                .findById(destinationAccountId)
                 .orElseThrow(() -> new BusinessException(
                         ErrorCode.ACCOUNT_NOT_FOUND
                 ));
-
-        if (sourceAccount.getId()
-                .equals(destinationAccount.getId())) {
-
-            throw new BusinessException(
-                    ErrorCode.SAME_ACCOUNT_TRANSFER
-            );
-        }
 
         if (sourceAccount.getStatus()
                 != AccountStatus.ACTIVE
