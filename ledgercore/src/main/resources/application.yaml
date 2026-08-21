@@ -49,7 +49,7 @@ jwt:
 
 ledger:
   system-account:
-    deposit-codes:
+    cash-codes:
       VND: CASH_VND
       USD: CASH_USD
 

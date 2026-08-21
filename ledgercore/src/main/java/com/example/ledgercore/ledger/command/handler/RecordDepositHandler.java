@@ -31,7 +31,7 @@ public class RecordDepositHandler
         validateCommand(command);
 
         LedgerAccount sourceLedgerAccount =
-                systemLedgerAccountService.getDepositSource(
+                systemLedgerAccountService.getCashAccount(
                         command.currency()
                 );
 

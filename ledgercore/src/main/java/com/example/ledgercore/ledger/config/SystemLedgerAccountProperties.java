@@ -11,5 +11,5 @@ import java.util.Map;
 @ConfigurationProperties(prefix = "ledger.system-account")
 public class SystemLedgerAccountProperties {
 
-    private Map<String, String> depositCodes;
+    private Map<String, String> cashCodes;
 }
