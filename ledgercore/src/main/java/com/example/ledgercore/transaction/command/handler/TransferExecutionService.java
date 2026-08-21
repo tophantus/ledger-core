@@ -2,6 +2,8 @@ package com.example.ledgercore.transaction.command.handler;
 
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
+import com.example.ledgercore.common.lock.DistributedLock;
+import com.example.ledgercore.common.lock.LockKeyPrefix;
 import com.example.ledgercore.transaction.command.dto.TransferMoneyCommand;
 import com.example.ledgercore.transaction.command.port.outbound.AccountTransferPort;
 import com.example.ledgercore.transaction.command.port.outbound.LedgerTransferPort;
@@ -26,6 +28,13 @@ public class TransferExecutionService {
     private final LedgerTransferPort ledgerTransferPort;
 
     @Transactional
+    @DistributedLock(
+            keys = {
+                    "#command.sourceAccountId",
+                    "#destinationAccountId"
+            },
+            prefix = LockKeyPrefix.ACCOUNT
+    )
     public TransactionResponse execute(
             UUID userId,
             TransferMoneyCommand command,
