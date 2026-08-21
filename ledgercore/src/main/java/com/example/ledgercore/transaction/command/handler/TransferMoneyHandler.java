@@ -5,26 +5,23 @@ import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.transaction.command.dto.TransferMoneyCommand;
 import com.example.ledgercore.transaction.command.port.inbound.TransferMoneyUseCase;
 import com.example.ledgercore.transaction.command.port.outbound.AccountTransferPort;
-import com.example.ledgercore.transaction.command.port.outbound.LedgerTransferPort;
-import com.example.ledgercore.transaction.command.repository.TransactionCommandRepository;
 import com.example.ledgercore.transaction.entity.MoneyTransaction;
-import com.example.ledgercore.transaction.enums.TransactionStatus;
-import com.example.ledgercore.transaction.enums.TransactionType;
+import com.example.ledgercore.transaction.command.repository.TransactionCommandRepository;
 import com.example.ledgercore.transaction.query.dto.TransactionResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class TransferMoneyHandler implements TransferMoneyUseCase {
+public class TransferMoneyHandler
+        implements TransferMoneyUseCase {
 
     private final TransactionCommandRepository transactionCommandRepository;
     private final AccountTransferPort accountTransferPort;
-    private final LedgerTransferPort ledgerTransferPort;
+    private final TransferExecutionService transferExecutionService;
 
     @Override
     @Transactional
@@ -46,43 +43,23 @@ public class TransferMoneyHandler implements TransferMoneyUseCase {
             );
         }
 
-        AccountTransferPort.TransferAccountInfo transferInfo =
-                accountTransferPort.getTransferInfo(
-                        userId,
-                        command.sourceAccountId(),
+        UUID destinationAccountId =
+                accountTransferPort.getAccountIdByAccountNo(
                         command.destinationAccountNo()
                 );
 
-        validateTransfer(
+        if (command.sourceAccountId()
+                .equals(destinationAccountId)) {
+            throw new BusinessException(
+                    ErrorCode.SAME_ACCOUNT_TRANSFER
+            );
+        }
+
+        return transferExecutionService.execute(
+                userId,
                 command,
-                transferInfo
+                destinationAccountId
         );
-
-        MoneyTransaction transaction =
-                createTransaction(
-                        command,
-                        transferInfo
-                );
-
-        transactionCommandRepository.save(transaction);
-
-        accountTransferPort.transfer(
-                transferInfo.sourceAccountId(),
-                transferInfo.destinationAccountId(),
-                command.amount()
-        );
-
-        ledgerTransferPort.recordTransfer(
-                transaction.getId(),
-                transferInfo.sourceAccountId(),
-                transferInfo.destinationAccountId(),
-                command.amount(),
-                command.currency()
-        );
-
-        completeTransaction(transaction);
-
-        return toResponse(transaction);
     }
 
     private void validateAmount(
@@ -104,56 +81,6 @@ public class TransferMoneyHandler implements TransferMoneyUseCase {
                 transaction.getSourceAccountId()
         );
 
-        return toResponse(transaction);
-    }
-
-    private void validateTransfer(
-            TransferMoneyCommand command,
-            AccountTransferPort.TransferAccountInfo transferInfo
-    ) {
-        if (!transferInfo.currency().equals(command.currency())) {
-            throw new BusinessException(
-                    ErrorCode.TRANSACTION_CURRENCY_MISMATCH
-            );
-        }
-
-        if (transferInfo.sourceBalance()
-                .compareTo(command.amount()) < 0) {
-
-            throw new BusinessException(
-                    ErrorCode.ACCOUNT_INSUFFICIENT_BALANCE
-            );
-        }
-    }
-
-    private MoneyTransaction createTransaction(
-            TransferMoneyCommand command,
-            AccountTransferPort.TransferAccountInfo transferInfo
-    ) {
-        return MoneyTransaction.builder()
-                .reference(command.reference())
-                .type(TransactionType.TRANSFER)
-                .status(TransactionStatus.PENDING)
-                .sourceAccountId(transferInfo.sourceAccountId())
-                .destinationAccountId(
-                        transferInfo.destinationAccountId()
-                )
-                .amount(command.amount())
-                .currency(command.currency())
-                .description(command.description())
-                .build();
-    }
-
-    private void completeTransaction(
-            MoneyTransaction transaction
-    ) {
-        transaction.setStatus(TransactionStatus.COMPLETED);
-        transaction.setCompletedAt(Instant.now());
-    }
-
-    private TransactionResponse toResponse(
-            MoneyTransaction transaction
-    ) {
         return new TransactionResponse(
                 transaction.getId(),
                 transaction.getReference(),

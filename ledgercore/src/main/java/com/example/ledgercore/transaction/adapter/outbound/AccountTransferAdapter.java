@@ -3,6 +3,7 @@ package com.example.ledgercore.transaction.adapter.outbound;
 import com.example.ledgercore.account.command.dto.TransferAccountCommand;
 import com.example.ledgercore.account.command.port.inbound.TransferAccountBalanceUseCase;
 import com.example.ledgercore.account.query.dto.AccountTransferInfo;
+import com.example.ledgercore.account.query.port.inbound.GetAccountIdByAccountNoUseCase;
 import com.example.ledgercore.account.query.port.inbound.GetTransferAccountInfoUseCase;
 import com.example.ledgercore.account.query.port.inbound.VerifyAccountOwnershipUseCase;
 import com.example.ledgercore.transaction.command.port.outbound.AccountTransferPort;
@@ -20,6 +21,9 @@ public class AccountTransferAdapter
     private final GetTransferAccountInfoUseCase
             getTransferAccountInfoUseCase;
 
+    private final GetAccountIdByAccountNoUseCase
+            getAccountIdByAccountNoUseCase;
+
     private final VerifyAccountOwnershipUseCase
             verifyAccountOwnershipUseCase;
 
@@ -30,13 +34,13 @@ public class AccountTransferAdapter
     public AccountTransferPort.TransferAccountInfo getTransferInfo(
             UUID userId,
             UUID sourceAccountId,
-            String destinationAccountNo
+            UUID destinationAccountId
     ) {
         AccountTransferInfo info =
                 getTransferAccountInfoUseCase.execute(
                         userId,
                         sourceAccountId,
-                        destinationAccountNo
+                        destinationAccountId
                 );
 
         return new AccountTransferPort.TransferAccountInfo(
@@ -45,6 +49,11 @@ public class AccountTransferAdapter
                 info.currency(),
                 info.sourceBalance()
         );
+    }
+
+    @Override
+    public UUID getAccountIdByAccountNo(String accountNo) {
+        return getAccountIdByAccountNoUseCase.execute(accountNo);
     }
 
     @Override
