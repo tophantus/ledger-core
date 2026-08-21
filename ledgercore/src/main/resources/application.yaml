@@ -61,6 +61,5 @@ security:
 
 logging:
   level:
-    com.example.lotusplus.common.lock: DEBUG
+    com.example.ledgercore: DEBUG
     org.hibernate.SQL: INFO
-    org.hibernate.orm.jdbc.bind: TRACE

@@ -2,6 +2,8 @@ package com.example.ledgercore.transaction.command.handler;
 
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
+import com.example.ledgercore.common.lock.DistributedLock;
+import com.example.ledgercore.common.lock.LockKeyPrefix;
 import com.example.ledgercore.transaction.command.dto.DepositMoneyCommand;
 import com.example.ledgercore.transaction.command.port.inbound.DepositMoneyUseCase;
 import com.example.ledgercore.transaction.command.port.outbound.AccountDepositPort;
@@ -27,6 +29,10 @@ public class DepositMoneyHandler implements DepositMoneyUseCase {
     private final LedgerDepositPort ledgerDepositPort;
 
     @Override
+    @DistributedLock(
+            keys = "#command.destinationAccountId",
+            prefix = LockKeyPrefix.ACCOUNT
+    )
     @Transactional
     public TransactionResponse execute(
             UUID adminUserId,

@@ -2,6 +2,8 @@ package com.example.ledgercore.transaction.command.handler;
 
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
+import com.example.ledgercore.common.lock.DistributedLock;
+import com.example.ledgercore.common.lock.LockKeyPrefix;
 import com.example.ledgercore.transaction.command.dto.WithdrawMoneyCommand;
 import com.example.ledgercore.transaction.command.port.inbound.WithdrawMoneyUseCase;
 import com.example.ledgercore.transaction.command.port.outbound.AccountWithdrawPort;
@@ -30,6 +32,10 @@ public class WithdrawMoneyHandler
     private final LedgerWithdrawPort ledgerWithdrawPort;
 
     @Override
+    @DistributedLock(
+            keys = "#command.sourceAccountId",
+            prefix = LockKeyPrefix.ACCOUNT
+    )
     @Transactional
     public TransactionResponse execute(
             UUID userId,
