@@ -26,8 +26,9 @@ import java.util.UUID;
 @AllArgsConstructor
 public class UserRole {
 
-    @EmbeddedId
-    private UserRoleId id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(
             name = "user_id",
@@ -36,7 +37,6 @@ public class UserRole {
     private UUID userId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("roleId")
     @JoinColumn(
             name = "role_id",
             nullable = false
