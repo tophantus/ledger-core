@@ -15,12 +15,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class SystemLedgerAccountService {
 
     private final LedgerAccountQueryRepository ledgerAccountQueryRepository;
-    private final SystemLedgerAccountProperties properties;
+    private final SystemLedgerAccountProperties systemLedgerAccountProperties;
 
     @Transactional(readOnly = true)
-    public LedgerAccount getDepositSource(String currency) {
-        String code = properties.getDepositCodes()
-                .get(currency);
+    public LedgerAccount getCashAccount(String currency) {
+        String code = systemLedgerAccountProperties
+                        .getCashCodes()
+                        .get(currency);
 
         if (code == null) {
             throw new BusinessException(
