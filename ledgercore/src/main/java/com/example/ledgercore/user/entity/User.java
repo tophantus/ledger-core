@@ -1,13 +1,10 @@
 package com.example.ledgercore.user.entity;
 
-import com.example.ledgercore.role.entity.UserRole;
 import com.example.ledgercore.user.enums.UserStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.Instant;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -51,15 +48,6 @@ public class User {
 
     @Column(name = "verified_at")
     private Instant verifiedAt;
-
-    @OneToMany(
-            mappedBy = "user",
-            fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
-    @Builder.Default
-    private Set<UserRole> roles = new HashSet<>();
 
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
