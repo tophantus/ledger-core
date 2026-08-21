@@ -144,6 +144,12 @@ public enum ErrorCode {
             HttpStatus.BAD_REQUEST
     ),
 
+    INVALID_WITHDRAW_AMOUNT(
+            "TRANSACTION_010",
+            "Withdraw amount must be greater than zero",
+            HttpStatus.BAD_REQUEST
+    ),
+
     INVALID_CREDENTIALS(
             "AUTH_001",
             "Invalid credentials",
