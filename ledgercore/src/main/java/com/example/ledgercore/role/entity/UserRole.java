@@ -1,10 +1,10 @@
 package com.example.ledgercore.role.entity;
 
-import com.example.ledgercore.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Entity
 @Table(
@@ -12,7 +12,10 @@ import java.time.Instant;
         uniqueConstraints = {
                 @UniqueConstraint(
                         name = "uk_user_roles_user_role",
-                        columnNames = {"user_id", "role_id"}
+                        columnNames = {
+                                "user_id",
+                                "role_id"
+                        }
                 )
         }
 )
@@ -23,19 +26,17 @@ import java.time.Instant;
 @AllArgsConstructor
 public class UserRole {
 
-    @EmbeddedId
-    private UserRoleId id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("userId")
-    @JoinColumn(
+    @Column(
             name = "user_id",
             nullable = false
     )
-    private User user;
+    private UUID userId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("roleId")
     @JoinColumn(
             name = "role_id",
             nullable = false
@@ -49,14 +50,8 @@ public class UserRole {
     )
     private Instant assignedAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(
-            name = "assigned_by",
-            foreignKey = @ForeignKey(
-                    name = "fk_user_roles_assigned_by"
-            )
-    )
-    private User assignedBy;
+    @Column(name = "assigned_by")
+    private UUID assignedBy;
 
     @PrePersist
     protected void prePersist() {

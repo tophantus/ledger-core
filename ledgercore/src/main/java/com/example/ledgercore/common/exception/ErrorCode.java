@@ -30,6 +30,11 @@ public enum ErrorCode {
             HttpStatus.CONFLICT
     ),
 
+    ROLE_NOT_FOUND(
+            "ROLE_001",
+            "Role not found",
+            HttpStatus.NOT_FOUND
+    ),
 
     ACCOUNT_NOT_FOUND(
             "ACCOUNT_001",

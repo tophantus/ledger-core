@@ -1,0 +1,39 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 020-change-user-roles-to-surrogate-key
+      author: tu
+
+      changes:
+
+        - addColumn:
+            tableName: user_roles
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+
+        - sql:
+            sql: |
+              UPDATE user_roles
+              SET id = gen_random_uuid()
+              WHERE id IS NULL;
+
+        - addNotNullConstraint:
+            tableName: user_roles
+            columnName: id
+            columnDataType: UUID
+
+        - dropPrimaryKey:
+            tableName: user_roles
+            constraintName: pk_user_roles
+
+        - addPrimaryKey:
+            tableName: user_roles
+            columnNames: id
+            constraintName: pk_user_roles
+
+        - addUniqueConstraint:
+            tableName: user_roles
+            columnNames: user_id, role_id
+            constraintName: uk_user_roles_user_role
