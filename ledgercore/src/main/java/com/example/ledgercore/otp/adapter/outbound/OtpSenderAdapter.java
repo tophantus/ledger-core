@@ -5,7 +5,7 @@ import com.example.ledgercore.otp.command.port.outbound.OtpSenderPort;
 import com.example.ledgercore.otp.enums.OtpChannel;
 import com.example.ledgercore.otp.enums.OtpPurpose;
 import com.example.ledgercore.otp.event.OtpNotificationEvent;
-import com.example.ledgercore.outbox.service.OutboxService;
+import com.example.ledgercore.outbox.command.port.inbound.SaveOutboxEventUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -18,7 +18,7 @@ public class OtpSenderAdapter implements OtpSenderPort {
     private static final String AGGREGATE_TYPE = "OTP_CHALLENGE";
     private static final String EVENT_TYPE = "OTP_NOTIFICATION_REQUESTED";
 
-    private final OutboxService outboxService;
+    private final SaveOutboxEventUseCase saveOutboxEventUseCase;
     private final EncryptionService encryptionService;
 
     @Override
@@ -42,7 +42,7 @@ public class OtpSenderAdapter implements OtpSenderPort {
                         encryptedOtp
                 );
 
-        outboxService.save(
+        saveOutboxEventUseCase.execute(
                 AGGREGATE_TYPE,
                 otpChallengeId,
                 EVENT_TYPE,
