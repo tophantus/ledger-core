@@ -30,7 +30,7 @@ public class EmailVerificationAdapter
                 new SendOtpCommand(
                         userId,
                         null,
-                        OtpPurpose.SIGNUP,
+                        OtpPurpose.EMAIL_VERIFICATION,
                         OtpChannel.EMAIL,
                         destination
                 )
@@ -46,7 +46,7 @@ public class EmailVerificationAdapter
                 new VerifyOtpCommand(
                         userId,
                         null,
-                        OtpPurpose.SIGNUP,
+                        OtpPurpose.EMAIL_VERIFICATION,
                         code
                 )
         );

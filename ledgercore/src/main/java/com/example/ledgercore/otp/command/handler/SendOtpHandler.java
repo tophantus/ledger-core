@@ -18,8 +18,6 @@ import java.time.Instant;
 @RequiredArgsConstructor
 public class SendOtpHandler implements SendOtpUseCase {
 
-    private static final long OTP_EXPIRATION_SECONDS = 300;
-
     private final OtpCommandRepository otpCommandRepository;
     private final OtpGenerator otpGenerator;
     private final OtpSenderPort otpSenderPort;
@@ -43,7 +41,7 @@ public class SendOtpHandler implements SendOtpUseCase {
                 .status(OtpStatus.PENDING)
                 .attempts(0)
                 .expiresAt(
-                        now.plusSeconds(OTP_EXPIRATION_SECONDS)
+                        now.plus(command.purpose().getExpiration())
                 )
                 .build();
 
