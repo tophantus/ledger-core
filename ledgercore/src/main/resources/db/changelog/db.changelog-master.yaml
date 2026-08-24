@@ -39,3 +39,5 @@ databaseChangeLog:
       file: db/changelog/019-seed-system-ledger-accounts.yaml
   - include:
       file: db/changelog/020-change-user-roles-primary-key.yaml
+  - include:
+      file: db/changelog/021-rename-otp-purpose-to-email-verification.yaml

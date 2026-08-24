@@ -1,0 +1,33 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 021-rename-otp-purpose-signup-to-email-verification
+      author: tu
+
+      changes:
+
+        - sql:
+            sql: >
+              UPDATE otp_challenges
+              SET purpose = 'EMAIL_VERIFICATION'
+              WHERE purpose = 'SIGNUP';
+
+        - sql:
+            sql: >
+              ALTER TABLE otp_challenges
+              DROP CONSTRAINT IF EXISTS chk_otp_challenges_purpose;
+
+        - sql:
+            sql: >
+              ALTER TABLE otp_challenges
+              ADD CONSTRAINT chk_otp_challenges_purpose
+              CHECK (
+                purpose IN (
+                  'EMAIL_VERIFICATION',
+                  'RESET_PASSWORD',
+                  'CONFIRM_TRANSFER',
+                  'CHANGE_EMAIL',
+                  'CHANGE_PHONE',
+                  'TWO_FACTOR_AUTH'
+                )
+              );

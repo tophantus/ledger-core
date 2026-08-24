@@ -1,16 +1,22 @@
 package com.example.ledgercore.otp.enums;
 
+import lombok.Getter;
+
+import java.time.Duration;
+
+@Getter
 public enum OtpPurpose {
 
-    SIGNUP,
+    EMAIL_VERIFICATION(Duration.ofMinutes(10)),
+    RESET_PASSWORD(Duration.ofMinutes(5)),
+    CONFIRM_TRANSFER(Duration.ofMinutes(3)),
+    CHANGE_EMAIL(Duration.ofMinutes(5)),
+    CHANGE_PHONE(Duration.ofMinutes(5)),
+    TWO_FACTOR_AUTH(Duration.ofMinutes(3));
 
-    RESET_PASSWORD,
+    private final Duration expiration;
 
-    CONFIRM_TRANSFER,
-
-    CHANGE_EMAIL,
-
-    CHANGE_PHONE,
-
-    TWO_FACTOR_AUTH
+    OtpPurpose(Duration expiration) {
+        this.expiration = expiration;
+    }
 }

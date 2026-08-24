@@ -10,6 +10,6 @@ public record OtpNotificationEvent(
         OtpPurpose purpose,
         OtpChannel channel,
         String destination,
-        String otp
+        String encryptedOtp
 ) {
 }
