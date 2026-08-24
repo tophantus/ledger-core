@@ -15,8 +15,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class OtpSenderAdapter implements OtpSenderPort {
 
-    private static final String AGGREGATE_TYPE = "OTP_CHALLENGE";
-    private static final String EVENT_TYPE = "OTP_NOTIFICATION_REQUESTED";
+    private static final String AGGREGATE_TYPE = "OTP";
+    private static final String EVENT_TYPE = "OTP_CHALLENGE_NOTIFICATION_REQUESTED";
 
     private final SaveOutboxEventUseCase saveOutboxEventUseCase;
     private final EncryptionService encryptionService;
