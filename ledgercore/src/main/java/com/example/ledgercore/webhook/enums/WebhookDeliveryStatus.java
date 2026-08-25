@@ -4,9 +4,11 @@ public enum WebhookDeliveryStatus {
 
     PENDING,
 
-    DELIVERED,
+    PROCESSING,
 
     RETRYING,
+
+    DELIVERED,
 
     FAILED
 }

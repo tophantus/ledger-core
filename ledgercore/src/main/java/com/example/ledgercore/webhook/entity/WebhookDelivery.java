@@ -115,9 +115,11 @@ public class WebhookDelivery {
         }
     }
 
-    public void markAttempt(Instant attemptedAt) {
+    public void markProcessing(Instant attemptedAt) {
+        this.status = WebhookDeliveryStatus.PROCESSING;
         this.attemptCount++;
         this.lastAttemptAt = attemptedAt;
+        this.lastError = null;
     }
 
     public void markDelivered(Instant deliveredAt) {
