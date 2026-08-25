@@ -9,11 +9,10 @@ import com.example.ledgercore.webhook.enums.WebhookDeliveryStatus;
 import com.example.ledgercore.webhook.enums.WebhookEventType;
 import com.example.ledgercore.webhook.enums.WebhookStatus;
 import com.example.ledgercore.webhook.query.repository.WebhookSubscriptionQueryRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tools.jackson.databind.ObjectMapper;
 
 import java.time.Instant;
 import java.util.List;
@@ -118,7 +117,7 @@ public class HandleTransferCompletedWebhookHandler
     ) {
         try {
             return objectMapper.writeValueAsString(event);
-        } catch (JsonProcessingException e) {
+        } catch (Exception e) {
             throw new IllegalStateException(
                     "Failed to serialize webhook event",
                     e

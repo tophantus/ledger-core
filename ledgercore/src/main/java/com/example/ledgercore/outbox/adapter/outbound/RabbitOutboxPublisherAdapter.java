@@ -4,6 +4,7 @@ import com.example.ledgercore.outbox.adapter.outbound.rabbit.OutboxEventRabbitMa
 import com.example.ledgercore.outbox.adapter.outbound.rabbit.RabbitOutboxMessage;
 import com.example.ledgercore.outbox.command.port.outbound.OutboxMessagePublisherPort;
 import com.example.ledgercore.outbox.entity.OutboxEvent;
+import com.example.ledgercore.outbox.service.OutboxPayloadDeserializer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -16,12 +17,16 @@ public class RabbitOutboxPublisherAdapter
 
     private final RabbitTemplate rabbitTemplate;
     private final OutboxEventRabbitMapper mapper;
+    private final OutboxPayloadDeserializer payloadDeserializer;
 
     @Override
     public void publish(OutboxEvent event) {
 
         RabbitOutboxMessage message =
                 mapper.map(event);
+
+        Object payload =
+                payloadDeserializer.deserialize(event);
 
         CorrelationData correlationData =
                 new CorrelationData(
@@ -31,7 +36,7 @@ public class RabbitOutboxPublisherAdapter
         rabbitTemplate.convertAndSend(
                 message.exchange(),
                 message.routingKey(),
-                event.getPayload(),
+                payload,
                 correlationData
         );
     }

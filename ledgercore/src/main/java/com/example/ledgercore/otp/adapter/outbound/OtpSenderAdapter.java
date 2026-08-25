@@ -6,19 +6,18 @@ import com.example.ledgercore.otp.enums.OtpChannel;
 import com.example.ledgercore.otp.enums.OtpPurpose;
 import com.example.ledgercore.otp.event.OtpNotificationEvent;
 import com.example.ledgercore.outbox.command.port.inbound.SaveOutboxEventUseCase;
+import com.example.ledgercore.outbox.event.OutboxAggregateType;
+import com.example.ledgercore.outbox.event.OutboxEventType;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
 @Component
+@Slf4j
 @RequiredArgsConstructor
 public class OtpSenderAdapter implements OtpSenderPort {
-
-    private static final String AGGREGATE_TYPE = "OTP";
-
-    private static final String EVENT_TYPE =
-            "OTP_CHALLENGE_NOTIFICATION_REQUESTED";
 
     private final SaveOutboxEventUseCase saveOutboxEventUseCase;
     private final EncryptionService encryptionService;
@@ -36,6 +35,8 @@ public class OtpSenderAdapter implements OtpSenderPort {
         String encryptedOtp =
                 encryptionService.encrypt(otp);
 
+        log.debug("OTP: {}", otp);
+
         OtpNotificationEvent event =
                 new OtpNotificationEvent(
                         otpChallengeId,
@@ -48,9 +49,9 @@ public class OtpSenderAdapter implements OtpSenderPort {
                 );
 
         saveOutboxEventUseCase.execute(
-                AGGREGATE_TYPE,
+                OutboxAggregateType.OTP.getValue(),
                 otpChallengeId,
-                EVENT_TYPE,
+                OutboxEventType.OTP_CHALLENGE_NOTIFICATION_REQUESTED.getValue(),
                 event
         );
     }

@@ -42,16 +42,37 @@ public class ProcessWebhookDeliveryHandler
 
         Instant now = Instant.now();
 
-        boolean claimed =
+        log.debug(
+                "Starting webhook delivery processing deliveryId={}",
+                deliveryId
+        );
+
+        int claimResult =
                 webhookDeliveryCommandRepository.claim(
                         deliveryId,
                         WebhookDeliveryStatus.PROCESSING,
                         WebhookDeliveryStatus.PENDING,
                         WebhookDeliveryStatus.RETRYING,
                         now
-                ) == 1;
+                );
+
+        boolean claimed = claimResult == 1;
+
+        log.debug(
+                "Webhook delivery claim result deliveryId={}, " +
+                        "claimed={}, rowsUpdated={}",
+                deliveryId,
+                claimed,
+                claimResult
+        );
 
         if (!claimed) {
+            log.debug(
+                    "Webhook delivery was not claimed, " +
+                            "possibly already processing or completed " +
+                            "deliveryId={}",
+                    deliveryId
+            );
             return;
         }
 
@@ -61,8 +82,24 @@ public class ProcessWebhookDeliveryHandler
                         .orElse(null);
 
         if (delivery == null) {
+            log.warn(
+                    "Webhook delivery not found after claim " +
+                            "deliveryId={}",
+                    deliveryId
+            );
             return;
         }
+
+        log.debug(
+                "Webhook delivery claimed deliveryId={}, " +
+                        "status={}, attemptCount={}, nextAttemptAt={}, " +
+                        "attemptStartedAt={}",
+                delivery.getId(),
+                delivery.getStatus(),
+                delivery.getAttemptCount(),
+                delivery.getNextAttemptAt(),
+                delivery.getAttemptStartedAt()
+        );
 
         WebhookEndpoint endpoint =
                 webhookEndpointQueryRepository
@@ -72,6 +109,14 @@ public class ProcessWebhookDeliveryHandler
                         .orElse(null);
 
         if (endpoint == null) {
+
+            log.warn(
+                    "Webhook endpoint not found deliveryId={}, " +
+                            "endpointId={}",
+                    deliveryId,
+                    delivery.getWebhookEndpointId()
+            );
+
             fail(
                     delivery,
                     "Webhook endpoint not found"
@@ -79,8 +124,25 @@ public class ProcessWebhookDeliveryHandler
             return;
         }
 
+        log.debug(
+                "Resolved webhook endpoint deliveryId={}, " +
+                        "endpointId={}, status={}, url={}",
+                deliveryId,
+                endpoint.getId(),
+                endpoint.getStatus(),
+                endpoint.getUrl()
+        );
+
         if (endpoint.getStatus()
                 != WebhookStatus.ACTIVE) {
+
+            log.warn(
+                    "Webhook endpoint is not active deliveryId={}, " +
+                            "endpointId={}, status={}",
+                    deliveryId,
+                    endpoint.getId(),
+                    endpoint.getStatus()
+            );
 
             fail(
                     delivery,
@@ -89,12 +151,31 @@ public class ProcessWebhookDeliveryHandler
             return;
         }
 
+        log.debug(
+                "Sending webhook delivery deliveryId={}, " +
+                        "attempt={}, url={}",
+                deliveryId,
+                delivery.getAttemptCount(),
+                endpoint.getUrl()
+        );
+
         WebhookHttpClientPort.WebhookResponse response =
                 webhookHttpClientPort.send(
                         endpoint.getUrl(),
                         endpoint.getSecret(),
                         delivery.getPayload()
                 );
+
+        log.debug(
+                "Webhook HTTP response deliveryId={}, " +
+                        "statusCode={}, success={}, retryable={}, " +
+                        "error={}",
+                deliveryId,
+                response.statusCode(),
+                response.isSuccess(),
+                response.isRetryable(),
+                response.error()
+        );
 
         handleResponse(
                 delivery,
@@ -106,7 +187,25 @@ public class ProcessWebhookDeliveryHandler
             WebhookDelivery delivery,
             WebhookHttpClientPort.WebhookResponse response
     ) {
+        log.debug(
+                "Handling webhook response deliveryId={}, " +
+                        "attempt={}, statusCode={}, success={}, retryable={}",
+                delivery.getId(),
+                delivery.getAttemptCount(),
+                response.statusCode(),
+                response.isSuccess(),
+                response.isRetryable()
+        );
+
         if (response.isSuccess()) {
+
+            log.debug(
+                    "Webhook delivery succeeded deliveryId={}, " +
+                            "attempt={}, statusCode={}",
+                    delivery.getId(),
+                    delivery.getAttemptCount(),
+                    response.statusCode()
+            );
 
             webhookDeliveryCommandRepository.markDelivered(
                     delivery.getId(),
@@ -121,7 +220,23 @@ public class ProcessWebhookDeliveryHandler
         String error =
                 buildErrorMessage(response);
 
+        log.debug(
+                "Webhook delivery failed deliveryId={}, " +
+                        "attempt={}, retryable={}, error={}",
+                delivery.getId(),
+                delivery.getAttemptCount(),
+                response.isRetryable(),
+                error
+        );
+
         if (!response.isRetryable()) {
+
+            log.debug(
+                    "Webhook delivery failure is non-retryable " +
+                            "deliveryId={}, attempt={}",
+                    delivery.getId(),
+                    delivery.getAttemptCount()
+            );
 
             fail(
                     delivery,
@@ -141,9 +256,30 @@ public class ProcessWebhookDeliveryHandler
             WebhookDelivery delivery,
             String error
     ) {
-        if (!retryPolicy.shouldRetry(
-                delivery.getAttemptCount()
-        )) {
+        int attemptCount =
+                delivery.getAttemptCount();
+
+        boolean shouldRetry =
+                retryPolicy.shouldRetry(
+                        attemptCount
+                );
+
+        log.debug(
+                "Webhook retry decision deliveryId={}, " +
+                        "attempt={}, shouldRetry={}",
+                delivery.getId(),
+                attemptCount,
+                shouldRetry
+        );
+
+        if (!shouldRetry) {
+
+            log.debug(
+                    "Webhook retry limit reached deliveryId={}, " +
+                            "attempt={}",
+                    delivery.getId(),
+                    attemptCount
+            );
 
             fail(
                     delivery,
@@ -153,13 +289,22 @@ public class ProcessWebhookDeliveryHandler
             return;
         }
 
+        var delay =
+                retryPolicy.getDelay(
+                        attemptCount
+                );
+
         Instant nextAttemptAt =
-                Instant.now()
-                        .plus(
-                                retryPolicy.getDelay(
-                                        delivery.getAttemptCount()
-                                )
-                        );
+                Instant.now().plus(delay);
+
+        log.debug(
+                "Scheduling webhook retry deliveryId={}, " +
+                        "attempt={}, delay={}, nextAttemptAt={}",
+                delivery.getId(),
+                attemptCount,
+                delay,
+                nextAttemptAt
+        );
 
         webhookDeliveryCommandRepository.markRetry(
                 delivery.getId(),
@@ -182,6 +327,13 @@ public class ProcessWebhookDeliveryHandler
             WebhookDelivery delivery,
             String error
     ) {
+        log.debug(
+                "Marking webhook delivery as failed " +
+                        "deliveryId={}, attempt={}, error={}",
+                delivery.getId(),
+                delivery.getAttemptCount(),
+                error
+        );
         webhookDeliveryCommandRepository.markFailed(
                 delivery.getId(),
                 WebhookDeliveryStatus.FAILED,

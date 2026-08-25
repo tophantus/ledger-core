@@ -3,7 +3,6 @@ package com.example.ledgercore.auth.config;
 import com.example.ledgercore.auth.security.filter.JwtAuthenticationFilter;
 import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.common.response.ApiResponse;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +20,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.List;
 
@@ -52,6 +52,10 @@ public class SecurityConfig {
                                         "/swagger-ui.html"
                                 ).permitAll()
 
+                                .requestMatchers(
+                                        "/test/webhook"
+                                ).permitAll()
+                                
                                 .requestMatchers(
                                         "/api/v1/auth/sign-up",
                                         "/api/v1/auth/verify-email",
