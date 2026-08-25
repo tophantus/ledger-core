@@ -1,0 +1,102 @@
+databaseChangeLog:
+  - changeSet:
+      id: 023-create-webhook-deliveries
+      author: ledgercore
+      changes:
+
+        - createTable:
+            tableName: webhook_deliveries
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: webhook_endpoint_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: event_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: event_type
+                  type: VARCHAR(150)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: payload
+                  type: TEXT
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: status
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: attempt_count
+                  type: INT
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: next_attempt_at
+                  type: TIMESTAMP WITH TIME ZONE
+
+              - column:
+                  name: delivered_at
+                  type: TIMESTAMP WITH TIME ZONE
+
+              - column:
+                  name: last_attempt_at
+                  type: TIMESTAMP WITH TIME ZONE
+
+              - column:
+                  name: last_error
+                  type: VARCHAR(2000)
+
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+        - addUniqueConstraint:
+            tableName: webhook_deliveries
+            columnNames: webhook_endpoint_id, event_id
+            constraintName: uk_webhook_deliveries_endpoint_event
+
+        - createIndex:
+            tableName: webhook_deliveries
+            indexName: idx_webhook_deliveries_status_next_attempt
+            columns:
+              - column:
+                  name: status
+              - column:
+                  name: next_attempt_at
+
+        - createIndex:
+            tableName: webhook_deliveries
+            indexName: idx_webhook_deliveries_endpoint_id
+            columns:
+              - column:
+                  name: webhook_endpoint_id
+
+        - createIndex:
+            tableName: webhook_deliveries
+            indexName: idx_webhook_deliveries_event_id
+            columns:
+              - column:
+                  name: event_id
