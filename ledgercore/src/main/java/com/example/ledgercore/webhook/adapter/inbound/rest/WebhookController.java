@@ -1,12 +1,13 @@
 package com.example.ledgercore.webhook.adapter.inbound.rest;
 
+import com.example.ledgercore.auth.security.AuthPrincipal;
 import com.example.ledgercore.webhook.command.dto.RegisterWebhookCommand;
 import com.example.ledgercore.webhook.command.dto.RegisterWebhookResult;
 import com.example.ledgercore.webhook.command.port.inbound.RegisterWebhookUseCase;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -23,14 +24,12 @@ public class WebhookController {
     public RegisterWebhookResponse register(
             @PathVariable UUID accountId,
             @Valid @RequestBody RegisterWebhookRequest request,
-            Authentication authentication
-    ) {
-        UUID userId = UUID.fromString(authentication.getName());
-
+            @AuthenticationPrincipal AuthPrincipal principal
+            ) {
         RegisterWebhookResult result =
                 registerWebhookUseCase.execute(
                         new RegisterWebhookCommand(
-                                userId,
+                                principal.getUserId(),
                                 accountId,
                                 request.url(),
                                 request.eventTypes()

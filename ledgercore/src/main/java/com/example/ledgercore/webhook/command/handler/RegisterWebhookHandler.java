@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -30,8 +31,14 @@ public class RegisterWebhookHandler
 
     @Override
     @Transactional
-    public RegisterWebhookResult execute(RegisterWebhookCommand command) {
-        validateAccountOwnership(command);
+    public RegisterWebhookResult execute(
+            RegisterWebhookCommand command
+    ) {
+        accountOwnerPort.verifyOwnership(
+                command.userId(),
+                command.accountId()
+        );
+
         validateUrl(command.url());
         validateEventTypes(command);
 
@@ -46,12 +53,15 @@ public class RegisterWebhookHandler
         WebhookEndpoint savedEndpoint =
                 webhookEndpointCommandRepository.save(endpoint);
 
-        Set<String> eventTypes = Set.copyOf(command.eventTypes());
+        Set<String> eventTypes =
+                Set.copyOf(command.eventTypes());
 
-        var subscriptions = eventTypes.stream()
+        List<WebhookSubscription> subscriptions = eventTypes.stream()
                 .map(eventType ->
                         WebhookSubscription.builder()
-                                .webhookEndpointId(savedEndpoint.getId())
+                                .webhookEndpointId(
+                                        savedEndpoint.getId()
+                                )
                                 .eventType(eventType)
                                 .build()
                 )
@@ -70,19 +80,6 @@ public class RegisterWebhookHandler
                 eventTypes,
                 savedEndpoint.getCreatedAt()
         );
-    }
-
-    private void validateAccountOwnership(
-            RegisterWebhookCommand command
-    ) {
-        if (!accountOwnerPort.isOwner(
-                command.accountId(),
-                command.userId()
-        )) {
-            throw new BusinessException(
-                    ErrorCode.ACCOUNT_NOT_FOUND
-            );
-        }
     }
 
     private void validateUrl(String url) {

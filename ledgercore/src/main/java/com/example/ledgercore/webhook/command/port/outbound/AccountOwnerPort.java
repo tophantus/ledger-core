@@ -4,8 +4,8 @@ import java.util.UUID;
 
 public interface AccountOwnerPort {
 
-    boolean isOwner(
-            UUID accountId,
-            UUID userId
+    void verifyOwnership(
+            UUID userId,
+            UUID accountId
     );
 }
