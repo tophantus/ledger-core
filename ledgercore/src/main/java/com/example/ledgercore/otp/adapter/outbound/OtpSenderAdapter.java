@@ -16,7 +16,9 @@ import java.util.UUID;
 public class OtpSenderAdapter implements OtpSenderPort {
 
     private static final String AGGREGATE_TYPE = "OTP";
-    private static final String EVENT_TYPE = "OTP_CHALLENGE_NOTIFICATION_REQUESTED";
+
+    private static final String EVENT_TYPE =
+            "OTP_CHALLENGE_NOTIFICATION_REQUESTED";
 
     private final SaveOutboxEventUseCase saveOutboxEventUseCase;
     private final EncryptionService encryptionService;
@@ -24,6 +26,8 @@ public class OtpSenderAdapter implements OtpSenderPort {
     @Override
     public void send(
             UUID otpChallengeId,
+            UUID subjectId,
+            UUID referenceId,
             OtpPurpose purpose,
             OtpChannel channel,
             String destination,
@@ -32,10 +36,11 @@ public class OtpSenderAdapter implements OtpSenderPort {
         String encryptedOtp =
                 encryptionService.encrypt(otp);
 
-        System.out.println("OTP: " + otp);
         OtpNotificationEvent event =
                 new OtpNotificationEvent(
                         otpChallengeId,
+                        subjectId,
+                        referenceId,
                         purpose,
                         channel,
                         destination,

@@ -3,9 +3,9 @@ package com.example.ledgercore.otp.command.handler;
 import com.example.ledgercore.otp.command.dto.SendOtpCommand;
 import com.example.ledgercore.otp.command.port.inbound.SendOtpUseCase;
 import com.example.ledgercore.otp.command.port.outbound.OtpSenderPort;
+import com.example.ledgercore.otp.command.repository.OtpCommandRepository;
 import com.example.ledgercore.otp.entity.OtpChallenge;
 import com.example.ledgercore.otp.enums.OtpStatus;
-import com.example.ledgercore.otp.command.repository.OtpCommandRepository;
 import com.example.ledgercore.otp.service.OtpGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -45,10 +45,13 @@ public class SendOtpHandler implements SendOtpUseCase {
                 )
                 .build();
 
-        OtpChallenge savedOtp = otpCommandRepository.save(challenge);
+        OtpChallenge savedOtp =
+                otpCommandRepository.save(challenge);
 
         otpSenderPort.send(
                 savedOtp.getId(),
+                savedOtp.getSubjectId(),
+                savedOtp.getReferenceId(),
                 savedOtp.getPurpose(),
                 savedOtp.getChannel(),
                 savedOtp.getDestination(),

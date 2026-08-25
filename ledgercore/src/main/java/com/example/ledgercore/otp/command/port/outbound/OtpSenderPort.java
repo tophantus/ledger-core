@@ -9,6 +9,8 @@ public interface OtpSenderPort {
 
     void send(
             UUID otpChallengeId,
+            UUID subjectId,
+            UUID referenceId,
             OtpPurpose purpose,
             OtpChannel channel,
             String destination,
