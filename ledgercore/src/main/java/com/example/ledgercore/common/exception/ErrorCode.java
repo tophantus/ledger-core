@@ -161,6 +161,38 @@ public enum ErrorCode {
             HttpStatus.UNAUTHORIZED
     ),
 
+    // Webhook
+
+    INVALID_WEBHOOK_URL(
+            "WEBHOOK_001",
+            "Invalid webhook URL",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    INVALID_WEBHOOK_EVENT_TYPES(
+            "WEBHOOK_002",
+            "Webhook event types must not be empty",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    WEBHOOK_ALREADY_EXISTS(
+            "WEBHOOK_003",
+            "Webhook endpoint already exists",
+            HttpStatus.CONFLICT
+    ),
+
+    WEBHOOK_NOT_FOUND(
+            "WEBHOOK_004",
+            "Webhook endpoint not found",
+            HttpStatus.NOT_FOUND
+    ),
+
+    WEBHOOK_DISABLED(
+            "WEBHOOK_005",
+            "Webhook endpoint is disabled",
+            HttpStatus.CONFLICT
+    ),
+
     USER_NOT_ACTIVE(
             "AUTH_002",
             "User is not active",
