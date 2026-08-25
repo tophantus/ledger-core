@@ -1,5 +1,6 @@
 package com.example.ledgercore.webhook.entity;
 
+import com.example.ledgercore.webhook.enums.WebhookEventType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -45,12 +46,13 @@ public class WebhookSubscription {
     )
     private UUID webhookEndpointId;
 
+    @Enumerated(EnumType.STRING)
     @Column(
             name = "event_type",
             nullable = false,
             length = 150
     )
-    private String eventType;
+    private WebhookEventType eventType;
 
     @Column(
             name = "created_at",

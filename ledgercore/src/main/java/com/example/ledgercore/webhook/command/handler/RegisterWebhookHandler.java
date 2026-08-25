@@ -10,6 +10,7 @@ import com.example.ledgercore.webhook.command.repository.WebhookEndpointCommandR
 import com.example.ledgercore.webhook.command.repository.WebhookSubscriptionCommandRepository;
 import com.example.ledgercore.webhook.entity.WebhookEndpoint;
 import com.example.ledgercore.webhook.entity.WebhookSubscription;
+import com.example.ledgercore.webhook.enums.WebhookEventType;
 import com.example.ledgercore.webhook.service.WebhookSecretGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -40,7 +41,7 @@ public class RegisterWebhookHandler
         );
 
         validateUrl(command.url());
-        validateEventTypes(command);
+        validateEventTypes(command.eventTypes());
 
         String secret = webhookSecretGenerator.generate();
 
@@ -53,15 +54,13 @@ public class RegisterWebhookHandler
         WebhookEndpoint savedEndpoint =
                 webhookEndpointCommandRepository.save(endpoint);
 
-        Set<String> eventTypes =
+        Set<WebhookEventType> eventTypes =
                 Set.copyOf(command.eventTypes());
 
         List<WebhookSubscription> subscriptions = eventTypes.stream()
                 .map(eventType ->
                         WebhookSubscription.builder()
-                                .webhookEndpointId(
-                                        savedEndpoint.getId()
-                                )
+                                .webhookEndpointId(savedEndpoint.getId())
                                 .eventType(eventType)
                                 .build()
                 )
@@ -106,14 +105,9 @@ public class RegisterWebhookHandler
     }
 
     private void validateEventTypes(
-            RegisterWebhookCommand command
+            Set<WebhookEventType> eventTypes
     ) {
-        if (command.eventTypes() == null
-                || command.eventTypes().isEmpty()
-                || command.eventTypes().stream()
-                .anyMatch(eventType ->
-                        eventType == null
-                                || eventType.isBlank())) {
+        if (eventTypes == null || eventTypes.isEmpty()) {
             throw new BusinessException(
                     ErrorCode.INVALID_WEBHOOK_EVENT_TYPES
             );

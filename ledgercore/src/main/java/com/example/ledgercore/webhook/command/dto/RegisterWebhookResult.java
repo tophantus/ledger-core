@@ -1,5 +1,6 @@
 package com.example.ledgercore.webhook.command.dto;
 
+import com.example.ledgercore.webhook.enums.WebhookEventType;
 import com.example.ledgercore.webhook.enums.WebhookStatus;
 
 import java.time.Instant;
@@ -12,7 +13,7 @@ public record RegisterWebhookResult(
         String url,
         String secret,
         WebhookStatus status,
-        Set<String> eventTypes,
+        Set<WebhookEventType> eventTypes,
         Instant createdAt
 ) {
 }
