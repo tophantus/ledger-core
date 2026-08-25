@@ -7,4 +7,5 @@ import java.util.UUID;
 
 public interface WebhookSubscriptionCommandRepository
         extends JpaRepository<WebhookSubscription, UUID> {
+    void deleteAllByWebhookEndpointId(UUID webhookEndpointId);
 }

@@ -82,6 +82,22 @@ public class WebhookEndpoint {
     )
     private Instant updatedAt;
 
+    public void updateUrl(String url) {
+        this.url = url;
+    }
+
+    public void updateStatus(WebhookStatus status) {
+        this.status = status;
+    }
+
+    public void rotateSecret(String secret) {
+        this.secret = secret;
+    }
+
+    public void inactivate() {
+        this.status = WebhookStatus.INACTIVE;
+    }
+
     @PrePersist
     void prePersist() {
         Instant now = Instant.now();

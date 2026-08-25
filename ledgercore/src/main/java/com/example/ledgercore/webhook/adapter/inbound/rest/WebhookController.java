@@ -133,7 +133,7 @@ public class WebhookController {
     @PatchMapping("/api/v1/webhooks/{webhookId}")
     @Operation(
             summary = "Update webhook",
-            description = "Update webhook URL or status"
+            description = "Update webhook URL"
     )
     public ResponseEntity<ApiResponse<UpdateWebhookResponse>> updateWebhook(
             @AuthenticationPrincipal AuthPrincipal principal,
@@ -145,8 +145,7 @@ public class WebhookController {
                         new UpdateWebhookCommand(
                                 principal.getUserId(),
                                 webhookId,
-                                request.url(),
-                                request.status()
+                                request.url()
                         )
                 );
 
