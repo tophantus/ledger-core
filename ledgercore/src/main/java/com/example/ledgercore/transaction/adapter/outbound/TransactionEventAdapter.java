@@ -1,6 +1,8 @@
 package com.example.ledgercore.transaction.adapter.outbound;
 
 import com.example.ledgercore.outbox.command.port.inbound.SaveOutboxEventUseCase;
+import com.example.ledgercore.outbox.event.OutboxAggregateType;
+import com.example.ledgercore.outbox.event.OutboxEventType;
 import com.example.ledgercore.transaction.command.port.outbound.TransactionEventPort;
 import com.example.ledgercore.transaction.event.DepositCompletedEvent;
 import com.example.ledgercore.transaction.event.TransferCompletedEvent;
@@ -12,17 +14,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class TransactionEventAdapter implements TransactionEventPort {
 
-    private static final String AGGREGATE_TYPE = "TRANSACTION";
-
-    private static final String TRANSFER_COMPLETED =
-            "TRANSFER_COMPLETED";
-
-    private static final String DEPOSIT_COMPLETED =
-            "DEPOSIT_COMPLETED";
-
-    private static final String WITHDRAW_COMPLETED =
-            "WITHDRAW_COMPLETED";
-
     private final SaveOutboxEventUseCase saveOutboxEventUseCase;
 
     @Override
@@ -30,9 +21,9 @@ public class TransactionEventAdapter implements TransactionEventPort {
             TransferCompletedEvent event
     ) {
         saveOutboxEventUseCase.execute(
-                AGGREGATE_TYPE,
+                OutboxAggregateType.TRANSACTION.getValue(),
                 event.transactionId(),
-                TRANSFER_COMPLETED,
+                OutboxEventType.TRANSFER_COMPLETED.getValue(),
                 event
         );
     }
@@ -42,9 +33,9 @@ public class TransactionEventAdapter implements TransactionEventPort {
             DepositCompletedEvent event
     ) {
         saveOutboxEventUseCase.execute(
-                AGGREGATE_TYPE,
+                OutboxAggregateType.TRANSACTION.getValue(),
                 event.transactionId(),
-                DEPOSIT_COMPLETED,
+                OutboxEventType.DEPOSIT_COMPLETED.getValue(),
                 event
         );
     }
@@ -54,9 +45,9 @@ public class TransactionEventAdapter implements TransactionEventPort {
             WithdrawCompletedEvent event
     ) {
         saveOutboxEventUseCase.execute(
-                AGGREGATE_TYPE,
+                OutboxAggregateType.TRANSACTION.getValue(),
                 event.transactionId(),
-                WITHDRAW_COMPLETED,
+                OutboxEventType.WITHDRAW_COMPLETED.getValue(),
                 event
         );
     }

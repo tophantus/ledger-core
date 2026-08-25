@@ -3,10 +3,9 @@ package com.example.ledgercore.outbox.command.handler;
 import com.example.ledgercore.outbox.command.port.inbound.SaveOutboxEventUseCase;
 import com.example.ledgercore.outbox.command.repository.OutboxEventCommandRepository;
 import com.example.ledgercore.outbox.entity.OutboxEvent;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.UUID;
 
@@ -40,7 +39,7 @@ public class SaveOutboxEventHandler
     private String serialize(Object payload) {
         try {
             return objectMapper.writeValueAsString(payload);
-        } catch (JsonProcessingException e) {
+        } catch (Exception e) {
             throw new IllegalStateException(
                     "Failed to serialize outbox event payload",
                     e

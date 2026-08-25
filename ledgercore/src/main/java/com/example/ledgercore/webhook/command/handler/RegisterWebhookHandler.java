@@ -5,6 +5,7 @@ import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.webhook.command.dto.RegisterWebhookCommand;
 import com.example.ledgercore.webhook.command.dto.RegisterWebhookResult;
 import com.example.ledgercore.webhook.command.port.inbound.RegisterWebhookUseCase;
+import com.example.ledgercore.webhook.config.WebhookProperties;
 import com.example.ledgercore.webhook.port.outbound.AccountOwnerPort;
 import com.example.ledgercore.webhook.command.repository.WebhookEndpointCommandRepository;
 import com.example.ledgercore.webhook.command.repository.WebhookSubscriptionCommandRepository;
@@ -29,6 +30,7 @@ public class RegisterWebhookHandler
     private final WebhookEndpointCommandRepository webhookEndpointCommandRepository;
     private final WebhookSubscriptionCommandRepository webhookSubscriptionCommandRepository;
     private final WebhookSecretGenerator webhookSecretGenerator;
+    private final WebhookProperties webhookProperties;
 
     @Override
     @Transactional
@@ -81,18 +83,25 @@ public class RegisterWebhookHandler
         );
     }
 
+
     private void validateUrl(String url) {
         if (url == null || url.isBlank()) {
             throw new BusinessException(
                     ErrorCode.INVALID_WEBHOOK_URL
             );
         }
-
         try {
             URI uri = URI.create(url);
+            String scheme = uri.getScheme();
 
-            if (!"https".equalsIgnoreCase(uri.getScheme())
-                    || uri.getHost() == null) {
+            boolean validScheme =
+                    "https".equalsIgnoreCase(scheme)
+                            || (
+                            webhookProperties.allowHttp()
+                                    && "http".equalsIgnoreCase(scheme)
+                    );
+
+            if (!validScheme || uri.getHost() == null) {
                 throw new BusinessException(
                         ErrorCode.INVALID_WEBHOOK_URL
                 );
