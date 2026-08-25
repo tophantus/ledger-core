@@ -5,7 +5,7 @@ import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.webhook.command.dto.RotateWebhookSecretCommand;
 import com.example.ledgercore.webhook.command.dto.RotateWebhookSecretResult;
 import com.example.ledgercore.webhook.command.port.inbound.RotateWebhookSecretUseCase;
-import com.example.ledgercore.webhook.command.port.outbound.AccountOwnerPort;
+import com.example.ledgercore.webhook.port.outbound.AccountOwnerPort;
 import com.example.ledgercore.webhook.command.repository.WebhookEndpointCommandRepository;
 import com.example.ledgercore.webhook.entity.WebhookEndpoint;
 import com.example.ledgercore.webhook.service.WebhookSecretGenerator;

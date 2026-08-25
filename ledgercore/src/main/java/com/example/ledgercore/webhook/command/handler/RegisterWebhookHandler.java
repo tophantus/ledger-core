@@ -5,7 +5,7 @@ import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.webhook.command.dto.RegisterWebhookCommand;
 import com.example.ledgercore.webhook.command.dto.RegisterWebhookResult;
 import com.example.ledgercore.webhook.command.port.inbound.RegisterWebhookUseCase;
-import com.example.ledgercore.webhook.command.port.outbound.AccountOwnerPort;
+import com.example.ledgercore.webhook.port.outbound.AccountOwnerPort;
 import com.example.ledgercore.webhook.command.repository.WebhookEndpointCommandRepository;
 import com.example.ledgercore.webhook.command.repository.WebhookSubscriptionCommandRepository;
 import com.example.ledgercore.webhook.entity.WebhookEndpoint;

@@ -6,7 +6,7 @@ import com.example.ledgercore.webhook.command.dto.UpdateWebhookSubscriptionsComm
 import com.example.ledgercore.webhook.command.port.inbound.UpdateWebhookSubscriptionsUseCase;
 import com.example.ledgercore.webhook.command.repository.WebhookEndpointCommandRepository;
 import com.example.ledgercore.webhook.command.repository.WebhookSubscriptionCommandRepository;
-import com.example.ledgercore.webhook.command.port.outbound.AccountOwnerPort;
+import com.example.ledgercore.webhook.port.outbound.AccountOwnerPort;
 import com.example.ledgercore.webhook.entity.WebhookEndpoint;
 import com.example.ledgercore.webhook.entity.WebhookSubscription;
 import lombok.RequiredArgsConstructor;

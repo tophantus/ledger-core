@@ -1,4 +1,4 @@
-package com.example.ledgercore.webhook.command.port.outbound;
+package com.example.ledgercore.webhook.port.outbound;
 
 import java.util.UUID;
 

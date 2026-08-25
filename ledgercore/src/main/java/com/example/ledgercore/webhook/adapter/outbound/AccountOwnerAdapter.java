@@ -1,7 +1,7 @@
 package com.example.ledgercore.webhook.adapter.outbound;
 
 import com.example.ledgercore.account.query.port.inbound.VerifyAccountOwnershipUseCase;
-import com.example.ledgercore.webhook.command.port.outbound.AccountOwnerPort;
+import com.example.ledgercore.webhook.port.outbound.AccountOwnerPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

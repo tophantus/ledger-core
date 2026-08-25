@@ -42,4 +42,4 @@ databaseChangeLog:
   - include:
       file: db/changelog/021-rename-otp-purpose-to-email-verification.yaml
   - include:
-      file: db/changelog/changes/022-create-webhook-tables.yaml
+      file: db/changelog/022-create-webhook-tables.yaml

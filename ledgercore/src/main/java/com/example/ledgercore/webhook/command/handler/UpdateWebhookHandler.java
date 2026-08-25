@@ -5,7 +5,7 @@ import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.webhook.command.dto.UpdateWebhookCommand;
 import com.example.ledgercore.webhook.command.dto.UpdateWebhookResult;
 import com.example.ledgercore.webhook.command.port.inbound.UpdateWebhookUseCase;
-import com.example.ledgercore.webhook.command.port.outbound.AccountOwnerPort;
+import com.example.ledgercore.webhook.port.outbound.AccountOwnerPort;
 import com.example.ledgercore.webhook.command.repository.WebhookEndpointCommandRepository;
 import com.example.ledgercore.webhook.entity.WebhookEndpoint;
 import lombok.RequiredArgsConstructor;
