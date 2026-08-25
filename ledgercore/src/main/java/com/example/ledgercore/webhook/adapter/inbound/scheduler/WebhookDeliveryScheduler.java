@@ -2,8 +2,8 @@ package com.example.ledgercore.webhook.adapter.inbound.scheduler;
 
 import com.example.ledgercore.webhook.command.port.inbound.ProcessWebhookDeliveryUseCase;
 import com.example.ledgercore.webhook.entity.WebhookDelivery;
-import com.example.ledgercore.webhook.query.repository.WebhookDeliveryQueryRepository;
 import com.example.ledgercore.webhook.enums.WebhookDeliveryStatus;
+import com.example.ledgercore.webhook.query.repository.WebhookDeliveryQueryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -27,7 +27,7 @@ public class WebhookDeliveryScheduler {
     private final ProcessWebhookDeliveryUseCase
             processWebhookDeliveryUseCase;
 
-    @Scheduled(fixedDelay = 1000)
+    @Scheduled(fixedDelay = 5000)
     public void processDeliveries() {
 
         List<UUID> deliveryIds =
@@ -42,22 +42,32 @@ public class WebhookDeliveryScheduler {
                                 )
                         )
                         .stream()
-                        .map(WebhookDelivery::getId
-                        )
+                        .map(WebhookDelivery::getId)
                         .toList();
+
+        int processedCount = 0;
 
         for (UUID deliveryId : deliveryIds) {
             try {
                 processWebhookDeliveryUseCase.execute(
                         deliveryId
                 );
+                processedCount++;
             } catch (Exception ex) {
                 log.error(
-                        "Failed to process webhook delivery id={}",
+                        "Unexpected error while processing " +
+                                "webhook delivery id={}",
                         deliveryId,
                         ex
                 );
             }
+        }
+        if (processedCount > 0) {
+            log.debug(
+                    "Finished processing webhook deliveries: processed={}, total={}",
+                    processedCount,
+                    deliveryIds.size()
+            );
         }
     }
 }

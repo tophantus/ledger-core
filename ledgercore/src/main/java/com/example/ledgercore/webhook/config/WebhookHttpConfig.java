@@ -8,10 +8,8 @@ import org.springframework.web.client.RestClient;
 public class WebhookHttpConfig {
 
     @Bean
-    public RestClient webhookRestClient(
-            RestClient.Builder builder
-    ) {
-        return builder
+    public RestClient webhookRestClient() {
+        return RestClient.builder()
                 .build();
     }
 }

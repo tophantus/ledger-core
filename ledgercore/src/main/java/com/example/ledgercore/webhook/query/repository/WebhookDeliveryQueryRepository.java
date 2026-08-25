@@ -31,4 +31,11 @@ public interface WebhookDeliveryQueryRepository
             @Param("now") Instant now,
             Pageable pageable
     );
+
+    List<WebhookDelivery>
+    findByStatusAndAttemptStartedAtBefore(
+            WebhookDeliveryStatus status,
+            Instant threshold,
+            Pageable pageable
+    );
 }

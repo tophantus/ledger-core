@@ -26,6 +26,10 @@ import java.util.UUID;
                         columnList = "status, next_attempt_at"
                 ),
                 @Index(
+                        name = "idx_webhook_deliveries_processing",
+                        columnList = "status, attempt_started_at"
+                ),
+                @Index(
                         name = "idx_webhook_deliveries_endpoint_id",
                         columnList = "webhook_endpoint_id"
                 ),
@@ -89,16 +93,19 @@ public class WebhookDelivery {
     @Builder.Default
     private int attemptCount = 0;
 
+    @Column(name = "attempt_started_at")
+    private Instant attemptStartedAt;
+
     @Column(name = "next_attempt_at")
     private Instant nextAttemptAt;
 
     @Column(name = "delivered_at")
     private Instant deliveredAt;
 
-    @Column(name = "last_attempt_at")
-    private Instant lastAttemptAt;
-
-    @Column(name = "last_error", length = 2000)
+    @Column(
+            name = "last_error",
+            length = 2000
+    )
     private String lastError;
 
     @Column(
@@ -115,17 +122,19 @@ public class WebhookDelivery {
         }
     }
 
-    public void markProcessing(Instant attemptedAt) {
+    public void startProcessing(Instant now) {
         this.status = WebhookDeliveryStatus.PROCESSING;
         this.attemptCount++;
-        this.lastAttemptAt = attemptedAt;
+        this.attemptStartedAt = now;
+        this.nextAttemptAt = null;
         this.lastError = null;
     }
 
-    public void markDelivered(Instant deliveredAt) {
+    public void markDelivered(Instant now) {
         this.status = WebhookDeliveryStatus.DELIVERED;
-        this.deliveredAt = deliveredAt;
+        this.attemptStartedAt = null;
         this.nextAttemptAt = null;
+        this.deliveredAt = now;
         this.lastError = null;
     }
 
@@ -134,12 +143,14 @@ public class WebhookDelivery {
             String error
     ) {
         this.status = WebhookDeliveryStatus.RETRYING;
+        this.attemptStartedAt = null;
         this.nextAttemptAt = nextAttemptAt;
         this.lastError = error;
     }
 
     public void markFailed(String error) {
         this.status = WebhookDeliveryStatus.FAILED;
+        this.attemptStartedAt = null;
         this.nextAttemptAt = null;
         this.lastError = error;
     }

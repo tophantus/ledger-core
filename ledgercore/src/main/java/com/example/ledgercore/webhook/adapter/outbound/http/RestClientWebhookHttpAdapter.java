@@ -11,24 +11,59 @@ import org.springframework.web.client.RestClient;
 public class RestClientWebhookHttpAdapter
         implements WebhookHttpClientPort {
 
-    private final RestClient webhookRestClient;
+    private static final int MAX_RESPONSE_BODY_LENGTH = 2000;
+
+    private final RestClient restClient;
 
     @Override
-    public void send(
+    public WebhookResponse send(
             String url,
             String secret,
             String payload
     ) {
-        webhookRestClient
-                .post()
-                .uri(url)
-                .contentType(MediaType.APPLICATION_JSON)
-                .header(
-                        "X-Webhook-Secret",
-                        secret
-                )
-                .body(payload)
-                .retrieve()
-                .toBodilessEntity();
+        try {
+            return restClient
+                    .post()
+                    .uri(url)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header("X-Webhook-Secret", secret)
+                    .body(payload)
+                    .exchange((request, response) -> {
+
+                        String body = null;
+
+                        if (response.getBody() != null) {
+                            body = new String(
+                                    response.getBody().readAllBytes()
+                            );
+                        }
+
+                        return new WebhookResponse(
+                                response.getStatusCode().value(),
+                                truncate(body),
+                                null
+                        );
+                    });
+
+        } catch (Exception ex) {
+            return new WebhookResponse(
+                    0,
+                    null,
+                    truncate(ex.getMessage())
+            );
+        }
+    }
+
+    private String truncate(String value) {
+        if (value == null) {
+            return null;
+        }
+
+        return value.length() <= MAX_RESPONSE_BODY_LENGTH
+                ? value
+                : value.substring(
+                0,
+                MAX_RESPONSE_BODY_LENGTH
+        );
     }
 }
