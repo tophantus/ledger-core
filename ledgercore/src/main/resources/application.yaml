@@ -17,8 +17,8 @@ spring:
       ddl-auto: validate
     properties:
       hibernate:
-        format_sql: true
-    show-sql: true
+        format_sql: false
+    show-sql: false
 
   rabbitmq:
     host: localhost
@@ -94,4 +94,6 @@ security:
 logging:
   level:
     com.example.ledgercore: DEBUG
-    org.hibernate.SQL: INFO
+    org.hibernate.SQL: OFF
+    org.hibernate.orm.jdbc.bind: OFF
+    org.hibernate.orm.jdbc.extract: OFF
