@@ -3,6 +3,7 @@ package com.example.ledgercore.webhook.command.handler;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.webhook.command.dto.RegisterWebhookCommand;
+import com.example.ledgercore.webhook.command.dto.RegisterWebhookResult;
 import com.example.ledgercore.webhook.command.port.inbound.RegisterWebhookUseCase;
 import com.example.ledgercore.webhook.command.port.outbound.AccountOwnerPort;
 import com.example.ledgercore.webhook.command.repository.WebhookEndpointCommandRepository;
@@ -15,7 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.net.URI;
-import java.util.UUID;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -29,26 +30,28 @@ public class RegisterWebhookHandler
 
     @Override
     @Transactional
-    public UUID execute(RegisterWebhookCommand command) {
+    public RegisterWebhookResult execute(RegisterWebhookCommand command) {
         validateAccountOwnership(command);
         validateUrl(command.url());
         validateEventTypes(command);
 
+        String secret = webhookSecretGenerator.generate();
+
         WebhookEndpoint endpoint = WebhookEndpoint.builder()
                 .accountId(command.accountId())
                 .url(command.url())
-                .secret(webhookSecretGenerator.generate())
+                .secret(secret)
                 .build();
 
         WebhookEndpoint savedEndpoint =
                 webhookEndpointCommandRepository.save(endpoint);
 
-        var subscriptions = command.eventTypes().stream()
+        Set<String> eventTypes = Set.copyOf(command.eventTypes());
+
+        var subscriptions = eventTypes.stream()
                 .map(eventType ->
                         WebhookSubscription.builder()
-                                .webhookEndpointId(
-                                        savedEndpoint.getId()
-                                )
+                                .webhookEndpointId(savedEndpoint.getId())
                                 .eventType(eventType)
                                 .build()
                 )
@@ -58,7 +61,15 @@ public class RegisterWebhookHandler
                 subscriptions
         );
 
-        return savedEndpoint.getId();
+        return new RegisterWebhookResult(
+                savedEndpoint.getId(),
+                savedEndpoint.getAccountId(),
+                savedEndpoint.getUrl(),
+                secret,
+                savedEndpoint.getStatus(),
+                eventTypes,
+                savedEndpoint.getCreatedAt()
+        );
     }
 
     private void validateAccountOwnership(
