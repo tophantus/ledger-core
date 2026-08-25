@@ -7,10 +7,12 @@ import com.example.ledgercore.common.lock.LockKeyPrefix;
 import com.example.ledgercore.transaction.command.dto.TransferMoneyCommand;
 import com.example.ledgercore.transaction.command.port.outbound.AccountTransferPort;
 import com.example.ledgercore.transaction.command.port.outbound.LedgerTransferPort;
+import com.example.ledgercore.transaction.command.port.outbound.TransactionEventPort;
 import com.example.ledgercore.transaction.command.repository.TransactionCommandRepository;
 import com.example.ledgercore.transaction.entity.MoneyTransaction;
 import com.example.ledgercore.transaction.enums.TransactionStatus;
 import com.example.ledgercore.transaction.enums.TransactionType;
+import com.example.ledgercore.transaction.event.TransferCompletedEvent;
 import com.example.ledgercore.transaction.query.dto.TransactionResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,6 +28,7 @@ public class TransferExecutionService {
     private final TransactionCommandRepository transactionCommandRepository;
     private final AccountTransferPort accountTransferPort;
     private final LedgerTransferPort ledgerTransferPort;
+    private final TransactionEventPort transactionEventPort;
 
     @Transactional
     @DistributedLock(
@@ -75,6 +78,18 @@ public class TransferExecutionService {
         );
 
         completeTransaction(transaction);
+
+        transactionEventPort.publishTransferCompleted(
+                new TransferCompletedEvent(
+                        transaction.getId(),
+                        transaction.getReference(),
+                        transaction.getSourceAccountId(),
+                        transaction.getDestinationAccountId(),
+                        transaction.getAmount(),
+                        transaction.getCurrency(),
+                        transaction.getCompletedAt()
+                )
+        );
 
         return toResponse(transaction);
     }

@@ -8,10 +8,12 @@ import com.example.ledgercore.transaction.command.dto.DepositMoneyCommand;
 import com.example.ledgercore.transaction.command.port.inbound.DepositMoneyUseCase;
 import com.example.ledgercore.transaction.command.port.outbound.AccountDepositPort;
 import com.example.ledgercore.transaction.command.port.outbound.LedgerDepositPort;
+import com.example.ledgercore.transaction.command.port.outbound.TransactionEventPort;
 import com.example.ledgercore.transaction.command.repository.TransactionCommandRepository;
 import com.example.ledgercore.transaction.entity.MoneyTransaction;
 import com.example.ledgercore.transaction.enums.TransactionStatus;
 import com.example.ledgercore.transaction.enums.TransactionType;
+import com.example.ledgercore.transaction.event.DepositCompletedEvent;
 import com.example.ledgercore.transaction.query.dto.TransactionResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,7 @@ public class DepositMoneyHandler implements DepositMoneyUseCase {
     private final TransactionCommandRepository transactionCommandRepository;
     private final AccountDepositPort accountDepositPort;
     private final LedgerDepositPort ledgerDepositPort;
+    private final TransactionEventPort transactionEventPort;
 
     @Override
     @DistributedLock(
@@ -81,6 +84,17 @@ public class DepositMoneyHandler implements DepositMoneyUseCase {
         );
 
         completeTransaction(transaction);
+
+        transactionEventPort.publishDepositCompleted(
+                new DepositCompletedEvent(
+                        transaction.getId(),
+                        transaction.getReference(),
+                        transaction.getDestinationAccountId(),
+                        transaction.getAmount(),
+                        transaction.getCurrency(),
+                        transaction.getCompletedAt()
+                )
+        );
 
         return toResponse(transaction);
     }

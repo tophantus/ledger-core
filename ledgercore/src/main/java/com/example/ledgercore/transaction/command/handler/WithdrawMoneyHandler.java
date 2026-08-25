@@ -8,10 +8,12 @@ import com.example.ledgercore.transaction.command.dto.WithdrawMoneyCommand;
 import com.example.ledgercore.transaction.command.port.inbound.WithdrawMoneyUseCase;
 import com.example.ledgercore.transaction.command.port.outbound.AccountWithdrawPort;
 import com.example.ledgercore.transaction.command.port.outbound.LedgerWithdrawPort;
+import com.example.ledgercore.transaction.command.port.outbound.TransactionEventPort;
 import com.example.ledgercore.transaction.command.repository.TransactionCommandRepository;
 import com.example.ledgercore.transaction.entity.MoneyTransaction;
 import com.example.ledgercore.transaction.enums.TransactionStatus;
 import com.example.ledgercore.transaction.enums.TransactionType;
+import com.example.ledgercore.transaction.event.WithdrawCompletedEvent;
 import com.example.ledgercore.transaction.query.dto.TransactionResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,10 +28,9 @@ public class WithdrawMoneyHandler
         implements WithdrawMoneyUseCase {
 
     private final TransactionCommandRepository transactionCommandRepository;
-
     private final AccountWithdrawPort accountWithdrawPort;
-
     private final LedgerWithdrawPort ledgerWithdrawPort;
+    private final TransactionEventPort transactionEventPort;
 
     @Override
     @DistributedLock(
@@ -84,6 +85,17 @@ public class WithdrawMoneyHandler
         );
 
         completeTransaction(transaction);
+
+        transactionEventPort.publishWithdrawCompleted(
+                new WithdrawCompletedEvent(
+                        transaction.getId(),
+                        transaction.getReference(),
+                        transaction.getSourceAccountId(),
+                        transaction.getAmount(),
+                        transaction.getCurrency(),
+                        transaction.getCompletedAt()
+                )
+        );
 
         return toResponse(transaction);
     }
