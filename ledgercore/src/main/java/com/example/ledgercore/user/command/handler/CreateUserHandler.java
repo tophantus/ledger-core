@@ -6,7 +6,9 @@ import com.example.ledgercore.user.command.dto.CreateUserCommand;
 import com.example.ledgercore.user.command.port.inbound.CreateUserUseCase;
 import com.example.ledgercore.user.command.port.outbound.UserRoleAssignmentPort;
 import com.example.ledgercore.user.command.repository.UserCommandRepository;
+import com.example.ledgercore.user.command.repository.UserProfileCommandRepository;
 import com.example.ledgercore.user.entity.User;
+import com.example.ledgercore.user.entity.UserProfile;
 import com.example.ledgercore.user.query.dto.UserAuthenticationResponse;
 import com.example.ledgercore.user.query.port.outbound.UserRoleQueryPort;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +27,8 @@ public class CreateUserHandler
     private final UserRoleAssignmentPort userRoleAssignmentPort;
     private final UserRoleQueryPort userRoleQueryPort;
 
+    private final UserProfileCommandRepository userProfileCommandRepository;
+
     @Override
     @Transactional
     public Optional<UserAuthenticationResponse> execute(
@@ -37,13 +41,19 @@ public class CreateUserHandler
         }
 
         User user = User.builder()
-                .username(command.username())
                 .email(command.email())
                 .passwordHash(command.passwordHash())
                 .build();
 
         User savedUser =
                 userCommandRepository.save(user);
+
+        UserProfile profile = UserProfile.builder()
+                .userId(savedUser.getId())
+                .displayName(command.displayName())
+                .build();
+
+        userProfileCommandRepository.save(profile);
 
         userRoleAssignmentPort.assignCustomerRole(
                 savedUser.getId()
@@ -64,7 +74,6 @@ public class CreateUserHandler
 
         return new UserAuthenticationResponse(
                 user.getId(),
-                user.getUsername(),
                 user.getEmail(),
                 user.getPasswordHash(),
                 roles,
