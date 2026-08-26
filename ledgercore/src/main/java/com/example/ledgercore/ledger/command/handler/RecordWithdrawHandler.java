@@ -22,9 +22,7 @@ public class RecordWithdrawHandler
         implements RecordWithdrawUseCase {
 
     private final LedgerEntryCommandRepository ledgerEntryCommandRepository;
-
     private final AccountLedgerMappingPort accountLedgerMappingPort;
-
     private final SystemLedgerAccountService systemLedgerAccountService;
 
     @Override
