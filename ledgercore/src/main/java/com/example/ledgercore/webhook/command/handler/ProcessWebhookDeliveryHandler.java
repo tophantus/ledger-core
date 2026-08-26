@@ -1,5 +1,6 @@
 package com.example.ledgercore.webhook.command.handler;
 
+import com.example.ledgercore.webhook.command.dto.WebhookPayload;
 import com.example.ledgercore.webhook.command.port.inbound.ProcessWebhookDeliveryUseCase;
 import com.example.ledgercore.webhook.command.port.outbound.WebhookHttpClientPort;
 import com.example.ledgercore.webhook.command.repository.WebhookDeliveryCommandRepository;
@@ -13,6 +14,9 @@ import com.example.ledgercore.webhook.service.WebhookRetryPolicy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -34,6 +38,8 @@ public class ProcessWebhookDeliveryHandler
 
     private final WebhookHttpClientPort
             webhookHttpClientPort;
+
+    private final ObjectMapper objectMapper;
 
     private final WebhookRetryPolicy retryPolicy;
 
@@ -159,11 +165,30 @@ public class ProcessWebhookDeliveryHandler
                 endpoint.getUrl()
         );
 
+        String payload;
+
+        try {
+            payload = buildWebhookPayload(delivery);
+        } catch (JacksonException ex) {
+            log.error(
+                    "Failed to build webhook payload deliveryId={}",
+                    delivery.getId(),
+                    ex
+            );
+
+            fail(
+                    delivery,
+                    "Failed to build webhook payload"
+            );
+
+            return;
+        }
+
         WebhookHttpClientPort.WebhookResponse response =
                 webhookHttpClientPort.send(
                         endpoint.getUrl(),
                         endpoint.getSecret(),
-                        delivery.getPayload()
+                        payload
                 );
 
         log.debug(
@@ -181,6 +206,25 @@ public class ProcessWebhookDeliveryHandler
                 delivery,
                 response
         );
+    }
+
+    private String buildWebhookPayload(
+            WebhookDelivery delivery
+    ) throws JacksonException {
+
+        JsonNode data =
+                objectMapper.readTree(
+                        delivery.getPayload()
+                );
+
+        WebhookPayload payload =
+                new WebhookPayload(
+                        delivery.getEventId(),
+                        delivery.getEventType().name(),
+                        data
+                );
+
+        return objectMapper.writeValueAsString(payload);
     }
 
     private void handleResponse(
