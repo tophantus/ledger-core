@@ -29,7 +29,7 @@ public class SignUpHandler implements SignUpUseCase {
 
         UserAuthenticationPort.UserAuthenticationInfo userInfo = userAuthenticationPort.createUser(
                 new UserAuthenticationPort.CreateUserData(
-                        command.username(),
+                        command.displayName(),
                         command.email(),
                         passwordHash
                 )
@@ -43,7 +43,6 @@ public class SignUpHandler implements SignUpUseCase {
 
         return new SignUpResponse(
                 userInfo.userId(),
-                userInfo.username(),
                 userInfo.email(),
                 userInfo.active(),
                 "OTP sent successfully"

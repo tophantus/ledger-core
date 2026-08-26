@@ -5,7 +5,6 @@ import java.util.UUID;
 
 public record UserAuthenticationResponse(
         UUID userId,
-        String username,
         String email,
         String passwordHash,
         Set<String> roles,

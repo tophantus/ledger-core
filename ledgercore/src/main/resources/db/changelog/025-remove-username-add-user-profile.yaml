@@ -1,0 +1,57 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 025-remove-username-from-users
+      author: tu
+
+      changes:
+        - dropColumn:
+            tableName: users
+            columnName: username
+
+  - changeSet:
+      id: 025-create-user-profiles
+      author: tu
+
+      changes:
+        - createTable:
+            tableName: user_profiles
+            columns:
+
+              - column:
+                  name: user_id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_user_profiles
+                    nullable: false
+
+              - column:
+                  name: display_name
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: avatar_url
+                  type: VARCHAR(2048)
+
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: user_profiles
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_user_profiles_user
+            onDelete: CASCADE

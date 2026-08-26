@@ -26,7 +26,6 @@ public interface UserAuthenticationPort {
 
     record UserAuthenticationInfo(
             UUID userId,
-            String username,
             String email,
             String passwordHash,
             Set<String> roles,
@@ -35,7 +34,7 @@ public interface UserAuthenticationPort {
     }
 
     record CreateUserData(
-            String username,
+            String displayName,
             String email,
             String passwordHash
     ) {

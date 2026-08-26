@@ -49,7 +49,7 @@ public class UserAuthenticationAdapter
     ) {
         return createUserUseCase.execute(
                 new CreateUserCommand(
-                        data.username(),
+                        data.displayName(),
                         data.email(),
                         data.passwordHash()
                 )
@@ -81,7 +81,6 @@ public class UserAuthenticationAdapter
     ) {
         return new UserAuthenticationInfo(
                 response.userId(),
-                response.username(),
                 response.email(),
                 response.passwordHash(),
                 response.roles(),

@@ -50,7 +50,6 @@ public class GetUserAuthenticationHandler
 
         return new UserAuthenticationResponse(
                 user.getId(),
-                user.getUsername(),
                 user.getEmail(),
                 user.getPasswordHash(),
                 roles,
