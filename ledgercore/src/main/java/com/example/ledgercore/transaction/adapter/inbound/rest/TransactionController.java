@@ -1,12 +1,20 @@
 package com.example.ledgercore.transaction.adapter.inbound.rest;
 
 import com.example.ledgercore.auth.security.AuthPrincipal;
+import com.example.ledgercore.common.dto.PageResponse;
 import com.example.ledgercore.common.response.ApiResponse;
+import com.example.ledgercore.transaction.adapter.inbound.rest.dto.TransactionFilterRequest;
 import com.example.ledgercore.transaction.command.dto.TransferMoneyCommand;
 import com.example.ledgercore.transaction.command.dto.WithdrawMoneyCommand;
 import com.example.ledgercore.transaction.command.port.inbound.TransferMoneyUseCase;
 import com.example.ledgercore.transaction.command.port.inbound.WithdrawMoneyUseCase;
+import com.example.ledgercore.transaction.query.dto.GetAccountTransactionsQuery;
+import com.example.ledgercore.transaction.query.dto.GetTransactionByReferenceQuery;
+import com.example.ledgercore.transaction.query.dto.GetTransactionQuery;
 import com.example.ledgercore.transaction.query.dto.TransactionResponse;
+import com.example.ledgercore.transaction.query.port.inbound.GetAccountTransactionsUseCase;
+import com.example.ledgercore.transaction.query.port.inbound.GetTransactionByReferenceUseCase;
+import com.example.ledgercore.transaction.query.port.inbound.GetTransactionUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -14,6 +22,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/transactions")
@@ -26,6 +36,12 @@ public class TransactionController {
 
     private final TransferMoneyUseCase transferMoneyUseCase;
     private final WithdrawMoneyUseCase withdrawMoneyUseCase;
+
+    private final GetTransactionUseCase getTransactionUseCase;
+    private final GetTransactionByReferenceUseCase
+            getTransactionByReferenceUseCase;
+    private final GetAccountTransactionsUseCase
+            getAccountTransactionsUseCase;
 
     @PostMapping("/transfers")
     @Operation(
@@ -69,6 +85,93 @@ public class TransactionController {
                 ApiResponse.success(
                         response,
                         "Money withdrawn successfully"
+                )
+        );
+    }
+
+
+    @GetMapping("/{transactionId}")
+    @Operation(
+            summary = "Get transaction",
+            description = "Get a transaction by its ID"
+    )
+    public ResponseEntity<ApiResponse<TransactionResponse>> getTransaction(
+            @AuthenticationPrincipal AuthPrincipal principal,
+            @PathVariable UUID transactionId
+    ) {
+        TransactionResponse response =
+                getTransactionUseCase.execute(
+                        new GetTransactionQuery(
+                                principal.getUserId(),
+                                transactionId
+                        )
+                );
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        response,
+                        "Transaction retrieved successfully"
+                )
+        );
+    }
+
+    @GetMapping("/reference/{reference}")
+    @Operation(
+            summary = "Get transaction by reference",
+            description = "Get a transaction by its reference"
+    )
+    public ResponseEntity<ApiResponse<TransactionResponse>>
+    getTransactionByReference(
+            @AuthenticationPrincipal AuthPrincipal principal,
+            @PathVariable String reference
+    ) {
+        TransactionResponse response =
+                getTransactionByReferenceUseCase.execute(
+                        new GetTransactionByReferenceQuery(
+                                principal.getUserId(),
+                                reference
+                        )
+                );
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        response,
+                        "Transaction retrieved successfully"
+                )
+        );
+    }
+
+    @GetMapping("/accounts/{accountId}/transactions")
+    @Operation(
+            summary = "Get account transactions",
+            description = "Get paginated transactions belonging to an account"
+    )
+    public ResponseEntity<
+            ApiResponse<PageResponse<TransactionResponse>>
+            > getAccountTransactions(
+            @AuthenticationPrincipal AuthPrincipal principal,
+            @PathVariable UUID accountId,
+            @ModelAttribute TransactionFilterRequest request
+    ) {
+        PageResponse<TransactionResponse> response =
+                getAccountTransactionsUseCase.execute(
+                        new GetAccountTransactionsQuery(
+                                principal.getUserId(),
+                                accountId,
+                                request.getStatus(),
+                                request.getType(),
+                                request.getCurrency(),
+                                request.getFrom(),
+                                request.getTo(),
+                                request.getPage(),
+                                request.getSize()
+                        )
+                );
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        response,
+                        "Account transactions retrieved successfully"
                 )
         );
     }
