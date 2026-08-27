@@ -55,7 +55,7 @@ public class GetCurrentUserHandler
                 user.getEmail(),
                 user.getStatus(),
                 new UserProfileResponse(
-                        profile.getDisplayName(),
+                        profile.getFullName(),
                         profile.getAvatarUrl()
                 ),
                 user.getCreatedAt()
