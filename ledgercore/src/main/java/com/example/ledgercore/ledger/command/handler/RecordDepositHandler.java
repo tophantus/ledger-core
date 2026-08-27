@@ -5,9 +5,11 @@ import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.ledger.command.dto.RecordDepositCommand;
 import com.example.ledgercore.ledger.command.port.inbound.RecordDepositUseCase;
 import com.example.ledgercore.ledger.command.port.outbound.AccountLedgerMappingPort;
-import com.example.ledgercore.ledger.command.repository.LedgerEntryCommandRepository;
+import com.example.ledgercore.ledger.command.repository.JournalEntryCommandRepository;
+import com.example.ledgercore.ledger.command.repository.JournalEntryLineCommandRepository;
+import com.example.ledgercore.ledger.entity.JournalEntry;
+import com.example.ledgercore.ledger.entity.JournalEntryLine;
 import com.example.ledgercore.ledger.entity.LedgerAccount;
-import com.example.ledgercore.ledger.entity.LedgerEntry;
 import com.example.ledgercore.ledger.enums.EntryType;
 import com.example.ledgercore.ledger.service.SystemLedgerAccountService;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +23,8 @@ import java.util.UUID;
 public class RecordDepositHandler
         implements RecordDepositUseCase {
 
-    private final LedgerEntryCommandRepository ledgerEntryCommandRepository;
+    private final JournalEntryCommandRepository journalEntryCommandRepository;
+    private final JournalEntryLineCommandRepository journalEntryLineCommandRepository;
     private final AccountLedgerMappingPort accountLedgerMappingPort;
     private final SystemLedgerAccountService systemLedgerAccountService;
 
@@ -40,24 +43,34 @@ public class RecordDepositHandler
                         command.destinationAccountId()
                 );
 
-        LedgerEntry debitEntry = LedgerEntry.builder()
-                .transactionId(command.transactionId())
-                .ledgerAccountId(sourceLedgerAccount.getId())
-                .entryType(EntryType.DEBIT)
-                .amount(command.amount())
-                .currency(command.currency())
-                .build();
+        JournalEntry journalEntry =
+                JournalEntry.builder()
+                        .transactionId(command.transactionId())
+                        .build();
 
-        LedgerEntry creditEntry = LedgerEntry.builder()
-                .transactionId(command.transactionId())
-                .ledgerAccountId(destinationLedgerAccountId)
-                .entryType(EntryType.CREDIT)
-                .amount(command.amount())
-                .currency(command.currency())
-                .build();
+        JournalEntry savedJournalEntry =
+                journalEntryCommandRepository.save(journalEntry);
 
-        ledgerEntryCommandRepository.save(debitEntry);
-        ledgerEntryCommandRepository.save(creditEntry);
+        JournalEntryLine debitLine =
+                JournalEntryLine.builder()
+                        .journalEntryId(savedJournalEntry.getId())
+                        .ledgerAccountId(sourceLedgerAccount.getId())
+                        .entryType(EntryType.DEBIT)
+                        .amount(command.amount())
+                        .currency(command.currency())
+                        .build();
+
+        JournalEntryLine creditLine =
+                JournalEntryLine.builder()
+                        .journalEntryId(savedJournalEntry.getId())
+                        .ledgerAccountId(destinationLedgerAccountId)
+                        .entryType(EntryType.CREDIT)
+                        .amount(command.amount())
+                        .currency(command.currency())
+                        .build();
+
+        journalEntryLineCommandRepository.save(debitLine);
+        journalEntryLineCommandRepository.save(creditLine);
     }
 
     private void validateCommand(

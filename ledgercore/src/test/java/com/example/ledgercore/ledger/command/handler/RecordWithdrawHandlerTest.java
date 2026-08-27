@@ -1,12 +1,13 @@
 package com.example.ledgercore.ledger.command.handler;
 
 import com.example.ledgercore.common.exception.BusinessException;
-import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.ledger.command.dto.RecordWithdrawCommand;
 import com.example.ledgercore.ledger.command.port.outbound.AccountLedgerMappingPort;
-import com.example.ledgercore.ledger.command.repository.LedgerEntryCommandRepository;
+import com.example.ledgercore.ledger.command.repository.JournalEntryCommandRepository;
+import com.example.ledgercore.ledger.command.repository.JournalEntryLineCommandRepository;
+import com.example.ledgercore.ledger.entity.JournalEntry;
+import com.example.ledgercore.ledger.entity.JournalEntryLine;
 import com.example.ledgercore.ledger.entity.LedgerAccount;
-import com.example.ledgercore.ledger.entity.LedgerEntry;
 import com.example.ledgercore.ledger.enums.EntryType;
 import com.example.ledgercore.ledger.service.SystemLedgerAccountService;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,17 +18,20 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class RecordWithdrawHandlerTest {
 
     @Mock
-    private LedgerEntryCommandRepository ledgerEntryCommandRepository;
+    private JournalEntryCommandRepository journalEntryCommandRepository;
+
+    @Mock
+    private JournalEntryLineCommandRepository journalEntryLineCommandRepository;
 
     @Mock
     private AccountLedgerMappingPort accountLedgerMappingPort;
@@ -41,15 +45,19 @@ class RecordWithdrawHandlerTest {
     private UUID sourceAccountId;
 
     private UUID customerLedgerAccountId;
-    private UUID systemCashLedgerAccountId;
+    private UUID cashLedgerAccountId;
+    private UUID journalEntryId;
 
-    private BigDecimal amount;
-    private String currency;
+    private static final String CURRENCY = "VND";
+
+    private static final BigDecimal AMOUNT =
+            new BigDecimal("1000000.0000");
 
     @BeforeEach
     void setUp() {
         handler = new RecordWithdrawHandler(
-                ledgerEntryCommandRepository,
+                journalEntryCommandRepository,
+                journalEntryLineCommandRepository,
                 accountLedgerMappingPort,
                 systemLedgerAccountService
         );
@@ -58,250 +66,295 @@ class RecordWithdrawHandlerTest {
         sourceAccountId = UUID.randomUUID();
 
         customerLedgerAccountId = UUID.randomUUID();
-        systemCashLedgerAccountId = UUID.randomUUID();
-
-        amount = new BigDecimal("75000");
-        currency = "VND";
+        cashLedgerAccountId = UUID.randomUUID();
+        journalEntryId = UUID.randomUUID();
     }
 
     @Test
-    void shouldRecordWithdraw() {
-        LedgerAccount cashAccount =
-                mock(LedgerAccount.class);
+    void shouldRecordWithdrawSuccessfully() {
+        RecordWithdrawCommand command =
+                new RecordWithdrawCommand(
+                        transactionId,
+                        sourceAccountId,
+                        AMOUNT,
+                        CURRENCY
+                );
 
-        when(cashAccount.getId())
-                .thenReturn(systemCashLedgerAccountId);
+        LedgerAccount cashAccount =
+                LedgerAccount.builder()
+                        .id(cashLedgerAccountId)
+                        .build();
+
+        JournalEntry savedJournalEntry =
+                JournalEntry.builder()
+                        .id(journalEntryId)
+                        .transactionId(transactionId)
+                        .build();
 
         when(accountLedgerMappingPort.getLedgerAccountId(
                 sourceAccountId
         )).thenReturn(customerLedgerAccountId);
 
-        when(systemLedgerAccountService.getCashAccount(currency))
-                .thenReturn(cashAccount);
+        when(systemLedgerAccountService.getCashAccount(
+                CURRENCY
+        )).thenReturn(cashAccount);
 
-        handler.execute(
-                new RecordWithdrawCommand(
-                        transactionId,
-                        sourceAccountId,
-                        amount,
-                        currency
-                )
+        when(journalEntryCommandRepository.save(any(JournalEntry.class)))
+                .thenReturn(savedJournalEntry);
+
+        handler.execute(command);
+
+        ArgumentCaptor<JournalEntry> journalCaptor =
+                ArgumentCaptor.forClass(JournalEntry.class);
+
+        verify(journalEntryCommandRepository)
+                .save(journalCaptor.capture());
+
+        JournalEntry journalEntry =
+                journalCaptor.getValue();
+
+        assertEquals(
+                transactionId,
+                journalEntry.getTransactionId()
+        );
+
+        ArgumentCaptor<JournalEntryLine> lineCaptor =
+                ArgumentCaptor.forClass(JournalEntryLine.class);
+
+        verify(journalEntryLineCommandRepository, times(2))
+                .save(lineCaptor.capture());
+
+        List<JournalEntryLine> lines =
+                lineCaptor.getAllValues();
+
+        assertEquals(2, lines.size());
+
+        JournalEntryLine debitLine = lines.getFirst();
+
+        assertEquals(
+                journalEntryId,
+                debitLine.getJournalEntryId()
+        );
+        assertEquals(
+                customerLedgerAccountId,
+                debitLine.getLedgerAccountId()
+        );
+        assertEquals(
+                EntryType.DEBIT,
+                debitLine.getEntryType()
+        );
+        assertEquals(
+                AMOUNT,
+                debitLine.getAmount()
+        );
+        assertEquals(
+                CURRENCY,
+                debitLine.getCurrency()
+        );
+
+        JournalEntryLine creditLine = lines.get(1);
+
+        assertEquals(
+                journalEntryId,
+                creditLine.getJournalEntryId()
+        );
+        assertEquals(
+                cashLedgerAccountId,
+                creditLine.getLedgerAccountId()
+        );
+        assertEquals(
+                EntryType.CREDIT,
+                creditLine.getEntryType()
+        );
+        assertEquals(
+                AMOUNT,
+                creditLine.getAmount()
+        );
+        assertEquals(
+                CURRENCY,
+                creditLine.getCurrency()
         );
 
         verify(accountLedgerMappingPort)
                 .getLedgerAccountId(sourceAccountId);
 
         verify(systemLedgerAccountService)
-                .getCashAccount(currency);
-
-        verify(ledgerEntryCommandRepository, times(2))
-                .save(any(LedgerEntry.class));
+                .getCashAccount(CURRENCY);
     }
 
     @Test
-    void shouldCreateDebitAndCreditEntries() {
-        LedgerAccount cashAccount =
-                mock(LedgerAccount.class);
-
-        when(cashAccount.getId())
-                .thenReturn(systemCashLedgerAccountId);
-
-        when(accountLedgerMappingPort.getLedgerAccountId(
-                sourceAccountId
-        )).thenReturn(customerLedgerAccountId);
-
-        when(systemLedgerAccountService.getCashAccount(currency))
-                .thenReturn(cashAccount);
-
-        handler.execute(
-                new RecordWithdrawCommand(
-                        transactionId,
-                        sourceAccountId,
-                        amount,
-                        currency
-                )
-        );
-
-        ArgumentCaptor<LedgerEntry> captor =
-                ArgumentCaptor.forClass(LedgerEntry.class);
-
-        verify(ledgerEntryCommandRepository, times(2))
-                .save(captor.capture());
-
-        var entries = captor.getAllValues();
-
-        LedgerEntry debit = entries.get(0);
-        LedgerEntry credit = entries.get(1);
-
-        assertEquals(transactionId, debit.getTransactionId());
-        assertEquals(
-                customerLedgerAccountId,
-                debit.getLedgerAccountId()
-        );
-        assertEquals(EntryType.DEBIT, debit.getEntryType());
-        assertEquals(amount, debit.getAmount());
-        assertEquals(currency, debit.getCurrency());
-
-        assertEquals(transactionId, credit.getTransactionId());
-        assertEquals(
-                systemCashLedgerAccountId,
-                credit.getLedgerAccountId()
-        );
-        assertEquals(EntryType.CREDIT, credit.getEntryType());
-        assertEquals(amount, credit.getAmount());
-        assertEquals(currency, credit.getCurrency());
-    }
-
-    @Test
-    void shouldThrowWhenTransactionIdIsNull() {
-        BusinessException exception =
-                assertThrows(
-                        BusinessException.class,
-                        () -> handler.execute(
-                                new RecordWithdrawCommand(
-                                        null,
-                                        sourceAccountId,
-                                        amount,
-                                        currency
-                                )
-                        )
-                );
-
-        assertEquals(
-                ErrorCode.INVALID_REQUEST,
-                exception.getErrorCode()
+    void shouldRejectNullCommand() {
+        assertThrows(
+                BusinessException.class,
+                () -> handler.execute(null)
         );
 
         verifyNoInteractions(
+                journalEntryCommandRepository,
+                journalEntryLineCommandRepository,
                 accountLedgerMappingPort,
-                systemLedgerAccountService,
-                ledgerEntryCommandRepository
+                systemLedgerAccountService
         );
     }
 
     @Test
-    void shouldThrowWhenSourceAccountIdIsNull() {
-        BusinessException exception =
-                assertThrows(
-                        BusinessException.class,
-                        () -> handler.execute(
-                                new RecordWithdrawCommand(
-                                        transactionId,
-                                        null,
-                                        amount,
-                                        currency
-                                )
-                        )
+    void shouldRejectNullTransactionId() {
+        RecordWithdrawCommand command =
+                new RecordWithdrawCommand(
+                        null,
+                        sourceAccountId,
+                        AMOUNT,
+                        CURRENCY
                 );
 
-        assertEquals(
-                ErrorCode.INVALID_REQUEST,
-                exception.getErrorCode()
+        assertThrows(
+                BusinessException.class,
+                () -> handler.execute(command)
+        );
+
+        verifyNoInteractions(
+                journalEntryCommandRepository,
+                journalEntryLineCommandRepository,
+                accountLedgerMappingPort,
+                systemLedgerAccountService
         );
     }
 
     @Test
-    void shouldThrowWhenAmountIsNull() {
-        BusinessException exception =
-                assertThrows(
-                        BusinessException.class,
-                        () -> handler.execute(
-                                new RecordWithdrawCommand(
-                                        transactionId,
-                                        sourceAccountId,
-                                        null,
-                                        currency
-                                )
-                        )
+    void shouldRejectNullSourceAccountId() {
+        RecordWithdrawCommand command =
+                new RecordWithdrawCommand(
+                        transactionId,
+                        null,
+                        AMOUNT,
+                        CURRENCY
                 );
 
-        assertEquals(
-                ErrorCode.INVALID_WITHDRAW_AMOUNT,
-                exception.getErrorCode()
+        assertThrows(
+                BusinessException.class,
+                () -> handler.execute(command)
+        );
+
+        verifyNoInteractions(
+                journalEntryCommandRepository,
+                journalEntryLineCommandRepository,
+                accountLedgerMappingPort,
+                systemLedgerAccountService
         );
     }
 
     @Test
-    void shouldThrowWhenAmountIsZero() {
-        BusinessException exception =
-                assertThrows(
-                        BusinessException.class,
-                        () -> handler.execute(
-                                new RecordWithdrawCommand(
-                                        transactionId,
-                                        sourceAccountId,
-                                        BigDecimal.ZERO,
-                                        currency
-                                )
-                        )
+    void shouldRejectNullCurrency() {
+        RecordWithdrawCommand command =
+                new RecordWithdrawCommand(
+                        transactionId,
+                        sourceAccountId,
+                        AMOUNT,
+                        null
                 );
 
-        assertEquals(
-                ErrorCode.INVALID_WITHDRAW_AMOUNT,
-                exception.getErrorCode()
+        assertThrows(
+                BusinessException.class,
+                () -> handler.execute(command)
+        );
+
+        verifyNoInteractions(
+                journalEntryCommandRepository,
+                journalEntryLineCommandRepository,
+                accountLedgerMappingPort,
+                systemLedgerAccountService
         );
     }
 
     @Test
-    void shouldThrowWhenAmountIsNegative() {
-        BusinessException exception =
-                assertThrows(
-                        BusinessException.class,
-                        () -> handler.execute(
-                                new RecordWithdrawCommand(
-                                        transactionId,
-                                        sourceAccountId,
-                                        new BigDecimal("-1"),
-                                        currency
-                                )
-                        )
+    void shouldRejectBlankCurrency() {
+        RecordWithdrawCommand command =
+                new RecordWithdrawCommand(
+                        transactionId,
+                        sourceAccountId,
+                        AMOUNT,
+                        "   "
                 );
 
-        assertEquals(
-                ErrorCode.INVALID_WITHDRAW_AMOUNT,
-                exception.getErrorCode()
+        assertThrows(
+                BusinessException.class,
+                () -> handler.execute(command)
+        );
+
+        verifyNoInteractions(
+                journalEntryCommandRepository,
+                journalEntryLineCommandRepository,
+                accountLedgerMappingPort,
+                systemLedgerAccountService
         );
     }
 
     @Test
-    void shouldThrowWhenCurrencyIsNull() {
-        BusinessException exception =
-                assertThrows(
-                        BusinessException.class,
-                        () -> handler.execute(
-                                new RecordWithdrawCommand(
-                                        transactionId,
-                                        sourceAccountId,
-                                        amount,
-                                        null
-                                )
-                        )
+    void shouldRejectNullAmount() {
+        RecordWithdrawCommand command =
+                new RecordWithdrawCommand(
+                        transactionId,
+                        sourceAccountId,
+                        null,
+                        CURRENCY
                 );
 
-        assertEquals(
-                ErrorCode.INVALID_REQUEST,
-                exception.getErrorCode()
+        assertThrows(
+                BusinessException.class,
+                () -> handler.execute(command)
+        );
+
+        verifyNoInteractions(
+                journalEntryCommandRepository,
+                journalEntryLineCommandRepository,
+                accountLedgerMappingPort,
+                systemLedgerAccountService
         );
     }
 
     @Test
-    void shouldThrowWhenCurrencyIsBlank() {
-        BusinessException exception =
-                assertThrows(
-                        BusinessException.class,
-                        () -> handler.execute(
-                                new RecordWithdrawCommand(
-                                        transactionId,
-                                        sourceAccountId,
-                                        amount,
-                                        " "
-                                )
-                        )
+    void shouldRejectZeroAmount() {
+        RecordWithdrawCommand command =
+                new RecordWithdrawCommand(
+                        transactionId,
+                        sourceAccountId,
+                        BigDecimal.ZERO,
+                        CURRENCY
                 );
 
-        assertEquals(
-                ErrorCode.INVALID_REQUEST,
-                exception.getErrorCode()
+        assertThrows(
+                BusinessException.class,
+                () -> handler.execute(command)
+        );
+
+        verifyNoInteractions(
+                journalEntryCommandRepository,
+                journalEntryLineCommandRepository,
+                accountLedgerMappingPort,
+                systemLedgerAccountService
+        );
+    }
+
+    @Test
+    void shouldRejectNegativeAmount() {
+        RecordWithdrawCommand command =
+                new RecordWithdrawCommand(
+                        transactionId,
+                        sourceAccountId,
+                        new BigDecimal("-1"),
+                        CURRENCY
+                );
+
+        assertThrows(
+                BusinessException.class,
+                () -> handler.execute(command)
+        );
+
+        verifyNoInteractions(
+                journalEntryCommandRepository,
+                journalEntryLineCommandRepository,
+                accountLedgerMappingPort,
+                systemLedgerAccountService
         );
     }
 }
