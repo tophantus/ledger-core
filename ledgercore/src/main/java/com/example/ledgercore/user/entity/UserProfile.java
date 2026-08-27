@@ -19,8 +19,12 @@ public class UserProfile {
     @Column(name = "user_id")
     private UUID userId;
 
-    @Column(name = "display_name", nullable = false, length = 100)
-    private String displayName;
+    @Column(
+            name = "full_name",
+            nullable = false,
+            length = 100
+    )
+    private String fullName;
 
     @Column(name = "avatar_url", length = 2048)
     private String avatarUrl;

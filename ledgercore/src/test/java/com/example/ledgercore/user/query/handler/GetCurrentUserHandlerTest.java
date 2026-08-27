@@ -81,7 +81,7 @@ class GetCurrentUserHandlerTest {
 
         assertEquals(
                 "Tu Phan",
-                response.profile().displayName()
+                response.profile().fullName()
         );
 
         assertEquals(
@@ -164,7 +164,7 @@ class GetCurrentUserHandlerTest {
 
         UserProfile profile = UserProfile.builder()
                 .userId(userId)
-                .displayName("Tu Phan")
+                .fullName("Tu Phan")
                 .avatarUrl(null)
                 .createdAt(createdAt)
                 .updatedAt(createdAt)
@@ -183,7 +183,7 @@ class GetCurrentUserHandlerTest {
 
         assertEquals(
                 "Tu Phan",
-                response.profile().displayName()
+                response.profile().fullName()
         );
 
         assertNull(
@@ -212,7 +212,7 @@ class GetCurrentUserHandlerTest {
     private UserProfile createUserProfile() {
         return UserProfile.builder()
                 .userId(userId)
-                .displayName("Tu Phan")
+                .fullName("Tu Phan")
                 .avatarUrl(
                         "https://example.com/avatar.jpg"
                 )

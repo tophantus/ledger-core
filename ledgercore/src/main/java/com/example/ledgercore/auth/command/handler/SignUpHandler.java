@@ -29,7 +29,7 @@ public class SignUpHandler implements SignUpUseCase {
 
         UserAuthenticationPort.UserAuthenticationInfo userInfo = userAuthenticationPort.createUser(
                 new UserAuthenticationPort.CreateUserData(
-                        command.displayName(),
+                        command.fullName(),
                         command.email(),
                         passwordHash
                 )

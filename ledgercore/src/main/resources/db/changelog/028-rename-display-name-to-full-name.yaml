@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: 028-rename-display-name-to-full-name
+      author: tu
+      changes:
+        - renameColumn:
+            tableName: user_profiles
+            oldColumnName: display_name
+            newColumnName: full_name
+            columnDataType: VARCHAR(100)

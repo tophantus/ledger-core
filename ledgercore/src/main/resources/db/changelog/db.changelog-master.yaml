@@ -53,3 +53,5 @@ databaseChangeLog:
       file: db/changelog/026-create-journal-entry.yaml
   - include:
       file: db/changelog/027-drop-ledger-entries.yaml
+  - include:
+      file: db/changelog/028-rename-display-name-to-full-name.yaml

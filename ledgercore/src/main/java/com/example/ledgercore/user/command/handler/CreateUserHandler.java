@@ -50,7 +50,7 @@ public class CreateUserHandler
 
         UserProfile profile = UserProfile.builder()
                 .userId(savedUser.getId())
-                .displayName(command.displayName())
+                .fullName(command.fullName())
                 .build();
 
         userProfileCommandRepository.save(profile);
