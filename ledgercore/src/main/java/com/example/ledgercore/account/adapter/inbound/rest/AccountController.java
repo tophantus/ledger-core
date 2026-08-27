@@ -10,6 +10,7 @@ import com.example.ledgercore.account.command.port.inbound.CloseAccountUseCase;
 import com.example.ledgercore.account.command.port.inbound.CreateAccountUseCase;
 import com.example.ledgercore.account.query.dto.*;
 import com.example.ledgercore.account.query.port.inbound.GetAccountByAccountNoUseCase;
+import com.example.ledgercore.account.query.port.inbound.GetAccountHolderUseCase;
 import com.example.ledgercore.account.query.port.inbound.GetAccountUseCase;
 import com.example.ledgercore.account.query.port.inbound.GetUserActiveAccountsUseCase;
 import com.example.ledgercore.common.response.ApiResponse;
@@ -42,6 +43,7 @@ public class AccountController {
     private final GetAccountUseCase getAccountUseCase;
     private final GetAccountByAccountNoUseCase getAccountByAccountNoUseCase;
     private final GetUserActiveAccountsUseCase getUserActiveAccountsUseCase;
+    private final GetAccountHolderUseCase getAccountHolderUseCase;
 
     @PostMapping
     @Operation(
@@ -118,6 +120,29 @@ public class AccountController {
         );
     }
 
+    @GetMapping("/number/{accountNo}/holder")
+    @Operation(
+            summary = "Get account holder",
+            description = "Get the full name of the account holder by account number"
+    )
+    public ResponseEntity<ApiResponse<AccountHolderResponse>> getAccountHolder(
+            @PathVariable String accountNo
+    ) {
+        AccountHolderResponse response =
+                getAccountHolderUseCase.execute(
+                        new GetAccountHolderQuery(
+                                accountNo
+                        )
+                );
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        response,
+                        "Account holder retrieved successfully"
+                )
+        );
+    }
+    
     @GetMapping
     @Operation(
             summary = "Get my accounts",
