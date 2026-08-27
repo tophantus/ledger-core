@@ -21,14 +21,14 @@ class VerifyAccountOwnershipHandlerTest {
     @Mock
     private AccountQueryRepository accountQueryRepository;
 
-    private VerifyAccountOwnershipHandler handler;
+    private CheckAccountOwnershipHandler handler;
 
     private UUID userId;
     private UUID accountId;
 
     @BeforeEach
     void setUp() {
-        handler = new VerifyAccountOwnershipHandler(
+        handler = new CheckAccountOwnershipHandler(
                 accountQueryRepository
         );
 

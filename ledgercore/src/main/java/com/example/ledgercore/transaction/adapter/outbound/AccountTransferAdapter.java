@@ -5,7 +5,9 @@ import com.example.ledgercore.account.command.port.inbound.TransferAccountBalanc
 import com.example.ledgercore.account.query.dto.AccountTransferInfo;
 import com.example.ledgercore.account.query.port.inbound.GetAccountIdByAccountNoUseCase;
 import com.example.ledgercore.account.query.port.inbound.GetTransferAccountInfoUseCase;
-import com.example.ledgercore.account.query.port.inbound.VerifyAccountOwnershipUseCase;
+import com.example.ledgercore.account.query.port.inbound.CheckAccountOwnershipUseCase;
+import com.example.ledgercore.common.exception.BusinessException;
+import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.transaction.command.port.outbound.AccountTransferPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -24,8 +26,8 @@ public class AccountTransferAdapter
     private final GetAccountIdByAccountNoUseCase
             getAccountIdByAccountNoUseCase;
 
-    private final VerifyAccountOwnershipUseCase
-            verifyAccountOwnershipUseCase;
+    private final CheckAccountOwnershipUseCase
+            checkAccountOwnershipUseCase;
 
     private final TransferAccountBalanceUseCase
             transferAccountBalanceUseCase;
@@ -61,10 +63,14 @@ public class AccountTransferAdapter
             UUID userId,
             UUID sourceAccountId
     ) {
-        verifyAccountOwnershipUseCase.execute(
+        boolean isOwner = checkAccountOwnershipUseCase.execute(
                 userId,
                 sourceAccountId
         );
+
+        if (!isOwner) {
+            throw new BusinessException(ErrorCode.ACCESS_DENIED);
+        }
     }
 
     @Override

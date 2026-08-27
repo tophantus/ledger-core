@@ -4,7 +4,9 @@ import com.example.ledgercore.account.command.dto.WithdrawAccountCommand;
 import com.example.ledgercore.account.command.port.inbound.WithdrawAccountBalanceUseCase;
 import com.example.ledgercore.account.query.dto.AccountWithdrawInfo;
 import com.example.ledgercore.account.query.port.inbound.GetWithdrawAccountInfoUseCase;
-import com.example.ledgercore.account.query.port.inbound.VerifyAccountOwnershipUseCase;
+import com.example.ledgercore.account.query.port.inbound.CheckAccountOwnershipUseCase;
+import com.example.ledgercore.common.exception.BusinessException;
+import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.transaction.command.port.outbound.AccountWithdrawPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -20,8 +22,8 @@ public class AccountWithdrawAdapter
     private final GetWithdrawAccountInfoUseCase
             getWithdrawAccountInfoUseCase;
 
-    private final VerifyAccountOwnershipUseCase
-            verifyAccountOwnershipUseCase;
+    private final CheckAccountOwnershipUseCase
+            checkAccountOwnershipUseCase;
 
     private final WithdrawAccountBalanceUseCase
             withdrawAccountBalanceUseCase;
@@ -49,10 +51,14 @@ public class AccountWithdrawAdapter
             UUID userId,
             UUID sourceAccountId
     ) {
-        verifyAccountOwnershipUseCase.execute(
+        boolean isOwner = checkAccountOwnershipUseCase.execute(
                 userId,
                 sourceAccountId
         );
+
+        if (!isOwner) {
+            throw new BusinessException(ErrorCode.ACCESS_DENIED);
+        }
     }
 
     @Override
