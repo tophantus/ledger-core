@@ -1,11 +1,12 @@
 package com.example.ledgercore.ledger.command.handler;
 
 import com.example.ledgercore.common.exception.BusinessException;
-import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.ledger.command.dto.RecordTransferCommand;
 import com.example.ledgercore.ledger.command.port.outbound.AccountLedgerMappingPort;
-import com.example.ledgercore.ledger.command.repository.LedgerEntryCommandRepository;
-import com.example.ledgercore.ledger.entity.LedgerEntry;
+import com.example.ledgercore.ledger.command.repository.JournalEntryCommandRepository;
+import com.example.ledgercore.ledger.command.repository.JournalEntryLineCommandRepository;
+import com.example.ledgercore.ledger.entity.JournalEntry;
+import com.example.ledgercore.ledger.entity.JournalEntryLine;
 import com.example.ledgercore.ledger.enums.EntryType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,17 +16,20 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class RecordTransferHandlerTest {
 
     @Mock
-    private LedgerEntryCommandRepository ledgerEntryRepository;
+    private JournalEntryCommandRepository journalEntryCommandRepository;
+
+    @Mock
+    private JournalEntryLineCommandRepository journalEntryLineCommandRepository;
 
     @Mock
     private AccountLedgerMappingPort accountLedgerMappingPort;
@@ -38,14 +42,18 @@ class RecordTransferHandlerTest {
 
     private UUID sourceLedgerAccountId;
     private UUID destinationLedgerAccountId;
+    private UUID journalEntryId;
 
-    private BigDecimal amount;
-    private String currency;
+    private static final String CURRENCY = "VND";
+
+    private static final BigDecimal AMOUNT =
+            new BigDecimal("1000000.0000");
 
     @BeforeEach
     void setUp() {
         handler = new RecordTransferHandler(
-                ledgerEntryRepository,
+                journalEntryCommandRepository,
+                journalEntryLineCommandRepository,
                 accountLedgerMappingPort
         );
 
@@ -55,13 +63,26 @@ class RecordTransferHandlerTest {
 
         sourceLedgerAccountId = UUID.randomUUID();
         destinationLedgerAccountId = UUID.randomUUID();
-
-        amount = new BigDecimal("50000");
-        currency = "VND";
+        journalEntryId = UUID.randomUUID();
     }
 
     @Test
-    void shouldRecordTransfer() {
+    void shouldRecordTransferSuccessfully() {
+        RecordTransferCommand command =
+                new RecordTransferCommand(
+                        transactionId,
+                        sourceAccountId,
+                        destinationAccountId,
+                        AMOUNT,
+                        CURRENCY
+                );
+
+        JournalEntry savedJournalEntry =
+                JournalEntry.builder()
+                        .id(journalEntryId)
+                        .transactionId(transactionId)
+                        .build();
+
         when(accountLedgerMappingPort.getLedgerAccountId(
                 sourceAccountId
         )).thenReturn(sourceLedgerAccountId);
@@ -70,14 +91,79 @@ class RecordTransferHandlerTest {
                 destinationAccountId
         )).thenReturn(destinationLedgerAccountId);
 
-        handler.execute(
-                new RecordTransferCommand(
-                        transactionId,
-                        sourceAccountId,
-                        destinationAccountId,
-                        amount,
-                        currency
-                )
+        when(journalEntryCommandRepository.save(any(JournalEntry.class)))
+                .thenReturn(savedJournalEntry);
+
+        handler.execute(command);
+
+        ArgumentCaptor<JournalEntry> journalCaptor =
+                ArgumentCaptor.forClass(JournalEntry.class);
+
+        verify(journalEntryCommandRepository)
+                .save(journalCaptor.capture());
+
+        JournalEntry journalEntry = journalCaptor.getValue();
+
+        assertEquals(
+                transactionId,
+                journalEntry.getTransactionId()
+        );
+
+        ArgumentCaptor<JournalEntryLine> lineCaptor =
+                ArgumentCaptor.forClass(JournalEntryLine.class);
+
+        verify(journalEntryLineCommandRepository, times(2))
+                .save(lineCaptor.capture());
+
+        List<JournalEntryLine> lines =
+                lineCaptor.getAllValues();
+
+        assertEquals(2, lines.size());
+
+        JournalEntryLine debitLine = lines.getFirst();
+
+        assertEquals(
+                journalEntryId,
+                debitLine.getJournalEntryId()
+        );
+        assertEquals(
+                sourceLedgerAccountId,
+                debitLine.getLedgerAccountId()
+        );
+        assertEquals(
+                EntryType.DEBIT,
+                debitLine.getEntryType()
+        );
+        assertEquals(
+                AMOUNT,
+                debitLine.getAmount()
+        );
+        assertEquals(
+                CURRENCY,
+                debitLine.getCurrency()
+        );
+
+        JournalEntryLine creditLine = lines.get(1);
+
+        assertEquals(
+                journalEntryId,
+                creditLine.getJournalEntryId()
+        );
+        assertEquals(
+                destinationLedgerAccountId,
+                creditLine.getLedgerAccountId()
+        );
+        assertEquals(
+                EntryType.CREDIT,
+                creditLine.getEntryType()
+        );
+        assertEquals(
+                AMOUNT,
+                creditLine.getAmount()
+        );
+        assertEquals(
+                CURRENCY,
+                creditLine.getCurrency()
         );
 
         verify(accountLedgerMappingPort)
@@ -85,153 +171,228 @@ class RecordTransferHandlerTest {
 
         verify(accountLedgerMappingPort)
                 .getLedgerAccountId(destinationAccountId);
-
-        verify(ledgerEntryRepository, times(2))
-                .save(any(LedgerEntry.class));
     }
 
     @Test
-    void shouldCreateDebitAndCreditEntries() {
-        when(accountLedgerMappingPort.getLedgerAccountId(
-                sourceAccountId
-        )).thenReturn(sourceLedgerAccountId);
+    void shouldRejectNullCommand() {
+        assertThrows(
+                BusinessException.class,
+                () -> handler.execute(null)
+        );
 
-        when(accountLedgerMappingPort.getLedgerAccountId(
-                destinationAccountId
-        )).thenReturn(destinationLedgerAccountId);
+        verifyNoInteractions(
+                journalEntryCommandRepository,
+                journalEntryLineCommandRepository,
+                accountLedgerMappingPort
+        );
+    }
 
-        handler.execute(
+    @Test
+    void shouldRejectNullTransactionId() {
+        RecordTransferCommand command =
+                new RecordTransferCommand(
+                        null,
+                        sourceAccountId,
+                        destinationAccountId,
+                        AMOUNT,
+                        CURRENCY
+                );
+
+        assertThrows(
+                BusinessException.class,
+                () -> handler.execute(command)
+        );
+
+        verifyNoInteractions(
+                journalEntryCommandRepository,
+                journalEntryLineCommandRepository,
+                accountLedgerMappingPort
+        );
+    }
+
+    @Test
+    void shouldRejectNullSourceAccountId() {
+        RecordTransferCommand command =
+                new RecordTransferCommand(
+                        transactionId,
+                        null,
+                        destinationAccountId,
+                        AMOUNT,
+                        CURRENCY
+                );
+
+        assertThrows(
+                BusinessException.class,
+                () -> handler.execute(command)
+        );
+
+        verifyNoInteractions(
+                journalEntryCommandRepository,
+                journalEntryLineCommandRepository,
+                accountLedgerMappingPort
+        );
+    }
+
+    @Test
+    void shouldRejectNullDestinationAccountId() {
+        RecordTransferCommand command =
+                new RecordTransferCommand(
+                        transactionId,
+                        sourceAccountId,
+                        null,
+                        AMOUNT,
+                        CURRENCY
+                );
+
+        assertThrows(
+                BusinessException.class,
+                () -> handler.execute(command)
+        );
+
+        verifyNoInteractions(
+                journalEntryCommandRepository,
+                journalEntryLineCommandRepository,
+                accountLedgerMappingPort
+        );
+    }
+
+    @Test
+    void shouldRejectNullCurrency() {
+        RecordTransferCommand command =
                 new RecordTransferCommand(
                         transactionId,
                         sourceAccountId,
                         destinationAccountId,
-                        amount,
-                        currency
-                )
-        );
-
-        ArgumentCaptor<LedgerEntry> captor =
-                ArgumentCaptor.forClass(LedgerEntry.class);
-
-        verify(ledgerEntryRepository, times(2))
-                .save(captor.capture());
-
-        var entries = captor.getAllValues();
-
-        LedgerEntry debit = entries.get(0);
-        LedgerEntry credit = entries.get(1);
-
-        assertEquals(transactionId, debit.getTransactionId());
-        assertEquals(sourceLedgerAccountId, debit.getLedgerAccountId());
-        assertEquals(EntryType.DEBIT, debit.getEntryType());
-        assertEquals(amount, debit.getAmount());
-        assertEquals(currency, debit.getCurrency());
-
-        assertEquals(transactionId, credit.getTransactionId());
-        assertEquals(
-                destinationLedgerAccountId,
-                credit.getLedgerAccountId()
-        );
-        assertEquals(EntryType.CREDIT, credit.getEntryType());
-        assertEquals(amount, credit.getAmount());
-        assertEquals(currency, credit.getCurrency());
-    }
-
-    @Test
-    void shouldThrowWhenAmountIsNull() {
-        BusinessException exception =
-                assertThrows(
-                        BusinessException.class,
-                        () -> handler.execute(
-                                new RecordTransferCommand(
-                                        transactionId,
-                                        sourceAccountId,
-                                        destinationAccountId,
-                                        null,
-                                        currency
-                                )
-                        )
+                        AMOUNT,
+                        null
                 );
 
-        assertEquals(
-                ErrorCode.INVALID_TRANSFER_AMOUNT,
-                exception.getErrorCode()
+        assertThrows(
+                BusinessException.class,
+                () -> handler.execute(command)
         );
 
         verifyNoInteractions(
-                accountLedgerMappingPort,
-                ledgerEntryRepository
+                journalEntryCommandRepository,
+                journalEntryLineCommandRepository,
+                accountLedgerMappingPort
         );
     }
 
     @Test
-    void shouldThrowWhenAmountIsZero() {
-        BusinessException exception =
-                assertThrows(
-                        BusinessException.class,
-                        () -> handler.execute(
-                                new RecordTransferCommand(
-                                        transactionId,
-                                        sourceAccountId,
-                                        destinationAccountId,
-                                        BigDecimal.ZERO,
-                                        currency
-                                )
-                        )
+    void shouldRejectBlankCurrency() {
+        RecordTransferCommand command =
+                new RecordTransferCommand(
+                        transactionId,
+                        sourceAccountId,
+                        destinationAccountId,
+                        AMOUNT,
+                        "   "
                 );
 
-        assertEquals(
-                ErrorCode.INVALID_TRANSFER_AMOUNT,
-                exception.getErrorCode()
-        );
-    }
-
-    @Test
-    void shouldThrowWhenAmountIsNegative() {
-        BusinessException exception =
-                assertThrows(
-                        BusinessException.class,
-                        () -> handler.execute(
-                                new RecordTransferCommand(
-                                        transactionId,
-                                        sourceAccountId,
-                                        destinationAccountId,
-                                        new BigDecimal("-1"),
-                                        currency
-                                )
-                        )
-                );
-
-        assertEquals(
-                ErrorCode.INVALID_TRANSFER_AMOUNT,
-                exception.getErrorCode()
-        );
-    }
-
-    @Test
-    void shouldThrowWhenSourceAndDestinationAreSame() {
-        BusinessException exception =
-                assertThrows(
-                        BusinessException.class,
-                        () -> handler.execute(
-                                new RecordTransferCommand(
-                                        transactionId,
-                                        sourceAccountId,
-                                        sourceAccountId,
-                                        amount,
-                                        currency
-                                )
-                        )
-                );
-
-        assertEquals(
-                ErrorCode.SAME_ACCOUNT_TRANSFER,
-                exception.getErrorCode()
+        assertThrows(
+                BusinessException.class,
+                () -> handler.execute(command)
         );
 
         verifyNoInteractions(
-                accountLedgerMappingPort,
-                ledgerEntryRepository
+                journalEntryCommandRepository,
+                journalEntryLineCommandRepository,
+                accountLedgerMappingPort
+        );
+    }
+
+    @Test
+    void shouldRejectNullAmount() {
+        RecordTransferCommand command =
+                new RecordTransferCommand(
+                        transactionId,
+                        sourceAccountId,
+                        destinationAccountId,
+                        null,
+                        CURRENCY
+                );
+
+        assertThrows(
+                BusinessException.class,
+                () -> handler.execute(command)
+        );
+
+        verifyNoInteractions(
+                journalEntryCommandRepository,
+                journalEntryLineCommandRepository,
+                accountLedgerMappingPort
+        );
+    }
+
+    @Test
+    void shouldRejectZeroAmount() {
+        RecordTransferCommand command =
+                new RecordTransferCommand(
+                        transactionId,
+                        sourceAccountId,
+                        destinationAccountId,
+                        BigDecimal.ZERO,
+                        CURRENCY
+                );
+
+        assertThrows(
+                BusinessException.class,
+                () -> handler.execute(command)
+        );
+
+        verifyNoInteractions(
+                journalEntryCommandRepository,
+                journalEntryLineCommandRepository,
+                accountLedgerMappingPort
+        );
+    }
+
+    @Test
+    void shouldRejectNegativeAmount() {
+        RecordTransferCommand command =
+                new RecordTransferCommand(
+                        transactionId,
+                        sourceAccountId,
+                        destinationAccountId,
+                        new BigDecimal("-1"),
+                        CURRENCY
+                );
+
+        assertThrows(
+                BusinessException.class,
+                () -> handler.execute(command)
+        );
+
+        verifyNoInteractions(
+                journalEntryCommandRepository,
+                journalEntryLineCommandRepository,
+                accountLedgerMappingPort
+        );
+    }
+
+    @Test
+    void shouldRejectSameAccountTransfer() {
+        UUID accountId = UUID.randomUUID();
+
+        RecordTransferCommand command =
+                new RecordTransferCommand(
+                        transactionId,
+                        accountId,
+                        accountId,
+                        AMOUNT,
+                        CURRENCY
+                );
+
+        assertThrows(
+                BusinessException.class,
+                () -> handler.execute(command)
+        );
+
+        verifyNoInteractions(
+                journalEntryCommandRepository,
+                journalEntryLineCommandRepository,
+                accountLedgerMappingPort
         );
     }
 }

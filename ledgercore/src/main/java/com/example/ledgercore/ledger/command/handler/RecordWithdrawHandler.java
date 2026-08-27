@@ -5,9 +5,11 @@ import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.ledger.command.dto.RecordWithdrawCommand;
 import com.example.ledgercore.ledger.command.port.inbound.RecordWithdrawUseCase;
 import com.example.ledgercore.ledger.command.port.outbound.AccountLedgerMappingPort;
-import com.example.ledgercore.ledger.command.repository.LedgerEntryCommandRepository;
+import com.example.ledgercore.ledger.command.repository.JournalEntryCommandRepository;
+import com.example.ledgercore.ledger.command.repository.JournalEntryLineCommandRepository;
+import com.example.ledgercore.ledger.entity.JournalEntry;
+import com.example.ledgercore.ledger.entity.JournalEntryLine;
 import com.example.ledgercore.ledger.entity.LedgerAccount;
-import com.example.ledgercore.ledger.entity.LedgerEntry;
 import com.example.ledgercore.ledger.enums.EntryType;
 import com.example.ledgercore.ledger.service.SystemLedgerAccountService;
 import lombok.RequiredArgsConstructor;
@@ -21,15 +23,14 @@ import java.util.UUID;
 public class RecordWithdrawHandler
         implements RecordWithdrawUseCase {
 
-    private final LedgerEntryCommandRepository ledgerEntryCommandRepository;
+    private final JournalEntryCommandRepository journalEntryCommandRepository;
+    private final JournalEntryLineCommandRepository journalEntryLineCommandRepository;
     private final AccountLedgerMappingPort accountLedgerMappingPort;
     private final SystemLedgerAccountService systemLedgerAccountService;
 
     @Override
     @Transactional
-    public void execute(
-            RecordWithdrawCommand command
-    ) {
+    public void execute(RecordWithdrawCommand command) {
         validateCommand(command);
 
         UUID customerLedgerAccountId =
@@ -42,42 +43,45 @@ public class RecordWithdrawHandler
                         command.currency()
                 );
 
-        LedgerEntry debitEntry =
-                LedgerEntry.builder()
+        JournalEntry journalEntry =
+                JournalEntry.builder()
                         .transactionId(command.transactionId())
-                        .ledgerAccountId(
-                                customerLedgerAccountId
-                        )
+                        .build();
+
+        JournalEntry savedJournalEntry =
+                journalEntryCommandRepository.save(journalEntry);
+
+        JournalEntryLine debitLine =
+                JournalEntryLine.builder()
+                        .journalEntryId(savedJournalEntry.getId())
+                        .ledgerAccountId(customerLedgerAccountId)
                         .entryType(EntryType.DEBIT)
                         .amount(command.amount())
                         .currency(command.currency())
                         .build();
 
-        LedgerEntry creditEntry =
-                LedgerEntry.builder()
-                        .transactionId(command.transactionId())
-                        .ledgerAccountId(
-                                systemCashAccount.getId()
-                        )
+        JournalEntryLine creditLine =
+                JournalEntryLine.builder()
+                        .journalEntryId(savedJournalEntry.getId())
+                        .ledgerAccountId(systemCashAccount.getId())
                         .entryType(EntryType.CREDIT)
                         .amount(command.amount())
                         .currency(command.currency())
                         .build();
 
-        ledgerEntryCommandRepository.save(debitEntry);
-        ledgerEntryCommandRepository.save(creditEntry);
+        journalEntryLineCommandRepository.save(debitLine);
+        journalEntryLineCommandRepository.save(creditLine);
     }
 
     private void validateCommand(
             RecordWithdrawCommand command
     ) {
-        if (command.transactionId() == null) {
-            throw new BusinessException(
-                    ErrorCode.INVALID_REQUEST
-            );
-        }
+        if (command == null
+                || command.transactionId() == null
+                || command.sourceAccountId() == null
+                || command.currency() == null
+                || command.currency().isBlank()) {
 
-        if (command.sourceAccountId() == null) {
             throw new BusinessException(
                     ErrorCode.INVALID_REQUEST
             );
@@ -85,15 +89,9 @@ public class RecordWithdrawHandler
 
         if (command.amount() == null
                 || command.amount().signum() <= 0) {
+
             throw new BusinessException(
                     ErrorCode.INVALID_WITHDRAW_AMOUNT
-            );
-        }
-
-        if (command.currency() == null
-                || command.currency().isBlank()) {
-            throw new BusinessException(
-                    ErrorCode.INVALID_REQUEST
             );
         }
     }

@@ -49,3 +49,7 @@ databaseChangeLog:
       file: db/changelog/024-add-attempt-started-at-to-webhook-delivery.yaml
   - include:
       file: db/changelog/025-remove-username-add-user-profile.yaml
+  - include:
+      file: db/changelog/026-create-journal-entry.yaml
+  - include:
+      file: db/changelog/027-drop-ledger-entries.yaml

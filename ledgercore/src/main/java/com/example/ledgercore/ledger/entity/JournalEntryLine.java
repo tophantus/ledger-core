@@ -1,7 +1,6 @@
 package com.example.ledgercore.ledger.entity;
 
 import com.example.ledgercore.ledger.enums.EntryType;
-import com.example.ledgercore.transaction.entity.MoneyTransaction;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,22 +9,40 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "ledger_entries")
+@Table(
+        name = "journal_entry_lines",
+        indexes = {
+                @Index(
+                        name = "idx_journal_entry_lines_journal_entry_id",
+                        columnList = "journal_entry_id"
+                ),
+                @Index(
+                        name = "idx_journal_entry_lines_ledger_account_id",
+                        columnList = "ledger_account_id"
+                )
+        }
+)
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class LedgerEntry {
+public class JournalEntryLine {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "transaction_id", nullable = false)
-    private UUID transactionId;
+    @Column(
+            name = "journal_entry_id",
+            nullable = false
+    )
+    private UUID journalEntryId;
 
-    @Column(name = "ledger_account_id", nullable = false)
+    @Column(
+            name = "ledger_account_id",
+            nullable = false
+    )
     private UUID ledgerAccountId;
 
     @Enumerated(EnumType.STRING)
@@ -43,10 +60,16 @@ public class LedgerEntry {
     )
     private BigDecimal amount;
 
-    @Column(nullable = false, length = 3)
+    @Column(
+            nullable = false,
+            length = 3
+    )
     private String currency;
 
-    @Column(nullable = false, updatable = false)
+    @Column(
+            nullable = false,
+            updatable = false
+    )
     private Instant createdAt;
 
     @PrePersist

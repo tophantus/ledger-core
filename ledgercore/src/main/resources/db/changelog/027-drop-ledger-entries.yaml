@@ -1,0 +1,10 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 027-drop-ledger-entries
+      author: ledgercore
+
+      changes:
+        - dropTable:
+            tableName: ledger_entries
+            cascadeConstraints: true
