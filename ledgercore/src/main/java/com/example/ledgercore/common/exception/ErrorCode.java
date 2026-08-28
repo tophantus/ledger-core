@@ -161,6 +161,13 @@ public enum ErrorCode {
             HttpStatus.BAD_REQUEST
     ),
 
+    TRANSFER_INTENT_NOT_FOUND(
+            "TRANSACTION_011",
+            "Transfer intent not found",
+            HttpStatus.NOT_FOUND
+    ),
+
+
     INVALID_CREDENTIALS(
             "AUTH_001",
             "Invalid credentials",
