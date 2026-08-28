@@ -4,8 +4,11 @@ import com.example.ledgercore.auth.security.AuthPrincipal;
 import com.example.ledgercore.common.dto.PageResponse;
 import com.example.ledgercore.common.response.ApiResponse;
 import com.example.ledgercore.transaction.adapter.inbound.rest.dto.TransactionFilterRequest;
+import com.example.ledgercore.transaction.command.dto.CreateTransferIntentCommand;
+import com.example.ledgercore.transaction.command.dto.CreateTransferIntentResult;
 import com.example.ledgercore.transaction.command.dto.TransferMoneyCommand;
 import com.example.ledgercore.transaction.command.dto.WithdrawMoneyCommand;
+import com.example.ledgercore.transaction.command.port.inbound.CreateTransferIntentUseCase;
 import com.example.ledgercore.transaction.command.port.inbound.TransferMoneyUseCase;
 import com.example.ledgercore.transaction.command.port.inbound.WithdrawMoneyUseCase;
 import com.example.ledgercore.transaction.query.dto.GetAccountTransactionsQuery;
@@ -34,6 +37,9 @@ import java.util.UUID;
 )
 public class TransactionController {
 
+    private final CreateTransferIntentUseCase
+            createTransferIntentUseCase;
+
     private final TransferMoneyUseCase transferMoneyUseCase;
     private final WithdrawMoneyUseCase withdrawMoneyUseCase;
 
@@ -42,6 +48,35 @@ public class TransactionController {
             getTransactionByReferenceUseCase;
     private final GetAccountTransactionsUseCase
             getAccountTransactionsUseCase;
+
+    @PostMapping("/transfer-intents")
+    @Operation(
+            summary = "Create transfer intent",
+            description = """
+                    Creates a money transfer intent and sends a confirmation OTP
+                    to the authenticated user. The transfer is not executed until
+                    the intent is confirmed with a valid OTP.
+                    """
+    )
+    public ResponseEntity<ApiResponse<CreateTransferIntentResult>>
+    createTransferIntent(
+            @AuthenticationPrincipal AuthPrincipal principal,
+            @Valid @RequestBody CreateTransferIntentCommand command
+    ) {
+        CreateTransferIntentResult response =
+                createTransferIntentUseCase.execute(
+                        principal.getUserId(),
+                        command
+                );
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        response,
+                        "Transfer intent created successfully"
+                )
+        );
+    }
+
 
     @PostMapping("/transfers")
     @Operation(

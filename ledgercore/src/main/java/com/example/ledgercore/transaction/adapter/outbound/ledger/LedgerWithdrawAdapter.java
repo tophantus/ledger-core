@@ -1,4 +1,4 @@
-package com.example.ledgercore.transaction.adapter.outbound;
+package com.example.ledgercore.transaction.adapter.outbound.ledger;
 
 import com.example.ledgercore.ledger.command.dto.RecordWithdrawCommand;
 import com.example.ledgercore.ledger.command.port.inbound.RecordWithdrawUseCase;

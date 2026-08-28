@@ -1,4 +1,4 @@
-package com.example.ledgercore.transaction.adapter.outbound;
+package com.example.ledgercore.transaction.adapter.outbound.account;
 
 import com.example.ledgercore.account.command.dto.WithdrawAccountCommand;
 import com.example.ledgercore.account.command.port.inbound.WithdrawAccountBalanceUseCase;
