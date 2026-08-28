@@ -55,3 +55,5 @@ databaseChangeLog:
       file: db/changelog/027-drop-ledger-entries.yaml
   - include:
       file: db/changelog/028-rename-display-name-to-full-name.yaml
+  - include:
+      file: db/changelog/029-create-transfer-intents.yaml
