@@ -42,6 +42,24 @@ public enum ErrorCode {
             HttpStatus.NOT_FOUND
     ),
 
+    OTP_INVALID(
+            "OTP_001",
+            "Invalid OTP",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    OTP_EXPIRED(
+            "OTP_002",
+            "OTP has expired",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    OTP_LOCKED(
+            "OTP_003",
+            "OTP verification is locked",
+            HttpStatus.CONFLICT
+    ),
+
     ACCOUNT_NOT_FOUND(
             "ACCOUNT_001",
             "Account not found",
@@ -159,6 +177,18 @@ public enum ErrorCode {
             "TRANSACTION_010",
             "Withdraw amount must be greater than zero",
             HttpStatus.BAD_REQUEST
+    ),
+
+    TRANSFER_INTENT_NOT_FOUND(
+            "TRANSACTION_011",
+            "Transfer intent not found",
+            HttpStatus.NOT_FOUND
+    ),
+
+    TRANSFER_INTENT_EXPIRED(
+            "TRANSACTION_012",
+            "Transfer intent has expired",
+            HttpStatus.CONFLICT
     ),
 
     INVALID_CREDENTIALS(

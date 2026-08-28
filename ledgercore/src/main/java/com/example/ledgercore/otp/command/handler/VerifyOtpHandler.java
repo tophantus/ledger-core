@@ -8,6 +8,7 @@ import com.example.ledgercore.otp.enums.OtpStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
@@ -22,7 +23,7 @@ public class VerifyOtpHandler implements VerifyOtpUseCase {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public OtpStatus execute(VerifyOtpCommand command) {
 
         OtpChallenge challenge =

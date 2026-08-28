@@ -14,6 +14,18 @@ public enum EmailTemplateType {
                     "otp",
                     "expiresInMinutes"
             )
+    ),
+
+    TRANSFER_CONFIRMATION(
+            "transfer-confirmation",
+            "Confirm your transfer",
+            List.of(
+                    "otp",
+                    "expiresInMinutes",
+                    "destinationAccountNo",
+                    "amount",
+                    "currency"
+            )
     );
 
     private final String templateName;
