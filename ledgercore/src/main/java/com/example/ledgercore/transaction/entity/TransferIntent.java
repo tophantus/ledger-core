@@ -102,13 +102,6 @@ public class TransferIntent {
     @Column(name = "completed_at")
     private Instant completedAt;
 
-    @PrePersist
-    protected void prePersist() {
-        if (createdAt == null) {
-            createdAt = Instant.now();
-        }
-    }
-
     public boolean isExpired(Instant now) {
         return now.isAfter(expiresAt);
     }

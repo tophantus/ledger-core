@@ -4,12 +4,9 @@ import com.example.ledgercore.auth.security.AuthPrincipal;
 import com.example.ledgercore.common.dto.PageResponse;
 import com.example.ledgercore.common.response.ApiResponse;
 import com.example.ledgercore.transaction.adapter.inbound.rest.dto.TransactionFilterRequest;
-import com.example.ledgercore.transaction.command.dto.CreateTransferIntentCommand;
-import com.example.ledgercore.transaction.command.dto.CreateTransferIntentResult;
-import com.example.ledgercore.transaction.command.dto.TransferMoneyCommand;
-import com.example.ledgercore.transaction.command.dto.WithdrawMoneyCommand;
+import com.example.ledgercore.transaction.command.dto.*;
+import com.example.ledgercore.transaction.command.port.inbound.ConfirmTransferUseCase;
 import com.example.ledgercore.transaction.command.port.inbound.CreateTransferIntentUseCase;
-import com.example.ledgercore.transaction.command.port.inbound.TransferMoneyUseCase;
 import com.example.ledgercore.transaction.command.port.inbound.WithdrawMoneyUseCase;
 import com.example.ledgercore.transaction.query.dto.GetAccountTransactionsQuery;
 import com.example.ledgercore.transaction.query.dto.GetTransactionByReferenceQuery;
@@ -37,10 +34,8 @@ import java.util.UUID;
 )
 public class TransactionController {
 
-    private final CreateTransferIntentUseCase
-            createTransferIntentUseCase;
-
-    private final TransferMoneyUseCase transferMoneyUseCase;
+    private final CreateTransferIntentUseCase createTransferIntentUseCase;
+    private final ConfirmTransferUseCase confirmTransferUseCase;
     private final WithdrawMoneyUseCase withdrawMoneyUseCase;
 
     private final GetTransactionUseCase getTransactionUseCase;
@@ -77,18 +72,23 @@ public class TransactionController {
         );
     }
 
-
-    @PostMapping("/transfers")
+    @PostMapping("/transfer-intents/confirm")
     @Operation(
-            summary = "Transfer money",
-            description = "Transfer money from the authenticated user's account to another account"
+            summary = "Confirm transfer intent",
+            description = """
+                Confirms a transfer intent using the OTP sent to the
+                authenticated user's email. If the OTP is valid and the
+                intent is still pending and not expired, the transfer
+                will be executed.
+                """
     )
-    public ResponseEntity<ApiResponse<TransactionResponse>> transferMoney(
+    public ResponseEntity<ApiResponse<TransactionResponse>>
+    confirmTransfer(
             @AuthenticationPrincipal AuthPrincipal principal,
-            @Valid @RequestBody TransferMoneyCommand command
+            @Valid @RequestBody ConfirmTransferCommand command
     ) {
         TransactionResponse response =
-                transferMoneyUseCase.execute(
+                confirmTransferUseCase.execute(
                         principal.getUserId(),
                         command
                 );
@@ -96,7 +96,7 @@ public class TransactionController {
         return ResponseEntity.ok(
                 ApiResponse.success(
                         response,
-                        "Money transferred successfully"
+                        "Transfer confirmed successfully"
                 )
         );
     }

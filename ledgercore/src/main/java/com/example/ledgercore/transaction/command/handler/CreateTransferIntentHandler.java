@@ -36,6 +36,17 @@ public class CreateTransferIntentHandler
             UUID userId,
             CreateTransferIntentCommand command
     ) {
+        TransferIntent existingIntent =
+                transferIntentCommandRepository
+                        .findByReference(command.reference())
+                        .orElse(null);
+
+        if (existingIntent != null) {
+            return handleExistingIntent(
+                    userId,
+                    existingIntent
+            );
+        }
         validateAmount(command);
 
         UUID destinationAccountId =
@@ -86,6 +97,7 @@ public class CreateTransferIntentHandler
                         .description(command.description())
                         .status(TransferIntentStatus.PENDING)
                         .expiresAt(expiresAt)
+                        .createdAt(now)
                         .build();
 
         TransferIntent savedIntent =
@@ -96,17 +108,20 @@ public class CreateTransferIntentHandler
                 savedIntent.getId()
         );
 
-        return new CreateTransferIntentResult(
-                savedIntent.getId(),
-                savedIntent.getSourceAccountId(),
-                savedIntent.getDestinationAccountId(),
-                savedIntent.getAmount(),
-                savedIntent.getCurrency(),
-                savedIntent.getReference(),
-                savedIntent.getStatus(),
-                savedIntent.getExpiresAt(),
-                savedIntent.getCreatedAt()
-        );
+        return toResult(savedIntent);
+    }
+
+    private CreateTransferIntentResult handleExistingIntent(
+            UUID userId,
+            TransferIntent intent
+    ) {
+        if (!intent.getUserId().equals(userId)) {
+            throw new BusinessException(
+                    ErrorCode.ACCESS_DENIED
+            );
+        }
+
+        return toResult(intent);
     }
 
     private void validateAmount(
@@ -140,5 +155,21 @@ public class CreateTransferIntentHandler
                     ErrorCode.ACCOUNT_INSUFFICIENT_BALANCE
             );
         }
+    }
+
+    private CreateTransferIntentResult toResult(
+            TransferIntent intent
+    ) {
+        return new CreateTransferIntentResult(
+                intent.getId(),
+                intent.getSourceAccountId(),
+                intent.getDestinationAccountId(),
+                intent.getAmount(),
+                intent.getCurrency(),
+                intent.getReference(),
+                intent.getStatus(),
+                intent.getExpiresAt(),
+                intent.getCreatedAt()
+        );
     }
 }

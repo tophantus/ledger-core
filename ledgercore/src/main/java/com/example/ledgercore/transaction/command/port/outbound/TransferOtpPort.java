@@ -8,4 +8,10 @@ public interface TransferOtpPort {
             UUID userId,
             UUID transferIntentId
     );
+
+    void verifyConfirmationOtp(
+            UUID userId,
+            UUID transferIntentId,
+            String otp
+    );
 }
