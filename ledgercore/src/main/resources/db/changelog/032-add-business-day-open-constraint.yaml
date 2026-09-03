@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: 032-business-day-single-open
+      author: ledgercore
+      changes:
+        - sql:
+            sql: |
+              CREATE UNIQUE INDEX uk_business_days_single_open
+              ON business_days (status)
+              WHERE status = 'OPEN';

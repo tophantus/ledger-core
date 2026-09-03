@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Component
@@ -22,7 +23,8 @@ public class LedgerTransferAdapter
             UUID sourceAccountId,
             UUID destinationAccountId,
             BigDecimal amount,
-            String currency
+            String currency,
+            LocalDate businessDate
     ) {
         recordTransferUseCase.execute(
                 new RecordTransferCommand(
@@ -30,7 +32,8 @@ public class LedgerTransferAdapter
                         sourceAccountId,
                         destinationAccountId,
                         amount,
-                        currency
+                        currency,
+                        businessDate
                 )
         );
     }

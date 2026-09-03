@@ -7,6 +7,7 @@ import com.example.ledgercore.common.lock.LockKeyPrefix;
 import com.example.ledgercore.transaction.command.dto.WithdrawMoneyCommand;
 import com.example.ledgercore.transaction.command.port.inbound.WithdrawMoneyUseCase;
 import com.example.ledgercore.transaction.command.port.outbound.AccountWithdrawPort;
+import com.example.ledgercore.transaction.command.port.outbound.BusinessDayPort;
 import com.example.ledgercore.transaction.command.port.outbound.LedgerWithdrawPort;
 import com.example.ledgercore.transaction.command.port.outbound.TransactionEventPort;
 import com.example.ledgercore.transaction.command.repository.TransactionCommandRepository;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Service
@@ -31,6 +33,7 @@ public class WithdrawMoneyHandler
     private final AccountWithdrawPort accountWithdrawPort;
     private final LedgerWithdrawPort ledgerWithdrawPort;
     private final TransactionEventPort transactionEventPort;
+    private final BusinessDayPort businessDayPort;
 
     @Override
     @DistributedLock(
@@ -67,8 +70,14 @@ public class WithdrawMoneyHandler
                 withdrawInfo
         );
 
+        LocalDate businessDate =
+                businessDayPort.getCurrentBusinessDate();
+
         MoneyTransaction transaction =
-                createTransaction(command);
+                createTransaction(
+                        command,
+                        businessDate
+                );
 
         transactionCommandRepository.save(transaction);
 
@@ -81,7 +90,8 @@ public class WithdrawMoneyHandler
                 transaction.getId(),
                 command.sourceAccountId(),
                 command.amount(),
-                command.currency()
+                command.currency(),
+                businessDate
         );
 
         completeTransaction(transaction);
@@ -132,12 +142,15 @@ public class WithdrawMoneyHandler
     }
 
     private MoneyTransaction createTransaction(
-            WithdrawMoneyCommand command
+            WithdrawMoneyCommand command,
+            LocalDate businessDate
+
     ) {
         return MoneyTransaction.builder()
                 .reference(command.reference())
                 .type(TransactionType.WITHDRAW)
                 .status(TransactionStatus.PENDING)
+                .businessDate(businessDate)
                 .sourceAccountId(
                         command.sourceAccountId()
                 )

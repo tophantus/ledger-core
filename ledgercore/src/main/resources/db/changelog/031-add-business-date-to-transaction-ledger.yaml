@@ -1,0 +1,43 @@
+databaseChangeLog:
+  - changeSet:
+      id: 031-add-business-date-to-transactions-and-journals
+      author: ledgercore
+      changes:
+
+        - addColumn:
+            tableName: transactions
+            columns:
+              - column:
+                  name: business_date
+                  type: DATE
+
+        - addColumn:
+            tableName: journal_entries
+            columns:
+              - column:
+                  name: business_date
+                  type: DATE
+
+        - createIndex:
+            tableName: transactions
+            indexName: idx_transactions_business_date
+            columns:
+              - column:
+                  name: business_date
+
+        - createIndex:
+            tableName: journal_entries
+            indexName: idx_journal_entries_business_date
+            columns:
+              - column:
+                  name: business_date
+
+        - addNotNullConstraint:
+            tableName: transactions
+            columnName: business_date
+            columnDataType: DATE
+
+        - addNotNullConstraint:
+            tableName: journal_entries
+            columnName: business_date
+            columnDataType: DATE

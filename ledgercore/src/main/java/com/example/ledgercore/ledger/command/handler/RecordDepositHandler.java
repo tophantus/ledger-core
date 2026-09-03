@@ -46,6 +46,7 @@ public class RecordDepositHandler
         JournalEntry journalEntry =
                 JournalEntry.builder()
                         .transactionId(command.transactionId())
+                        .businessDate(command.businessDate())
                         .build();
 
         JournalEntry savedJournalEntry =
@@ -80,7 +81,8 @@ public class RecordDepositHandler
                 || command.transactionId() == null
                 || command.destinationAccountId() == null
                 || command.currency() == null
-                || command.currency().isBlank()) {
+                || command.currency().isBlank()
+                || command.businessDate() == null) {
 
             throw new BusinessException(
                     ErrorCode.INVALID_REQUEST

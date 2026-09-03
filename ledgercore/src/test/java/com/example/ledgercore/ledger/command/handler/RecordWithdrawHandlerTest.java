@@ -1,6 +1,7 @@
 package com.example.ledgercore.ledger.command.handler;
 
 import com.example.ledgercore.common.exception.BusinessException;
+import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.ledger.command.dto.RecordWithdrawCommand;
 import com.example.ledgercore.ledger.command.port.outbound.AccountLedgerMappingPort;
 import com.example.ledgercore.ledger.command.repository.JournalEntryCommandRepository;
@@ -18,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -53,6 +55,9 @@ class RecordWithdrawHandlerTest {
     private static final BigDecimal AMOUNT =
             new BigDecimal("1000000.0000");
 
+    private static final LocalDate BUSINESS_DATE =
+            LocalDate.of(2026, 9, 4);
+
     @BeforeEach
     void setUp() {
         handler = new RecordWithdrawHandler(
@@ -72,12 +77,14 @@ class RecordWithdrawHandlerTest {
 
     @Test
     void shouldRecordWithdrawSuccessfully() {
+        // Given
         RecordWithdrawCommand command =
                 new RecordWithdrawCommand(
                         transactionId,
                         sourceAccountId,
                         AMOUNT,
-                        CURRENCY
+                        CURRENCY,
+                        BUSINESS_DATE
                 );
 
         LedgerAccount cashAccount =
@@ -89,6 +96,7 @@ class RecordWithdrawHandlerTest {
                 JournalEntry.builder()
                         .id(journalEntryId)
                         .transactionId(transactionId)
+                        .businessDate(BUSINESS_DATE)
                         .build();
 
         when(accountLedgerMappingPort.getLedgerAccountId(
@@ -102,8 +110,10 @@ class RecordWithdrawHandlerTest {
         when(journalEntryCommandRepository.save(any(JournalEntry.class)))
                 .thenReturn(savedJournalEntry);
 
+        // When
         handler.execute(command);
 
+        // Then
         ArgumentCaptor<JournalEntry> journalCaptor =
                 ArgumentCaptor.forClass(JournalEntry.class);
 
@@ -118,6 +128,11 @@ class RecordWithdrawHandlerTest {
                 journalEntry.getTransactionId()
         );
 
+        assertEquals(
+                BUSINESS_DATE,
+                journalEntry.getBusinessDate()
+        );
+
         ArgumentCaptor<JournalEntryLine> lineCaptor =
                 ArgumentCaptor.forClass(JournalEntryLine.class);
 
@@ -129,47 +144,59 @@ class RecordWithdrawHandlerTest {
 
         assertEquals(2, lines.size());
 
-        JournalEntryLine debitLine = lines.getFirst();
+        // Debit: Customer account
+        JournalEntryLine debitLine =
+                lines.getFirst();
 
         assertEquals(
                 journalEntryId,
                 debitLine.getJournalEntryId()
         );
+
         assertEquals(
                 customerLedgerAccountId,
                 debitLine.getLedgerAccountId()
         );
+
         assertEquals(
                 EntryType.DEBIT,
                 debitLine.getEntryType()
         );
+
         assertEquals(
                 AMOUNT,
                 debitLine.getAmount()
         );
+
         assertEquals(
                 CURRENCY,
                 debitLine.getCurrency()
         );
 
-        JournalEntryLine creditLine = lines.get(1);
+        // Credit: System cash account
+        JournalEntryLine creditLine =
+                lines.get(1);
 
         assertEquals(
                 journalEntryId,
                 creditLine.getJournalEntryId()
         );
+
         assertEquals(
                 cashLedgerAccountId,
                 creditLine.getLedgerAccountId()
         );
+
         assertEquals(
                 EntryType.CREDIT,
                 creditLine.getEntryType()
         );
+
         assertEquals(
                 AMOUNT,
                 creditLine.getAmount()
         );
+
         assertEquals(
                 CURRENCY,
                 creditLine.getCurrency()
@@ -184,9 +211,16 @@ class RecordWithdrawHandlerTest {
 
     @Test
     void shouldRejectNullCommand() {
-        assertThrows(
+        // When
+        BusinessException exception = assertThrows(
                 BusinessException.class,
                 () -> handler.execute(null)
+        );
+
+        // Then
+        assertEquals(
+                ErrorCode.INVALID_REQUEST,
+                exception.getErrorCode()
         );
 
         verifyNoInteractions(
@@ -199,17 +233,26 @@ class RecordWithdrawHandlerTest {
 
     @Test
     void shouldRejectNullTransactionId() {
+        // Given
         RecordWithdrawCommand command =
                 new RecordWithdrawCommand(
                         null,
                         sourceAccountId,
                         AMOUNT,
-                        CURRENCY
+                        CURRENCY,
+                        BUSINESS_DATE
                 );
 
-        assertThrows(
+        // When
+        BusinessException exception = assertThrows(
                 BusinessException.class,
                 () -> handler.execute(command)
+        );
+
+        // Then
+        assertEquals(
+                ErrorCode.INVALID_REQUEST,
+                exception.getErrorCode()
         );
 
         verifyNoInteractions(
@@ -222,17 +265,26 @@ class RecordWithdrawHandlerTest {
 
     @Test
     void shouldRejectNullSourceAccountId() {
+        // Given
         RecordWithdrawCommand command =
                 new RecordWithdrawCommand(
                         transactionId,
                         null,
                         AMOUNT,
-                        CURRENCY
+                        CURRENCY,
+                        BUSINESS_DATE
                 );
 
-        assertThrows(
+        // When
+        BusinessException exception = assertThrows(
                 BusinessException.class,
                 () -> handler.execute(command)
+        );
+
+        // Then
+        assertEquals(
+                ErrorCode.INVALID_REQUEST,
+                exception.getErrorCode()
         );
 
         verifyNoInteractions(
@@ -245,17 +297,26 @@ class RecordWithdrawHandlerTest {
 
     @Test
     void shouldRejectNullCurrency() {
+        // Given
         RecordWithdrawCommand command =
                 new RecordWithdrawCommand(
                         transactionId,
                         sourceAccountId,
                         AMOUNT,
-                        null
+                        null,
+                        BUSINESS_DATE
                 );
 
-        assertThrows(
+        // When
+        BusinessException exception = assertThrows(
                 BusinessException.class,
                 () -> handler.execute(command)
+        );
+
+        // Then
+        assertEquals(
+                ErrorCode.INVALID_REQUEST,
+                exception.getErrorCode()
         );
 
         verifyNoInteractions(
@@ -268,17 +329,58 @@ class RecordWithdrawHandlerTest {
 
     @Test
     void shouldRejectBlankCurrency() {
+        // Given
         RecordWithdrawCommand command =
                 new RecordWithdrawCommand(
                         transactionId,
                         sourceAccountId,
                         AMOUNT,
-                        "   "
+                        "   ",
+                        BUSINESS_DATE
                 );
 
-        assertThrows(
+        // When
+        BusinessException exception = assertThrows(
                 BusinessException.class,
                 () -> handler.execute(command)
+        );
+
+        // Then
+        assertEquals(
+                ErrorCode.INVALID_REQUEST,
+                exception.getErrorCode()
+        );
+
+        verifyNoInteractions(
+                journalEntryCommandRepository,
+                journalEntryLineCommandRepository,
+                accountLedgerMappingPort,
+                systemLedgerAccountService
+        );
+    }
+
+    @Test
+    void shouldRejectNullBusinessDate() {
+        // Given
+        RecordWithdrawCommand command =
+                new RecordWithdrawCommand(
+                        transactionId,
+                        sourceAccountId,
+                        AMOUNT,
+                        CURRENCY,
+                        null
+                );
+
+        // When
+        BusinessException exception = assertThrows(
+                BusinessException.class,
+                () -> handler.execute(command)
+        );
+
+        // Then
+        assertEquals(
+                ErrorCode.INVALID_REQUEST,
+                exception.getErrorCode()
         );
 
         verifyNoInteractions(
@@ -291,17 +393,26 @@ class RecordWithdrawHandlerTest {
 
     @Test
     void shouldRejectNullAmount() {
+        // Given
         RecordWithdrawCommand command =
                 new RecordWithdrawCommand(
                         transactionId,
                         sourceAccountId,
                         null,
-                        CURRENCY
+                        CURRENCY,
+                        BUSINESS_DATE
                 );
 
-        assertThrows(
+        // When
+        BusinessException exception = assertThrows(
                 BusinessException.class,
                 () -> handler.execute(command)
+        );
+
+        // Then
+        assertEquals(
+                ErrorCode.INVALID_WITHDRAW_AMOUNT,
+                exception.getErrorCode()
         );
 
         verifyNoInteractions(
@@ -314,17 +425,26 @@ class RecordWithdrawHandlerTest {
 
     @Test
     void shouldRejectZeroAmount() {
+        // Given
         RecordWithdrawCommand command =
                 new RecordWithdrawCommand(
                         transactionId,
                         sourceAccountId,
                         BigDecimal.ZERO,
-                        CURRENCY
+                        CURRENCY,
+                        BUSINESS_DATE
                 );
 
-        assertThrows(
+        // When
+        BusinessException exception = assertThrows(
                 BusinessException.class,
                 () -> handler.execute(command)
+        );
+
+        // Then
+        assertEquals(
+                ErrorCode.INVALID_WITHDRAW_AMOUNT,
+                exception.getErrorCode()
         );
 
         verifyNoInteractions(
@@ -337,17 +457,26 @@ class RecordWithdrawHandlerTest {
 
     @Test
     void shouldRejectNegativeAmount() {
+        // Given
         RecordWithdrawCommand command =
                 new RecordWithdrawCommand(
                         transactionId,
                         sourceAccountId,
                         new BigDecimal("-1"),
-                        CURRENCY
+                        CURRENCY,
+                        BUSINESS_DATE
                 );
 
-        assertThrows(
+        // When
+        BusinessException exception = assertThrows(
                 BusinessException.class,
                 () -> handler.execute(command)
+        );
+
+        // Then
+        assertEquals(
+                ErrorCode.INVALID_WITHDRAW_AMOUNT,
+                exception.getErrorCode()
         );
 
         verifyNoInteractions(

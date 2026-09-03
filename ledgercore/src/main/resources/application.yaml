@@ -97,6 +97,11 @@ webhook:
     max-delay-seconds: 300
     processing-timeout-seconds: 60
 
+business-day:
+  timezone: Asia/Ho_Chi_Minh
+  closing-cron: "0 30 23 * * *"
+  closing-start: "23:30"
+
 app:
   webhook:
     allow-http: true

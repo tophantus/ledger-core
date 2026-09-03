@@ -103,6 +103,36 @@ public enum ErrorCode {
             HttpStatus.CONFLICT
     ),
 
+    BUSINESS_DAY_NOT_FOUND(
+            "BUSINESS_DAY_001",
+            "Current business day not found",
+            HttpStatus.NOT_FOUND
+    ),
+
+    INVALID_BUSINESS_DAY_STATUS(
+            "BUSINESS_DAY_002",
+            "Invalid business day status",
+            HttpStatus.CONFLICT
+    ),
+
+    BUSINESS_DAY_CLOSE_NOT_ALLOWED(
+            "BUSINESS_DAY_003",
+            "Business day can only be closed during the closing window",
+            HttpStatus.CONFLICT
+    ),
+
+    BUSINESS_DAY_DATE_MISMATCH(
+            "BUSINESS_DAY_004",
+            "Current business day does not match system date",
+            HttpStatus.CONFLICT
+    ),
+
+    NEXT_BUSINESS_DAY_ALREADY_EXISTS(
+            "BUSINESS_DAY_005",
+            "Next business day already exists",
+            HttpStatus.CONFLICT
+    ),
+
     // Ledger
 
     LEDGER_ACCOUNT_NOT_FOUND(

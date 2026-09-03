@@ -57,3 +57,9 @@ databaseChangeLog:
       file: db/changelog/028-rename-display-name-to-full-name.yaml
   - include:
       file: db/changelog/029-create-transfer-intents.yaml
+  - include:
+      file: db/changelog/030-create-business-days.yaml
+  - include:
+      file: db/changelog/031-add-business-date-to-transaction-ledger.yaml
+  - include:
+      file: db/changelog/032-add-business-day-open-constraint.yaml

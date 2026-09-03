@@ -7,6 +7,7 @@ import com.example.ledgercore.common.lock.LockKeyPrefix;
 import com.example.ledgercore.transaction.command.dto.DepositMoneyCommand;
 import com.example.ledgercore.transaction.command.port.inbound.DepositMoneyUseCase;
 import com.example.ledgercore.transaction.command.port.outbound.AccountDepositPort;
+import com.example.ledgercore.transaction.command.port.outbound.BusinessDayPort;
 import com.example.ledgercore.transaction.command.port.outbound.LedgerDepositPort;
 import com.example.ledgercore.transaction.command.port.outbound.TransactionEventPort;
 import com.example.ledgercore.transaction.command.repository.TransactionCommandRepository;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Service
@@ -30,6 +32,7 @@ public class DepositMoneyHandler implements DepositMoneyUseCase {
     private final AccountDepositPort accountDepositPort;
     private final LedgerDepositPort ledgerDepositPort;
     private final TransactionEventPort transactionEventPort;
+    private final BusinessDayPort businessDayPort;
 
     @Override
     @DistributedLock(
@@ -64,9 +67,13 @@ public class DepositMoneyHandler implements DepositMoneyUseCase {
                 depositInfo
         );
 
+        LocalDate businessDate =
+                businessDayPort.getCurrentBusinessDate();
+
         MoneyTransaction transaction =
                 createTransaction(
-                        command
+                        command,
+                        businessDate
                 );
 
         transactionCommandRepository.save(transaction);
@@ -80,7 +87,8 @@ public class DepositMoneyHandler implements DepositMoneyUseCase {
                 transaction.getId(),
                 command.destinationAccountId(),
                 command.amount(),
-                command.currency()
+                command.currency(),
+                businessDate
         );
 
         completeTransaction(transaction);
@@ -121,12 +129,14 @@ public class DepositMoneyHandler implements DepositMoneyUseCase {
     }
 
     private MoneyTransaction createTransaction(
-            DepositMoneyCommand command
+            DepositMoneyCommand command,
+            LocalDate businessDate
     ) {
         return MoneyTransaction.builder()
                 .reference(command.reference())
                 .type(TransactionType.DEPOSIT)
                 .status(TransactionStatus.PENDING)
+                .businessDate(businessDate)
                 .destinationAccountId(
                         command.destinationAccountId()
                 )

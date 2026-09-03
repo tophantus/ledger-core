@@ -1,0 +1,51 @@
+databaseChangeLog:
+  - changeSet:
+      id: 030-create-business-days
+      author: ledgercore
+      changes:
+
+        - createTable:
+            tableName: business_days
+            columns:
+              - column:
+                  name: business_date
+                  type: DATE
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: status
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: opened_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: closed_at
+                  type: TIMESTAMP WITH TIME ZONE
+
+        - createIndex:
+            tableName: business_days
+            indexName: idx_business_days_status
+            columns:
+              - column:
+                  name: status
+
+        - sql:
+            sql: |
+              INSERT INTO business_days (
+                  business_date,
+                  status,
+                  opened_at
+              )
+              VALUES (
+                  CURRENT_DATE,
+                  'OPEN',
+                  CURRENT_TIMESTAMP
+              );

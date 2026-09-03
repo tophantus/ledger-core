@@ -5,6 +5,7 @@ import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.common.lock.DistributedLock;
 import com.example.ledgercore.common.lock.LockKeyPrefix;
 import com.example.ledgercore.transaction.command.port.outbound.AccountTransferPort;
+import com.example.ledgercore.transaction.command.port.outbound.BusinessDayPort;
 import com.example.ledgercore.transaction.command.port.outbound.LedgerTransferPort;
 import com.example.ledgercore.transaction.command.port.outbound.TransactionEventPort;
 import com.example.ledgercore.transaction.command.repository.TransactionCommandRepository;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Clock;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Service
@@ -38,6 +40,8 @@ public class ConfirmTransferExecutionService {
     private final LedgerTransferPort ledgerTransferPort;
 
     private final TransactionEventPort transactionEventPort;
+
+    private final BusinessDayPort businessDayPort;
 
     private final Clock clock;
 
@@ -95,10 +99,14 @@ public class ConfirmTransferExecutionService {
                 transferInfo
         );
 
+        LocalDate businessDate =
+                businessDayPort.getCurrentBusinessDate();
+
         MoneyTransaction transaction =
                 createTransaction(
                         intent,
-                        transferInfo
+                        transferInfo,
+                        businessDate
                 );
 
         transactionCommandRepository.save(transaction);
@@ -114,7 +122,8 @@ public class ConfirmTransferExecutionService {
                 transferInfo.sourceAccountId(),
                 transferInfo.destinationAccountId(),
                 intent.getAmount(),
-                intent.getCurrency()
+                intent.getCurrency(),
+                businessDate
         );
 
         completeTransaction(
@@ -212,12 +221,14 @@ public class ConfirmTransferExecutionService {
 
     private MoneyTransaction createTransaction(
             TransferIntent intent,
-            AccountTransferPort.TransferAccountInfo transferInfo
+            AccountTransferPort.TransferAccountInfo transferInfo,
+            LocalDate businessDate
     ) {
         return MoneyTransaction.builder()
                 .reference(intent.getReference())
                 .type(TransactionType.TRANSFER)
                 .status(TransactionStatus.PENDING)
+                .businessDate(businessDate)
                 .sourceAccountId(
                         transferInfo.sourceAccountId()
                 )

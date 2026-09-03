@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Component
@@ -20,14 +21,16 @@ public class LedgerDepositAdapter implements LedgerDepositPort {
             UUID transactionId,
             UUID destinationAccountId,
             BigDecimal amount,
-            String currency
+            String currency,
+            LocalDate businessDate
     ) {
         recordDepositUseCase.execute(
                 new RecordDepositCommand(
                         transactionId,
                         destinationAccountId,
                         amount,
-                        currency
+                        currency,
+                        businessDate
                 )
         );
     }

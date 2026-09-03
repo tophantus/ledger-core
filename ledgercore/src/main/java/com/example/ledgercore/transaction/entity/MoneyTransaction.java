@@ -7,6 +7,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
@@ -41,6 +42,9 @@ public class MoneyTransaction {
     @Column(nullable = false, length = 20)
     @Builder.Default
     private TransactionStatus status = TransactionStatus.PENDING;
+
+    @Column(name = "business_date", nullable = false)
+    private LocalDate businessDate;
 
     @Column(name = "source_account_id")
     private UUID sourceAccountId;
