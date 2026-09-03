@@ -3,6 +3,7 @@ package com.example.ledgercore.transaction.command.handler;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.transaction.command.port.outbound.AccountTransferPort;
+import com.example.ledgercore.transaction.command.port.outbound.BusinessDayPort;
 import com.example.ledgercore.transaction.command.port.outbound.LedgerTransferPort;
 import com.example.ledgercore.transaction.command.port.outbound.TransactionEventPort;
 import com.example.ledgercore.transaction.command.repository.TransactionCommandRepository;
@@ -25,6 +26,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.Optional;
 import java.util.UUID;
@@ -52,12 +54,18 @@ class ConfirmTransferExecutionServiceTest {
     @Mock
     private TransactionEventPort transactionEventPort;
 
+    @Mock
+    private BusinessDayPort businessDayPort;
+
     private ConfirmTransferExecutionService service;
 
     private Clock clock;
 
     private final Instant now =
-            Instant.parse("2026-08-27T10:00:00Z");
+            Instant.parse("2026-09-04T10:00:00Z");
+
+    private static final LocalDate BUSINESS_DATE =
+            LocalDate.of(2026, 9, 4);
 
     private UUID userId;
     private UUID intentId;
@@ -85,6 +93,7 @@ class ConfirmTransferExecutionServiceTest {
                         accountTransferPort,
                         ledgerTransferPort,
                         transactionEventPort,
+                        businessDayPort,
                         clock
                 );
     }
@@ -105,6 +114,7 @@ class ConfirmTransferExecutionServiceTest {
 
         mockIntent(intent);
         mockTransferInfo(transferInfo);
+        mockBusinessDate();
         mockSaveTransaction();
 
         TransactionResponse response =
@@ -177,33 +187,33 @@ class ConfirmTransferExecutionServiceTest {
                 intent.getCompletedAt()
         );
 
-        verify(
-                transactionCommandRepository
-        ).save(any(MoneyTransaction.class));
+        verify(transactionCommandRepository)
+                .save(any(MoneyTransaction.class));
 
-        verify(
-                accountTransferPort
-        ).transfer(
-                sourceAccountId,
-                destinationAccountId,
-                new BigDecimal("100.00")
-        );
+        verify(accountTransferPort)
+                .transfer(
+                        sourceAccountId,
+                        destinationAccountId,
+                        new BigDecimal("100.00")
+                );
 
-        verify(
-                ledgerTransferPort
-        ).recordTransfer(
-                eq(transactionId),
-                eq(sourceAccountId),
-                eq(destinationAccountId),
-                eq(new BigDecimal("100.00")),
-                eq("VND")
-        );
+        verify(ledgerTransferPort)
+                .recordTransfer(
+                        eq(transactionId),
+                        eq(sourceAccountId),
+                        eq(destinationAccountId),
+                        eq(new BigDecimal("100.00")),
+                        eq("VND"),
+                        eq(BUSINESS_DATE)
+                );
 
-        verify(
-                transactionEventPort
-        ).publishTransferCompleted(
-                any(TransferCompletedEvent.class)
-        );
+        verify(transactionEventPort)
+                .publishTransferCompleted(
+                        any(TransferCompletedEvent.class)
+                );
+
+        verify(businessDayPort)
+                .getCurrentBusinessDate();
     }
 
     @Test
@@ -233,7 +243,8 @@ class ConfirmTransferExecutionServiceTest {
         verifyNoInteractions(
                 accountTransferPort,
                 ledgerTransferPort,
-                transactionEventPort
+                transactionEventPort,
+                businessDayPort
         );
 
         verify(
@@ -250,9 +261,7 @@ class ConfirmTransferExecutionServiceTest {
                         now.plusSeconds(300)
                 );
 
-        intent.setUserId(
-                UUID.randomUUID()
-        );
+        intent.setUserId(UUID.randomUUID());
 
         mockIntent(intent);
 
@@ -275,7 +284,8 @@ class ConfirmTransferExecutionServiceTest {
         verifyNoInteractions(
                 accountTransferPort,
                 ledgerTransferPort,
-                transactionEventPort
+                transactionEventPort,
+                businessDayPort
         );
 
         verify(
@@ -316,7 +326,8 @@ class ConfirmTransferExecutionServiceTest {
         verifyNoInteractions(
                 accountTransferPort,
                 ledgerTransferPort,
-                transactionEventPort
+                transactionEventPort,
+                businessDayPort
         );
 
         verify(
@@ -357,7 +368,8 @@ class ConfirmTransferExecutionServiceTest {
         verifyNoInteractions(
                 accountTransferPort,
                 ledgerTransferPort,
-                transactionEventPort
+                transactionEventPort,
+                businessDayPort
         );
 
         verify(
@@ -399,7 +411,8 @@ class ConfirmTransferExecutionServiceTest {
         verifyNoInteractions(
                 accountTransferPort,
                 ledgerTransferPort,
-                transactionEventPort
+                transactionEventPort,
+                businessDayPort
         );
 
         verify(
@@ -437,7 +450,8 @@ class ConfirmTransferExecutionServiceTest {
         verifyNoInteractions(
                 accountTransferPort,
                 ledgerTransferPort,
-                transactionEventPort
+                transactionEventPort,
+                businessDayPort
         );
 
         verify(
@@ -495,7 +509,8 @@ class ConfirmTransferExecutionServiceTest {
 
         verifyNoInteractions(
                 ledgerTransferPort,
-                transactionEventPort
+                transactionEventPort,
+                businessDayPort
         );
     }
 
@@ -548,7 +563,8 @@ class ConfirmTransferExecutionServiceTest {
 
         verifyNoInteractions(
                 ledgerTransferPort,
-                transactionEventPort
+                transactionEventPort,
+                businessDayPort
         );
     }
 
@@ -568,6 +584,7 @@ class ConfirmTransferExecutionServiceTest {
 
         mockIntent(intent);
         mockTransferInfo(transferInfo);
+        mockBusinessDate();
         mockSaveTransaction();
 
         service.execute(
@@ -610,6 +627,11 @@ class ConfirmTransferExecutionServiceTest {
         );
 
         assertEquals(
+                BUSINESS_DATE,
+                transaction.getBusinessDate()
+        );
+
+        assertEquals(
                 sourceAccountId,
                 transaction.getSourceAccountId()
         );
@@ -641,6 +663,45 @@ class ConfirmTransferExecutionServiceTest {
     }
 
     @Test
+    void shouldGetBusinessDateBeforeCreatingTransaction() {
+
+        TransferIntent intent =
+                createPendingIntent(
+                        now.plusSeconds(300)
+                );
+
+        AccountTransferPort.TransferAccountInfo transferInfo =
+                createTransferInfo(
+                        new BigDecimal("1000.00"),
+                        "VND"
+                );
+
+        mockIntent(intent);
+        mockTransferInfo(transferInfo);
+        mockBusinessDate();
+        mockSaveTransaction();
+
+        service.execute(
+                userId,
+                intentId,
+                sourceAccountId,
+                destinationAccountId
+        );
+
+        InOrder inOrder =
+                inOrder(
+                        businessDayPort,
+                        transactionCommandRepository
+                );
+
+        inOrder.verify(businessDayPort)
+                .getCurrentBusinessDate();
+
+        inOrder.verify(transactionCommandRepository)
+                .save(any(MoneyTransaction.class));
+    }
+
+    @Test
     void shouldRecordLedgerAfterAccountTransfer() {
 
         TransferIntent intent =
@@ -656,6 +717,7 @@ class ConfirmTransferExecutionServiceTest {
 
         mockIntent(intent);
         mockTransferInfo(transferInfo);
+        mockBusinessDate();
         mockSaveTransaction();
 
         service.execute(
@@ -684,7 +746,8 @@ class ConfirmTransferExecutionServiceTest {
                         sourceAccountId,
                         destinationAccountId,
                         new BigDecimal("100.00"),
-                        "VND"
+                        "VND",
+                        BUSINESS_DATE
                 );
     }
 
@@ -704,6 +767,7 @@ class ConfirmTransferExecutionServiceTest {
 
         mockIntent(intent);
         mockTransferInfo(transferInfo);
+        mockBusinessDate();
         mockSaveTransaction();
 
         service.execute(
@@ -781,6 +845,7 @@ class ConfirmTransferExecutionServiceTest {
 
         mockIntent(intent);
         mockTransferInfo(transferInfo);
+        mockBusinessDate();
         mockSaveTransaction();
 
         service.execute(
@@ -827,14 +892,20 @@ class ConfirmTransferExecutionServiceTest {
         mockIntent(intent);
         mockTransferInfo(transferInfo);
 
-        assertThrows(
-                BusinessException.class,
-                () -> service.execute(
-                        userId,
-                        intentId,
-                        sourceAccountId,
-                        destinationAccountId
-                )
+        BusinessException exception =
+                assertThrows(
+                        BusinessException.class,
+                        () -> service.execute(
+                                userId,
+                                intentId,
+                                sourceAccountId,
+                                destinationAccountId
+                        )
+                );
+
+        assertEquals(
+                ErrorCode.ACCOUNT_INSUFFICIENT_BALANCE,
+                exception.getErrorCode()
         );
 
         verify(
@@ -853,7 +924,8 @@ class ConfirmTransferExecutionServiceTest {
 
         verifyNoInteractions(
                 ledgerTransferPort,
-                transactionEventPort
+                transactionEventPort,
+                businessDayPort
         );
     }
 
@@ -873,6 +945,7 @@ class ConfirmTransferExecutionServiceTest {
 
         mockIntent(intent);
         mockTransferInfo(transferInfo);
+        mockBusinessDate();
         mockSaveTransaction();
 
         doThrow(
@@ -902,6 +975,7 @@ class ConfirmTransferExecutionServiceTest {
                 any(),
                 any(),
                 any(),
+                any(),
                 any()
         );
 
@@ -927,6 +1001,7 @@ class ConfirmTransferExecutionServiceTest {
 
         mockIntent(intent);
         mockTransferInfo(transferInfo);
+        mockBusinessDate();
         mockSaveTransaction();
 
         doThrow(
@@ -939,7 +1014,8 @@ class ConfirmTransferExecutionServiceTest {
                         sourceAccountId,
                         destinationAccountId,
                         new BigDecimal("100.00"),
-                        "VND"
+                        "VND",
+                        BUSINESS_DATE
                 );
 
         assertThrows(
@@ -952,13 +1028,12 @@ class ConfirmTransferExecutionServiceTest {
                 )
         );
 
-        verify(
-                accountTransferPort
-        ).transfer(
-                sourceAccountId,
-                destinationAccountId,
-                new BigDecimal("100.00")
-        );
+        verify(accountTransferPort)
+                .transfer(
+                        sourceAccountId,
+                        destinationAccountId,
+                        new BigDecimal("100.00")
+                );
 
         verify(
                 transactionEventPort,
@@ -987,6 +1062,7 @@ class ConfirmTransferExecutionServiceTest {
 
         mockIntent(intent);
         mockTransferInfo(transferInfo);
+        mockBusinessDate();
         mockSaveTransaction();
 
         service.execute(
@@ -1016,7 +1092,8 @@ class ConfirmTransferExecutionServiceTest {
                         sourceAccountId,
                         destinationAccountId,
                         new BigDecimal("100.00"),
-                        "VND"
+                        "VND",
+                        BUSINESS_DATE
                 );
 
         inOrder.verify(transactionEventPort)
@@ -1051,6 +1128,7 @@ class ConfirmTransferExecutionServiceTest {
 
         mockIntent(intent);
         mockTransferInfo(transferInfo);
+        mockBusinessDate();
         mockSaveTransaction();
 
         service.execute(
@@ -1060,13 +1138,12 @@ class ConfirmTransferExecutionServiceTest {
                 destinationAccountId
         );
 
-        verify(
-                accountTransferPort
-        ).getTransferInfo(
-                userId,
-                sourceAccountId,
-                destinationAccountId
-        );
+        verify(accountTransferPort)
+                .getTransferInfo(
+                        userId,
+                        sourceAccountId,
+                        destinationAccountId
+                );
     }
 
     @Test
@@ -1102,7 +1179,8 @@ class ConfirmTransferExecutionServiceTest {
         verifyNoInteractions(
                 accountTransferPort,
                 ledgerTransferPort,
-                transactionEventPort
+                transactionEventPort,
+                businessDayPort
         );
 
         verify(
@@ -1133,6 +1211,14 @@ class ConfirmTransferExecutionServiceTest {
                 )
         ).thenReturn(
                 transferInfo
+        );
+    }
+
+    private void mockBusinessDate() {
+        when(
+                businessDayPort.getCurrentBusinessDate()
+        ).thenReturn(
+                BUSINESS_DATE
         );
     }
 

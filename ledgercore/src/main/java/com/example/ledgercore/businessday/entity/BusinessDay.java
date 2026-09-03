@@ -1,6 +1,8 @@
 package com.example.ledgercore.businessday.entity;
 
 import com.example.ledgercore.businessday.enums.BusinessDayStatus;
+import com.example.ledgercore.common.exception.BusinessException;
+import com.example.ledgercore.common.exception.ErrorCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -43,4 +45,15 @@ public class BusinessDay {
 
     @Column(name = "closed_at")
     private Instant closedAt;
+
+    public void close(Instant closedAt) {
+        if (status != BusinessDayStatus.OPEN) {
+            throw new BusinessException(
+                    ErrorCode.INVALID_BUSINESS_DAY_STATUS
+            );
+        }
+
+        this.status = BusinessDayStatus.CLOSED;
+        this.closedAt = closedAt;
+    }
 }

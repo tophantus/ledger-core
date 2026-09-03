@@ -1,6 +1,7 @@
 package com.example.ledgercore.ledger.command.handler;
 
 import com.example.ledgercore.common.exception.BusinessException;
+import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.ledger.command.dto.RecordTransferCommand;
 import com.example.ledgercore.ledger.command.port.outbound.AccountLedgerMappingPort;
 import com.example.ledgercore.ledger.command.repository.JournalEntryCommandRepository;
@@ -16,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -49,6 +51,9 @@ class RecordTransferHandlerTest {
     private static final BigDecimal AMOUNT =
             new BigDecimal("1000000.0000");
 
+    private static final LocalDate BUSINESS_DATE =
+            LocalDate.of(2026, 9, 4);
+
     @BeforeEach
     void setUp() {
         handler = new RecordTransferHandler(
@@ -68,19 +73,22 @@ class RecordTransferHandlerTest {
 
     @Test
     void shouldRecordTransferSuccessfully() {
+        // Given
         RecordTransferCommand command =
                 new RecordTransferCommand(
                         transactionId,
                         sourceAccountId,
                         destinationAccountId,
                         AMOUNT,
-                        CURRENCY
+                        CURRENCY,
+                        BUSINESS_DATE
                 );
 
         JournalEntry savedJournalEntry =
                 JournalEntry.builder()
                         .id(journalEntryId)
                         .transactionId(transactionId)
+                        .businessDate(BUSINESS_DATE)
                         .build();
 
         when(accountLedgerMappingPort.getLedgerAccountId(
@@ -94,19 +102,27 @@ class RecordTransferHandlerTest {
         when(journalEntryCommandRepository.save(any(JournalEntry.class)))
                 .thenReturn(savedJournalEntry);
 
+        // When
         handler.execute(command);
 
+        // Then
         ArgumentCaptor<JournalEntry> journalCaptor =
                 ArgumentCaptor.forClass(JournalEntry.class);
 
         verify(journalEntryCommandRepository)
                 .save(journalCaptor.capture());
 
-        JournalEntry journalEntry = journalCaptor.getValue();
+        JournalEntry journalEntry =
+                journalCaptor.getValue();
 
         assertEquals(
                 transactionId,
                 journalEntry.getTransactionId()
+        );
+
+        assertEquals(
+                BUSINESS_DATE,
+                journalEntry.getBusinessDate()
         );
 
         ArgumentCaptor<JournalEntryLine> lineCaptor =
@@ -120,47 +136,59 @@ class RecordTransferHandlerTest {
 
         assertEquals(2, lines.size());
 
-        JournalEntryLine debitLine = lines.getFirst();
+        // Debit: Source account
+        JournalEntryLine debitLine =
+                lines.getFirst();
 
         assertEquals(
                 journalEntryId,
                 debitLine.getJournalEntryId()
         );
+
         assertEquals(
                 sourceLedgerAccountId,
                 debitLine.getLedgerAccountId()
         );
+
         assertEquals(
                 EntryType.DEBIT,
                 debitLine.getEntryType()
         );
+
         assertEquals(
                 AMOUNT,
                 debitLine.getAmount()
         );
+
         assertEquals(
                 CURRENCY,
                 debitLine.getCurrency()
         );
 
-        JournalEntryLine creditLine = lines.get(1);
+        // Credit: Destination account
+        JournalEntryLine creditLine =
+                lines.get(1);
 
         assertEquals(
                 journalEntryId,
                 creditLine.getJournalEntryId()
         );
+
         assertEquals(
                 destinationLedgerAccountId,
                 creditLine.getLedgerAccountId()
         );
+
         assertEquals(
                 EntryType.CREDIT,
                 creditLine.getEntryType()
         );
+
         assertEquals(
                 AMOUNT,
                 creditLine.getAmount()
         );
+
         assertEquals(
                 CURRENCY,
                 creditLine.getCurrency()
@@ -175,9 +203,16 @@ class RecordTransferHandlerTest {
 
     @Test
     void shouldRejectNullCommand() {
-        assertThrows(
+        // When
+        BusinessException exception = assertThrows(
                 BusinessException.class,
                 () -> handler.execute(null)
+        );
+
+        // Then
+        assertEquals(
+                ErrorCode.INVALID_REQUEST,
+                exception.getErrorCode()
         );
 
         verifyNoInteractions(
@@ -189,18 +224,27 @@ class RecordTransferHandlerTest {
 
     @Test
     void shouldRejectNullTransactionId() {
+        // Given
         RecordTransferCommand command =
                 new RecordTransferCommand(
                         null,
                         sourceAccountId,
                         destinationAccountId,
                         AMOUNT,
-                        CURRENCY
+                        CURRENCY,
+                        BUSINESS_DATE
                 );
 
-        assertThrows(
+        // When
+        BusinessException exception = assertThrows(
                 BusinessException.class,
                 () -> handler.execute(command)
+        );
+
+        // Then
+        assertEquals(
+                ErrorCode.INVALID_REQUEST,
+                exception.getErrorCode()
         );
 
         verifyNoInteractions(
@@ -212,18 +256,27 @@ class RecordTransferHandlerTest {
 
     @Test
     void shouldRejectNullSourceAccountId() {
+        // Given
         RecordTransferCommand command =
                 new RecordTransferCommand(
                         transactionId,
                         null,
                         destinationAccountId,
                         AMOUNT,
-                        CURRENCY
+                        CURRENCY,
+                        BUSINESS_DATE
                 );
 
-        assertThrows(
+        // When
+        BusinessException exception = assertThrows(
                 BusinessException.class,
                 () -> handler.execute(command)
+        );
+
+        // Then
+        assertEquals(
+                ErrorCode.INVALID_REQUEST,
+                exception.getErrorCode()
         );
 
         verifyNoInteractions(
@@ -235,18 +288,27 @@ class RecordTransferHandlerTest {
 
     @Test
     void shouldRejectNullDestinationAccountId() {
+        // Given
         RecordTransferCommand command =
                 new RecordTransferCommand(
                         transactionId,
                         sourceAccountId,
                         null,
                         AMOUNT,
-                        CURRENCY
+                        CURRENCY,
+                        BUSINESS_DATE
                 );
 
-        assertThrows(
+        // When
+        BusinessException exception = assertThrows(
                 BusinessException.class,
                 () -> handler.execute(command)
+        );
+
+        // Then
+        assertEquals(
+                ErrorCode.INVALID_REQUEST,
+                exception.getErrorCode()
         );
 
         verifyNoInteractions(
@@ -258,18 +320,27 @@ class RecordTransferHandlerTest {
 
     @Test
     void shouldRejectNullCurrency() {
+        // Given
         RecordTransferCommand command =
                 new RecordTransferCommand(
                         transactionId,
                         sourceAccountId,
                         destinationAccountId,
                         AMOUNT,
-                        null
+                        null,
+                        BUSINESS_DATE
                 );
 
-        assertThrows(
+        // When
+        BusinessException exception = assertThrows(
                 BusinessException.class,
                 () -> handler.execute(command)
+        );
+
+        // Then
+        assertEquals(
+                ErrorCode.INVALID_REQUEST,
+                exception.getErrorCode()
         );
 
         verifyNoInteractions(
@@ -281,18 +352,59 @@ class RecordTransferHandlerTest {
 
     @Test
     void shouldRejectBlankCurrency() {
+        // Given
         RecordTransferCommand command =
                 new RecordTransferCommand(
                         transactionId,
                         sourceAccountId,
                         destinationAccountId,
                         AMOUNT,
-                        "   "
+                        "   ",
+                        BUSINESS_DATE
                 );
 
-        assertThrows(
+        // When
+        BusinessException exception = assertThrows(
                 BusinessException.class,
                 () -> handler.execute(command)
+        );
+
+        // Then
+        assertEquals(
+                ErrorCode.INVALID_REQUEST,
+                exception.getErrorCode()
+        );
+
+        verifyNoInteractions(
+                journalEntryCommandRepository,
+                journalEntryLineCommandRepository,
+                accountLedgerMappingPort
+        );
+    }
+
+    @Test
+    void shouldRejectNullBusinessDate() {
+        // Given
+        RecordTransferCommand command =
+                new RecordTransferCommand(
+                        transactionId,
+                        sourceAccountId,
+                        destinationAccountId,
+                        AMOUNT,
+                        CURRENCY,
+                        null
+                );
+
+        // When
+        BusinessException exception = assertThrows(
+                BusinessException.class,
+                () -> handler.execute(command)
+        );
+
+        // Then
+        assertEquals(
+                ErrorCode.INVALID_REQUEST,
+                exception.getErrorCode()
         );
 
         verifyNoInteractions(
@@ -304,18 +416,27 @@ class RecordTransferHandlerTest {
 
     @Test
     void shouldRejectNullAmount() {
+        // Given
         RecordTransferCommand command =
                 new RecordTransferCommand(
                         transactionId,
                         sourceAccountId,
                         destinationAccountId,
                         null,
-                        CURRENCY
+                        CURRENCY,
+                        BUSINESS_DATE
                 );
 
-        assertThrows(
+        // When
+        BusinessException exception = assertThrows(
                 BusinessException.class,
                 () -> handler.execute(command)
+        );
+
+        // Then
+        assertEquals(
+                ErrorCode.INVALID_TRANSFER_AMOUNT,
+                exception.getErrorCode()
         );
 
         verifyNoInteractions(
@@ -327,18 +448,27 @@ class RecordTransferHandlerTest {
 
     @Test
     void shouldRejectZeroAmount() {
+        // Given
         RecordTransferCommand command =
                 new RecordTransferCommand(
                         transactionId,
                         sourceAccountId,
                         destinationAccountId,
                         BigDecimal.ZERO,
-                        CURRENCY
+                        CURRENCY,
+                        BUSINESS_DATE
                 );
 
-        assertThrows(
+        // When
+        BusinessException exception = assertThrows(
                 BusinessException.class,
                 () -> handler.execute(command)
+        );
+
+        // Then
+        assertEquals(
+                ErrorCode.INVALID_TRANSFER_AMOUNT,
+                exception.getErrorCode()
         );
 
         verifyNoInteractions(
@@ -350,18 +480,27 @@ class RecordTransferHandlerTest {
 
     @Test
     void shouldRejectNegativeAmount() {
+        // Given
         RecordTransferCommand command =
                 new RecordTransferCommand(
                         transactionId,
                         sourceAccountId,
                         destinationAccountId,
                         new BigDecimal("-1"),
-                        CURRENCY
+                        CURRENCY,
+                        BUSINESS_DATE
                 );
 
-        assertThrows(
+        // When
+        BusinessException exception = assertThrows(
                 BusinessException.class,
                 () -> handler.execute(command)
+        );
+
+        // Then
+        assertEquals(
+                ErrorCode.INVALID_TRANSFER_AMOUNT,
+                exception.getErrorCode()
         );
 
         verifyNoInteractions(
@@ -373,6 +512,7 @@ class RecordTransferHandlerTest {
 
     @Test
     void shouldRejectSameAccountTransfer() {
+        // Given
         UUID accountId = UUID.randomUUID();
 
         RecordTransferCommand command =
@@ -381,12 +521,20 @@ class RecordTransferHandlerTest {
                         accountId,
                         accountId,
                         AMOUNT,
-                        CURRENCY
+                        CURRENCY,
+                        BUSINESS_DATE
                 );
 
-        assertThrows(
+        // When
+        BusinessException exception = assertThrows(
                 BusinessException.class,
                 () -> handler.execute(command)
+        );
+
+        // Then
+        assertEquals(
+                ErrorCode.SAME_ACCOUNT_TRANSFER,
+                exception.getErrorCode()
         );
 
         verifyNoInteractions(
