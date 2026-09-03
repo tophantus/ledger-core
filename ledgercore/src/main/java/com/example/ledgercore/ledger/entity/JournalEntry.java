@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
@@ -32,6 +33,9 @@ public class JournalEntry {
             nullable = false
     )
     private UUID transactionId;
+
+    @Column(name = "business_date", nullable = false)
+    private LocalDate businessDate;
 
     @Column(
             nullable = false,

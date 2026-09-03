@@ -59,3 +59,5 @@ databaseChangeLog:
       file: db/changelog/029-create-transfer-intents.yaml
   - include:
       file: db/changelog/030-create-business-days.yaml
+  - include:
+      file: db/changelog/031-add-business-date-to-transaction-ledger.yaml
