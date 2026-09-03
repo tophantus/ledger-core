@@ -103,6 +103,12 @@ public enum ErrorCode {
             HttpStatus.CONFLICT
     ),
 
+    BUSINESS_DAY_NOT_FOUND(
+            "BUSINESS_DAY_001",
+            "Current business day not found",
+            HttpStatus.NOT_FOUND
+    ),
+
     // Ledger
 
     LEDGER_ACCOUNT_NOT_FOUND(
