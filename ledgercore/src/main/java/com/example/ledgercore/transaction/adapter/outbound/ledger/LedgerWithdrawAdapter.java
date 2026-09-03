@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Component
@@ -22,14 +23,16 @@ public class LedgerWithdrawAdapter
             UUID transactionId,
             UUID sourceAccountId,
             BigDecimal amount,
-            String currency
+            String currency,
+            LocalDate businessDate
     ) {
         recordWithdrawUseCase.execute(
                 new RecordWithdrawCommand(
                         transactionId,
                         sourceAccountId,
                         amount,
-                        currency
+                        currency,
+                        businessDate
                 )
         );
     }
