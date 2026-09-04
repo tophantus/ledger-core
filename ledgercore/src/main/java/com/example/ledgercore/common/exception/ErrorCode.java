@@ -337,6 +337,12 @@ public enum ErrorCode {
             HttpStatus.BAD_REQUEST
     ),
 
+    RECONCILIATION_PROCESSOR_NOT_FOUND(
+            "RECONCILIATION_001",
+            "Reconciliation processor not found",
+            HttpStatus.INTERNAL_SERVER_ERROR
+    ),
+
     INTERNAL_ERROR(
             "SYSTEM_001",
             "Internal server error",

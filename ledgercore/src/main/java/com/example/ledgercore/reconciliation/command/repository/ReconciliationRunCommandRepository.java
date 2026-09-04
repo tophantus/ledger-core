@@ -6,11 +6,33 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface ReconciliationRunCommandRepository
         extends JpaRepository<ReconciliationRun, UUID> {
+
+    @Query(
+            value = """
+                    SELECT *
+                    FROM reconciliation_runs
+                    WHERE
+                        status = 'PENDING'
+                        OR (
+                            status = 'RUNNING'
+                            AND heartbeat_at < :staleBefore
+                        )
+                    ORDER BY created_at ASC
+                    FOR UPDATE SKIP LOCKED
+                    LIMIT 1
+                    """,
+            nativeQuery = true
+    )
+    Optional<ReconciliationRun> findClaimableRun(
+            @Param("staleBefore") Instant staleBefore
+    );
 
     @Modifying
     @Query(

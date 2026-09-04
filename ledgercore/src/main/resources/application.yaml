@@ -102,6 +102,11 @@ business-day:
   closing-cron: "0 30 23 * * *"
   closing-start: "23:30"
 
+reconciliation:
+  scheduler:
+    enabled: false
+    fixed-delay: 1000
+
 app:
   webhook:
     allow-http: true
