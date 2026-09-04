@@ -4,7 +4,9 @@ public enum OutboxAggregateType {
 
     OTP("OTP"),
 
-    TRANSACTION("TRANSACTION");
+    TRANSACTION("TRANSACTION"),
+
+    BUSINESS_DAY("BUSINESS_DAY");
 
     private final String value;
 

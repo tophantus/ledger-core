@@ -1,10 +1,12 @@
 package com.example.ledgercore.businessday.command.handler;
 
 import com.example.ledgercore.businessday.command.port.inbound.CloseBusinessDayUseCase;
+import com.example.ledgercore.businessday.command.port.outbound.BusinessDayEventPort;
 import com.example.ledgercore.businessday.command.repository.BusinessDayCommandRepository;
 import com.example.ledgercore.businessday.config.BusinessDayProperties;
 import com.example.ledgercore.businessday.entity.BusinessDay;
 import com.example.ledgercore.businessday.enums.BusinessDayStatus;
+import com.example.ledgercore.businessday.event.BusinessDayClosedEvent;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,8 @@ public class CloseBusinessDayHandler
 
     private final BusinessDayProperties
             businessDayProperties;
+
+    private final BusinessDayEventPort businessDayEventPort;
 
     private final Clock clock;
 
@@ -72,6 +76,12 @@ public class CloseBusinessDayHandler
         openNextBusinessDay(
                 businessDate.plusDays(1),
                 now
+        );
+
+        businessDayEventPort.publishBusinessDayClosed(
+                new BusinessDayClosedEvent(
+                        businessDate
+                )
         );
     }
 
