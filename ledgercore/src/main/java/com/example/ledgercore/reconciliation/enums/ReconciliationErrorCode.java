@@ -3,16 +3,22 @@ package com.example.ledgercore.reconciliation.enums;
 public enum ReconciliationErrorCode {
 
     // Transaction ↔ Journal
+
     JOURNAL_NOT_FOUND,
+
+    TRANSACTION_AMOUNT_MISMATCH,
+
     BUSINESS_DATE_MISMATCH,
 
-    // Journal balance
+
+    // Journal ↔ Journal Lines
+
     JOURNAL_NOT_BALANCED,
 
-    // Account balance
-    BALANCE_MISMATCH,
-    OPENING_BALANCE_MISMATCH,
 
-    // Account ↔ Ledger
-    LEDGER_BALANCE_MISMATCH
+    // Account ↔ Daily Balance
+
+    BALANCE_MISMATCH,
+
+    OPENING_BALANCE_MISMATCH
 }

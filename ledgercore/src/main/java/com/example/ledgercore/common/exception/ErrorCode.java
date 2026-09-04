@@ -343,6 +343,12 @@ public enum ErrorCode {
             HttpStatus.INTERNAL_SERVER_ERROR
     ),
 
+    RECONCILIATION_RUN_NOT_FOUND(
+            "RECONCILIATION_002",
+            "Reconciliation run not found",
+            HttpStatus.NOT_FOUND
+    ),
+
     INTERNAL_ERROR(
             "SYSTEM_001",
             "Internal server error",
