@@ -68,6 +68,9 @@ public class ReconciliationRun {
     @Column(name = "started_at")
     private Instant startedAt;
 
+    @Column(name = "heartbeat_at")
+    private Instant heartbeatAt;
+
     @Column(name = "completed_at")
     private Instant completedAt;
 
@@ -106,9 +109,14 @@ public class ReconciliationRun {
         updatedAt = Instant.now();
     }
 
-    public void start(Instant startedAt) {
+    public void start(Instant now) {
         this.status = ReconciliationRunStatus.RUNNING;
-        this.startedAt = startedAt;
+        this.startedAt = now;
+        this.heartbeatAt = now;
+    }
+
+    public void heartbeat(Instant now) {
+        this.heartbeatAt = now;
     }
 
     public void updateProgress(

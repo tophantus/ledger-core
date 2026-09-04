@@ -1,0 +1,14 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 035-add-reconciliation-run-heartbeat
+      author: tu
+
+      changes:
+
+        - addColumn:
+            tableName: reconciliation_runs
+            columns:
+              - column:
+                  name: heartbeat_at
+                  type: TIMESTAMP WITH TIME ZONE

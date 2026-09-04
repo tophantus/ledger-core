@@ -67,3 +67,5 @@ databaseChangeLog:
       file: db/changelog/033-add-account-daily-balance.yaml
   - include:
       file: db/changelog/034-add-reconciliation.yaml
+  - include:
+      file: db/changelog/035-add-reconciliation-run-heartbeat.yaml
