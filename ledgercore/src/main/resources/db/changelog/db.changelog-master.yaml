@@ -63,3 +63,5 @@ databaseChangeLog:
       file: db/changelog/031-add-business-date-to-transaction-ledger.yaml
   - include:
       file: db/changelog/032-add-business-day-open-constraint.yaml
+  - include:
+      file: db/changelog/033-add-account-daily-balance.yaml
