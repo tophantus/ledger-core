@@ -114,7 +114,8 @@ public class ConfirmTransferExecutionService {
         accountTransferPort.transfer(
                 transferInfo.sourceAccountId(),
                 transferInfo.destinationAccountId(),
-                intent.getAmount()
+                intent.getAmount(),
+                businessDate
         );
 
         ledgerTransferPort.recordTransfer(

@@ -2,6 +2,7 @@ package com.example.ledgercore.account.command.handler;
 
 import com.example.ledgercore.account.command.dto.TransferAccountCommand;
 import com.example.ledgercore.account.command.repository.AccountCommandRepository;
+import com.example.ledgercore.account.command.service.AccountDailyBalanceService;
 import com.example.ledgercore.account.entity.Account;
 import com.example.ledgercore.account.enums.AccountStatus;
 import com.example.ledgercore.common.exception.BusinessException;
@@ -12,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -25,19 +27,25 @@ class TransferAccountHandlerTest {
     @Mock
     private AccountCommandRepository accountCommandRepository;
 
+    @Mock
+    private AccountDailyBalanceService accountDailyBalanceService;
+
     private TransferAccountHandler handler;
 
     @BeforeEach
     void setUp() {
         handler = new TransferAccountHandler(
-                accountCommandRepository
+                accountCommandRepository,
+                accountDailyBalanceService
         );
     }
 
     @Test
     void shouldTransferSuccessfully() {
+        // Given
         UUID sourceId = UUID.randomUUID();
         UUID destinationId = UUID.randomUUID();
+        LocalDate businessDate = LocalDate.of(2026, 9, 4);
 
         Account source = account(
                 sourceId,
@@ -57,17 +65,21 @@ class TransferAccountHandlerTest {
                 new TransferAccountCommand(
                         sourceId,
                         destinationId,
-                        new BigDecimal("300")
+                        new BigDecimal("300"),
+                        businessDate
                 );
 
-        when(accountCommandRepository.findById(sourceId))
-                .thenReturn(Optional.of(source));
+        mockAccounts(
+                sourceId,
+                source,
+                destinationId,
+                destination
+        );
 
-        when(accountCommandRepository.findById(destinationId))
-                .thenReturn(Optional.of(destination));
-
+        // When
         handler.execute(command);
 
+        // Then
         assertThat(source.getBalance())
                 .isEqualByComparingTo("700");
 
@@ -80,56 +92,92 @@ class TransferAccountHandlerTest {
         verify(accountCommandRepository)
                 .findById(destinationId);
 
-        verifyNoMoreInteractions(accountCommandRepository);
+        verify(accountDailyBalanceService)
+                .updateClosingBalance(
+                        sourceId,
+                        businessDate,
+                        new BigDecimal("700")
+                );
+
+        verify(accountDailyBalanceService)
+                .updateClosingBalance(
+                        destinationId,
+                        businessDate,
+                        new BigDecimal("800")
+                );
+
+        verifyNoMoreInteractions(
+                accountCommandRepository,
+                accountDailyBalanceService
+        );
     }
 
     @Test
     void shouldThrowWhenAmountIsNull() {
+        // Given
         TransferAccountCommand command =
                 new TransferAccountCommand(
                         UUID.randomUUID(),
                         UUID.randomUUID(),
-                        null
+                        null,
+                        LocalDate.of(2026, 9, 4)
                 );
 
+        // When & Then
         assertThatThrownBy(() -> handler.execute(command))
                 .isInstanceOf(BusinessException.class);
 
-        verifyNoInteractions(accountCommandRepository);
+        verifyNoInteractions(
+                accountCommandRepository,
+                accountDailyBalanceService
+        );
     }
 
     @Test
     void shouldThrowWhenAmountIsZero() {
+        // Given
         TransferAccountCommand command =
                 new TransferAccountCommand(
                         UUID.randomUUID(),
                         UUID.randomUUID(),
-                        BigDecimal.ZERO
+                        BigDecimal.ZERO,
+                        LocalDate.of(2026, 9, 4)
                 );
 
+        // When & Then
         assertThatThrownBy(() -> handler.execute(command))
                 .isInstanceOf(BusinessException.class);
 
-        verifyNoInteractions(accountCommandRepository);
+        verifyNoInteractions(
+                accountCommandRepository,
+                accountDailyBalanceService
+        );
     }
 
     @Test
     void shouldThrowWhenAmountIsNegative() {
+        // Given
         TransferAccountCommand command =
                 new TransferAccountCommand(
                         UUID.randomUUID(),
                         UUID.randomUUID(),
-                        new BigDecimal("-100")
+                        new BigDecimal("-100"),
+                        LocalDate.of(2026, 9, 4)
                 );
 
+        // When & Then
         assertThatThrownBy(() -> handler.execute(command))
                 .isInstanceOf(BusinessException.class);
 
-        verifyNoInteractions(accountCommandRepository);
+        verifyNoInteractions(
+                accountCommandRepository,
+                accountDailyBalanceService
+        );
     }
 
     @Test
     void shouldThrowWhenSourceAccountNotFound() {
+        // Given
         UUID sourceId = UUID.randomUUID();
         UUID destinationId = UUID.randomUUID();
 
@@ -137,12 +185,14 @@ class TransferAccountHandlerTest {
                 new TransferAccountCommand(
                         sourceId,
                         destinationId,
-                        new BigDecimal("100")
+                        new BigDecimal("100"),
+                        LocalDate.of(2026, 9, 4)
                 );
 
         when(accountCommandRepository.findById(sourceId))
                 .thenReturn(Optional.empty());
 
+        // When & Then
         assertThatThrownBy(() -> handler.execute(command))
                 .isInstanceOf(BusinessException.class);
 
@@ -151,10 +201,15 @@ class TransferAccountHandlerTest {
 
         verify(accountCommandRepository, never())
                 .findById(destinationId);
+
+        verifyNoInteractions(accountDailyBalanceService);
+
+        verifyNoMoreInteractions(accountCommandRepository);
     }
 
     @Test
     void shouldThrowWhenDestinationAccountNotFound() {
+        // Given
         UUID sourceId = UUID.randomUUID();
         UUID destinationId = UUID.randomUUID();
 
@@ -169,7 +224,8 @@ class TransferAccountHandlerTest {
                 new TransferAccountCommand(
                         sourceId,
                         destinationId,
-                        new BigDecimal("100")
+                        new BigDecimal("100"),
+                        LocalDate.of(2026, 9, 4)
                 );
 
         when(accountCommandRepository.findById(sourceId))
@@ -178,6 +234,7 @@ class TransferAccountHandlerTest {
         when(accountCommandRepository.findById(destinationId))
                 .thenReturn(Optional.empty());
 
+        // When & Then
         assertThatThrownBy(() -> handler.execute(command))
                 .isInstanceOf(BusinessException.class);
 
@@ -186,6 +243,10 @@ class TransferAccountHandlerTest {
 
         verify(accountCommandRepository)
                 .findById(destinationId);
+
+        verifyNoInteractions(accountDailyBalanceService);
+
+        verifyNoMoreInteractions(accountCommandRepository);
     }
 
     @Test
@@ -203,7 +264,8 @@ class TransferAccountHandlerTest {
                 new TransferAccountCommand(
                         accountId,
                         accountId,
-                        new BigDecimal("100")
+                        new BigDecimal("100"),
+                        LocalDate.of(2026, 9, 4)
                 );
 
         when(accountCommandRepository.findById(accountId))
@@ -214,10 +276,18 @@ class TransferAccountHandlerTest {
 
         assertThat(account.getBalance())
                 .isEqualByComparingTo("1000");
+
+        verify(accountCommandRepository, times(2))
+                .findById(accountId);
+
+        verifyNoInteractions(accountDailyBalanceService);
+
+        verifyNoMoreInteractions(accountCommandRepository);
     }
 
     @Test
     void shouldThrowWhenSourceAccountIsNotActive() {
+        // Given
         UUID sourceId = UUID.randomUUID();
         UUID destinationId = UUID.randomUUID();
 
@@ -235,15 +305,22 @@ class TransferAccountHandlerTest {
                 "VND"
         );
 
-        mockAccounts(sourceId, source, destinationId, destination);
+        mockAccounts(
+                sourceId,
+                source,
+                destinationId,
+                destination
+        );
 
         TransferAccountCommand command =
                 new TransferAccountCommand(
                         sourceId,
                         destinationId,
-                        new BigDecimal("100")
+                        new BigDecimal("100"),
+                        LocalDate.of(2026, 9, 4)
                 );
 
+        // When & Then
         assertThatThrownBy(() -> handler.execute(command))
                 .isInstanceOf(BusinessException.class);
 
@@ -252,10 +329,15 @@ class TransferAccountHandlerTest {
 
         assertThat(destination.getBalance())
                 .isEqualByComparingTo("500");
+
+        verifyNoInteractions(accountDailyBalanceService);
+
+        verifyNoMoreInteractions(accountCommandRepository);
     }
 
     @Test
     void shouldThrowWhenDestinationAccountIsNotActive() {
+        // Given
         UUID sourceId = UUID.randomUUID();
         UUID destinationId = UUID.randomUUID();
 
@@ -273,15 +355,22 @@ class TransferAccountHandlerTest {
                 "VND"
         );
 
-        mockAccounts(sourceId, source, destinationId, destination);
+        mockAccounts(
+                sourceId,
+                source,
+                destinationId,
+                destination
+        );
 
         TransferAccountCommand command =
                 new TransferAccountCommand(
                         sourceId,
                         destinationId,
-                        new BigDecimal("100")
+                        new BigDecimal("100"),
+                        LocalDate.of(2026, 9, 4)
                 );
 
+        // When & Then
         assertThatThrownBy(() -> handler.execute(command))
                 .isInstanceOf(BusinessException.class);
 
@@ -290,10 +379,15 @@ class TransferAccountHandlerTest {
 
         assertThat(destination.getBalance())
                 .isEqualByComparingTo("500");
+
+        verifyNoInteractions(accountDailyBalanceService);
+
+        verifyNoMoreInteractions(accountCommandRepository);
     }
 
     @Test
     void shouldThrowWhenCurrencyMismatch() {
+        // Given
         UUID sourceId = UUID.randomUUID();
         UUID destinationId = UUID.randomUUID();
 
@@ -311,15 +405,22 @@ class TransferAccountHandlerTest {
                 "USD"
         );
 
-        mockAccounts(sourceId, source, destinationId, destination);
+        mockAccounts(
+                sourceId,
+                source,
+                destinationId,
+                destination
+        );
 
         TransferAccountCommand command =
                 new TransferAccountCommand(
                         sourceId,
                         destinationId,
-                        new BigDecimal("100")
+                        new BigDecimal("100"),
+                        LocalDate.of(2026, 9, 4)
                 );
 
+        // When & Then
         assertThatThrownBy(() -> handler.execute(command))
                 .isInstanceOf(BusinessException.class);
 
@@ -328,10 +429,15 @@ class TransferAccountHandlerTest {
 
         assertThat(destination.getBalance())
                 .isEqualByComparingTo("500");
+
+        verifyNoInteractions(accountDailyBalanceService);
+
+        verifyNoMoreInteractions(accountCommandRepository);
     }
 
     @Test
     void shouldThrowWhenBalanceIsInsufficient() {
+        // Given
         UUID sourceId = UUID.randomUUID();
         UUID destinationId = UUID.randomUUID();
 
@@ -349,15 +455,22 @@ class TransferAccountHandlerTest {
                 "VND"
         );
 
-        mockAccounts(sourceId, source, destinationId, destination);
+        mockAccounts(
+                sourceId,
+                source,
+                destinationId,
+                destination
+        );
 
         TransferAccountCommand command =
                 new TransferAccountCommand(
                         sourceId,
                         destinationId,
-                        new BigDecimal("200")
+                        new BigDecimal("200"),
+                        LocalDate.of(2026, 9, 4)
                 );
 
+        // When & Then
         assertThatThrownBy(() -> handler.execute(command))
                 .isInstanceOf(BusinessException.class);
 
@@ -366,6 +479,10 @@ class TransferAccountHandlerTest {
 
         assertThat(destination.getBalance())
                 .isEqualByComparingTo("500");
+
+        verifyNoInteractions(accountDailyBalanceService);
+
+        verifyNoMoreInteractions(accountCommandRepository);
     }
 
     private void mockAccounts(

@@ -2,6 +2,7 @@ package com.example.ledgercore.account.command.handler;
 
 import com.example.ledgercore.account.command.dto.TransferAccountCommand;
 import com.example.ledgercore.account.command.port.inbound.TransferAccountBalanceUseCase;
+import com.example.ledgercore.account.command.service.AccountDailyBalanceService;
 import com.example.ledgercore.account.entity.Account;
 import com.example.ledgercore.account.enums.AccountStatus;
 import com.example.ledgercore.account.command.repository.AccountCommandRepository;
@@ -19,6 +20,8 @@ public class TransferAccountHandler
         implements TransferAccountBalanceUseCase {
 
     private final AccountCommandRepository accountCommandRepository;
+
+    private final AccountDailyBalanceService accountDailyBalanceService;
 
     @Override
     @Transactional
@@ -62,6 +65,18 @@ public class TransferAccountHandler
         destinationAccount.setBalance(
                 destinationAccount.getBalance()
                         .add(command.amount())
+        );
+
+        accountDailyBalanceService.updateClosingBalance(
+                sourceAccount.getId(),
+                command.businessDate(),
+                sourceAccount.getBalance()
+        );
+
+        accountDailyBalanceService.updateClosingBalance(
+                destinationAccount.getId(),
+                command.businessDate(),
+                destinationAccount.getBalance()
         );
     }
 

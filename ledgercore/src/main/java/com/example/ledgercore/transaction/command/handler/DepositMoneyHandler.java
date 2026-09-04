@@ -80,7 +80,8 @@ public class DepositMoneyHandler implements DepositMoneyUseCase {
 
         accountDepositPort.deposit(
                 command.destinationAccountId(),
-                command.amount()
+                command.amount(),
+                businessDate
         );
 
         ledgerDepositPort.recordDeposit(

@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Component
@@ -64,12 +65,14 @@ public class AccountWithdrawAdapter
     @Override
     public void withdraw(
             UUID sourceAccountId,
-            BigDecimal amount
+            BigDecimal amount,
+            LocalDate businessDate
     ) {
         withdrawAccountBalanceUseCase.execute(
                 new WithdrawAccountCommand(
                         sourceAccountId,
-                        amount
+                        amount,
+                        businessDate
                 )
         );
     }

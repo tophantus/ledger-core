@@ -83,7 +83,8 @@ public class WithdrawMoneyHandler
 
         accountWithdrawPort.withdraw(
                 command.sourceAccountId(),
-                command.amount()
+                command.amount(),
+                businessDate
         );
 
         ledgerWithdrawPort.recordWithdraw(
