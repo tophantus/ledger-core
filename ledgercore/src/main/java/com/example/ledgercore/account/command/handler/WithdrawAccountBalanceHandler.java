@@ -3,6 +3,7 @@ package com.example.ledgercore.account.command.handler;
 import com.example.ledgercore.account.command.dto.WithdrawAccountCommand;
 import com.example.ledgercore.account.command.port.inbound.WithdrawAccountBalanceUseCase;
 import com.example.ledgercore.account.command.repository.AccountCommandRepository;
+import com.example.ledgercore.account.command.service.AccountDailyBalanceService;
 import com.example.ledgercore.account.entity.Account;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
@@ -16,6 +17,8 @@ public class WithdrawAccountBalanceHandler
         implements WithdrawAccountBalanceUseCase {
 
     private final AccountCommandRepository accountCommandRepository;
+
+    private final AccountDailyBalanceService accountDailyBalanceService;
 
     @Override
     @Transactional
@@ -58,6 +61,12 @@ public class WithdrawAccountBalanceHandler
         account.setBalance(
                 account.getBalance()
                         .subtract(command.amount())
+        );
+
+        accountDailyBalanceService.updateClosingBalance(
+                account.getId(),
+                command.businessDate(),
+                account.getBalance()
         );
 
         accountCommandRepository.save(account);

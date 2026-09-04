@@ -3,6 +3,7 @@ package com.example.ledgercore.account.command.handler;
 import com.example.ledgercore.account.command.dto.DepositAccountCommand;
 import com.example.ledgercore.account.command.port.inbound.DepositAccountBalanceUseCase;
 import com.example.ledgercore.account.command.repository.AccountCommandRepository;
+import com.example.ledgercore.account.command.service.AccountDailyBalanceService;
 import com.example.ledgercore.account.entity.Account;
 import com.example.ledgercore.account.enums.AccountStatus;
 import com.example.ledgercore.common.exception.BusinessException;
@@ -17,6 +18,8 @@ public class DepositAccountBalanceHandler
         implements DepositAccountBalanceUseCase {
 
     private final AccountCommandRepository accountCommandRepository;
+
+    private final AccountDailyBalanceService accountDailyBalanceService;
 
     @Override
     @Transactional
@@ -37,6 +40,12 @@ public class DepositAccountBalanceHandler
         account.setBalance(
                 account.getBalance()
                         .add(command.amount())
+        );
+
+        accountDailyBalanceService.updateClosingBalance(
+                account.getId(),
+                command.businessDate(),
+                account.getBalance()
         );
     }
 

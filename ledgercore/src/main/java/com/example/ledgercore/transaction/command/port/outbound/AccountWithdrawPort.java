@@ -1,6 +1,7 @@
 package com.example.ledgercore.transaction.command.port.outbound;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.UUID;
 
 public interface AccountWithdrawPort {
@@ -17,7 +18,8 @@ public interface AccountWithdrawPort {
 
     void withdraw(
             UUID sourceAccountId,
-            BigDecimal amount
+            BigDecimal amount,
+            LocalDate businessDate
     );
 
     record WithdrawAccountInfo(

@@ -194,7 +194,8 @@ class ConfirmTransferExecutionServiceTest {
                 .transfer(
                         sourceAccountId,
                         destinationAccountId,
-                        new BigDecimal("100.00")
+                        new BigDecimal("100.00"),
+                        BUSINESS_DATE
                 );
 
         verify(ledgerTransferPort)
@@ -504,6 +505,7 @@ class ConfirmTransferExecutionServiceTest {
         ).transfer(
                 any(),
                 any(),
+                any(),
                 any()
         );
 
@@ -556,6 +558,7 @@ class ConfirmTransferExecutionServiceTest {
                 accountTransferPort,
                 never()
         ).transfer(
+                any(),
                 any(),
                 any(),
                 any()
@@ -737,7 +740,8 @@ class ConfirmTransferExecutionServiceTest {
                 .transfer(
                         sourceAccountId,
                         destinationAccountId,
-                        new BigDecimal("100.00")
+                        new BigDecimal("100.00"),
+                        BUSINESS_DATE
                 );
 
         inOrder.verify(ledgerTransferPort)
@@ -919,6 +923,7 @@ class ConfirmTransferExecutionServiceTest {
         ).transfer(
                 any(),
                 any(),
+                any(),
                 any()
         );
 
@@ -954,7 +959,8 @@ class ConfirmTransferExecutionServiceTest {
                 .transfer(
                         sourceAccountId,
                         destinationAccountId,
-                        new BigDecimal("100.00")
+                        new BigDecimal("100.00"),
+                        BUSINESS_DATE
                 );
 
         assertThrows(
@@ -1032,7 +1038,8 @@ class ConfirmTransferExecutionServiceTest {
                 .transfer(
                         sourceAccountId,
                         destinationAccountId,
-                        new BigDecimal("100.00")
+                        new BigDecimal("100.00"),
+                        BUSINESS_DATE
                 );
 
         verify(
@@ -1083,7 +1090,8 @@ class ConfirmTransferExecutionServiceTest {
                 .transfer(
                         sourceAccountId,
                         destinationAccountId,
-                        new BigDecimal("100.00")
+                        new BigDecimal("100.00"),
+                        BUSINESS_DATE
                 );
 
         inOrder.verify(ledgerTransferPort)

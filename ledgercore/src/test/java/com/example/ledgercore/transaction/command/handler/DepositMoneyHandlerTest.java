@@ -168,7 +168,8 @@ class DepositMoneyHandlerTest {
         verify(accountDepositPort)
                 .deposit(
                         destinationAccountId,
-                        new BigDecimal("100.00")
+                        new BigDecimal("100.00"),
+                        BUSINESS_DATE
                 );
 
         verify(ledgerDepositPort)
@@ -324,7 +325,7 @@ class DepositMoneyHandlerTest {
                 .getDepositInfo(any());
 
         verify(accountDepositPort, never())
-                .deposit(any(), any());
+                .deposit(any(), any(), any());
 
         verify(ledgerDepositPort, never())
                 .recordDeposit(
@@ -386,7 +387,7 @@ class DepositMoneyHandlerTest {
                 .getDepositInfo(any());
 
         verify(accountDepositPort, never())
-                .deposit(any(), any());
+                .deposit(any(), any(), any());
 
         verify(ledgerDepositPort, never())
                 .recordDeposit(
@@ -516,7 +517,7 @@ class DepositMoneyHandlerTest {
                 .save(any());
 
         verify(accountDepositPort, never())
-                .deposit(any(), any());
+                .deposit(any(), any(), any());
 
         verifyNoInteractions(
                 ledgerDepositPort,

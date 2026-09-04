@@ -1,6 +1,7 @@
 package com.example.ledgercore.transaction.command.port.outbound;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.UUID;
 
 public interface AccountTransferPort {
@@ -23,7 +24,8 @@ public interface AccountTransferPort {
     void transfer(
             UUID sourceAccountId,
             UUID destinationAccountId,
-            BigDecimal amount
+            BigDecimal amount,
+            LocalDate businessDate
     );
 
     record TransferAccountInfo(

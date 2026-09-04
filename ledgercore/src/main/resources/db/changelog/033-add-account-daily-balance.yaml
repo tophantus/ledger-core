@@ -1,0 +1,45 @@
+databaseChangeLog:
+  - changeSet:
+      id: 033-add-account-daily-balance
+      author: tu
+      changes:
+        - createTable:
+            tableName: account_daily_balances
+            columns:
+              - column:
+                  name: account_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: business_date
+                  type: DATE
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: closing_balance
+                  type: DECIMAL(19,4)
+                  constraints:
+                    nullable: false
+
+        - addPrimaryKey:
+            tableName: account_daily_balances
+            columnNames: account_id, business_date
+            constraintName: pk_account_daily_balances
+
+        - addForeignKeyConstraint:
+            baseTableName: account_daily_balances
+            baseColumnNames: account_id
+            referencedTableName: accounts
+            referencedColumnNames: id
+            constraintName: fk_account_daily_balance_account
+            onDelete: CASCADE
+
+        - createIndex:
+            tableName: account_daily_balances
+            indexName: idx_account_daily_balances_business_date
+            columns:
+              - column:
+                  name: business_date

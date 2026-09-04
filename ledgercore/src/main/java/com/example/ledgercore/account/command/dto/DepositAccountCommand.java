@@ -4,6 +4,7 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.UUID;
 
 public record DepositAccountCommand(
@@ -13,7 +14,9 @@ public record DepositAccountCommand(
 
         @NotNull
         @DecimalMin("0.0001")
-        BigDecimal amount
+        BigDecimal amount,
+
+        LocalDate businessDate
 
 ) {
 }

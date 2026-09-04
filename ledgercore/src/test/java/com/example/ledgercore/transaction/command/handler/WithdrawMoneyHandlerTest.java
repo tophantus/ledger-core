@@ -146,7 +146,8 @@ class WithdrawMoneyHandlerTest {
         verify(accountWithdrawPort)
                 .withdraw(
                         accountId,
-                        new BigDecimal("100")
+                        new BigDecimal("100"),
+                        BUSINESS_DATE
                 );
 
         verify(ledgerWithdrawPort)
@@ -308,7 +309,7 @@ class WithdrawMoneyHandlerTest {
                 .getWithdrawInfo(any(), any());
 
         verify(accountWithdrawPort, never())
-                .withdraw(any(), any());
+                .withdraw(any(), any(), any());
 
         verify(ledgerWithdrawPort, never())
                 .recordWithdraw(
@@ -476,7 +477,7 @@ class WithdrawMoneyHandlerTest {
                 .save(any());
 
         verify(accountWithdrawPort, never())
-                .withdraw(any(), any());
+                .withdraw(any(), any(), any());
 
         verifyNoInteractions(
                 ledgerWithdrawPort,
@@ -520,7 +521,7 @@ class WithdrawMoneyHandlerTest {
                 .save(any());
 
         verify(accountWithdrawPort, never())
-                .withdraw(any(), any());
+                .withdraw(any(), any(), any());
 
         verifyNoInteractions(
                 ledgerWithdrawPort,

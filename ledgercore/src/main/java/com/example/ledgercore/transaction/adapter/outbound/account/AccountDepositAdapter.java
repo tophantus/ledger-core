@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Component
@@ -39,12 +40,14 @@ public class AccountDepositAdapter implements AccountDepositPort {
     @Override
     public void deposit(
             UUID destinationAccountId,
-            BigDecimal amount
+            BigDecimal amount,
+            LocalDate businessDate
     ) {
         depositAccountBalanceUseCase.execute(
                 new DepositAccountCommand(
                         destinationAccountId,
-                        amount
+                        amount,
+                        businessDate
                 )
         );
     }
