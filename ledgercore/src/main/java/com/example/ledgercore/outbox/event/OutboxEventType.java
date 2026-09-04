@@ -1,5 +1,7 @@
 package com.example.ledgercore.outbox.event;
 
+import com.example.ledgercore.businessday.config.BusinessDayRabbitConfig;
+import com.example.ledgercore.businessday.event.BusinessDayClosedEvent;
 import com.example.ledgercore.otp.config.OtpRabbitConfig;
 import com.example.ledgercore.otp.event.OtpNotificationEvent;
 import com.example.ledgercore.transaction.config.TransactionRabbitConfig;
@@ -49,7 +51,19 @@ public enum OutboxEventType {
             WithdrawCompletedEvent.class,
             TransactionRabbitConfig.TRANSACTION_EXCHANGE,
             TransactionRabbitConfig.WITHDRAW_COMPLETED_ROUTING_KEY
-    );
+    ),
+
+    // =========================
+    // BUSINESS DAY
+    // =========================
+
+    BUSINESS_DAY_CLOSED(
+            "BUSINESS_DAY_CLOSED",
+            OutboxAggregateType.BUSINESS_DAY,
+            BusinessDayClosedEvent.class,
+            BusinessDayRabbitConfig.BUSINESS_DAY_EXCHANGE,
+            BusinessDayRabbitConfig.BUSINESS_DAY_CLOSED_ROUTING_KEY
+            );
 
     private final String value;
     private final OutboxAggregateType aggregateType;
