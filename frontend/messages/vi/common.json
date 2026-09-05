@@ -1,0 +1,34 @@
+{
+  "appName": "LedgerCore",
+  "welcome": "Chào mừng đến với LedgerCore",
+
+  "actions": {
+    "save": "Lưu",
+    "cancel": "Hủy",
+    "confirm": "Xác nhận",
+    "delete": "Xóa",
+    "edit": "Chỉnh sửa",
+    "search": "Tìm kiếm",
+    "filter": "Lọc",
+    "refresh": "Làm mới",
+    "back": "Quay lại",
+    "next": "Tiếp theo",
+    "previous": "Trước"
+  },
+
+  "status": {
+    "loading": "Đang tải...",
+    "success": "Thành công",
+    "error": "Đã xảy ra lỗi"
+  },
+
+  "navigation": {
+    "home": "Trang chủ",
+    "accounts": "Tài khoản",
+    "transfer": "Chuyển tiền",
+    "deposit": "Nạp tiền",
+    "withdraw": "Rút tiền",
+    "transactions": "Giao dịch",
+    "settings": "Cài đặt"
+  }
+}
