@@ -1,0 +1,163 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 034-add-reconciliation
+      author: tu
+
+      changes:
+
+        - createTable:
+            tableName: reconciliation_runs
+            columns:
+
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: business_date
+                  type: DATE
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: type
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: status
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: last_processed_id
+                  type: UUID
+
+              - column:
+                  name: processed_count
+                  type: BIGINT
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: started_at
+                  type: TIMESTAMP WITH TIME ZONE
+
+              - column:
+                  name: completed_at
+                  type: TIMESTAMP WITH TIME ZONE
+
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+        - addUniqueConstraint:
+            tableName: reconciliation_runs
+            columnNames: business_date, type
+            constraintName: uk_reconciliation_runs_business_date_type
+
+        - createIndex:
+            tableName: reconciliation_runs
+            indexName: idx_reconciliation_runs_status
+            columns:
+              - column:
+                  name: status
+
+        - createIndex:
+            tableName: reconciliation_runs
+            indexName: idx_reconciliation_runs_business_date
+            columns:
+              - column:
+                  name: business_date
+
+        - createTable:
+            tableName: reconciliation_exceptions
+            columns:
+
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: reconciliation_run_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: target_type
+                  type: VARCHAR(30)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: target_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: error_code
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: expected_value
+                  type: TEXT
+
+              - column:
+                  name: actual_value
+                  type: TEXT
+
+              - column:
+                  name: message
+                  type: TEXT
+
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: reconciliation_exceptions
+            baseColumnNames: reconciliation_run_id
+            referencedTableName: reconciliation_runs
+            referencedColumnNames: id
+            constraintName: fk_reconciliation_exceptions_run
+            onDelete: CASCADE
+
+        - createIndex:
+            tableName: reconciliation_exceptions
+            indexName: idx_reconciliation_exceptions_run
+            columns:
+              - column:
+                  name: reconciliation_run_id
+
+        - createIndex:
+            tableName: reconciliation_exceptions
+            indexName: idx_reconciliation_exceptions_target
+            columns:
+              - column:
+                  name: target_type
+              - column:
+                  name: target_id
