@@ -1,16 +1,19 @@
-import type { Locale } from "./config";
+import type {Locale} from "./config";
 
 export async function getMessages(locale: Locale) {
     const [
         common,
-        home
+        dashboard,
+        auth,
     ] = await Promise.all([
         import(`../messages/${locale}/common.json`),
-        import(`../messages/${locale}/home.json`),
+        import(`../messages/${locale}/dashboard.json`),
+        import(`../messages/${locale}/auth.json`),
     ]);
 
     return {
         common: common.default,
-        home: home.default
+        dashboard: dashboard.default,
+        auth: auth.default,
     };
 }
