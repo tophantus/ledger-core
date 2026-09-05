@@ -85,6 +85,15 @@ ledger:
       VND: CASH_VND
       USD: CASH_USD
 
+auth:
+  refresh-token:
+    cookie:
+      name: refresh_token
+      path: /api/v1/auth
+      max-age: 30d
+      http-only: true
+      secure: false
+      same-site: Lax
 
 security:
   encryption:

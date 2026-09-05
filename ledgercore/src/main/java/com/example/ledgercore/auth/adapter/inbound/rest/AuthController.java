@@ -3,9 +3,13 @@ package com.example.ledgercore.auth.adapter.inbound.rest;
 import com.example.ledgercore.auth.command.dto.*;
 import com.example.ledgercore.auth.command.port.inbound.*;
 import com.example.ledgercore.auth.security.AuthPrincipal;
+import com.example.ledgercore.common.exception.BusinessException;
+import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.common.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +32,7 @@ public class AuthController {
     private final LoginUseCase loginUseCase;
     private final RefreshTokenUseCase refreshTokenUseCase;
     private final LogoutUseCase logoutUseCase;
+    private final RefreshTokenCookieService refreshTokenCookieService;
 
     @PostMapping("/sign-up")
     @Operation(
@@ -54,10 +59,16 @@ public class AuthController {
             description = "Verify the email verification OTP and activate the user account"
     )
     public ResponseEntity<ApiResponse<TokenResponse>> verifyOtp(
-            @RequestBody VerifyEmailCommand command
+            @RequestBody VerifyEmailCommand command,
+            HttpServletResponse httpResponse
     ) {
         TokenResponse response =
                 verifyEmailUseCase.execute(command);
+
+        refreshTokenCookieService.set(
+                httpResponse,
+                response.refreshToken()
+        );
 
         return ResponseEntity.ok(
                 ApiResponse.success(
@@ -113,10 +124,18 @@ public class AuthController {
             description = "Authenticate user and issue access and refresh tokens"
     )
     public ResponseEntity<ApiResponse<LoginResponse>> login(
-            @RequestBody LoginCommand command
+            @RequestBody LoginCommand command,
+            HttpServletResponse httpResponse
     ) {
         LoginResponse response =
                 loginUseCase.execute(command);
+
+        if (response.token() != null) {
+            refreshTokenCookieService.set(
+                    httpResponse,
+                    response.token().refreshToken()
+            );
+        }
 
         return ResponseEntity.ok(
                 ApiResponse.success(
@@ -132,10 +151,25 @@ public class AuthController {
             description = "Rotate refresh token and issue a new access token"
     )
     public ResponseEntity<ApiResponse<TokenResponse>> refresh(
-            @RequestBody RefreshTokenCommand command
+            @RequestBody RefreshTokenCommand command,
+            HttpServletRequest httpRequest,
+            HttpServletResponse httpResponse
     ) {
+        String refreshToken =
+                resolveRefreshToken(
+                        command.refreshToken(),
+                        httpRequest
+                );
+
         TokenResponse response =
-                refreshTokenUseCase.execute(command);
+                refreshTokenUseCase.execute(
+                        new RefreshTokenCommand(refreshToken)
+                );
+
+        refreshTokenCookieService.set(
+                httpResponse,
+                response.refreshToken()
+        );
 
         return ResponseEntity.ok(
                 ApiResponse.success(
@@ -151,10 +185,21 @@ public class AuthController {
             description = "Revoke the current refresh token"
     )
     public ResponseEntity<ApiResponse<LogoutResponse>> logout(
-            @RequestBody LogoutCommand command
+            @RequestBody LogoutCommand command,
+            HttpServletRequest httpRequest,
+            HttpServletResponse httpResponse
     ) {
+        String refreshToken =
+                resolveRefreshToken(
+                        command.refreshToken(),
+                        httpRequest
+                );
+
         LogoutResponse response =
-                logoutUseCase.execute(command);
+                logoutUseCase.execute(
+                        new LogoutCommand(refreshToken)
+                );
+        refreshTokenCookieService.delete(httpResponse);
 
         return ResponseEntity.ok(
                 ApiResponse.success(
@@ -162,5 +207,23 @@ public class AuthController {
                         "Logout successfully"
                 )
         );
+    }
+
+    private String resolveRefreshToken(
+            String commandRefreshToken,
+            HttpServletRequest request
+    ) {
+        return refreshTokenCookieService
+                .get(request)
+                .orElseGet(() -> {
+                    if (commandRefreshToken != null
+                            && !commandRefreshToken.isBlank()) {
+                        return commandRefreshToken;
+                    }
+
+                    throw new BusinessException(
+                            ErrorCode.INVALID_REFRESH_TOKEN
+                    );
+                });
     }
 }
