@@ -1,0 +1,34 @@
+{
+  "appName": "LedgerCore",
+  "welcome": "Welcome to LedgerCore",
+
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "edit": "Edit",
+    "search": "Search",
+    "filter": "Filter",
+    "refresh": "Refresh",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous"
+  },
+
+  "status": {
+    "loading": "Loading...",
+    "success": "Success",
+    "error": "Something went wrong"
+  },
+
+  "navigation": {
+    "home": "Home",
+    "accounts": "Accounts",
+    "transfer": "Transfer",
+    "deposit": "Deposit",
+    "withdraw": "Withdraw",
+    "transactions": "Transactions",
+    "settings": "Settings"
+  }
+}
