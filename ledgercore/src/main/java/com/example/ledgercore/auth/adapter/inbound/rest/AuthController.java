@@ -151,13 +151,15 @@ public class AuthController {
             description = "Rotate refresh token and issue a new access token"
     )
     public ResponseEntity<ApiResponse<TokenResponse>> refresh(
-            @RequestBody RefreshTokenCommand command,
+            @RequestBody(required = false) RefreshTokenCommand command,
             HttpServletRequest httpRequest,
             HttpServletResponse httpResponse
     ) {
         String refreshToken =
                 resolveRefreshToken(
-                        command.refreshToken(),
+                        command != null
+                                ? command.refreshToken()
+                                : null,
                         httpRequest
                 );
 
@@ -185,13 +187,15 @@ public class AuthController {
             description = "Revoke the current refresh token"
     )
     public ResponseEntity<ApiResponse<LogoutResponse>> logout(
-            @RequestBody LogoutCommand command,
+            @RequestBody(required = false) LogoutCommand command,
             HttpServletRequest httpRequest,
             HttpServletResponse httpResponse
     ) {
         String refreshToken =
                 resolveRefreshToken(
-                        command.refreshToken(),
+                        command != null
+                                ? command.refreshToken()
+                                : null,
                         httpRequest
                 );
 
