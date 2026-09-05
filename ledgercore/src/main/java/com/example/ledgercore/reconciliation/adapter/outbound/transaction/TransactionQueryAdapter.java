@@ -1,7 +1,7 @@
 package com.example.ledgercore.reconciliation.adapter.outbound.transaction;
 
-import com.example.ledgercore.reconciliation.command.port.outbound.TransactionQueryPort;
-import com.example.ledgercore.reconciliation.command.port.outbound.TransactionReconciliationData;
+import com.example.ledgercore.reconciliation.command.port.outbound.transaction.TransactionQueryPort;
+import com.example.ledgercore.reconciliation.command.port.outbound.transaction.TransactionReconciliationData;
 import com.example.ledgercore.transaction.query.port.inbound.GetTransactionsForReconciliationUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

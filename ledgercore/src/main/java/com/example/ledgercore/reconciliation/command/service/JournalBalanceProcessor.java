@@ -7,11 +7,13 @@ import com.example.ledgercore.reconciliation.command.port.inbound.ProcessJournal
 import com.example.ledgercore.reconciliation.entity.ReconciliationRun;
 import com.example.ledgercore.reconciliation.enums.ReconciliationType;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class JournalBalanceProcessor
@@ -36,33 +38,55 @@ public class JournalBalanceProcessor
     @Override
     public void process(ReconciliationRun run) {
 
-        UUID lastProcessedId =
-                run.getLastProcessedId();
+        UUID runId = run.getId();
+        UUID lastProcessedId = run.getLastProcessedId();
+        long processedCount = run.getProcessedCount();
 
-        long processedCount =
-                run.getProcessedCount();
+        log.info(
+                "Starting journal balance reconciliation: runId={}, businessDate={}, lastProcessedId={}, processedCount={}",
+                runId,
+                run.getBusinessDate(),
+                lastProcessedId,
+                processedCount
+        );
 
         while (true) {
 
             BatchResult result =
                     processBatchUseCase.execute(
-                            run.getId(),
+                            runId,
                             run.getBusinessDate(),
                             lastProcessedId,
                             processedCount,
                             BATCH_SIZE
                     );
 
+            log.info(
+                    "Processed journal balance reconciliation batch: runId={}, businessDate={}, lastProcessedId={}, processedCount={}, completed={}",
+                    runId,
+                    run.getBusinessDate(),
+                    result.lastProcessedId(),
+                    result.processedCount(),
+                    result.completed()
+            );
+
             heartbeatUseCase.execute(
-                    run.getId(),
+                    runId,
                     Instant.now()
             );
 
             if (result.completed()) {
 
                 completeRunUseCase.execute(
-                        run.getId(),
+                        runId,
                         Instant.now()
+                );
+
+                log.info(
+                        "Completed journal balance reconciliation: runId={}, businessDate={}, processedCount={}",
+                        runId,
+                        run.getBusinessDate(),
+                        result.processedCount()
                 );
 
                 return;

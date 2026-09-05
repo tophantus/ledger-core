@@ -4,6 +4,8 @@ import com.example.ledgercore.ledger.query.dto.JournalBalanceReconciliationData;
 import com.example.ledgercore.ledger.query.port.inbound.GetJournalsForBalanceReconciliationUseCase;
 import com.example.ledgercore.ledger.query.repository.JournalEntryQueryRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,11 +28,15 @@ public class GetJournalsForBalanceReconciliationHandler
             int limit
     ) {
 
+        Pageable pageable =
+                PageRequest.of(0, limit);
+
+
         return repository
                 .findForBalanceReconciliation(
                         businessDate,
                         lastProcessedId,
-                        limit
+                        pageable
                 )
                 .stream()
                 .map(data -> new JournalBalanceReconciliationData(

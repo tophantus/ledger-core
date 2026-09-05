@@ -1,13 +1,12 @@
 package com.example.ledgercore.reconciliation.command.handler;
 
+import com.example.ledgercore.reconciliation.command.port.inbound.GetReconciliationRunUseCase;
 import com.example.ledgercore.reconciliation.command.port.inbound.ProcessTransactionJournalBatchUseCase;
-import com.example.ledgercore.reconciliation.command.port.outbound.JournalQueryPort;
-import com.example.ledgercore.reconciliation.command.port.outbound.JournalReconciliationData;
-import com.example.ledgercore.reconciliation.command.port.outbound.TransactionQueryPort;
-import com.example.ledgercore.reconciliation.command.port.outbound.TransactionReconciliationData;
-import com.example.ledgercore.reconciliation.command.repository.ReconciliationExceptionCommandRepository;
-import com.example.ledgercore.reconciliation.command.repository.ReconciliationRunCommandRepository;
-import com.example.ledgercore.reconciliation.entity.ReconciliationException;
+import com.example.ledgercore.reconciliation.command.port.inbound.RecordReconciliationExceptionUseCase;
+import com.example.ledgercore.reconciliation.command.port.outbound.ledger.JournalQueryPort;
+import com.example.ledgercore.reconciliation.command.port.outbound.ledger.JournalReconciliationData;
+import com.example.ledgercore.reconciliation.command.port.outbound.transaction.TransactionQueryPort;
+import com.example.ledgercore.reconciliation.command.port.outbound.transaction.TransactionReconciliationData;
 import com.example.ledgercore.reconciliation.entity.ReconciliationRun;
 import com.example.ledgercore.reconciliation.enums.ReconciliationErrorCode;
 import com.example.ledgercore.reconciliation.enums.ReconciliationTargetType;
@@ -27,14 +26,13 @@ public class ProcessTransactionJournalBatchHandler
         implements ProcessTransactionJournalBatchUseCase {
 
     private final TransactionQueryPort transactionQueryPort;
-
     private final JournalQueryPort journalQueryPort;
 
-    private final ReconciliationRunCommandRepository
-            runRepository;
+    private final GetReconciliationRunUseCase
+            getReconciliationRunUseCase;
 
-    private final ReconciliationExceptionCommandRepository
-            exceptionRepository;
+    private final RecordReconciliationExceptionUseCase
+            recordExceptionUseCase;
 
     @Override
     @Transactional
@@ -61,6 +59,9 @@ public class ProcessTransactionJournalBatchHandler
             );
         }
 
+        ReconciliationRun run =
+                getReconciliationRunUseCase.execute(runId);
+
         List<UUID> transactionIds =
                 transactions.stream()
                         .map(TransactionReconciliationData::id)
@@ -76,22 +77,14 @@ public class ProcessTransactionJournalBatchHandler
                 new HashMap<>();
 
         for (JournalReconciliationData journal : journals) {
-
             journalsByTransactionId.put(
                     journal.transactionId(),
                     journal
             );
         }
 
-        ReconciliationRun run =
-                runRepository.findById(runId)
-                        .orElseThrow();
-
-        UUID newLastProcessedId =
-                lastProcessedId;
-
-        long newProcessedCount =
-                processedCount;
+        UUID newLastProcessedId = lastProcessedId;
+        long newProcessedCount = processedCount;
 
         for (TransactionReconciliationData transaction :
                 transactions) {
@@ -103,27 +96,14 @@ public class ProcessTransactionJournalBatchHandler
 
             if (journal == null) {
 
-                exceptionRepository.save(
-                        ReconciliationException.builder()
-                                .reconciliationRun(run)
-                                .targetType(
-                                        ReconciliationTargetType.TRANSACTION
-                                )
-                                .targetId(transaction.id())
-                                .errorCode(
-                                        ReconciliationErrorCode
-                                                .JOURNAL_NOT_FOUND
-                                )
-                                .expectedValue(
-                                        "JournalEntry exists"
-                                )
-                                .actualValue(
-                                        "null"
-                                )
-                                .message(
-                                        "Transaction has no corresponding journal entry"
-                                )
-                                .build()
+                recordExceptionUseCase.execute(
+                        run.getId(),
+                        ReconciliationTargetType.TRANSACTION,
+                        transaction.id(),
+                        ReconciliationErrorCode.JOURNAL_NOT_FOUND,
+                        "JournalEntry exists",
+                        "null",
+                        "Transaction has no corresponding journal entry"
                 );
 
             } else {
@@ -141,9 +121,7 @@ public class ProcessTransactionJournalBatchHandler
                 );
             }
 
-            newLastProcessedId =
-                    transaction.id();
-
+            newLastProcessedId = transaction.id();
             newProcessedCount++;
         }
 
@@ -152,10 +130,13 @@ public class ProcessTransactionJournalBatchHandler
                 newProcessedCount
         );
 
+        boolean completed =
+                transactions.size() < batchSize;
+
         return new BatchResult(
                 newLastProcessedId,
                 newProcessedCount,
-                false
+                completed
         );
     }
 
@@ -165,34 +146,20 @@ public class ProcessTransactionJournalBatchHandler
             JournalReconciliationData journal
     ) {
 
-        if (!transaction.businessDate()
+        if (transaction.businessDate()
                 .equals(journal.businessDate())) {
-
-            exceptionRepository.save(
-                    ReconciliationException.builder()
-                            .reconciliationRun(run)
-                            .targetType(
-                                    ReconciliationTargetType.TRANSACTION
-                            )
-                            .targetId(transaction.id())
-                            .errorCode(
-                                    ReconciliationErrorCode
-                                            .BUSINESS_DATE_MISMATCH
-                            )
-                            .expectedValue(
-                                    transaction.businessDate()
-                                            .toString()
-                            )
-                            .actualValue(
-                                    journal.businessDate()
-                                            .toString()
-                            )
-                            .message(
-                                    "Transaction and journal business dates do not match"
-                            )
-                            .build()
-            );
+            return;
         }
+
+        recordExceptionUseCase.execute(
+                run.getId(),
+                ReconciliationTargetType.TRANSACTION,
+                transaction.id(),
+                ReconciliationErrorCode.BUSINESS_DATE_MISMATCH,
+                transaction.businessDate().toString(),
+                journal.businessDate().toString(),
+                "Transaction and journal business dates do not match"
+        );
     }
 
     private void validateAmount(
@@ -209,34 +176,20 @@ public class ProcessTransactionJournalBatchHandler
                 transaction.amount()
                         .compareTo(journal.creditTotal()) != 0;
 
-        if (debitMismatch || creditMismatch) {
-
-            exceptionRepository.save(
-                    ReconciliationException.builder()
-                            .reconciliationRun(run)
-                            .targetType(
-                                    ReconciliationTargetType.TRANSACTION
-                            )
-                            .targetId(transaction.id())
-                            .errorCode(
-                                    ReconciliationErrorCode
-                                            .TRANSACTION_AMOUNT_MISMATCH
-                            )
-                            .expectedValue(
-                                    "amount="
-                                            + transaction.amount()
-                            )
-                            .actualValue(
-                                    "debit="
-                                            + journal.debitTotal()
-                                            + ", credit="
-                                            + journal.creditTotal()
-                            )
-                            .message(
-                                    "Transaction amount does not match journal debit and credit totals"
-                            )
-                            .build()
-            );
+        if (!debitMismatch && !creditMismatch) {
+            return;
         }
+
+        recordExceptionUseCase.execute(
+                run.getId(),
+                ReconciliationTargetType.TRANSACTION,
+                transaction.id(),
+                ReconciliationErrorCode.TRANSACTION_AMOUNT_MISMATCH,
+                "amount=" + transaction.amount(),
+                "debit=" + journal.debitTotal()
+                        + ", credit=" + journal.creditTotal(),
+                "Transaction amount does not match "
+                        + "journal debit and credit totals"
+        );
     }
 }

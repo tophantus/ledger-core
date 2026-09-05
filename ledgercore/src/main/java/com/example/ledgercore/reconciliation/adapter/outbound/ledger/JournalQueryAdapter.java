@@ -1,8 +1,8 @@
 package com.example.ledgercore.reconciliation.adapter.outbound.ledger;
 
 import com.example.ledgercore.ledger.query.port.inbound.GetJournalsForReconciliationUseCase;
-import com.example.ledgercore.reconciliation.command.port.outbound.JournalQueryPort;
-import com.example.ledgercore.reconciliation.command.port.outbound.JournalReconciliationData;
+import com.example.ledgercore.reconciliation.command.port.outbound.ledger.JournalQueryPort;
+import com.example.ledgercore.reconciliation.command.port.outbound.ledger.JournalReconciliationData;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

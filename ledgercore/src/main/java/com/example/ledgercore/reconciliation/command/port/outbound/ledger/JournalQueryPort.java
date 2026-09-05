@@ -1,4 +1,4 @@
-package com.example.ledgercore.reconciliation.command.port.outbound;
+package com.example.ledgercore.reconciliation.command.port.outbound.ledger;
 
 import java.util.List;
 import java.util.UUID;

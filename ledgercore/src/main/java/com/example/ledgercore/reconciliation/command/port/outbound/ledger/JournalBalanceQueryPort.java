@@ -1,12 +1,12 @@
-package com.example.ledgercore.reconciliation.command.port.outbound;
+package com.example.ledgercore.reconciliation.command.port.outbound.ledger;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
-public interface TransactionQueryPort {
+public interface JournalBalanceQueryPort {
 
-    List<TransactionReconciliationData> findBatch(
+    List<JournalBalanceReconciliationData> findBatch(
             LocalDate businessDate,
             UUID lastProcessedId,
             int limit

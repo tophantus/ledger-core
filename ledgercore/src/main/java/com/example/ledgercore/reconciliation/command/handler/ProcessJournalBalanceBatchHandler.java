@@ -1,13 +1,10 @@
 package com.example.ledgercore.reconciliation.command.handler;
 
-import com.example.ledgercore.common.exception.BusinessException;
-import com.example.ledgercore.common.exception.ErrorCode;
+import com.example.ledgercore.reconciliation.command.port.inbound.GetReconciliationRunUseCase;
 import com.example.ledgercore.reconciliation.command.port.inbound.ProcessJournalBalanceBatchUseCase;
-import com.example.ledgercore.reconciliation.command.port.outbound.JournalBalanceQueryPort;
-import com.example.ledgercore.reconciliation.command.port.outbound.JournalBalanceReconciliationData;
-import com.example.ledgercore.reconciliation.command.repository.ReconciliationExceptionCommandRepository;
-import com.example.ledgercore.reconciliation.command.repository.ReconciliationRunCommandRepository;
-import com.example.ledgercore.reconciliation.entity.ReconciliationException;
+import com.example.ledgercore.reconciliation.command.port.inbound.RecordReconciliationExceptionUseCase;
+import com.example.ledgercore.reconciliation.command.port.outbound.ledger.JournalBalanceQueryPort;
+import com.example.ledgercore.reconciliation.command.port.outbound.ledger.JournalBalanceReconciliationData;
 import com.example.ledgercore.reconciliation.entity.ReconciliationRun;
 import com.example.ledgercore.reconciliation.enums.ReconciliationErrorCode;
 import com.example.ledgercore.reconciliation.enums.ReconciliationTargetType;
@@ -26,11 +23,11 @@ public class ProcessJournalBalanceBatchHandler
 
     private final JournalBalanceQueryPort journalBalanceQueryPort;
 
-    private final ReconciliationRunCommandRepository
-            runRepository;
+    private final GetReconciliationRunUseCase
+            getReconciliationRunUseCase;
 
-    private final ReconciliationExceptionCommandRepository
-            exceptionRepository;
+    private final RecordReconciliationExceptionUseCase
+            recordExceptionUseCase;
 
     @Override
     @Transactional
@@ -58,12 +55,7 @@ public class ProcessJournalBalanceBatchHandler
         }
 
         ReconciliationRun run =
-                runRepository.findById(runId)
-                        .orElseThrow(() ->
-                                new BusinessException(
-                                        ErrorCode.RECONCILIATION_RUN_NOT_FOUND
-                                )
-                        );
+                getReconciliationRunUseCase.execute(runId);
 
         UUID newLastProcessedId = lastProcessedId;
         long newProcessedCount = processedCount;
@@ -81,10 +73,13 @@ public class ProcessJournalBalanceBatchHandler
                 newProcessedCount
         );
 
+        boolean completed =
+                journals.size() < batchSize;
+
         return new BatchResult(
                 newLastProcessedId,
                 newProcessedCount,
-                false
+                completed
         );
     }
 
@@ -98,29 +93,14 @@ public class ProcessJournalBalanceBatchHandler
             return;
         }
 
-        exceptionRepository.save(
-                ReconciliationException.builder()
-                        .reconciliationRun(run)
-                        .targetType(
-                                ReconciliationTargetType.JOURNAL
-                        )
-                        .targetId(journal.id())
-                        .errorCode(
-                                ReconciliationErrorCode
-                                        .JOURNAL_NOT_BALANCED
-                        )
-                        .expectedValue(
-                                "debit="
-                                        + journal.debitTotal()
-                        )
-                        .actualValue(
-                                "credit="
-                                        + journal.creditTotal()
-                        )
-                        .message(
-                                "Journal entry debit and credit totals do not balance"
-                        )
-                        .build()
+        recordExceptionUseCase.execute(
+                run.getId(),
+                ReconciliationTargetType.JOURNAL,
+                journal.id(),
+                ReconciliationErrorCode.JOURNAL_NOT_BALANCED,
+                "debit=" + journal.debitTotal(),
+                "credit=" + journal.creditTotal(),
+                "Journal entry debit and credit totals do not balance"
         );
     }
 }

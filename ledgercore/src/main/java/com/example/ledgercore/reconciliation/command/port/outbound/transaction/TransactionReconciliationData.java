@@ -1,4 +1,4 @@
-package com.example.ledgercore.reconciliation.command.port.outbound;
+package com.example.ledgercore.reconciliation.command.port.outbound.transaction;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
