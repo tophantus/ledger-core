@@ -52,11 +52,11 @@ export function TransactionActions() {
                     </div>
 
                     <div className="min-w-0">
-                        <p className="text-sm font-medium text-text-primary">
+                        <p className="text-sm font-medium text-primary">
                             {t("actions.transfer")}
                         </p>
 
-                        <p className="mt-1 text-xs text-text-muted">
+                        <p className="mt-1 text-xs text-muted">
                             {t("actions.transferDescription")}
                         </p>
                     </div>
@@ -88,18 +88,18 @@ export function TransactionActions() {
                             justify-center
                             rounded-full
                             bg-secondary
-                            text-text-primary
+                            text-secondary-foreground
                         "
                     >
                         <ArrowDownToLine className="h-5 w-5" />
                     </div>
 
                     <div className="min-w-0">
-                        <p className="text-sm font-medium text-text-primary">
+                        <p className="text-sm font-medium text-secondary">
                             {t("actions.withdraw")}
                         </p>
 
-                        <p className="mt-1 text-xs text-text-muted">
+                        <p className="mt-1 text-xs text-muted">
                             {t("actions.withdrawDescription")}
                         </p>
                     </div>
