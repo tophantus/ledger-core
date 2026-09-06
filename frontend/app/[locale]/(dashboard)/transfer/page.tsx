@@ -6,7 +6,11 @@ import {
     CheckCircle2,
     Loader2,
 } from "lucide-react";
-import {useCallback, useEffect, useState} from "react";
+import {
+    useCallback,
+    useEffect,
+    useState,
+} from "react";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useTranslations} from "next-intl";
@@ -39,12 +43,13 @@ import {
     type TransferDetailsForm,
     type TransferOtpForm,
 } from "@/features/transaction/schemas/transfer-schema";
+
 import {isAmountLessThanOrEqual} from "@/lib/utils/money";
+import {useSearchParams} from "next/navigation";
+import {generateTransactionReference} from "@/lib/utils/reference";
 
 type TransferStep =
-    | "SOURCE"
-    | "DESTINATION"
-    | "DETAILS"
+    | "TRANSFER"
     | "OTP"
     | "RESULT";
 
@@ -54,17 +59,34 @@ export default function TransferPage() {
 
     const router = useRouter();
 
+    const searchParams = useSearchParams();
+
+    const urlAccountNo =
+        searchParams.get("accountNo")?.trim();
+
+    const urlReference =
+        searchParams.get("reference")?.trim();
+
+    const [reference, setReference] =
+        useState(
+            () =>
+                urlReference ||
+                generateTransactionReference(),
+        );
+
     const {getMyAccounts} = useMyAccounts();
     const {getAccountHolder} = useAccountHolder();
+
     const {
         createTransferIntent,
     } = useCreateTransferIntent();
+
     const {
         confirmTransfer,
     } = useConfirmTransfer();
 
     const [step, setStep] =
-        useState<TransferStep>("SOURCE");
+        useState<TransferStep>("TRANSFER");
 
     const [accounts, setAccounts] = useState<
         AccountSummary[]
@@ -99,6 +121,7 @@ export default function TransferPage() {
     const [error, setError] =
         useState<string | null>(null);
 
+
     const destinationForm =
         useForm<TransferDestinationForm>({
             resolver: zodResolver(
@@ -109,6 +132,10 @@ export default function TransferPage() {
             },
         });
 
+    const {
+        setValue,
+    } = destinationForm;
+
     const detailsForm =
         useForm<TransferDetailsForm>({
             resolver: zodResolver(
@@ -116,7 +143,6 @@ export default function TransferPage() {
             ),
             defaultValues: {
                 amount: "",
-                reference: "",
                 description: "",
             },
         });
@@ -131,25 +157,94 @@ export default function TransferPage() {
             },
         });
 
-    const getErrorMessage = useCallback((
-        code?: string,
-    ): string => {
-        if (
-            code &&
-            tErrors.has(code)
-        ) {
-            return tErrors(code);
+    const getErrorMessage = useCallback(
+        (code?: string): string => {
+            if (
+                code &&
+                tErrors.has(code)
+            ) {
+                return tErrors(code);
+            }
+
+            return tErrors("fallback");
+        },
+        [tErrors],
+    );
+
+    useEffect(() => {
+        if (!urlAccountNo) {
+            return;
         }
 
-        return tErrors("fallback");
-    }, [tErrors]);
+        let mounted = true;
 
+        const loadHolder = async () => {
+            setIsHolderLoading(true);
+            setError(null);
+            setHolder(null);
+
+            setValue(
+                "destinationAccountNo",
+                urlAccountNo,
+            );
+
+            try {
+                const response =
+                    await getAccountHolder(
+                        urlAccountNo,
+                    );
+
+                if (!mounted) {
+                    return;
+                }
+
+                if (!response.success) {
+                    setError(
+                        getErrorMessage(
+                            response.code,
+                        ),
+                    );
+
+                    return;
+                }
+
+                setHolder(response.data);
+            } catch {
+                if (mounted) {
+                    setError(
+                        tErrors("fallback"),
+                    );
+                }
+            } finally {
+                if (mounted) {
+                    setIsHolderLoading(false);
+                }
+            }
+        };
+
+        void loadHolder();
+
+        return () => {
+            mounted = false;
+        };
+    }, [
+        urlAccountNo,
+        getAccountHolder,
+        getErrorMessage,
+        setValue,
+        tErrors,
+    ]);
+
+    /*
+     * Load active accounts.
+     *
+     * The first active account is selected
+     * automatically as the default source account.
+     */
     useEffect(() => {
         let mounted = true;
 
         const loadAccounts = async () => {
-            setIsAccountsLoading(true);
-
             try {
                 const response =
                     await getMyAccounts();
@@ -168,7 +263,18 @@ export default function TransferPage() {
                     return;
                 }
 
-                setAccounts(response.data);
+                const activeAccounts =
+                    response.data.filter(
+                        (account) =>
+                            account.status ===
+                            "ACTIVE",
+                    );
+
+                setAccounts(activeAccounts);
+
+                setSelectedAccount(
+                    activeAccounts[0] ?? null,
+                );
             } catch {
                 if (mounted) {
                     setError(
@@ -187,16 +293,19 @@ export default function TransferPage() {
         return () => {
             mounted = false;
         };
-    }, [getErrorMessage, getMyAccounts, t, tErrors]);
+    }, [
+        getErrorMessage,
+        getMyAccounts,
+        tErrors,
+    ]);
 
-    const handleSelectSource = (
-        account: AccountSummary,
-    ) => {
-        setSelectedAccount(account);
-        setError(null);
-        setStep("DESTINATION");
-    };
-
+    /*
+     * Fetch destination account holder.
+     *
+     * This does not change the step.
+     * Once the holder is loaded, the remaining
+     * transfer fields are displayed below.
+     */
     const handleFindHolder =
         destinationForm.handleSubmit(
             async (values) => {
@@ -216,11 +325,11 @@ export default function TransferPage() {
                                 response.code,
                             ),
                         );
+
                         return;
                     }
 
                     setHolder(response.data);
-                    setStep("DETAILS");
                 } catch {
                     setError(
                         tErrors("fallback"),
@@ -231,10 +340,16 @@ export default function TransferPage() {
             },
         );
 
+    /*
+     * Create transfer intent.
+     */
     const handleCreateIntent =
         detailsForm.handleSubmit(
             async (values) => {
-                if (!selectedAccount || !holder) {
+                if (
+                    !selectedAccount ||
+                    !holder
+                ) {
                     return;
                 }
 
@@ -249,6 +364,7 @@ export default function TransferPage() {
                             "transfer.amountExceedsBalance",
                         ),
                     );
+
                     return;
                 }
 
@@ -265,8 +381,7 @@ export default function TransferPage() {
                             amount: values.amount,
                             currency:
                             selectedAccount.currency,
-                            reference:
-                            values.reference,
+                            reference,
                             description:
                                 values.description ||
                                 undefined,
@@ -278,6 +393,7 @@ export default function TransferPage() {
                                 response.code,
                             ),
                         );
+
                         return;
                     }
 
@@ -293,6 +409,9 @@ export default function TransferPage() {
             },
         );
 
+    /*
+     * Confirm transfer with OTP.
+     */
     const handleConfirmTransfer =
         otpForm.handleSubmit(
             async (values) => {
@@ -306,7 +425,8 @@ export default function TransferPage() {
                 try {
                     const response =
                         await confirmTransfer({
-                            intentId: intent.intentId,
+                            intentId:
+                            intent.intentId,
                             otp: values.otp,
                         });
 
@@ -316,10 +436,14 @@ export default function TransferPage() {
                                 response.code,
                             ),
                         );
+
                         return;
                     }
 
-                    setTransaction(response.data);
+                    setTransaction(
+                        response.data,
+                    );
+
                     setStep("RESULT");
                 } catch {
                     setError(
@@ -331,36 +455,38 @@ export default function TransferPage() {
             },
         );
 
-    const handleBackToDestination = () => {
-        setHolder(null);
-        setError(null);
-        setStep("DESTINATION");
-    };
-
-    const handleBackToSource = () => {
-        setSelectedAccount(null);
-        setHolder(null);
-        setError(null);
-        setStep("SOURCE");
-    };
-
-    const handleBackToDetails = () => {
-        setError(null);
-        setStep("DETAILS");
-    };
-
     const handleStartNewTransfer = () => {
-        setSelectedAccount(null);
+        setSelectedAccount(
+            accounts[0] ?? null,
+        );
+
         setHolder(null);
         setIntent(null);
         setTransaction(null);
         setError(null);
 
-        destinationForm.reset();
-        detailsForm.reset();
-        otpForm.reset();
+        setReference(
+            generateTransactionReference(),
+        );
 
-        setStep("SOURCE");
+        destinationForm.reset({
+            destinationAccountNo: "",
+        });
+
+        detailsForm.reset({
+            amount: "",
+            description: "",
+        });
+
+        otpForm.reset({
+            otp: "",
+        });
+
+        setStep("TRANSFER");
+
+        router.replace(
+            ROUTES.TRANSACTION.TRANSFER,
+        );
     };
 
     return (
@@ -387,7 +513,9 @@ export default function TransferPage() {
                     </h1>
 
                     <p className="mt-1 text-sm text-muted">
-                        {t("transfer.description")}
+                        {t(
+                            "transfer.description",
+                        )}
                     </p>
                 </div>
             </div>
@@ -406,145 +534,64 @@ export default function TransferPage() {
                 </div>
             )}
 
-            {step === "SOURCE" && (
+            {step === "TRANSFER" && (
                 <div className="rounded-lg border border-border bg-surface p-6">
-                    <h2 className="text-base font-semibold text-foreground">
-                        {t(
-                            "transfer.selectSource",
-                        )}
-                    </h2>
+                    {/* Source account */}
 
-                    <div className="mt-4 space-y-3">
-                        {isAccountsLoading && (
-                            <div className="flex items-center justify-center py-8">
-                                <Loader2 className="h-5 w-5 animate-spin text-muted" />
+                    <div>
+                        <label
+                            htmlFor="source-account"
+                            className="
+                                mb-2
+                                block
+                                text-sm
+                                font-medium
+                                text-foreground
+                            "
+                        >
+                            {t(
+                                "transfer.sourceAccount",
+                            )}
+                        </label>
+
+                        {isAccountsLoading ? (
+                            <div className="flex h-11 items-center rounded-md border border-border bg-background px-3">
+                                <Loader2 className="h-4 w-4 animate-spin text-muted" />
                             </div>
-                        )}
-
-                        {!isAccountsLoading &&
-                            accounts.length === 0 && (
-                                <p className="py-8 text-center text-sm text-muted">
+                        ) : accounts.length === 0 ? (
+                            <div className="rounded-md border border-border bg-background-subtle p-3">
+                                <p className="text-sm text-muted">
                                     {t(
                                         "transfer.noAccounts",
                                     )}
                                 </p>
-                            )}
-
-                        {!isAccountsLoading &&
-                            accounts.filter(a => a.status === "ACTIVE").map(
-                                (account) => (
-                                    <button
-                                        key={account.id}
-                                        type="button"
-                                        onClick={() =>
-                                            handleSelectSource(
-                                                account,
-                                            )
-                                        }
-                                        disabled={
-                                            account.status !==
-                                            "ACTIVE"
-                                        }
-                                        className="
-                                            flex
-                                            w-full
-                                            items-center
-                                            justify-between
-                                            rounded-lg
-                                            border
-                                            border-border
-                                            p-4
-                                            text-left
-                                            transition
-                                            hover:border-primary
-                                            hover:bg-background-subtle
-                                            disabled:cursor-not-allowed
-                                            disabled:opacity-50
-                                        "
-                                    >
-                                        <div>
-                                            <p className="text-sm font-medium text-primary">
-                                                {
-                                                    account.accountNo
-                                                }
-                                            </p>
-
-                                            <p className="mt-1 text-xs text-muted">
-                                                {
-                                                    account.currency
-                                                }
-                                            </p>
-                                        </div>
-
-                                        <div className="text-right">
-                                            <p className="text-sm font-semibold text-primary">
-                                                {
-                                                    account.balance
-                                                }{" "}
-                                                {
-                                                    account.currency
-                                                }
-                                            </p>
-
-                                            <p className="mt-1 text-xs text-muted">
-                                                {
-                                                    account.status
-                                                }
-                                            </p>
-                                        </div>
-                                    </button>
-                                ),
-                            )}
-                    </div>
-                </div>
-            )}
-
-            {step === "DESTINATION" &&
-                selectedAccount && (
-                    <form
-                        onSubmit={
-                            handleFindHolder
-                        }
-                        className="rounded-lg border border-border bg-surface p-6"
-                    >
-                        <div className="rounded-md bg-background-subtle p-4">
-                            <p className="text-xs text-muted">
-                                {t(
-                                    "transfer.sourceAccount",
-                                )}
-                            </p>
-
-                            <p className="mt-1 text-sm font-medium text-primary">
-                                {
-                                    selectedAccount.accountNo
+                            </div>
+                        ) : (
+                            <select
+                                id="source-account"
+                                value={
+                                    selectedAccount?.id ??
+                                    ""
                                 }
-                            </p>
+                                onChange={(event) => {
+                                    const account =
+                                        accounts.find(
+                                            (
+                                                item,
+                                            ) =>
+                                                item.id ===
+                                                event
+                                                    .target
+                                                    .value,
+                                        );
 
-                            <p className="mt-1 text-xs text-muted">
-                                {
-                                    selectedAccount.balance
-                                }{" "}
-                                {
-                                    selectedAccount.currency
-                                }
-                            </p>
-                        </div>
-
-                        <div className="mt-6">
-                            <label
-                                htmlFor="destination-account-no"
-                                className="mb-2 block text-sm font-medium text-foreground"
-                            >
-                                {t(
-                                    "transfer.destinationAccount",
-                                )}
-                            </label>
-
-                            <input
-                                id="destination-account-no"
-                                {...destinationForm.register(
-                                    "destinationAccountNo",
-                                )}
+                                    if (account) {
+                                        setSelectedAccount(
+                                            account,
+                                        );
+                                        setError(null);
+                                    }
+                                }}
                                 className="
                                     w-full
                                     rounded-md
@@ -557,13 +604,94 @@ export default function TransferPage() {
                                     text-foreground
                                     outline-none
                                 "
-                                placeholder={t(
-                                    "transfer.destinationPlaceholder",
+                            >
+                                {accounts.map(
+                                    (account) => (
+                                        <option
+                                            key={
+                                                account.id
+                                            }
+                                            value={
+                                                account.id
+                                            }
+                                        >
+                                            {
+                                                account.accountNo
+                                            }{" "}
+                                            —{" "}
+                                            {
+                                                account.balance
+                                            }{" "}
+                                            {
+                                                account.currency
+                                            }
+                                        </option>
+                                    ),
                                 )}
-                            />
+                            </select>
+                        )}
+                    </div>
 
-                            {destinationForm.formState
-                                .errors
+                    {/* Destination */}
+
+                    <form
+                        onSubmit={
+                            handleFindHolder
+                        }
+                    >
+                        <div className="mt-6">
+                            <label
+                                htmlFor="destination-account-no"
+                                className="
+                                    mb-2
+                                    block
+                                    text-sm
+                                    font-medium
+                                    text-foreground
+                                "
+                            >
+                                {t(
+                                    "transfer.destinationAccount",
+                                )}
+                            </label>
+
+                            <div className="flex gap-3">
+                                <input
+                                    id="destination-account-no"
+                                    {...destinationForm.register(
+                                        "destinationAccountNo",
+                                    )}
+                                    className="
+                                        min-w-0
+                                        flex-1
+                                        rounded-md
+                                        border
+                                        border-border
+                                        bg-background
+                                        px-3
+                                        py-2.5
+                                        text-sm
+                                        text-foreground
+                                        outline-none
+                                    "
+                                    placeholder={t(
+                                        "transfer.destinationPlaceholder",
+                                    )}
+                                />
+
+                                {!urlAccountNo && (
+                                    <Button
+                                        type="submit"
+                                        variant="outline"
+                                        loading={isHolderLoading}
+                                    >
+                                        {t("transfer.check")}
+                                    </Button>
+                                )}
+                            </div>
+
+                            {destinationForm
+                                .formState.errors
                                 .destinationAccountNo && (
                                 <p className="mt-1 text-xs text-danger">
                                     {
@@ -576,74 +704,21 @@ export default function TransferPage() {
                                 </p>
                             )}
                         </div>
-
-                        <div className="mt-6 flex justify-between gap-3">
-                            <Button
-                                type="button"
-                                variant="outline"
-                                onClick={
-                                    handleBackToSource
-                                }
-                            >
-                                {t("back")}
-                            </Button>
-
-                            <Button
-                                type="submit"
-                                loading={
-                                    isHolderLoading
-                                }
-                            >
-                                {t(
-                                    "transfer.continue",
-                                )}
-                                <ArrowRight className="h-4 w-4" />
-                            </Button>
-                        </div>
                     </form>
-                )}
 
-            {step === "DETAILS" &&
-                selectedAccount &&
-                holder && (
-                    <form
-                        onSubmit={
-                            handleCreateIntent
-                        }
-                        className="rounded-lg border border-border bg-surface p-6"
-                    >
-                        <div className="rounded-lg border border-border bg-background-subtle p-4 mb-3">
-                            <p className="text-xs text-muted">
-                                {t("transfer.sourceAccount")}
-                            </p>
+                    {/* Recipient */}
 
-                            <div className="mt-1 flex items-center justify-between gap-4">
-                                <div>
-                                    <p className="text-sm font-semibold text-primary">
-                                        {selectedAccount.accountNo}
-                                    </p>
-
-                                    <p className="mt-1 text-xs text-muted">
-                                        {selectedAccount.currency}
-                                    </p>
-                                </div>
-
-                                <div className="text-right">
-                                    <p className="text-xs text-muted">
-                                        {t(
-                                            "transfer.availableBalance",
-                                        )}
-                                    </p>
-
-                                    <p className="mt-1 text-sm font-semibold text-primary">
-                                        {selectedAccount.balance}{" "}
-                                        {selectedAccount.currency}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="rounded-lg border border-border bg-background-subtle p-4">
+                    {holder && (
+                        <div
+                            className="
+                                mt-4
+                                rounded-lg
+                                border
+                                border-border
+                                bg-background-subtle
+                                p-4
+                            "
+                        >
                             <p className="text-xs text-muted">
                                 {t(
                                     "transfer.recipient",
@@ -662,183 +737,171 @@ export default function TransferPage() {
                                 }
                             </p>
                         </div>
+                    )}
 
-                        <div className="mt-6 space-y-5">
-                            <div>
-                                <label
-                                    htmlFor="transfer-amount"
-                                    className="mb-2 block text-sm font-medium text-foreground"
-                                >
-                                    {t(
-                                        "transfer.amount",
+                    {/* Transfer details */}
+
+                    {holder && (
+                        <form
+                            onSubmit={
+                                handleCreateIntent
+                            }
+                        >
+                            <div className="mt-6 space-y-5">
+                                {/* Amount */}
+
+                                <div>
+                                    <label
+                                        htmlFor="transfer-amount"
+                                        className="
+                                            mb-2
+                                            block
+                                            text-sm
+                                            font-medium
+                                            text-foreground
+                                        "
+                                    >
+                                        {t(
+                                            "transfer.amount",
+                                        )}
+                                    </label>
+
+                                    <div className="relative">
+                                        <input
+                                            id="transfer-amount"
+                                            type="text"
+                                            inputMode="decimal"
+                                            {...detailsForm.register(
+                                                "amount",
+                                            )}
+                                            className="
+                                                w-full
+                                                rounded-md
+                                                border
+                                                border-border
+                                                bg-background
+                                                px-3
+                                                py-2.5
+                                                pr-16
+                                                text-sm
+                                                text-foreground
+                                                outline-none
+                                            "
+                                            placeholder="0.00"
+                                        />
+
+                                        <span
+                                            className="
+                                                absolute
+                                                right-3
+                                                top-1/2
+                                                -translate-y-1/2
+                                                text-xs
+                                                font-medium
+                                                text-muted
+                                            "
+                                        >
+                                            {
+                                                selectedAccount?.currency
+                                            }
+                                        </span>
+                                    </div>
+
+                                    {detailsForm
+                                        .formState
+                                        .errors
+                                        .amount && (
+                                        <p className="mt-1 text-xs text-danger">
+                                            {
+                                                detailsForm
+                                                    .formState
+                                                    .errors
+                                                    .amount
+                                                    .message
+                                            }
+                                        </p>
                                     )}
-                                </label>
+                                </div>
 
-                                <div className="relative">
-                                    <input
-                                        id="transfer-amount"
-                                        type="text"
-                                        inputMode="decimal"
+                                {/* Description */}
+
+                                <div>
+                                    <label
+                                        htmlFor="transfer-description"
+                                        className="
+                                            mb-2
+                                            block
+                                            text-sm
+                                            font-medium
+                                            text-foreground
+                                        "
+                                    >
+                                        {t(
+                                            "transfer.descriptionField",
+                                        )}
+                                    </label>
+
+                                    <textarea
+                                        id="transfer-description"
+                                        rows={3}
                                         {...detailsForm.register(
-                                            "amount",
+                                            "description",
                                         )}
                                         className="
                                             w-full
+                                            resize-none
                                             rounded-md
                                             border
                                             border-border
                                             bg-background
                                             px-3
                                             py-2.5
-                                            pr-16
                                             text-sm
-                                            text-primary
+                                            text-foreground
                                             outline-none
                                         "
-                                        placeholder="0.00"
+                                        placeholder={t(
+                                            "transfer.descriptionPlaceholder",
+                                        )}
                                     />
 
-                                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-muted">
-                                        {
-                                            selectedAccount.currency
-                                        }
-                                    </span>
+                                    {detailsForm
+                                        .formState
+                                        .errors
+                                        .description && (
+                                        <p className="mt-1 text-xs text-danger">
+                                            {
+                                                detailsForm
+                                                    .formState
+                                                    .errors
+                                                    .description
+                                                    .message
+                                            }
+                                        </p>
+                                    )}
                                 </div>
-
-                                {detailsForm.formState
-                                    .errors.amount && (
-                                    <p className="mt-1 text-xs text-danger">
-                                        {
-                                            detailsForm
-                                                .formState
-                                                .errors.amount
-                                                .message
-                                        }
-                                    </p>
-                                )}
                             </div>
 
-                            <div>
-                                <label
-                                    htmlFor="transfer-reference"
-                                    className="mb-2 block text-sm font-medium text-foreground"
+                            <div className="mt-6 flex justify-end">
+                                <Button
+                                    type="submit"
+                                    loading={
+                                        isIntentLoading
+                                    }
+                                    disabled={
+                                        !selectedAccount
+                                    }
                                 >
                                     {t(
-                                        "transfer.reference",
+                                        "transfer.continue",
                                     )}
-                                </label>
-
-                                <input
-                                    id="transfer-reference"
-                                    {...detailsForm.register(
-                                        "reference",
-                                    )}
-                                    className="
-                                        w-full
-                                        rounded-md
-                                        border
-                                        border-border
-                                        bg-background
-                                        px-3
-                                        py-2.5
-                                        text-sm
-                                        text-foreground
-                                        outline-none
-                                    "
-                                    placeholder={t(
-                                        "transfer.referencePlaceholder",
-                                    )}
-                                />
-
-                                {detailsForm.formState
-                                    .errors.reference && (
-                                    <p className="mt-1 text-xs text-danger">
-                                        {
-                                            detailsForm
-                                                .formState
-                                                .errors
-                                                .reference
-                                                .message
-                                        }
-                                    </p>
-                                )}
+                                    <ArrowRight className="h-4 w-4" />
+                                </Button>
                             </div>
-
-                            <div>
-                                <label
-                                    htmlFor="transfer-description"
-                                    className="mb-2 block text-sm font-medium text-foreground"
-                                >
-                                    {t(
-                                        "transfer.descriptionField",
-                                    )}
-                                </label>
-
-                                <textarea
-                                    id="transfer-description"
-                                    rows={3}
-                                    {...detailsForm.register(
-                                        "description",
-                                    )}
-                                    className="
-                                        w-full
-                                        resize-none
-                                        rounded-md
-                                        border
-                                        border-border
-                                        bg-background
-                                        px-3
-                                        py-2.5
-                                        text-sm
-                                        text-foreground
-                                        outline-none
-                                    "
-                                    placeholder={t(
-                                        "transfer.descriptionPlaceholder",
-                                    )}
-                                />
-
-                                {detailsForm.formState
-                                    .errors
-                                    .description && (
-                                    <p className="mt-1 text-xs text-danger">
-                                        {
-                                            detailsForm
-                                                .formState
-                                                .errors
-                                                .description
-                                                .message
-                                        }
-                                    </p>
-                                )}
-                            </div>
-                        </div>
-
-                        <div className="mt-6 flex justify-between gap-3">
-                            <Button
-                                type="button"
-                                variant="outline"
-                                onClick={
-                                    handleBackToDestination
-                                }
-                            >
-                                {t("back")}
-                            </Button>
-
-                            <Button
-                                type="submit"
-                                loading={
-                                    isIntentLoading
-                                }
-                            >
-                                {t(
-                                    "transfer.review",
-                                )}
-                                <ArrowRight className="h-4 w-4" />
-                            </Button>
-                        </div>
-                    </form>
-                )}
+                        </form>
+                    )}
+                </div>
+            )}
 
             {step === "OTP" &&
                 intent &&
@@ -847,7 +910,13 @@ export default function TransferPage() {
                         onSubmit={
                             handleConfirmTransfer
                         }
-                        className="rounded-lg border border-border bg-surface p-6"
+                        className="
+                            rounded-lg
+                            border
+                            border-border
+                            bg-surface
+                            p-6
+                        "
                     >
                         <div>
                             <h2 className="text-base font-semibold text-primary">
@@ -868,19 +937,13 @@ export default function TransferPage() {
                                 <div>
                                     <p className="text-xs text-muted">
                                         {t(
-                                            "transfer.recipient",
+                                            "transfer.sourceAccount",
                                         )}
                                     </p>
 
                                     <p className="mt-1 text-sm font-medium text-primary">
                                         {
-                                            holder.fullName
-                                        }
-                                    </p>
-
-                                    <p className="mt-1 text-xs text-muted">
-                                        {
-                                            holder.accountNo
+                                            selectedAccount?.accountNo
                                         }
                                     </p>
                                 </div>
@@ -906,6 +969,26 @@ export default function TransferPage() {
                             <div className="mt-4 border-t border-border pt-4">
                                 <p className="text-xs text-muted">
                                     {t(
+                                        "transfer.recipient",
+                                    )}
+                                </p>
+
+                                <p className="mt-1 text-sm font-medium text-primary">
+                                    {
+                                        holder.fullName
+                                    }
+                                </p>
+
+                                <p className="mt-1 text-xs text-muted">
+                                    {
+                                        holder.accountNo
+                                    }
+                                </p>
+                            </div>
+
+                            <div className="mt-4 border-t border-border pt-4">
+                                <p className="text-xs text-muted">
+                                    {t(
                                         "transfer.reference",
                                     )}
                                 </p>
@@ -921,7 +1004,13 @@ export default function TransferPage() {
                         <div className="mt-6">
                             <label
                                 htmlFor="transfer-otp"
-                                className="mb-2 block text-sm font-medium text-foreground"
+                                className="
+                                    mb-2
+                                    block
+                                    text-sm
+                                    font-medium
+                                    text-foreground
+                                "
                             >
                                 {t(
                                     "transfer.otp",
@@ -945,7 +1034,7 @@ export default function TransferPage() {
                                     py-2.5
                                     text-sm
                                     tracking-[0.3em]
-                                    text-primary
+                                    text-foreground
                                     outline-none
                                 "
                                 placeholder={t(
@@ -971,8 +1060,10 @@ export default function TransferPage() {
                             <Button
                                 type="button"
                                 variant="outline"
-                                onClick={
-                                    handleBackToDetails
+                                onClick={() =>
+                                    setStep(
+                                        "TRANSFER",
+                                    )
                                 }
                             >
                                 {t("back")}
@@ -994,7 +1085,15 @@ export default function TransferPage() {
 
             {step === "RESULT" &&
                 transaction && (
-                    <div className="rounded-lg border border-border bg-surface p-6">
+                    <div
+                        className="
+                            rounded-lg
+                            border
+                            border-border
+                            bg-surface
+                            p-6
+                        "
+                    >
                         <div className="flex flex-col items-center text-center">
                             <div className="flex h-14 w-14 items-center justify-center rounded-full bg-success">
                                 <CheckCircle2 className="h-7 w-7 text-success-foreground" />
@@ -1055,7 +1154,9 @@ export default function TransferPage() {
                                 variant="outline"
                                 onClick={() =>
                                     router.push(
-                                        ROUTES.TRANSACTION.LIST,
+                                        ROUTES
+                                            .TRANSACTION
+                                            .LIST,
                                     )
                                 }
                             >
@@ -1093,21 +1194,9 @@ function TransferProgress({
         label: string;
     }> = [
         {
-            key: "SOURCE",
+            key: "TRANSFER",
             label: t(
-                "transfer.steps.source",
-            ),
-        },
-        {
-            key: "DESTINATION",
-            label: t(
-                "transfer.steps.destination",
-            ),
-        },
-        {
-            key: "DETAILS",
-            label: t(
-                "transfer.steps.details",
+                "transfer.steps.transfer",
             ),
         },
         {
@@ -1123,7 +1212,7 @@ function TransferProgress({
     );
 
     return (
-        <div className="grid grid-cols-4 gap-2">
+        <div className="grid grid-cols-2 gap-2">
             {steps.map((item, index) => {
                 const active =
                     index <= currentIndex;

@@ -17,11 +17,11 @@ function formatAmount(
     incoming: boolean | null,
 ): string {
     if (incoming === true) {
-        return `+${amount}`;
+        return `+ ${amount}`;
     }
 
     if (incoming === false) {
-        return `-${amount}`;
+        return `- ${amount}`;
     }
 
     return amount;

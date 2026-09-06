@@ -18,37 +18,46 @@
   },
   "transfer": {
     "title": "Chuyển tiền",
-    "description": "Chuyển tiền đến tài khoản khác.",
+    "description": "Chuyển tiền đến một tài khoản khác.",
+
+    "steps": {
+      "transfer": "Chuyển tiền",
+      "confirm": "Xác nhận",
+      "result": "Hoàn tất"
+    },
+
+    "sourceAccount": "Tài khoản nguồn",
+    "noAccounts": "Bạn không có tài khoản nào đang hoạt động.",
+
+    "destinationAccount": "Số tài khoản nhận",
+    "destinationPlaceholder": "Nhập số tài khoản",
+
+    "recipient": "Người nhận",
+
+    "amount": "Số tiền",
     "availableBalance": "Số dư khả dụng",
     "amountExceedsBalance": "Số tiền chuyển không được vượt quá số dư khả dụng.",
-    "steps": {
-      "source": "Nguồn",
-      "destination": "Người nhận",
-      "details": "Thông tin",
-      "confirm": "Xác nhận"
-    },
-    "selectSource": "Chọn tài khoản nguồn",
-    "sourceAccount": "Tài khoản nguồn",
-    "noAccounts": "Bạn không có tài khoản đang hoạt động.",
-    "destinationAccount": "Số tài khoản đích",
-    "destinationPlaceholder": "Nhập số tài khoản",
-    "recipient": "Người nhận",
-    "amount": "Số tiền",
+
     "reference": "Mã tham chiếu",
-    "referencePlaceholder": "Nhập mã tham chiếu",
+
     "descriptionField": "Nội dung",
     "descriptionPlaceholder": "Nội dung tùy chọn",
+
+    "check": "Kiểm tra",
     "continue": "Tiếp tục",
-    "review": "Tiếp tục xác nhận",
+
     "confirmTitle": "Xác nhận chuyển tiền",
-    "confirmDescription": "Nhập OTP để xác nhận giao dịch.",
+    "confirmDescription": "Nhập mã OTP để xác nhận giao dịch chuyển tiền này.",
     "otp": "Mã OTP",
     "otpPlaceholder": "Nhập mã OTP",
     "confirm": "Xác nhận chuyển tiền",
+
     "successTitle": "Chuyển tiền thành công",
-    "successDescription": "Giao dịch chuyển tiền đã được hoàn tất.",
+    "successDescription": "Giao dịch chuyển tiền đã được thực hiện thành công.",
+
     "transactionId": "Mã giao dịch",
     "status": "Trạng thái",
+
     "viewTransactions": "Xem giao dịch",
     "newTransfer": "Chuyển tiền mới"
   },

@@ -28,12 +28,6 @@ export const transferDetailsSchema = z.object({
             },
         ),
 
-    reference: z
-        .string()
-        .trim()
-        .min(1, "Reference is required")
-        .max(50),
-
     description: z
         .string()
         .max(500)
