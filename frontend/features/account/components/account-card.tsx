@@ -6,6 +6,7 @@ import {Link} from "@/i18n/routing";
 import {ROUTES} from "@/lib/constants/routes";
 
 import type {AccountSummary} from "../types/account";
+import {getAccountStatusColor} from "@/lib/utils/account";
 
 interface AccountCardProps {
     account: AccountSummary;
@@ -71,13 +72,21 @@ export function AccountCard({
             </div>
 
             <div className="mt-5 border-t border-border pt-4">
-                <p className="text-xs text-text-muted">
-                    {t("status")}
-                </p>
+                <span className="text-xs text-muted">
+                    {t("status")}{": "}
+                </span>
 
-                <p className="mt-1 text-sm font-medium text-text-primary">
+                <span
+                    className={`
+                        mt-1
+                        text-sm
+                        font-medium
+                        ${getAccountStatusColor(account.status, "text")}
+                    `}
+                >
                     {t(`statuses.${account.status}`)}
-                </p>
+                </span>
+                <div className={`w-full h-4 rounded-full ${getAccountStatusColor(account.status, "background")}`}/>
             </div>
         </Link>
     );

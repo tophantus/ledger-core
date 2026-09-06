@@ -7,13 +7,17 @@ import {useTranslations} from "next-intl";
 import {AccountDetails} from "@/features/account/components/account-details";
 import {AccountDetailsSkeleton} from "@/features/account/components/account-details-skeleton";
 import {useAccount} from "@/features/account/hooks/use-account";
+import {useAccountStore} from "@/features/account/stores/account-store";
 import {RecentTransactionList} from "@/features/transaction/components/recent-transaction-list";
-import type {Account} from "@/features/account/types/account";
+import {useRouter} from "@/i18n/routing";
+import {ROUTES} from "@/lib/constants/routes";
 
 export default function AccountDetailsPage() {
     const t = useTranslations(
         "dashboard.account.details",
     );
+
+    const router = useRouter();
 
     const params = useParams<{
         accountId: string;
@@ -23,8 +27,21 @@ export default function AccountDetailsPage() {
 
     const {getAccount} = useAccount();
 
-    const [account, setAccount] =
-        useState<Account | null>(null);
+    const account = useAccountStore(
+        (state) => state.currentAccount,
+    );
+
+    const setCurrentAccount =
+        useAccountStore(
+            (state) =>
+                state.setCurrentAccount,
+        );
+
+    const clearCurrentAccount =
+        useAccountStore(
+            (state) =>
+                state.clearCurrentAccount,
+        );
 
     const [isLoading, setIsLoading] =
         useState(true);
@@ -36,9 +53,6 @@ export default function AccountDetailsPage() {
         let mounted = true;
 
         const loadAccount = async () => {
-            setIsLoading(true);
-            setHasError(false);
-
             try {
                 const response =
                     await getAccount(accountId);
@@ -52,7 +66,9 @@ export default function AccountDetailsPage() {
                     return;
                 }
 
-                setAccount(response.data);
+                setCurrentAccount(
+                    response.data,
+                );
             } catch {
                 if (mounted) {
                     setHasError(true);
@@ -68,8 +84,14 @@ export default function AccountDetailsPage() {
 
         return () => {
             mounted = false;
+            clearCurrentAccount();
         };
-    }, [accountId, getAccount]);
+    }, [
+        accountId,
+        getAccount,
+        setCurrentAccount,
+        clearCurrentAccount,
+    ]);
 
     if (isLoading) {
         return (
@@ -86,7 +108,7 @@ export default function AccountDetailsPage() {
     if (hasError || !account) {
         return (
             <section className="rounded-lg border border-border bg-surface p-8 text-center">
-                <p className="text-sm text-text-muted">
+                <p className="text-sm text-muted">
                     {t("loadError")}
                 </p>
             </section>
@@ -95,7 +117,13 @@ export default function AccountDetailsPage() {
 
     return (
         <section className="space-y-8">
-            <AccountDetails account={account} />
+            <AccountDetails
+                onClosed={() =>
+                    router.push(
+                        ROUTES.DASHBOARD,
+                    )
+                }
+            />
 
             <RecentTransactionList
                 accountId={account.id}

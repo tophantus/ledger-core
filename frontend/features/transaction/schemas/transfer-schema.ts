@@ -13,16 +13,18 @@ export const transferDetailsSchema = z.object({
         .string()
         .trim()
         .min(1, "Amount is required")
+        .regex(
+            /^\d+(?:\.\d+)?$/,
+            "Invalid amount",
+        )
         .refine(
-            (value) => {
-                try {
-                    return Number(value) > 0;
-                } catch {
-                    return false;
-                }
-            },
+            (value) =>
+                !/^0+(?:\.0+)?$/.test(
+                    value,
+                ),
             {
-                message: "Amount must be greater than zero",
+                message:
+                    "Amount must be greater than zero",
             },
         ),
 

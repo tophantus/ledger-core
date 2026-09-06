@@ -18,7 +18,13 @@
     "status": "Trạng thái",
     "createdAt": "Ngày tạo",
     "updatedAt": "Cập nhật lần cuối",
-    "loadError": "Không thể tải thông tin tài khoản."
+    "loadError": "Không thể tải thông tin tài khoản.",
+    "actions": {
+      "open": "Mở thao tác tài khoản",
+      "block": "Khóa tài khoản",
+      "activate": "Kích hoạt tài khoản",
+      "close": "Đóng tài khoản"
+    }
   },
   "create": {
     "title": "Tạo tài khoản",

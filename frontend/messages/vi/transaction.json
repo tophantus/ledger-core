@@ -21,6 +21,8 @@
   "transfer": {
     "title": "Chuyển tiền",
     "description": "Chuyển tiền đến tài khoản khác.",
+    "availableBalance": "Số dư khả dụng",
+    "amountExceedsBalance": "Số tiền chuyển không được vượt quá số dư khả dụng.",
     "steps": {
       "source": "Nguồn",
       "destination": "Người nhận",

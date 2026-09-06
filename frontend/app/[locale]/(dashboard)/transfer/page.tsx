@@ -39,6 +39,7 @@ import {
     type TransferDetailsForm,
     type TransferOtpForm,
 } from "@/features/transaction/schemas/transfer-schema";
+import {isAmountLessThanOrEqual} from "@/lib/utils/money";
 
 type TransferStep =
     | "SOURCE"
@@ -221,6 +222,20 @@ export default function TransferPage() {
                     return;
                 }
 
+                if (
+                    !isAmountLessThanOrEqual(
+                        values.amount,
+                        selectedAccount.balance,
+                    )
+                ) {
+                    setError(
+                        t(
+                            "transfer.amountExceedsBalance",
+                        ),
+                    );
+                    return;
+                }
+
                 setIsIntentLoading(true);
                 setError(null);
 
@@ -337,7 +352,7 @@ export default function TransferPage() {
     };
 
     return (
-        <section className="mx-auto max-w-2xl space-y-6">
+        <section className="mx-auto max-w-2xl space-y-3">
             <div className="space-y-2">
                 <Link
                     href={ROUTES.DASHBOARD}
@@ -585,6 +600,37 @@ export default function TransferPage() {
                         }
                         className="rounded-lg border border-border bg-surface p-6"
                     >
+                        <div className="rounded-lg border border-border bg-background-subtle p-4 mb-3">
+                            <p className="text-xs text-muted">
+                                {t("transfer.sourceAccount")}
+                            </p>
+
+                            <div className="mt-1 flex items-center justify-between gap-4">
+                                <div>
+                                    <p className="text-sm font-semibold text-primary">
+                                        {selectedAccount.accountNo}
+                                    </p>
+
+                                    <p className="mt-1 text-xs text-muted">
+                                        {selectedAccount.currency}
+                                    </p>
+                                </div>
+
+                                <div className="text-right">
+                                    <p className="text-xs text-muted">
+                                        {t(
+                                            "transfer.availableBalance",
+                                        )}
+                                    </p>
+
+                                    <p className="mt-1 text-sm font-semibold text-primary">
+                                        {selectedAccount.balance}{" "}
+                                        {selectedAccount.currency}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
                         <div className="rounded-lg border border-border bg-background-subtle p-4">
                             <p className="text-xs text-muted">
                                 {t(

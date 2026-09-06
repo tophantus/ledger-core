@@ -18,7 +18,13 @@
     "status": "Status",
     "createdAt": "Created at",
     "updatedAt": "Updated at",
-    "loadError": "Unable to load this account."
+    "loadError": "Unable to load this account.",
+    "actions": {
+      "open": "Open account actions",
+      "block": "Block account",
+      "activate": "Activate account",
+      "close": "Close account"
+    }
   },
   "create": {
     "title": "Create account",

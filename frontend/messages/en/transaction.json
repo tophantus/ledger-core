@@ -21,6 +21,8 @@
   "transfer": {
     "title": "Transfer money",
     "description": "Send money to another account.",
+    "availableBalance": "Available balance",
+    "amountExceedsBalance": "Transfer amount cannot exceed your available balance.",
     "steps": {
       "source": "Source",
       "destination": "Recipient",
