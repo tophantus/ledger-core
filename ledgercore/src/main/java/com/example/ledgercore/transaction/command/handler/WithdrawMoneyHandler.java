@@ -206,6 +206,7 @@ public class WithdrawMoneyHandler
                 transaction.getAmount(),
                 transaction.getCurrency(),
                 transaction.getDescription(),
+                null,
                 transaction.getCreatedAt(),
                 transaction.getCompletedAt()
         );

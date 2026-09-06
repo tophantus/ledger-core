@@ -64,12 +64,29 @@ public class GetAccountTransactionsHandler
         return new PageResponse<>(
                 transactionPage.getContent()
                         .stream()
-                        .map(transactionQueryMapper::toResponse)
+                        .map(transaction ->
+                                transactionQueryMapper.toResponse(
+                                        transaction,
+                                        isIncoming(
+                                                transaction,
+                                                query.accountId()
+                                        )
+                                )
+                        )
                         .toList(),
                 transactionPage.getNumber(),
                 transactionPage.getSize(),
                 transactionPage.getTotalElements(),
                 transactionPage.getTotalPages()
+        );
+    }
+
+    private boolean isIncoming(
+            MoneyTransaction transaction,
+            UUID accountId
+    ) {
+        return accountId.equals(
+                transaction.getDestinationAccountId()
         );
     }
 

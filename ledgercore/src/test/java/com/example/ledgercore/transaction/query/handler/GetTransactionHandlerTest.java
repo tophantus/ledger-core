@@ -78,6 +78,7 @@ class GetTransactionHandlerTest {
                 new BigDecimal("100000"),
                 "VND",
                 "Transfer",
+                null,
                 transaction.getCreatedAt(),
                 null
         );

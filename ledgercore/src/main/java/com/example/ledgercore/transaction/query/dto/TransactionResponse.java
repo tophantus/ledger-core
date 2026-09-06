@@ -17,6 +17,7 @@ public record TransactionResponse(
         BigDecimal amount,
         String currency,
         String description,
+        Boolean incoming,
         Instant createdAt,
         Instant completedAt
 ) {

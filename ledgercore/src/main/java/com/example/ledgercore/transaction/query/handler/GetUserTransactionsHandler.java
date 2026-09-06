@@ -20,7 +20,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -75,16 +77,57 @@ public class GetUserTransactionsHandler
                         pageable
                 );
 
+        Set<UUID> accountIdSet = new HashSet<>(accountIds);
+
         return new PageResponse<>(
                 transactionPage.getContent()
                         .stream()
-                        .map(transactionQueryMapper::toResponse)
+                        .map(transaction ->
+                                transactionQueryMapper.toResponse(
+                                        transaction,
+                                        resolveIncoming(
+                                                transaction,
+                                                accountIdSet
+                                        )
+                                )
+                        )
                         .toList(),
                 transactionPage.getNumber(),
                 transactionPage.getSize(),
                 transactionPage.getTotalElements(),
                 transactionPage.getTotalPages()
         );
+    }
+
+    private Boolean resolveIncoming(
+            MoneyTransaction transaction,
+            Set<UUID> accountIds
+    ) {
+        boolean sourceOwned =
+                transaction.getSourceAccountId() != null
+                        && accountIds.contains(
+                        transaction.getSourceAccountId()
+                );
+
+        boolean destinationOwned =
+                transaction.getDestinationAccountId() != null
+                        && accountIds.contains(
+                        transaction.getDestinationAccountId()
+                );
+
+        if (sourceOwned && destinationOwned) {
+            return null;
+        }
+
+        if (destinationOwned) {
+            return true;
+        }
+
+        if (sourceOwned) {
+            return false;
+        }
+
+        return null;
     }
 
     private Specification<MoneyTransaction> buildSpecification(
