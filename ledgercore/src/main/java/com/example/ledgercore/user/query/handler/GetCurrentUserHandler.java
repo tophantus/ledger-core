@@ -7,12 +7,14 @@ import com.example.ledgercore.user.entity.UserProfile;
 import com.example.ledgercore.user.query.dto.CurrentUserResponse;
 import com.example.ledgercore.user.query.dto.UserProfileResponse;
 import com.example.ledgercore.user.query.port.inbound.GetCurrentUserUseCase;
+import com.example.ledgercore.user.query.port.outbound.UserRoleQueryPort;
 import com.example.ledgercore.user.query.repository.UserProfileQueryRepository;
 import com.example.ledgercore.user.query.repository.UserQueryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -22,6 +24,7 @@ public class GetCurrentUserHandler
 
     private final UserQueryRepository userQueryRepository;
     private final UserProfileQueryRepository userProfileQueryRepository;
+    private final UserRoleQueryPort userRoleQueryPort;
 
     @Override
     @Transactional(readOnly = true)
@@ -43,17 +46,26 @@ public class GetCurrentUserHandler
                         )
                 );
 
-        return toResponse(user, profile);
+        Set<String> roles =
+                userRoleQueryPort.getRoleNames(userId);
+
+        return toResponse(
+                user,
+                profile,
+                roles
+        );
     }
 
     private CurrentUserResponse toResponse(
             User user,
-            UserProfile profile
+            UserProfile profile,
+            Set<String> roles
     ) {
         return new CurrentUserResponse(
                 user.getId(),
                 user.getEmail(),
                 user.getStatus(),
+                roles,
                 new UserProfileResponse(
                         profile.getFullName(),
                         profile.getAvatarUrl()

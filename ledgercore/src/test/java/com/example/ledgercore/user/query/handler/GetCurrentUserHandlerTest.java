@@ -5,6 +5,7 @@ import com.example.ledgercore.user.entity.User;
 import com.example.ledgercore.user.entity.UserProfile;
 import com.example.ledgercore.user.enums.UserStatus;
 import com.example.ledgercore.user.query.dto.CurrentUserResponse;
+import com.example.ledgercore.user.query.port.outbound.UserRoleQueryPort;
 import com.example.ledgercore.user.query.repository.UserProfileQueryRepository;
 import com.example.ledgercore.user.query.repository.UserQueryRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.Instant;
+import java.util.Set;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -29,6 +31,9 @@ class GetCurrentUserHandlerTest {
     @Mock
     private UserProfileQueryRepository userProfileQueryRepository;
 
+    @Mock
+    private UserRoleQueryPort userRoleQueryPort;
+
     private GetCurrentUserHandler handler;
 
     private UUID userId;
@@ -38,7 +43,8 @@ class GetCurrentUserHandlerTest {
     void setUp() {
         handler = new GetCurrentUserHandler(
                 userQueryRepository,
-                userProfileQueryRepository
+                userProfileQueryRepository,
+                userRoleQueryPort
         );
 
         userId = UUID.randomUUID();
@@ -48,14 +54,18 @@ class GetCurrentUserHandlerTest {
     @Test
     void shouldGetCurrentUserSuccessfully() {
         User user = createUser();
-
         UserProfile profile = createUserProfile();
+
+        Set<String> roles = Set.of("USER");
 
         when(userQueryRepository.findById(userId))
                 .thenReturn(Optional.of(user));
 
         when(userProfileQueryRepository.findById(userId))
                 .thenReturn(Optional.of(profile));
+
+        when(userRoleQueryPort.getRoleNames(userId))
+                .thenReturn(roles);
 
         CurrentUserResponse response =
                 handler.execute(userId);
@@ -75,6 +85,11 @@ class GetCurrentUserHandlerTest {
         assertEquals(
                 UserStatus.ACTIVE,
                 response.status()
+        );
+
+        assertEquals(
+                roles,
+                response.roles()
         );
 
         assertNotNull(response.profile());
@@ -100,9 +115,13 @@ class GetCurrentUserHandlerTest {
         verify(userProfileQueryRepository)
                 .findById(userId);
 
+        verify(userRoleQueryPort)
+                .getRoleNames(userId);
+
         verifyNoMoreInteractions(
                 userQueryRepository,
-                userProfileQueryRepository
+                userProfileQueryRepository,
+                userRoleQueryPort
         );
     }
 
@@ -126,7 +145,8 @@ class GetCurrentUserHandlerTest {
                 .findById(userId);
 
         verifyNoInteractions(
-                userProfileQueryRepository
+                userProfileQueryRepository,
+                userRoleQueryPort
         );
     }
 
@@ -156,6 +176,10 @@ class GetCurrentUserHandlerTest {
 
         verify(userProfileQueryRepository)
                 .findById(userId);
+
+        verifyNoInteractions(
+                userRoleQueryPort
+        );
     }
 
     @Test
@@ -170,11 +194,16 @@ class GetCurrentUserHandlerTest {
                 .updatedAt(createdAt)
                 .build();
 
+        Set<String> roles = Set.of("USER");
+
         when(userQueryRepository.findById(userId))
                 .thenReturn(Optional.of(user));
 
         when(userProfileQueryRepository.findById(userId))
                 .thenReturn(Optional.of(profile));
+
+        when(userRoleQueryPort.getRoleNames(userId))
+                .thenReturn(roles);
 
         CurrentUserResponse response =
                 handler.execute(userId);
@@ -190,11 +219,83 @@ class GetCurrentUserHandlerTest {
                 response.profile().avatarUrl()
         );
 
+        assertEquals(
+                roles,
+                response.roles()
+        );
+
         verify(userQueryRepository)
                 .findById(userId);
 
         verify(userProfileQueryRepository)
                 .findById(userId);
+
+        verify(userRoleQueryPort)
+                .getRoleNames(userId);
+
+        verifyNoMoreInteractions(
+                userQueryRepository,
+                userProfileQueryRepository,
+                userRoleQueryPort
+        );
+    }
+
+    @Test
+    void shouldReturnMultipleRoles() {
+        User user = createUser();
+        UserProfile profile = createUserProfile();
+
+        Set<String> roles = Set.of(
+                "USER",
+                "ADMIN"
+        );
+
+        when(userQueryRepository.findById(userId))
+                .thenReturn(Optional.of(user));
+
+        when(userProfileQueryRepository.findById(userId))
+                .thenReturn(Optional.of(profile));
+
+        when(userRoleQueryPort.getRoleNames(userId))
+                .thenReturn(roles);
+
+        CurrentUserResponse response =
+                handler.execute(userId);
+
+        assertEquals(
+                roles,
+                response.roles()
+        );
+
+        verify(userRoleQueryPort)
+                .getRoleNames(userId);
+    }
+
+    @Test
+    void shouldReturnEmptyRoles() {
+        User user = createUser();
+        UserProfile profile = createUserProfile();
+
+        when(userQueryRepository.findById(userId))
+                .thenReturn(Optional.of(user));
+
+        when(userProfileQueryRepository.findById(userId))
+                .thenReturn(Optional.of(profile));
+
+        when(userRoleQueryPort.getRoleNames(userId))
+                .thenReturn(Set.of());
+
+        CurrentUserResponse response =
+                handler.execute(userId);
+
+        assertNotNull(response);
+
+        assertTrue(
+                response.roles().isEmpty()
+        );
+
+        verify(userRoleQueryPort)
+                .getRoleNames(userId);
     }
 
     private User createUser() {
