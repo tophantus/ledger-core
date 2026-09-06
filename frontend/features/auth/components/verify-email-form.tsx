@@ -24,7 +24,7 @@ export function VerifyEmailForm() {
     const router = useRouter();
 
     const t = useTranslations("auth.verifyEmail");
-    const tErrors = useTranslations("auth.errors");
+    const tErrors = useTranslations("errors");
 
     const {verifyEmail} = useVerifyEmail();
     const {resendVerificationCode} =
@@ -90,7 +90,7 @@ export function VerifyEmailForm() {
                         result.code &&
                         tErrors.has(result.code)
                             ? tErrors(result.code)
-                            : tErrors("generic"),
+                            : tErrors("fallback"),
                 });
 
                 return;
@@ -99,7 +99,7 @@ export function VerifyEmailForm() {
             router.replace(ROUTES.DASHBOARD);
         } catch {
             setError("root", {
-                message: tErrors("generic"),
+                message: tErrors("fallback"),
             });
         }
     };
@@ -126,7 +126,7 @@ export function VerifyEmailForm() {
                         result.code &&
                         tErrors.has(result.code)
                             ? tErrors(result.code)
-                            : tErrors("generic"),
+                            : tErrors("fallback"),
                 });
 
                 return;
@@ -137,7 +137,7 @@ export function VerifyEmailForm() {
             );
         } catch {
             setError("root", {
-                message: tErrors("generic"),
+                message: tErrors("fallback"),
             });
         } finally {
             setIsResending(false);

@@ -19,7 +19,7 @@ export function RegisterForm() {
     const router = useRouter();
 
     const t = useTranslations("auth.register");
-    const tErrors = useTranslations("auth.errors");
+    const tErrors = useTranslations("errors");
 
     const {signUp} = useSignUp();
 
@@ -48,7 +48,7 @@ export function RegisterForm() {
                         result.code &&
                         tErrors.has(result.code)
                             ? tErrors(result.code)
-                            : tErrors("generic"),
+                            : tErrors("fallback"),
                 });
 
                 return;
@@ -65,7 +65,7 @@ export function RegisterForm() {
             router.push(ROUTES.AUTH.LOGIN);
         } catch {
             setError("root", {
-                message: tErrors("generic"),
+                message: tErrors("fallback"),
             });
         }
     };

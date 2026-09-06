@@ -1,0 +1,72 @@
+{
+  "fallback": "Something went wrong.",
+  "COMMON_001": "Invalid request.",
+
+  "USER_001": "User not found.",
+  "USER_002": "Email already exists.",
+  "USER_003": "User is already active.",
+  "USER_004": "User profile not found.",
+
+  "ROLE_001": "Role not found.",
+
+  "OTP_001": "Invalid OTP.",
+  "OTP_002": "OTP has expired.",
+  "OTP_003": "OTP verification is locked.",
+
+  "ACCOUNT_001": "Account not found.",
+  "ACCOUNT_002": "Account is already active.",
+  "ACCOUNT_003": "Account is already blocked.",
+  "ACCOUNT_004": "Account is already closed.",
+  "ACCOUNT_005": "Account balance must be zero before closing.",
+  "ACCOUNT_006": "Account has insufficient balance.",
+  "ACCOUNT_007": "Account is not active.",
+
+  "BUSINESS_DAY_001": "Current business day not found.",
+  "BUSINESS_DAY_002": "Invalid business day status.",
+  "BUSINESS_DAY_003": "Business day can only be closed during the closing window.",
+  "BUSINESS_DAY_004": "Current business day does not match system date.",
+  "BUSINESS_DAY_005": "Next business day already exists.",
+
+  "LEDGER_001": "Ledger account not found.",
+  "LEDGER_002": "Ledger account is not active.",
+
+  "TRANSACTION_001": "Transaction not found.",
+  "TRANSACTION_002": "Transaction reference already exists.",
+  "TRANSACTION_003": "Source and destination accounts must be different.",
+  "TRANSACTION_004": "Source and destination account currencies must match.",
+  "TRANSACTION_005": "Transfer amount must be greater than zero.",
+  "TRANSACTION_006": "Transaction is not in a valid state for this operation.",
+  "TRANSACTION_007": "Transaction has already been completed.",
+  "TRANSACTION_008": "Transaction has already failed.",
+  "TRANSACTION_009": "Deposit amount must be greater than zero.",
+  "TRANSACTION_010": "Withdraw amount must be greater than zero.",
+  "TRANSACTION_011": "Transfer intent not found.",
+  "TRANSACTION_012": "Transfer intent has expired.",
+
+  "AUTH_001": "Invalid credentials.",
+  "AUTH_002": "User is not active.",
+  "AUTH_003": "Invalid verification code.",
+  "AUTH_004": "Verification code has expired.",
+  "AUTH_005": "Email has already been verified.",
+  "AUTH_006": "Authentication is required.",
+  "AUTH_007": "Access denied.",
+  "AUTH_008": "Invalid refresh token.",
+  "AUTH_009": "Refresh token has been revoked.",
+  "AUTH_010": "Refresh token has expired.",
+  "AUTH_011": "Too many verification code requests.",
+  "AUTH_012": "Please wait before requesting another verification code.",
+  "AUTH_013": "Current password is incorrect.",
+  "AUTH_014": "New password must be different from current password.",
+
+  "WEBHOOK_001": "Invalid webhook URL.",
+  "WEBHOOK_002": "Webhook event types must not be empty.",
+  "WEBHOOK_003": "Webhook endpoint already exists.",
+  "WEBHOOK_004": "Webhook endpoint not found.",
+  "WEBHOOK_005": "Webhook endpoint is disabled.",
+
+  "RECONCILIATION_001": "Reconciliation processor not found.",
+  "RECONCILIATION_002": "Reconciliation run not found.",
+
+  "SYSTEM_001": "Internal server error.",
+  "SYSTEM_002": "Request is being processed."
+}

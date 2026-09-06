@@ -1,0 +1,72 @@
+{
+  "fallback": "Đã xảy ra lỗi.",
+  "COMMON_001": "Yêu cầu không hợp lệ.",
+
+  "USER_001": "Không tìm thấy người dùng.",
+  "USER_002": "Email đã tồn tại.",
+  "USER_003": "Người dùng đã được kích hoạt.",
+  "USER_004": "Không tìm thấy hồ sơ người dùng.",
+
+  "ROLE_001": "Không tìm thấy vai trò.",
+
+  "OTP_001": "Mã OTP không hợp lệ.",
+  "OTP_002": "Mã OTP đã hết hạn.",
+  "OTP_003": "Xác thực OTP đã bị khóa.",
+
+  "ACCOUNT_001": "Không tìm thấy tài khoản.",
+  "ACCOUNT_002": "Tài khoản đã được kích hoạt.",
+  "ACCOUNT_003": "Tài khoản đã bị khóa.",
+  "ACCOUNT_004": "Tài khoản đã được đóng.",
+  "ACCOUNT_005": "Số dư tài khoản phải bằng 0 trước khi đóng.",
+  "ACCOUNT_006": "Số dư tài khoản không đủ.",
+  "ACCOUNT_007": "Tài khoản chưa được kích hoạt.",
+
+  "BUSINESS_DAY_001": "Không tìm thấy ngày giao dịch hiện tại.",
+  "BUSINESS_DAY_002": "Trạng thái ngày giao dịch không hợp lệ.",
+  "BUSINESS_DAY_003": "Chỉ được phép đóng ngày giao dịch trong khoảng thời gian đóng ngày.",
+  "BUSINESS_DAY_004": "Ngày giao dịch hiện tại không khớp với ngày hệ thống.",
+  "BUSINESS_DAY_005": "Ngày giao dịch tiếp theo đã tồn tại.",
+
+  "LEDGER_001": "Không tìm thấy tài khoản ledger.",
+  "LEDGER_002": "Tài khoản ledger chưa được kích hoạt.",
+
+  "TRANSACTION_001": "Không tìm thấy giao dịch.",
+  "TRANSACTION_002": "Mã tham chiếu giao dịch đã tồn tại.",
+  "TRANSACTION_003": "Tài khoản nguồn và tài khoản đích phải khác nhau.",
+  "TRANSACTION_004": "Loại tiền của tài khoản nguồn và tài khoản đích phải giống nhau.",
+  "TRANSACTION_005": "Số tiền chuyển phải lớn hơn 0.",
+  "TRANSACTION_006": "Giao dịch không ở trạng thái hợp lệ để thực hiện thao tác này.",
+  "TRANSACTION_007": "Giao dịch đã được hoàn thành.",
+  "TRANSACTION_008": "Giao dịch đã thất bại.",
+  "TRANSACTION_009": "Số tiền nạp phải lớn hơn 0.",
+  "TRANSACTION_010": "Số tiền rút phải lớn hơn 0.",
+  "TRANSACTION_011": "Không tìm thấy yêu cầu chuyển tiền.",
+  "TRANSACTION_012": "Yêu cầu chuyển tiền đã hết hạn.",
+
+  "AUTH_001": "Thông tin đăng nhập không hợp lệ.",
+  "AUTH_002": "Người dùng chưa được kích hoạt.",
+  "AUTH_003": "Mã xác thực không hợp lệ.",
+  "AUTH_004": "Mã xác thực đã hết hạn.",
+  "AUTH_005": "Email đã được xác thực.",
+  "AUTH_006": "Yêu cầu xác thực.",
+  "AUTH_007": "Bạn không có quyền truy cập.",
+  "AUTH_008": "Refresh token không hợp lệ.",
+  "AUTH_009": "Refresh token đã bị thu hồi.",
+  "AUTH_010": "Refresh token đã hết hạn.",
+  "AUTH_011": "Đã yêu cầu mã xác thực quá nhiều lần.",
+  "AUTH_012": "Vui lòng đợi trước khi yêu cầu mã xác thực mới.",
+  "AUTH_013": "Mật khẩu hiện tại không chính xác.",
+  "AUTH_014": "Mật khẩu mới phải khác mật khẩu hiện tại.",
+
+  "WEBHOOK_001": "URL webhook không hợp lệ.",
+  "WEBHOOK_002": "Danh sách loại sự kiện webhook không được để trống.",
+  "WEBHOOK_003": "Webhook endpoint đã tồn tại.",
+  "WEBHOOK_004": "Không tìm thấy webhook endpoint.",
+  "WEBHOOK_005": "Webhook endpoint đã bị vô hiệu hóa.",
+
+  "RECONCILIATION_001": "Không tìm thấy reconciliation processor.",
+  "RECONCILIATION_002": "Không tìm thấy reconciliation run.",
+
+  "SYSTEM_001": "Đã xảy ra lỗi hệ thống.",
+  "SYSTEM_002": "Yêu cầu đang được xử lý."
+}

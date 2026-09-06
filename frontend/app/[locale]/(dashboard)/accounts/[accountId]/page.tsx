@@ -13,9 +13,7 @@ import {useRouter} from "@/i18n/routing";
 import {ROUTES} from "@/lib/constants/routes";
 
 export default function AccountDetailsPage() {
-    const t = useTranslations(
-        "dashboard.account.details",
-    );
+    const tErrors = useTranslations("errors");
 
     const router = useRouter();
 
@@ -49,6 +47,9 @@ export default function AccountDetailsPage() {
     const [hasError, setHasError] =
         useState(false);
 
+    const [errorMessage, setErrorMessage] =
+        useState<string | null>(null);
+
     useEffect(() => {
         let mounted = true;
 
@@ -63,6 +64,14 @@ export default function AccountDetailsPage() {
 
                 if (!response.success) {
                     setHasError(true);
+
+                    setErrorMessage(
+                        response.code &&
+                        tErrors.has(response.code)
+                            ? tErrors(response.code)
+                            : tErrors("fallback"),
+                    );
+
                     return;
                 }
 
@@ -72,6 +81,9 @@ export default function AccountDetailsPage() {
             } catch {
                 if (mounted) {
                     setHasError(true);
+                    setErrorMessage(
+                        tErrors("fallback"),
+                    );
                 }
             } finally {
                 if (mounted) {
@@ -91,6 +103,7 @@ export default function AccountDetailsPage() {
         getAccount,
         setCurrentAccount,
         clearCurrentAccount,
+        tErrors,
     ]);
 
     if (isLoading) {
@@ -108,8 +121,9 @@ export default function AccountDetailsPage() {
     if (hasError || !account) {
         return (
             <section className="rounded-lg border border-border bg-surface p-8 text-center">
-                <p className="text-sm text-muted">
-                    {t("loadError")}
+                <p className="text-sm text-danger">
+                    {errorMessage ??
+                        tErrors("fallback")}
                 </p>
             </section>
         );

@@ -6,7 +6,7 @@ import {
     CheckCircle2,
     Loader2,
 } from "lucide-react";
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useTranslations} from "next-intl";
@@ -50,6 +50,8 @@ type TransferStep =
 
 export default function TransferPage() {
     const t = useTranslations("transaction");
+    const tErrors = useTranslations("errors");
+
     const router = useRouter();
 
     const {getMyAccounts} = useMyAccounts();
@@ -129,6 +131,19 @@ export default function TransferPage() {
             },
         });
 
+    const getErrorMessage = useCallback((
+        code?: string,
+    ): string => {
+        if (
+            code &&
+            tErrors.has(code)
+        ) {
+            return tErrors(code);
+        }
+
+        return tErrors("fallback");
+    }, [tErrors]);
+
     useEffect(() => {
         let mounted = true;
 
@@ -145,8 +160,11 @@ export default function TransferPage() {
 
                 if (!response.success) {
                     setError(
-                        t("transfer.loadAccountsError"),
+                        getErrorMessage(
+                            response.code,
+                        ),
                     );
+
                     return;
                 }
 
@@ -154,7 +172,7 @@ export default function TransferPage() {
             } catch {
                 if (mounted) {
                     setError(
-                        t("transfer.loadAccountsError"),
+                        tErrors("fallback"),
                     );
                 }
             } finally {
@@ -169,7 +187,7 @@ export default function TransferPage() {
         return () => {
             mounted = false;
         };
-    }, [getMyAccounts, t]);
+    }, [getErrorMessage, getMyAccounts, t, tErrors]);
 
     const handleSelectSource = (
         account: AccountSummary,
@@ -194,8 +212,8 @@ export default function TransferPage() {
 
                     if (!response.success) {
                         setError(
-                            t(
-                                "transfer.destinationNotFound",
+                            getErrorMessage(
+                                response.code,
                             ),
                         );
                         return;
@@ -205,9 +223,7 @@ export default function TransferPage() {
                     setStep("DETAILS");
                 } catch {
                     setError(
-                        t(
-                            "transfer.destinationNotFound",
-                        ),
+                        tErrors("fallback"),
                     );
                 } finally {
                     setIsHolderLoading(false);
@@ -258,8 +274,8 @@ export default function TransferPage() {
 
                     if (!response.success) {
                         setError(
-                            t(
-                                "transfer.createIntentError",
+                            getErrorMessage(
+                                response.code,
                             ),
                         );
                         return;
@@ -269,9 +285,7 @@ export default function TransferPage() {
                     setStep("OTP");
                 } catch {
                     setError(
-                        t(
-                            "transfer.createIntentError",
-                        ),
+                        tErrors("fallback"),
                     );
                 } finally {
                     setIsIntentLoading(false);
@@ -298,8 +312,8 @@ export default function TransferPage() {
 
                     if (!response.success) {
                         setError(
-                            t(
-                                "transfer.confirmError",
+                            getErrorMessage(
+                                response.code,
                             ),
                         );
                         return;
@@ -309,9 +323,7 @@ export default function TransferPage() {
                     setStep("RESULT");
                 } catch {
                     setError(
-                        t(
-                            "transfer.confirmError",
-                        ),
+                        tErrors("fallback"),
                     );
                 } finally {
                     setIsConfirmLoading(false);

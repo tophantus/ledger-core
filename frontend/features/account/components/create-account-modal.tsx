@@ -1,7 +1,7 @@
 "use client";
 
 import {X} from "lucide-react";
-import {useEffect} from "react";
+import {useState} from "react";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useTranslations} from "next-intl";
@@ -31,9 +31,13 @@ export function CreateAccountModal({
                                        onSuccess,
                                    }: CreateAccountModalProps) {
     const t = useTranslations("account");
+    const tErrors = useTranslations("errors");
 
     const {createAccount} =
         useCreateAccount();
+
+    const [errorMessage, setErrorMessage] =
+        useState<string | null>(null);
 
     const {
         register,
@@ -52,21 +56,21 @@ export function CreateAccountModal({
         },
     });
 
-    useEffect(() => {
-        if (!open) {
-            reset({
-                currency: "VND",
-            });
-        }
-    }, [open, reset]);
+    const handleClose = () => {
+        reset({
+            currency: "VND",
+        });
 
-    if (!open) {
-        return null;
-    }
+        setErrorMessage(null);
+
+        onClose();
+    };
 
     const onSubmit = async (
         values: CreateAccountForm,
     ) => {
+        setErrorMessage(null);
+
         try {
             const response =
                 await createAccount({
@@ -74,6 +78,13 @@ export function CreateAccountModal({
                 });
 
             if (!response.success) {
+                setErrorMessage(
+                    response.code &&
+                    tErrors.has(response.code)
+                        ? tErrors(response.code)
+                        : tErrors("fallback"),
+                );
+
                 return;
             }
 
@@ -81,10 +92,19 @@ export function CreateAccountModal({
                 currency: "VND",
             });
 
+            setErrorMessage(null);
+
             onSuccess();
         } catch {
+            setErrorMessage(
+                tErrors("fallback"),
+            );
         }
     };
+
+    if (!open) {
+        return null;
+    }
 
     return (
         <div
@@ -103,7 +123,7 @@ export function CreateAccountModal({
                     event.target ===
                     event.currentTarget
                 ) {
-                    onClose();
+                    handleClose();
                 }
             }}
         >
@@ -141,7 +161,8 @@ export function CreateAccountModal({
 
                     <button
                         type="button"
-                        onClick={onClose}
+                        onClick={handleClose}
+                        disabled={isSubmitting}
                         className="
                             rounded-md
                             p-2
@@ -149,6 +170,8 @@ export function CreateAccountModal({
                             transition
                             hover:bg-secondary
                             hover:text-secondary-foreground
+                            disabled:cursor-not-allowed
+                            disabled:opacity-50
                         "
                         aria-label={t(
                             "create.close",
@@ -164,6 +187,24 @@ export function CreateAccountModal({
                     )}
                     className="p-6"
                 >
+                    {errorMessage && (
+                        <div
+                            className="
+                                mb-6
+                                rounded-md
+                                border
+                                border-danger/20
+                                bg-danger-subtle
+                                px-4
+                                py-3
+                                text-sm
+                                text-danger
+                            "
+                        >
+                            {errorMessage}
+                        </div>
+                    )}
+
                     <div>
                         <label
                             htmlFor="create-account-currency"
@@ -192,6 +233,9 @@ export function CreateAccountModal({
                                 text-sm
                                 text-foreground
                                 outline-none
+                                transition
+                                focus:ring-2
+                                focus:ring-primary/20
                             "
                         >
                             {SUPPORTED_CURRENCIES.map(
@@ -220,7 +264,7 @@ export function CreateAccountModal({
                         <Button
                             type="button"
                             variant="outline"
-                            onClick={onClose}
+                            onClick={handleClose}
                             disabled={isSubmitting}
                         >
                             {t("create.cancel")}

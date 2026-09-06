@@ -7,6 +7,7 @@ import type {
     TransactionStatus,
     TransactionType,
 } from "../types/transaction";
+import React from "react";
 
 interface TransactionFilterProps {
     filters: TransactionFilters;
@@ -199,7 +200,6 @@ export function TransactionFilter({
                             text-sm
                             text-text-primary
                             outline-none
-                            focus:border-primary
                         "
                     >
                         <option value="">
@@ -240,7 +240,6 @@ export function TransactionFilter({
                             text-sm
                             text-text-primary
                             outline-none
-                            focus:border-primary
                         "
                     >
                         <option value="">
@@ -289,8 +288,6 @@ export function TransactionFilter({
                             uppercase
                             text-text-primary
                             outline-none
-                            placeholder:text-text-muted
-                            focus:border-primary
                         "
                     />
                 </div>
@@ -320,7 +317,6 @@ export function TransactionFilter({
                             text-sm
                             text-text-primary
                             outline-none
-                            focus:border-primary
                         "
                     />
                 </div>
@@ -351,7 +347,6 @@ export function TransactionFilter({
                             text-sm
                             text-text-primary
                             outline-none
-                            focus:border-primary
                         "
                     />
                 </div>

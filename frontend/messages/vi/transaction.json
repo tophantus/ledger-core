@@ -4,12 +4,10 @@
   "userTransactions": "Tất cả giao dịch của các tài khoản.",
   "accountTitle": "Giao dịch tài khoản",
   "accountTransactions": "Lịch sử giao dịch của tài khoản này.",
-  "accountLoadError": "Không thể tải thông tin tài khoản.",
   "recent": {
     "title": "Giao dịch gần đây",
     "viewAll": "Xem tất cả",
-    "empty": "Chưa có giao dịch nào.",
-    "loadError": "Không thể tải các giao dịch gần đây."
+    "empty": "Chưa có giao dịch nào."
   },
   "actions": {
     "title": "Thao tác nhanh",
@@ -32,10 +30,8 @@
     "selectSource": "Chọn tài khoản nguồn",
     "sourceAccount": "Tài khoản nguồn",
     "noAccounts": "Bạn không có tài khoản đang hoạt động.",
-    "loadAccountsError": "Không thể tải danh sách tài khoản.",
     "destinationAccount": "Số tài khoản đích",
     "destinationPlaceholder": "Nhập số tài khoản",
-    "destinationNotFound": "Không tìm thấy tài khoản đích.",
     "recipient": "Người nhận",
     "amount": "Số tiền",
     "reference": "Mã tham chiếu",
@@ -44,13 +40,11 @@
     "descriptionPlaceholder": "Nội dung tùy chọn",
     "continue": "Tiếp tục",
     "review": "Tiếp tục xác nhận",
-    "createIntentError": "Không thể tạo giao dịch chuyển tiền. Vui lòng thử lại.",
     "confirmTitle": "Xác nhận chuyển tiền",
     "confirmDescription": "Nhập OTP để xác nhận giao dịch.",
     "otp": "Mã OTP",
     "otpPlaceholder": "Nhập mã OTP",
     "confirm": "Xác nhận chuyển tiền",
-    "confirmError": "Không thể xác nhận giao dịch. Vui lòng kiểm tra OTP và thử lại.",
     "successTitle": "Chuyển tiền thành công",
     "successDescription": "Giao dịch chuyển tiền đã được hoàn tất.",
     "transactionId": "Mã giao dịch",

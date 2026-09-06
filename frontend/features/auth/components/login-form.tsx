@@ -19,7 +19,7 @@ export function LoginForm() {
     const router = useRouter();
 
     const t = useTranslations("auth.login");
-    const tErrors = useTranslations("auth.errors");
+    const tErrors = useTranslations("errors");
 
     const {login} = useLogin();
 
@@ -47,7 +47,7 @@ export function LoginForm() {
                         result.code &&
                         tErrors.has(result.code)
                             ? tErrors(result.code)
-                            : tErrors("generic"),
+                            : tErrors("fallback"),
                 });
 
                 return;
@@ -64,11 +64,11 @@ export function LoginForm() {
             }
 
             setError("root", {
-                message: tErrors("generic"),
+                message: tErrors("fallback"),
             });
         } catch {
             setError("root", {
-                message: tErrors("generic"),
+                message: tErrors("fallback"),
             });
         }
     };

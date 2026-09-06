@@ -1,6 +1,6 @@
 "use client";
 
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useMemo, useState} from "react";
 import {useTranslations} from "next-intl";
 
 import {Link} from "@/i18n/routing";
@@ -20,6 +20,7 @@ export function RecentTransactionList({
                                           accountId,
                                       }: RecentTransactionListProps) {
     const t = useTranslations("transaction");
+    const tErrors = useTranslations("errors");
 
     const {getAccountTransactions} =
         useAccountTransactions();
@@ -30,15 +31,28 @@ export function RecentTransactionList({
     const [isLoading, setIsLoading] =
         useState(true);
 
-    const [hasError, setHasError] =
-        useState(false);
+    const [errorMessage, setErrorMessage] =
+        useState<string | null>(null);
+
+    const getErrorMessage = useCallback((
+        code?: string,
+    ): string => {
+        if (
+            code &&
+            tErrors.has(code)
+        ) {
+            return tErrors(code);
+        }
+
+        return tErrors("fallback");
+    }, [tErrors]);
 
     useEffect(() => {
         let mounted = true;
 
         const loadTransactions = async () => {
             setIsLoading(true);
-            setHasError(false);
+            setErrorMessage(null);
 
             try {
                 const response =
@@ -55,7 +69,12 @@ export function RecentTransactionList({
                 }
 
                 if (!response.success) {
-                    setHasError(true);
+                    setErrorMessage(
+                        getErrorMessage(
+                            response.code,
+                        ),
+                    );
+
                     return;
                 }
 
@@ -64,7 +83,9 @@ export function RecentTransactionList({
                 );
             } catch {
                 if (mounted) {
-                    setHasError(true);
+                    setErrorMessage(
+                        tErrors("fallback"),
+                    );
                 }
             } finally {
                 if (mounted) {
@@ -78,21 +99,22 @@ export function RecentTransactionList({
         return () => {
             mounted = false;
         };
-    }, [
-        accountId,
-        getAccountTransactions,
-    ]);
+    }, [accountId, getAccountTransactions, getErrorMessage, tErrors]);
+
+    const href = useMemo(() => {
+        return `${ROUTES.TRANSACTION.LIST}?accountId=${accountId}`
+    }, [accountId]);
 
     return (
         <section className="rounded-lg border border-border bg-surface">
             <div className="flex items-center justify-between border-b border-border px-6 py-4">
-                <h2 className="text-lg font-semibold text-text-primary">
+                <h2 className="text-lg font-semibold text-primary">
                     {t("recent.title")}
                 </h2>
 
                 <Link
-                    href={`${ROUTES.TRANSACTION.LIST}?accountId=${accountId}`}
-                    className="text-sm font-medium text-text-primary hover:underline"
+                    href={href}
+                    className="text-sm font-medium text-primary hover:underline"
                 >
                     {t("recent.viewAll")}
                 </Link>
@@ -111,26 +133,27 @@ export function RecentTransactionList({
                     </div>
                 )}
 
-                {!isLoading && hasError && (
-                    <div className="py-8 text-center">
-                        <p className="text-sm text-text-muted">
-                            {t("recent.loadError")}
-                        </p>
-                    </div>
-                )}
+                {!isLoading &&
+                    errorMessage && (
+                        <div className="py-8 text-center">
+                            <p className="text-sm text-danger">
+                                {errorMessage}
+                            </p>
+                        </div>
+                    )}
 
                 {!isLoading &&
-                    !hasError &&
+                    !errorMessage &&
                     transactions.length === 0 && (
                         <div className="py-8 text-center">
-                            <p className="text-sm text-text-muted">
+                            <p className="text-sm text-muted">
                                 {t("recent.empty")}
                             </p>
                         </div>
                     )}
 
                 {!isLoading &&
-                    !hasError &&
+                    !errorMessage &&
                     transactions.length > 0 && (
                         <div>
                             {transactions.map(

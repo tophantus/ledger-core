@@ -4,12 +4,10 @@
   "userTransactions": "All transactions across your accounts.",
   "accountTitle": "Account transactions",
   "accountTransactions": "Transaction history for this account.",
-  "accountLoadError": "Unable to load account information.",
   "recent": {
     "title": "Recent transactions",
     "viewAll": "View all",
-    "empty": "No transactions yet.",
-    "loadError": "Unable to load recent transactions."
+    "empty": "No transactions yet."
   },
   "actions": {
     "title": "Quick actions",
@@ -32,10 +30,8 @@
     "selectSource": "Select source account",
     "sourceAccount": "Source account",
     "noAccounts": "You don't have any active accounts.",
-    "loadAccountsError": "Unable to load your accounts.",
     "destinationAccount": "Destination account number",
     "destinationPlaceholder": "Enter account number",
-    "destinationNotFound": "Unable to find the destination account.",
     "recipient": "Recipient",
     "amount": "Amount",
     "reference": "Reference",
@@ -44,13 +40,11 @@
     "descriptionPlaceholder": "Optional description",
     "continue": "Continue",
     "review": "Continue to confirmation",
-    "createIntentError": "Unable to create the transfer. Please try again.",
     "confirmTitle": "Confirm transfer",
     "confirmDescription": "Enter the OTP to confirm this transfer.",
     "otp": "OTP",
     "otpPlaceholder": "Enter OTP",
     "confirm": "Confirm transfer",
-    "confirmError": "Unable to confirm the transfer. Please check your OTP and try again.",
     "successTitle": "Transfer successful",
     "successDescription": "Your transfer has been completed successfully.",
     "transactionId": "Transaction ID",

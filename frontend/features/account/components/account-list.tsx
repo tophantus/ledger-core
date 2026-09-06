@@ -12,7 +12,7 @@ import {CreateAccountCard} from "@/features/account/components/create-account-ca
 import {CreateAccountModal} from "@/features/account/components/create-account-modal";
 
 export function AccountList() {
-    const t = useTranslations("account");
+    const tErrors = useTranslations("errors");
 
     const {getMyAccounts} = useMyAccounts();
 
@@ -25,6 +25,9 @@ export function AccountList() {
 
     const [hasError, setHasError] =
         useState(false);
+
+    const [errorMessage, setErrorMessage] =
+        useState<string | null>(null);
 
     const [isCreateModalOpen, setIsCreateModalOpen] =
         useState(false);
@@ -39,6 +42,7 @@ export function AccountList() {
         const loadAccounts = async () => {
             setIsLoading(true);
             setHasError(false);
+            setErrorMessage(null);
 
             try {
                 const response =
@@ -50,11 +54,22 @@ export function AccountList() {
 
                 if (!response.success) {
                     setHasError(true);
+
+                    setErrorMessage(
+                        response.code &&
+                        tErrors.has(response.code)
+                            ? tErrors(response.code)
+                            : tErrors("fallback"),
+                    );
+
                     return;
                 }
             } catch {
                 if (mounted) {
                     setHasError(true);
+                    setErrorMessage(
+                        tErrors("fallback"),
+                    );
                 }
             } finally {
                 if (mounted) {
@@ -68,7 +83,7 @@ export function AccountList() {
         return () => {
             mounted = false;
         };
-    }, [getMyAccounts]);
+    }, [getMyAccounts, tErrors]);
 
     if (isLoading) {
         return (
@@ -102,28 +117,9 @@ export function AccountList() {
                     p-6
                 "
             >
-                <p className="text-sm text-text-muted">
-                    {t("loadError")}
-                </p>
-            </div>
-        );
-    }
-
-    if (accounts.length === 0) {
-        return (
-            <div
-                className="
-                    rounded-lg
-                    border
-                    border-dashed
-                    border-border
-                    bg-surface
-                    p-8
-                    text-center
-                "
-            >
-                <p className="text-sm text-text-muted">
-                    {t("empty")}
+                <p className="text-sm text-danger">
+                    {errorMessage ??
+                        tErrors("fallback")}
                 </p>
             </div>
         );
@@ -133,11 +129,11 @@ export function AccountList() {
         <>
             <div
                 className="
-                grid
-                gap-4
-                sm:grid-cols-2
-                lg:grid-cols-3
-            "
+                    grid
+                    gap-4
+                    sm:grid-cols-2
+                    lg:grid-cols-3
+                "
             >
                 {accounts.map((account) => (
                     <AccountCard
@@ -152,6 +148,7 @@ export function AccountList() {
                     }
                 />
             </div>
+
             <CreateAccountModal
                 open={isCreateModalOpen}
                 onClose={() =>
