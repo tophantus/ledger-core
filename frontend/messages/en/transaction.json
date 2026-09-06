@@ -11,6 +11,13 @@
     "empty": "No transactions yet.",
     "loadError": "Unable to load recent transactions."
   },
+  "actions": {
+    "title": "Quick actions",
+    "transfer": "Transfer",
+    "transferDescription": "Send money to another account.",
+    "withdraw": "Withdraw",
+    "withdrawDescription": "Withdraw money from your account."
+  },
   "list": {
     "empty": "No transactions found.",
     "loadError": "Unable to load transactions."

@@ -4,6 +4,7 @@ import {useTranslations} from "next-intl";
 
 import {AccountList} from "@/features/account/components/account-list";
 import {useUserStore} from "@/features/user/stores/user-store";
+import {TransactionActions} from "@/features/transaction/components/transaction-actions";
 
 export default function DashboardPage() {
     const t = useTranslations("dashboard");
@@ -26,6 +27,8 @@ export default function DashboardPage() {
                     })}
                 </p>
             </div>
+
+            <TransactionActions />
 
             <AccountList />
         </section>

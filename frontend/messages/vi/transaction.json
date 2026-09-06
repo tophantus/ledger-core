@@ -11,6 +11,13 @@
     "empty": "Chưa có giao dịch nào.",
     "loadError": "Không thể tải các giao dịch gần đây."
   },
+  "actions": {
+    "title": "Thao tác nhanh",
+    "transfer": "Chuyển tiền",
+    "transferDescription": "Chuyển tiền đến tài khoản khác.",
+    "withdraw": "Rút tiền",
+    "withdrawDescription": "Rút tiền từ tài khoản của bạn."
+  },
   "list": {
     "empty": "Không tìm thấy giao dịch nào.",
     "loadError": "Không thể tải danh sách giao dịch."
