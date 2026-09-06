@@ -19,6 +19,8 @@
     "type": "Loại giao dịch",
     "status": "Trạng thái",
     "currency": "Loại tiền",
+    "from": "Từ ngày",
+    "to": "Đến ngày",
     "allTypes": "Tất cả loại",
     "allStatuses": "Tất cả trạng thái",
     "clear": "Xóa bộ lọc"
