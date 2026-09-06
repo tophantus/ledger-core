@@ -1,5 +1,6 @@
 package com.example.ledgercore.businessday.command.handler;
 
+import com.example.ledgercore.businessday.command.port.outbound.BusinessDayEventPort;
 import com.example.ledgercore.businessday.command.repository.BusinessDayCommandRepository;
 import com.example.ledgercore.businessday.config.BusinessDayProperties;
 import com.example.ledgercore.businessday.entity.BusinessDay;
@@ -60,6 +61,9 @@ class CloseBusinessDayHandlerTest {
     private BusinessDayProperties
             businessDayProperties;
 
+    @Mock
+    private BusinessDayEventPort businessDayEventPort;
+
     private CloseBusinessDayHandler handler;
 
     @BeforeEach
@@ -67,6 +71,7 @@ class CloseBusinessDayHandlerTest {
         handler = new CloseBusinessDayHandler(
                 businessDayCommandRepository,
                 businessDayProperties,
+                businessDayEventPort,
                 Clock.fixed(
                         CLOSING_TIME,
                         ZONE_ID
@@ -195,6 +200,7 @@ class CloseBusinessDayHandlerTest {
         handler = new CloseBusinessDayHandler(
                 businessDayCommandRepository,
                 businessDayProperties,
+                businessDayEventPort,
                 Clock.fixed(
                         BEFORE_CLOSING_TIME,
                         ZONE_ID
@@ -250,6 +256,7 @@ class CloseBusinessDayHandlerTest {
         handler = new CloseBusinessDayHandler(
                 businessDayCommandRepository,
                 businessDayProperties,
+                businessDayEventPort,
                 Clock.fixed(
                         RECOVERY_TIME,
                         ZONE_ID

@@ -38,7 +38,7 @@ public class GetUserActiveAccountsHandler implements GetUserActiveAccountsUseCas
                 account.getId(),
                 account.getAccountNo(),
                 account.getCurrency(),
-                account.getBalance(),
+                account.getBalance().toPlainString(),
                 account.getStatus()
         );
     }

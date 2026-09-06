@@ -9,7 +9,7 @@ public record AccountSummaryResponse(
         UUID id,
         String accountNo,
         String currency,
-        BigDecimal balance,
+        String balance,
         AccountStatus status
 ) {
 }

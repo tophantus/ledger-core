@@ -68,7 +68,7 @@ class GetAccountHandlerTest {
         assertEquals(account.getUserId(), response.userId());
         assertEquals(account.getAccountNo(), response.accountNo());
         assertEquals(account.getCurrency(), response.currency());
-        assertEquals(account.getBalance(), response.balance());
+        assertEquals(account.getBalance().toPlainString(), response.balance());
         assertEquals(account.getStatus(), response.status());
         assertEquals(account.getCreatedAt(), response.createdAt());
         assertEquals(account.getUpdatedAt(), response.updatedAt());

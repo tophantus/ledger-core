@@ -38,7 +38,7 @@ public class GetAccountHandler implements GetAccountUseCase {
                 account.getUserId(),
                 account.getAccountNo(),
                 account.getCurrency(),
-                account.getBalance(),
+                account.getBalance().toPlainString(),
                 account.getStatus(),
                 account.getCreatedAt(),
                 account.getUpdatedAt()
