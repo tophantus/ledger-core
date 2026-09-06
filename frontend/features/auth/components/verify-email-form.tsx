@@ -7,6 +7,7 @@ import {zodResolver} from "@hookform/resolvers/zod";
 
 import {useRouter} from "@/i18n/routing";
 import {ROUTES} from "@/lib/constants/routes";
+import {Button} from "@/components/ui/button";
 
 import {useVerifyEmail} from "../hooks/use-verify-email";
 import {useResendVerificationCode} from "../hooks/use-resend-verification-code";
@@ -15,6 +16,7 @@ import {
     type VerifyEmailFormValues,
 } from "../schemas/auth-schema";
 import {useAuthStore} from "../stores/auth-store";
+import {Logo} from "@/components/common/logo";
 
 const RESEND_COOLDOWN_SECONDS = 30;
 
@@ -94,9 +96,7 @@ export function VerifyEmailForm() {
                 return;
             }
 
-            router.replace(
-                ROUTES.DASHBOARD,
-            );
+            router.replace(ROUTES.DASHBOARD);
         } catch {
             setError("root", {
                 message: t("errors.generic"),
@@ -149,18 +149,22 @@ export function VerifyEmailForm() {
             onSubmit={handleSubmit(onSubmit)}
             className="space-y-6"
         >
-            <div className="space-y-1">
-                <h1 className="text-2xl font-semibold text-text-primary">
-                    {t("title")}
-                </h1>
+            <div className="flex flex-col items-center gap-4">
+                <Logo size={56} />
 
-                <p className="text-sm text-text-secondary">
-                    {t("description")}
-                </p>
+                <div className="space-y-1 text-center">
+                    <h1 className="text-2xl font-semibold text-text-primary">
+                        {t("title")}
+                    </h1>
 
-                <p className="pt-2 text-sm font-medium text-text-primary">
-                    {pendingVerification.email}
-                </p>
+                    <p className="text-sm text-text-secondary">
+                        {t("description")}
+                    </p>
+
+                    <p className="pt-2 text-sm font-medium text-text-primary">
+                        {pendingVerification.email}
+                    </p>
+                </div>
             </div>
 
             {errors.root && (
@@ -195,35 +199,29 @@ export function VerifyEmailForm() {
                 )}
             </div>
 
-            <button
+            <Button
                 type="submit"
-                disabled={isSubmitting}
-                className="w-full rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
+                loading={isSubmitting}
+                className="w-full"
             >
-                {isSubmitting
-                    ? t("verifying")
-                    : t("submit")}
-            </button>
+                {t("submit")}
+            </Button>
 
             <div className="text-center">
-                <button
+                <Button
                     type="button"
+                    variant="ghost"
+                    loading={isResending}
+                    disabled={resendCooldown > 0}
                     onClick={handleResend}
-                    disabled={
-                        isResending ||
-                        resendCooldown > 0
-                    }
-                    className="text-sm font-medium text-primary hover:underline disabled:cursor-not-allowed disabled:no-underline disabled:opacity-50"
+                    className="text-sm font-medium text-primary hover:underline disabled:no-underline"
                 >
-                    {isResending
-                        ? t("resending")
-                        : resendCooldown > 0
-                            ? t("resendIn", {
-                                seconds:
-                                resendCooldown,
-                            })
-                            : t("resend")}
-                </button>
+                    {resendCooldown > 0
+                        ? t("resendIn", {
+                            seconds: resendCooldown,
+                        })
+                        : t("resend")}
+                </Button>
             </div>
         </form>
     );

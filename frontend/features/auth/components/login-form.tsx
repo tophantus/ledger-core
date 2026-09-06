@@ -6,6 +6,8 @@ import {zodResolver} from "@hookform/resolvers/zod";
 
 import {useRouter, Link} from "@/i18n/routing";
 import {ROUTES} from "@/lib/constants/routes";
+import {Button} from "@/components/ui/button";
+import {Logo} from "@/components/common/logo";
 
 import {useLogin} from "../hooks/use-login";
 import {
@@ -39,7 +41,6 @@ export function LoginForm() {
         try {
             const result = await login(values);
 
-            console.log(result)
             if (!result.success) {
                 setError("root", {
                     message:
@@ -58,7 +59,7 @@ export function LoginForm() {
             }
 
             if (result.data.status === "AUTHENTICATED") {
-                router.push(ROUTES.DASHBOARD,);
+                router.push(ROUTES.DASHBOARD);
                 return;
             }
 
@@ -77,14 +78,18 @@ export function LoginForm() {
             onSubmit={handleSubmit(onSubmit)}
             className="space-y-6"
         >
-            <div className="space-y-1">
-                <h1 className="text-2xl font-semibold text-text-primary">
-                    {t("title")}
-                </h1>
+            <div className="flex flex-col items-center gap-4">
+                <Logo size={56} />
 
-                <p className="text-sm text-text-secondary">
-                    {t("description")}
-                </p>
+                <div className="space-y-1 text-center">
+                    <h1 className="text-2xl font-semibold text-text-primary">
+                        {t("title")}
+                    </h1>
+
+                    <p className="text-sm text-text-secondary">
+                        {t("description")}
+                    </p>
+                </div>
             </div>
 
             {errors.root && (
@@ -141,15 +146,13 @@ export function LoginForm() {
                 )}
             </div>
 
-            <button
+            <Button
                 type="submit"
-                disabled={isSubmitting}
-                className="w-full rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
+                loading={isSubmitting}
+                className="w-full"
             >
-                {isSubmitting
-                    ? t("submitting")
-                    : t("submit")}
-            </button>
+                {t("submit")}
+            </Button>
 
             <div className="text-center text-sm text-text-secondary">
                 {t("noAccount")}{" "}
