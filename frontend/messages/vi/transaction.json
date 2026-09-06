@@ -65,6 +65,20 @@
     "empty": "Không tìm thấy giao dịch nào.",
     "loadError": "Không thể tải danh sách giao dịch."
   },
+  "detail": {
+    "title": "Chi tiết giao dịch",
+    "description": "Xem thông tin chi tiết của giao dịch này.",
+    "reference": "Mã tham chiếu",
+    "type": "Loại giao dịch",
+    "status": "Trạng thái",
+    "amount": "Số tiền",
+    "sourceAccount": "Tài khoản nguồn",
+    "destinationAccount": "Tài khoản nhận",
+    "descriptionField": "Nội dung",
+    "createdAt": "Thời gian tạo",
+    "completedAt": "Thời gian hoàn tất",
+    "transactionId": "Mã giao dịch"
+  },
   "filters": {
     "type": "Loại giao dịch",
     "status": "Trạng thái",

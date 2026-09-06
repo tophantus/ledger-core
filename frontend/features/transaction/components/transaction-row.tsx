@@ -7,6 +7,8 @@ import {
 import {useTranslations} from "next-intl";
 
 import type {Transaction} from "../types/transaction";
+import {Link} from "@/i18n/routing";
+import {ROUTES} from "@/lib/constants/routes";
 
 interface TransactionRowProps {
     transaction: Transaction;
@@ -40,7 +42,12 @@ export function TransactionRow({
     const isOutgoing = transaction.incoming !== null && !transaction.incoming;
 
     return (
-        <div className="flex gap-4 border-b border-border py-5">
+        <Link
+            href={ROUTES.TRANSACTION.DETAIL(
+                transaction.id,
+            )}
+            className="flex gap-4 border-b border-border py-5"
+        >
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-background-subtle">
                 {isIncoming ? (
                     <ArrowDownLeft className="h-5 w-5 text-success" />
@@ -96,6 +103,6 @@ export function TransactionRow({
                     {formatDate(transaction.createdAt)}
                 </p>
             </div>
-        </div>
+        </Link>
     );
 }

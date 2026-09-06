@@ -16,5 +16,7 @@ export const ROUTES = {
         LIST: "/transactions",
         TRANSFER: "/transfer",
         WITHDRAW: "/withdraw",
+        DETAIL: (transactionId: string) =>
+            `/transactions/${transactionId}`,
     },
 } as const;

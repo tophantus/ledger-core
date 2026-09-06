@@ -65,6 +65,20 @@
     "empty": "No transactions found.",
     "loadError": "Unable to load transactions."
   },
+  "detail": {
+    "title": "Transaction details",
+    "description": "View detailed information about this transaction.",
+    "reference": "Reference",
+    "type": "Type",
+    "status": "Status",
+    "amount": "Amount",
+    "sourceAccount": "Source account",
+    "destinationAccount": "Destination account",
+    "descriptionField": "Description",
+    "createdAt": "Created at",
+    "completedAt": "Completed at",
+    "transactionId": "Transaction ID"
+  },
   "filters": {
     "type": "Type",
     "status": "Status",
