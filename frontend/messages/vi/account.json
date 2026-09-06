@@ -1,0 +1,23 @@
+{
+  "accountNumber": "Số tài khoản",
+  "balance": "Số dư",
+  "status": "Trạng thái",
+  "empty": "Bạn chưa có tài khoản nào.",
+  "loadError": "Không thể tải danh sách tài khoản. Vui lòng thử lại.",
+  "statuses": {
+    "ACTIVE": "Đang hoạt động",
+    "BLOCKED": "Đã khóa",
+    "CLOSED": "Đã đóng"
+  },
+  "details": {
+    "title": "Chi tiết tài khoản",
+    "back": "Quay lại",
+    "accountNumber": "Số tài khoản",
+    "balance": "Số dư",
+    "currency": "Loại tiền",
+    "status": "Trạng thái",
+    "createdAt": "Ngày tạo",
+    "updatedAt": "Cập nhật lần cuối",
+    "loadError": "Không thể tải thông tin tài khoản."
+  }
+}

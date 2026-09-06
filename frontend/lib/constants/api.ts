@@ -8,6 +8,41 @@ export const API_ENDPOINTS = {
         LOGOUT: "/api/v1/auth/logout",
     },
     USER: {
-        CURRENT_USER: "/api/vi/users/me",
+        CURRENT_USER: "/api/v1/users/me",
+    },
+    ACCOUNT: {
+        BASE: "/api/v1/accounts",
+        BY_ID: (accountId: string) =>
+            `/api/v1/accounts/${accountId}`,
+        BY_NUMBER: (accountNo: string) =>
+            `/api/v1/accounts/number/${accountNo}`,
+        HOLDER: (accountNo: string) =>
+            `/api/v1/accounts/number/${accountNo}/holder`,
+        BLOCK: (accountId: string) =>
+            `/api/v1/accounts/${accountId}/block`,
+        ACTIVATE: (accountId: string) =>
+            `/api/v1/accounts/${accountId}/activate`,
+        CLOSE: (accountId: string) =>
+            `/api/v1/accounts/${accountId}/close`,
+    },
+    TRANSACTION: {
+        BASE: "/api/v1/transactions",
+
+        BY_ID: (transactionId: string) =>
+            `/api/v1/transactions/${transactionId}`,
+
+        ACCOUNT_TRANSACTIONS: (
+            accountId: string,
+        ) =>
+            `/api/v1/transactions/accounts/${accountId}/transactions`,
+
+        TRANSFER_INTENTS:
+            "/api/v1/transactions/transfer-intents",
+
+        CONFIRM_TRANSFER:
+            "/api/v1/transactions/transfer-intents/confirm",
+
+        WITHDRAW:
+            "/api/v1/transactions/withdraw",
     },
 } as const;

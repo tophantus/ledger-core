@@ -1,5 +1,5 @@
 {
   "title": "Dashboard",
-  "welcome": "Welcome to LedgerCore",
+  "welcome": "Welcome back, {name}!",
   "logout": "Logout"
 }

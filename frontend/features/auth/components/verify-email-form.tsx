@@ -87,10 +87,10 @@ export function VerifyEmailForm() {
             if (!result.success) {
                 setError("root", {
                     message:
-                        result.errorCode &&
-                        tErrors.has(result.errorCode)
-                            ? tErrors(result.errorCode)
-                            : t("errors.generic"),
+                        result.code &&
+                        tErrors.has(result.code)
+                            ? tErrors(result.code)
+                            : tErrors("generic"),
                 });
 
                 return;
@@ -99,7 +99,7 @@ export function VerifyEmailForm() {
             router.replace(ROUTES.DASHBOARD);
         } catch {
             setError("root", {
-                message: t("errors.generic"),
+                message: tErrors("generic"),
             });
         }
     };
@@ -123,10 +123,10 @@ export function VerifyEmailForm() {
             if (!result.success) {
                 setError("root", {
                     message:
-                        result.errorCode &&
-                        tErrors.has(result.errorCode)
-                            ? tErrors(result.errorCode)
-                            : t("errors.generic"),
+                        result.code &&
+                        tErrors.has(result.code)
+                            ? tErrors(result.code)
+                            : tErrors("generic"),
                 });
 
                 return;
@@ -137,7 +137,7 @@ export function VerifyEmailForm() {
             );
         } catch {
             setError("root", {
-                message: t("errors.generic"),
+                message: tErrors("generic"),
             });
         } finally {
             setIsResending(false);

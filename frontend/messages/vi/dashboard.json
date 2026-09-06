@@ -1,5 +1,5 @@
 {
   "title": "Trang chủ",
-  "welcome": "Chào mừng bạn đến với LedgerCore",
+  "welcome": "Chào mừng trở lại, {name}!",
   "logout": "Đăng xuất"
 }
