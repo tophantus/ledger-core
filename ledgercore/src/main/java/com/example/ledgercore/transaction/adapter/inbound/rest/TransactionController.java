@@ -8,13 +8,11 @@ import com.example.ledgercore.transaction.command.dto.*;
 import com.example.ledgercore.transaction.command.port.inbound.ConfirmTransferUseCase;
 import com.example.ledgercore.transaction.command.port.inbound.CreateTransferIntentUseCase;
 import com.example.ledgercore.transaction.command.port.inbound.WithdrawMoneyUseCase;
-import com.example.ledgercore.transaction.query.dto.GetAccountTransactionsQuery;
-import com.example.ledgercore.transaction.query.dto.GetTransactionByReferenceQuery;
-import com.example.ledgercore.transaction.query.dto.GetTransactionQuery;
-import com.example.ledgercore.transaction.query.dto.TransactionResponse;
+import com.example.ledgercore.transaction.query.dto.*;
 import com.example.ledgercore.transaction.query.port.inbound.GetAccountTransactionsUseCase;
 import com.example.ledgercore.transaction.query.port.inbound.GetTransactionByReferenceUseCase;
 import com.example.ledgercore.transaction.query.port.inbound.GetTransactionUseCase;
+import com.example.ledgercore.transaction.query.port.inbound.GetUserTransactionsUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -43,6 +41,9 @@ public class TransactionController {
             getTransactionByReferenceUseCase;
     private final GetAccountTransactionsUseCase
             getAccountTransactionsUseCase;
+
+    private final GetUserTransactionsUseCase
+            getUserTransactionsUseCase;
 
     @PostMapping("/transfer-intents")
     @Operation(
@@ -207,6 +208,40 @@ public class TransactionController {
                 ApiResponse.success(
                         response,
                         "Account transactions retrieved successfully"
+                )
+        );
+    }
+
+    @GetMapping
+    @Operation(
+            summary = "Get user transactions",
+            description = "Get paginated transactions belonging to the current user"
+    )
+    public ResponseEntity<
+            ApiResponse<PageResponse<TransactionResponse>>
+            > getUserTransactions(
+            @AuthenticationPrincipal AuthPrincipal principal,
+            @ModelAttribute TransactionFilterRequest request
+    ) {
+
+        PageResponse<TransactionResponse> response =
+                getUserTransactionsUseCase.execute(
+                        new GetUserTransactionsQuery(
+                                principal.getUserId(),
+                                request.getStatus(),
+                                request.getType(),
+                                request.getCurrency(),
+                                request.getFrom(),
+                                request.getTo(),
+                                request.getPage(),
+                                request.getSize()
+                        )
+                );
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        response,
+                        "User transactions retrieved successfully"
                 )
         );
     }
