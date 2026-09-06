@@ -1,9 +1,25 @@
 {
+  "back": "Back",
+  "title": "Transactions",
+  "accountTransactions": "Transaction history for this account.",
+  "invalidAccount": "Invalid account.",
   "recent": {
     "title": "Recent transactions",
     "viewAll": "View all",
     "empty": "No transactions yet.",
     "loadError": "Unable to load recent transactions."
+  },
+  "list": {
+    "empty": "No transactions found.",
+    "loadError": "Unable to load transactions."
+  },
+  "filters": {
+    "type": "Type",
+    "status": "Status",
+    "currency": "Currency",
+    "allTypes": "All types",
+    "allStatuses": "All statuses",
+    "clear": "Clear"
   },
   "types": {
     "TRANSFER": "Transfer",
@@ -17,5 +33,10 @@
     "COMPLETED": "Completed",
     "FAILED": "Failed",
     "CANCELLED": "Cancelled"
+  },
+  "pagination": {
+    "page": "Page {current} of {total}",
+    "previous": "Previous",
+    "next": "Next"
   }
 }
