@@ -6,6 +6,8 @@ import {zodResolver} from "@hookform/resolvers/zod";
 
 import {useRouter, Link} from "@/i18n/routing";
 import {ROUTES} from "@/lib/constants/routes";
+import {Button} from "@/components/ui/button";
+import {Logo} from "@/components/common/logo";
 
 import {useSignUp} from "../hooks/use-sign-up";
 import {
@@ -60,9 +62,7 @@ export function RegisterForm() {
                 return;
             }
 
-            router.push(
-                ROUTES.AUTH.LOGIN,
-            );
+            router.push(ROUTES.AUTH.LOGIN);
         } catch {
             setError("root", {
                 message: t("errors.generic"),
@@ -75,14 +75,18 @@ export function RegisterForm() {
             onSubmit={handleSubmit(onSubmit)}
             className="space-y-5"
         >
-            <div className="space-y-1">
-                <h1 className="text-2xl font-semibold text-text-primary">
-                    {t("title")}
-                </h1>
+            <div className="flex flex-col items-center gap-4">
+                <Logo size={56} />
 
-                <p className="text-sm text-text-secondary">
-                    {t("description")}
-                </p>
+                <div className="space-y-1 text-center">
+                    <h1 className="text-2xl font-semibold text-text-primary">
+                        {t("title")}
+                    </h1>
+
+                    <p className="text-sm text-text-secondary">
+                        {t("description")}
+                    </p>
+                </div>
             </div>
 
             {errors.root && (
@@ -187,15 +191,13 @@ export function RegisterForm() {
                 )}
             </div>
 
-            <button
+            <Button
                 type="submit"
-                disabled={isSubmitting}
-                className="w-full rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
+                loading={isSubmitting}
+                className="w-full"
             >
-                {isSubmitting
-                    ? t("submitting")
-                    : t("submit")}
-            </button>
+                {t("submit")}
+            </Button>
 
             <div className="text-center text-sm text-text-secondary">
                 {t("hasAccount")}{" "}

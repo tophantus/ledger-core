@@ -7,4 +7,7 @@ export const API_ENDPOINTS = {
         REFRESH: "/api/v1/auth/refresh",
         LOGOUT: "/api/v1/auth/logout",
     },
+    USER: {
+        CURRENT_USER: "/api/vi/users/me",
+    },
 } as const;
