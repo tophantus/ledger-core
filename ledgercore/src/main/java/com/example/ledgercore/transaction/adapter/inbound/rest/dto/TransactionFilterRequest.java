@@ -3,10 +3,12 @@ package com.example.ledgercore.transaction.adapter.inbound.rest.dto;
 import com.example.ledgercore.transaction.enums.TransactionStatus;
 import com.example.ledgercore.transaction.enums.TransactionType;
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.Instant;
 
+@Setter
 @Getter
 public class TransactionFilterRequest {
 
