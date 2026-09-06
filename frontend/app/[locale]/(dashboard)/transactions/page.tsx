@@ -11,13 +11,14 @@ import {ROUTES} from "@/lib/constants/routes";
 import {AccountSummary} from "@/features/account/components/account-summary";
 import {AccountSummarySkeleton} from "@/features/account/components/account-summary-skeleton";
 import {useAccount} from "@/features/account/hooks/use-account";
+import type {Account} from "@/features/account/types/account";
 
 import {TransactionFilter} from "@/features/transaction/components/transaction-filter";
 import {TransactionList} from "@/features/transaction/components/transaction-list";
 import {TransactionPagination} from "@/features/transaction/components/transaction-pagination";
 import {useAccountTransactions} from "@/features/transaction/hooks/use-account-transactions";
+import {useUserTransactions} from "@/features/transaction/hooks/use-user-transactions";
 
-import type {Account} from "@/features/account/types/account";
 import type {
     PageResponse,
     Transaction,
@@ -31,8 +32,12 @@ export default function TransactionsPage() {
     const accountId = searchParams.get("accountId");
 
     const {getAccount} = useAccount();
-    const {getAccountTransactions} =
-        useAccountTransactions();
+    const {
+        getAccountTransactions,
+    } = useAccountTransactions();
+    const {
+        getUserTransactions,
+    } = useUserTransactions();
 
     const [account, setAccount] =
         useState<Account | null>(null);
@@ -49,7 +54,7 @@ export default function TransactionsPage() {
         );
 
     const [isAccountLoading, setIsAccountLoading] =
-        useState(true);
+        useState(false);
 
     const [isTransactionLoading, setIsTransactionLoading] =
         useState(true);
@@ -60,6 +65,10 @@ export default function TransactionsPage() {
     const [hasTransactionError, setHasTransactionError] =
         useState(false);
 
+    /*
+     * Load account information only when
+     * this page is opened for a specific account.
+     */
     useEffect(() => {
         if (!accountId) {
             return;
@@ -103,11 +112,16 @@ export default function TransactionsPage() {
         };
     }, [accountId, getAccount]);
 
+    /*
+     * Load transactions.
+     *
+     * accountId exists:
+     *     GET /transactions/accounts/{accountId}/transactions
+     *
+     * accountId does not exist:
+     *     GET /transactions
+     */
     useEffect(() => {
-        if (!accountId) {
-            return;
-        }
-
         let mounted = true;
 
         const loadTransactions = async () => {
@@ -115,9 +129,12 @@ export default function TransactionsPage() {
             setHasTransactionError(false);
 
             try {
-                const response =
-                    await getAccountTransactions(
+                const response = accountId
+                    ? await getAccountTransactions(
                         accountId,
+                        filters,
+                    )
+                    : await getUserTransactions(
                         filters,
                     );
 
@@ -151,6 +168,7 @@ export default function TransactionsPage() {
         accountId,
         filters,
         getAccountTransactions,
+        getUserTransactions,
     ]);
 
     const handleFilterChange = (
@@ -170,38 +188,15 @@ export default function TransactionsPage() {
         }));
     };
 
-    if (!accountId) {
-        return (
-            <section className="space-y-6">
-                <Link
-                    href={ROUTES.DASHBOARD}
-                    className="
-                        inline-flex
-                        items-center
-                        gap-2
-                        text-sm
-                        text-text-muted
-                        hover:text-text-primary
-                    "
-                >
-                    <ArrowLeft className="h-4 w-4" />
-                    {t("back")}
-                </Link>
-
-                <div className="rounded-lg border border-border bg-surface p-8 text-center">
-                    <p className="text-sm text-text-muted">
-                        {t("invalidAccount")}
-                    </p>
-                </div>
-            </section>
-        );
-    }
+    const backHref = accountId
+        ? ROUTES.ACCOUNT.DETAIL(accountId)
+        : ROUTES.DASHBOARD;
 
     return (
         <section className="space-y-6">
             <div className="space-y-2">
                 <Link
-                    href={ROUTES.ACCOUNT.DETAIL(accountId)}
+                    href={backHref}
                     className="
                         inline-flex
                         items-center
@@ -217,35 +212,45 @@ export default function TransactionsPage() {
 
                 <div>
                     <h1 className="text-2xl font-semibold text-text-primary">
-                        {t("title")}
+                        {accountId
+                            ? t("accountTitle")
+                            : t("title")}
                     </h1>
 
                     <p className="mt-1 text-sm text-text-muted">
-                        {t("accountTransactions")}
+                        {accountId
+                            ? t("accountTransactions")
+                            : t("userTransactions")}
                     </p>
                 </div>
             </div>
 
-            {isAccountLoading && (
-                <AccountSummarySkeleton />
+            {accountId && (
+                <>
+                    {isAccountLoading && (
+                        <AccountSummarySkeleton />
+                    )}
+
+                    {!isAccountLoading &&
+                        !hasAccountError &&
+                        account && (
+                            <AccountSummary
+                                account={account}
+                            />
+                        )}
+
+                    {!isAccountLoading &&
+                        hasAccountError && (
+                            <div className="rounded-lg border border-border bg-surface p-6">
+                                <p className="text-sm text-text-muted">
+                                    {t(
+                                        "accountLoadError",
+                                    )}
+                                </p>
+                            </div>
+                        )}
+                </>
             )}
-
-            {!isAccountLoading &&
-                !hasAccountError &&
-                account && (
-                    <AccountSummary
-                        account={account}
-                    />
-                )}
-
-            {!isAccountLoading &&
-                hasAccountError && (
-                    <div className="rounded-lg border border-border bg-surface p-6">
-                        <p className="text-sm text-text-muted">
-                            {t("accountLoadError")}
-                        </p>
-                    </div>
-                )}
 
             <TransactionFilter
                 filters={filters}
@@ -253,7 +258,9 @@ export default function TransactionsPage() {
             />
 
             <TransactionList
-                transactions={result?.content ?? []}
+                transactions={
+                    result?.content ?? []
+                }
                 isLoading={isTransactionLoading}
                 hasError={hasTransactionError}
             />

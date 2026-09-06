@@ -1,8 +1,10 @@
 {
   "back": "Quay lại",
   "title": "Giao dịch",
+  "userTransactions": "Tất cả giao dịch của các tài khoản.",
+  "accountTitle": "Giao dịch tài khoản",
   "accountTransactions": "Lịch sử giao dịch của tài khoản này.",
-  "invalidAccount": "Tài khoản không hợp lệ.",
+  "accountLoadError": "Không thể tải thông tin tài khoản.",
   "recent": {
     "title": "Giao dịch gần đây",
     "viewAll": "Xem tất cả",

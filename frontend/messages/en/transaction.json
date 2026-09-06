@@ -1,8 +1,10 @@
 {
   "back": "Back",
   "title": "Transactions",
+  "userTransactions": "All transactions across your accounts.",
+  "accountTitle": "Account transactions",
   "accountTransactions": "Transaction history for this account.",
-  "invalidAccount": "Invalid account.",
+  "accountLoadError": "Unable to load account information.",
   "recent": {
     "title": "Recent transactions",
     "viewAll": "View all",
