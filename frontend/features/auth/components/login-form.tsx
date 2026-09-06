@@ -44,10 +44,10 @@ export function LoginForm() {
             if (!result.success) {
                 setError("root", {
                     message:
-                        result.errorCode &&
-                        tErrors.has(result.errorCode)
-                            ? tErrors(result.errorCode)
-                            : t("errors.generic"),
+                        result.code &&
+                        tErrors.has(result.code)
+                            ? tErrors(result.code)
+                            : tErrors("generic"),
                 });
 
                 return;
@@ -64,11 +64,11 @@ export function LoginForm() {
             }
 
             setError("root", {
-                message: t("errors.generic"),
+                message: tErrors("generic"),
             });
         } catch {
             setError("root", {
-                message: t("errors.generic"),
+                message: tErrors("generic"),
             });
         }
     };

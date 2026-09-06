@@ -1,5 +1,17 @@
 {
   "title": "Trang chủ",
-  "welcome": "Chào mừng bạn đến với LedgerCore",
-  "logout": "Đăng xuất"
+  "welcome": "Chào mừng trở lại, {name}!",
+  "logout": "Đăng xuất",
+  "account": {
+    "accountNumber": "Số tài khoản",
+    "balance": "Số dư",
+    "status": "Trạng thái",
+    "empty": "Bạn chưa có tài khoản nào.",
+    "loadError": "Không thể tải danh sách tài khoản. Vui lòng thử lại.",
+    "statuses": {
+      "ACTIVE": "Đang hoạt động",
+      "BLOCKED": "Đã khóa",
+      "CLOSED": "Đã đóng"
+    }
+  }
 }

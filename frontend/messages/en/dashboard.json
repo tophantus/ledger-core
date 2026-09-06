@@ -1,5 +1,17 @@
 {
   "title": "Dashboard",
-  "welcome": "Welcome to LedgerCore",
-  "logout": "Logout"
+  "welcome": "Welcome back, {name}!",
+  "logout": "Logout",
+  "account": {
+    "accountNumber": "Account number",
+    "balance": "Balance",
+    "status": "Status",
+    "empty": "You don't have any accounts yet.",
+    "loadError": "Unable to load your accounts. Please try again.",
+    "statuses": {
+      "ACTIVE": "Active",
+      "BLOCKED": "Blocked",
+      "CLOSED": "Closed"
+    }
+  }
 }
