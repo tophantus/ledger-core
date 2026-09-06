@@ -10,7 +10,7 @@ import {AccountCard} from "./account-card";
 import {AccountCardSkeleton} from "./account-card-skeleton";
 
 export function AccountList() {
-    const t = useTranslations("dashboard.account");
+    const t = useTranslations("account");
 
     const {getMyAccounts} = useMyAccounts();
 
@@ -35,11 +35,13 @@ export function AccountList() {
                 const response =
                     await getMyAccounts();
 
-                if (
-                    mounted &&
-                    !response.success
-                ) {
+                if (!mounted) {
+                    return;
+                }
+
+                if (!response.success) {
                     setHasError(true);
+                    return;
                 }
             } catch {
                 if (mounted) {

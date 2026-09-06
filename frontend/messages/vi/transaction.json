@@ -1,0 +1,21 @@
+{
+  "recent": {
+    "title": "Giao dịch gần đây",
+    "viewAll": "Xem tất cả",
+    "empty": "Chưa có giao dịch nào.",
+    "loadError": "Không thể tải các giao dịch gần đây."
+  },
+  "types": {
+    "TRANSFER": "Chuyển tiền",
+    "DEPOSIT": "Nạp tiền",
+    "WITHDRAW": "Rút tiền",
+    "FEE": "Phí",
+    "REFUND": "Hoàn tiền"
+  },
+  "statuses": {
+    "PENDING": "Đang xử lý",
+    "COMPLETED": "Hoàn thành",
+    "FAILED": "Thất bại",
+    "CANCELLED": "Đã hủy"
+  }
+}

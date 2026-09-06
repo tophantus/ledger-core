@@ -6,4 +6,13 @@ export const ROUTES = {
     },
 
     DASHBOARD: "/dashboard",
+
+    ACCOUNT: {
+        DETAIL: (accountId: string) =>
+            `/accounts/${accountId}`,
+    },
+
+    TRANSACTION: {
+        LIST: "/transactions",
+    },
 } as const;

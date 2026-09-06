@@ -1,0 +1,21 @@
+{
+  "recent": {
+    "title": "Recent transactions",
+    "viewAll": "View all",
+    "empty": "No transactions yet.",
+    "loadError": "Unable to load recent transactions."
+  },
+  "types": {
+    "TRANSFER": "Transfer",
+    "DEPOSIT": "Deposit",
+    "WITHDRAW": "Withdraw",
+    "FEE": "Fee",
+    "REFUND": "Refund"
+  },
+  "statuses": {
+    "PENDING": "Pending",
+    "COMPLETED": "Completed",
+    "FAILED": "Failed",
+    "CANCELLED": "Cancelled"
+  }
+}

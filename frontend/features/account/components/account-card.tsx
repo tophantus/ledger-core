@@ -2,6 +2,9 @@
 
 import {useTranslations} from "next-intl";
 
+import {Link} from "@/i18n/routing";
+import {ROUTES} from "@/lib/constants/routes";
+
 import type {AccountSummary} from "../types/account";
 
 interface AccountCardProps {
@@ -11,32 +14,38 @@ interface AccountCardProps {
 export function AccountCard({
                                 account,
                             }: AccountCardProps) {
-    const t = useTranslations("dashboard.account");
+    const t = useTranslations("account");
 
     return (
-        <article
+        <Link
+            href={ROUTES.ACCOUNT.DETAIL(account.id)}
             className="
+                block
                 rounded-lg
                 border
                 border-border
                 bg-surface
                 p-5
                 shadow-sm
+                transition
+                hover:border-text-muted
+                hover:shadow-md
             "
         >
-            <div className="flex items-start justify-between">
-                <div>
+            <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0">
                     <p className="text-xs text-text-muted">
                         {t("accountNumber")}
                     </p>
 
-                    <p className="mt-1 font-medium text-text-primary">
+                    <p className="mt-1 truncate font-medium text-text-primary">
                         {account.accountNo}
                     </p>
                 </div>
 
                 <span
                     className="
+                        shrink-0
                         rounded-full
                         bg-surface-subtle
                         px-2.5
@@ -69,6 +78,6 @@ export function AccountCard({
                     {t(`statuses.${account.status}`)}
                 </p>
             </div>
-        </article>
+        </Link>
     );
 }
