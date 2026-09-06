@@ -1,3 +1,5 @@
+import type {UserRole} from "./role";
+
 export type UserStatus =
     | "PENDING_VERIFICATION"
     | "ACTIVE"
@@ -12,6 +14,7 @@ export interface UserProfile {
 export interface CurrentUser {
     id: string;
     email: string;
+    roles: UserRole[];
     status: UserStatus;
     profile: UserProfile;
     createdAt: string;
