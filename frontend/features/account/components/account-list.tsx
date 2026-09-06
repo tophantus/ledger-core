@@ -8,6 +8,8 @@ import {useAccountStore} from "../stores/account-store";
 
 import {AccountCard} from "./account-card";
 import {AccountCardSkeleton} from "./account-card-skeleton";
+import {CreateAccountCard} from "@/features/account/components/create-account-card";
+import {CreateAccountModal} from "@/features/account/components/create-account-modal";
 
 export function AccountList() {
     const t = useTranslations("account");
@@ -23,6 +25,13 @@ export function AccountList() {
 
     const [hasError, setHasError] =
         useState(false);
+
+    const [isCreateModalOpen, setIsCreateModalOpen] =
+        useState(false);
+
+    const handleCreateSuccess = () => {
+        setIsCreateModalOpen(false);
+    };
 
     useEffect(() => {
         let mounted = true;
@@ -121,20 +130,37 @@ export function AccountList() {
     }
 
     return (
-        <div
-            className="
+        <>
+            <div
+                className="
                 grid
                 gap-4
                 sm:grid-cols-2
                 lg:grid-cols-3
             "
-        >
-            {accounts.map((account) => (
-                <AccountCard
-                    key={account.id}
-                    account={account}
+            >
+                {accounts.map((account) => (
+                    <AccountCard
+                        key={account.id}
+                        account={account}
+                    />
+                ))}
+
+                <CreateAccountCard
+                    onClick={() =>
+                        setIsCreateModalOpen(true)
+                    }
                 />
-            ))}
-        </div>
+            </div>
+            <CreateAccountModal
+                open={isCreateModalOpen}
+                onClose={() =>
+                    setIsCreateModalOpen(false)
+                }
+                onSuccess={
+                    handleCreateSuccess
+                }
+            />
+        </>
     );
 }

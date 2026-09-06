@@ -19,5 +19,13 @@
     "createdAt": "Created at",
     "updatedAt": "Updated at",
     "loadError": "Unable to load this account."
+  },
+  "create": {
+    "title": "Create account",
+    "description": "Open a new bank account.",
+    "currency": "Currency",
+    "submit": "Create account",
+    "cancel": "Cancel",
+    "close": "Close"
   }
 }

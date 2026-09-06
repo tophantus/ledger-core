@@ -11,6 +11,10 @@ interface AccountState {
         accounts: AccountSummary[],
     ) => void;
 
+    addAccount: (
+        account: AccountSummary,
+    ) => void;
+
     clearAccounts: () => void;
 
     updateAccountStatus: (
@@ -27,6 +31,14 @@ export const useAccountStore =
             set({
                 accounts,
             }),
+
+        addAccount: (account) =>
+            set((state) => ({
+                accounts: [
+                    ...state.accounts,
+                    account,
+                ],
+            })),
 
         clearAccounts: () =>
             set({

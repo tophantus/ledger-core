@@ -29,6 +29,7 @@ export function AccountCard({
                 shadow-sm
                 transition
                 hover:border-text-muted
+                hover:bg-background-subtle
                 hover:shadow-md
             "
         >

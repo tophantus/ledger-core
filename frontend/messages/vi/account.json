@@ -19,5 +19,13 @@
     "createdAt": "Ngày tạo",
     "updatedAt": "Cập nhật lần cuối",
     "loadError": "Không thể tải thông tin tài khoản."
+  },
+  "create": {
+    "title": "Tạo tài khoản",
+    "description": "Mở một tài khoản ngân hàng mới.",
+    "currency": "Loại tiền",
+    "submit": "Tạo tài khoản",
+    "cancel": "Hủy",
+    "close": "Đóng"
   }
 }
