@@ -4,10 +4,9 @@ import {accountApi} from "../api/account-api";
 import {useAccountStore} from "../stores/account-store";
 
 export function useCloseAccount() {
-    const updateAccountStatus =
-        useAccountStore(
-            (state) => state.updateAccountStatus,
-        );
+    const removeAccount = useAccountStore(
+        (state) => state.removeAccount,
+    );
 
     const closeAccount = async (
         accountId: string,
@@ -16,10 +15,7 @@ export function useCloseAccount() {
             await accountApi.close(accountId);
 
         if (response.success) {
-            updateAccountStatus(
-                accountId,
-                "CLOSED",
-            );
+            removeAccount(accountId);
         }
 
         return response;

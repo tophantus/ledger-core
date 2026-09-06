@@ -36,6 +36,9 @@ export const API_ENDPOINTS = {
         ) =>
             `/api/v1/transactions/accounts/${accountId}/transactions`,
 
+        USER_TRANSACTIONS:
+            "/api/v1/transactions",
+
         TRANSFER_INTENTS:
             "/api/v1/transactions/transfer-intents",
 

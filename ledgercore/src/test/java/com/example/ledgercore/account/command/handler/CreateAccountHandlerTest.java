@@ -125,7 +125,7 @@ class CreateAccountHandlerTest {
                         response.currency()
                 ),
                 () -> assertEquals(
-                        BigDecimal.ZERO,
+                        BigDecimal.ZERO.toPlainString(),
                         response.balance()
                 ),
                 () -> assertEquals(

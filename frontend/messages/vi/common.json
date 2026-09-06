@@ -23,12 +23,7 @@
   },
 
   "navigation": {
-    "home": "Trang chủ",
-    "accounts": "Tài khoản",
-    "transfer": "Chuyển tiền",
-    "deposit": "Nạp tiền",
-    "withdraw": "Rút tiền",
-    "transactions": "Giao dịch",
-    "settings": "Cài đặt"
+    "dashboard": "Trang chủ",
+    "transactions": "Giao dịch"
   }
 }

@@ -8,6 +8,26 @@ import org.springframework.stereotype.Component;
 public class TransactionQueryMapper {
 
     public TransactionResponse toResponse(
+            MoneyTransaction transaction,
+            Boolean incoming
+    ) {
+        return new TransactionResponse(
+                transaction.getId(),
+                transaction.getReference(),
+                transaction.getType(),
+                transaction.getStatus(),
+                transaction.getSourceAccountId(),
+                transaction.getDestinationAccountId(),
+                transaction.getAmount(),
+                transaction.getCurrency(),
+                transaction.getDescription(),
+                incoming,
+                transaction.getCreatedAt(),
+                transaction.getCompletedAt()
+        );
+    }
+
+    public TransactionResponse toResponse(
             MoneyTransaction transaction
     ) {
         return new TransactionResponse(
@@ -20,6 +40,7 @@ public class TransactionQueryMapper {
                 transaction.getAmount(),
                 transaction.getCurrency(),
                 transaction.getDescription(),
+                null,
                 transaction.getCreatedAt(),
                 transaction.getCompletedAt()
         );

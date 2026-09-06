@@ -2,50 +2,106 @@
 
 import {create} from "zustand";
 
-import type {AccountSummary} from "../types/account";
+import type {
+    Account,
+    AccountStatus,
+    AccountSummary,
+} from "../types/account";
 
 interface AccountState {
     accounts: AccountSummary[];
+    currentAccount: Account | null;
 
     setAccounts: (
         accounts: AccountSummary[],
     ) => void;
 
-    clearAccounts: () => void;
+    setCurrentAccount: (
+        account: Account,
+    ) => void;
+
+    clearCurrentAccount: () => void;
+
+    addAccount: (
+        account: AccountSummary,
+    ) => void;
+
+    removeAccount: (
+        accountId: string,
+    ) => void;
 
     updateAccountStatus: (
         accountId: string,
-        status: AccountSummary["status"],
+        status: AccountStatus,
     ) => void;
 }
 
 export const useAccountStore =
     create<AccountState>((set) => ({
         accounts: [],
+        currentAccount: null,
 
         setAccounts: (accounts) =>
             set({
                 accounts,
             }),
 
-        clearAccounts: () =>
+        setCurrentAccount: (account) =>
             set({
-                accounts: [],
+                currentAccount: account,
             }),
+
+        clearCurrentAccount: () =>
+            set({
+                currentAccount: null,
+            }),
+
+        addAccount: (account) =>
+            set((state) => ({
+                accounts: [
+                    ...state.accounts,
+                    account,
+                ],
+            })),
+
+        removeAccount: (accountId) =>
+            set((state) => ({
+                accounts:
+                    state.accounts.filter(
+                        (account) =>
+                            account.id !== accountId,
+                    ),
+
+                currentAccount:
+                    state.currentAccount?.id ===
+                    accountId
+                        ? null
+                        : state.currentAccount,
+            })),
 
         updateAccountStatus: (
             accountId,
             status,
         ) =>
             set((state) => ({
-                accounts: state.accounts.map(
-                    (account) =>
-                        account.id === accountId
-                            ? {
-                                ...account,
-                                status,
-                            }
-                            : account,
-                ),
+                accounts:
+                    state.accounts.map(
+                        (account) =>
+                            account.id === accountId
+                                ? {
+                                    ...account,
+                                    status,
+                                }
+                                : account,
+                    ),
+
+                currentAccount:
+                    state.currentAccount?.id ===
+                    accountId
+                        ? {
+                            ...state.currentAccount,
+                            status,
+                        }
+                        : state.currentAccount,
             })),
     }));

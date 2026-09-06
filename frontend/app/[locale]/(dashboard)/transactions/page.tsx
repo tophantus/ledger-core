@@ -1,6 +1,6 @@
 "use client";
 
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {useSearchParams} from "next/navigation";
 import {useTranslations} from "next-intl";
 import {ArrowLeft} from "lucide-react";
@@ -11,13 +11,14 @@ import {ROUTES} from "@/lib/constants/routes";
 import {AccountSummary} from "@/features/account/components/account-summary";
 import {AccountSummarySkeleton} from "@/features/account/components/account-summary-skeleton";
 import {useAccount} from "@/features/account/hooks/use-account";
+import type {Account} from "@/features/account/types/account";
 
 import {TransactionFilter} from "@/features/transaction/components/transaction-filter";
 import {TransactionList} from "@/features/transaction/components/transaction-list";
 import {TransactionPagination} from "@/features/transaction/components/transaction-pagination";
 import {useAccountTransactions} from "@/features/transaction/hooks/use-account-transactions";
+import {useUserTransactions} from "@/features/transaction/hooks/use-user-transactions";
 
-import type {Account} from "@/features/account/types/account";
 import type {
     PageResponse,
     Transaction,
@@ -26,13 +27,19 @@ import type {
 
 export default function TransactionsPage() {
     const t = useTranslations("transaction");
+    const tErrors = useTranslations("errors");
+
     const searchParams = useSearchParams();
 
     const accountId = searchParams.get("accountId");
 
     const {getAccount} = useAccount();
-    const {getAccountTransactions} =
-        useAccountTransactions();
+    const {
+        getAccountTransactions,
+    } = useAccountTransactions();
+    const {
+        getUserTransactions,
+    } = useUserTransactions();
 
     const [account, setAccount] =
         useState<Account | null>(null);
@@ -49,17 +56,37 @@ export default function TransactionsPage() {
         );
 
     const [isAccountLoading, setIsAccountLoading] =
-        useState(true);
+        useState(false);
 
     const [isTransactionLoading, setIsTransactionLoading] =
         useState(true);
 
-    const [hasAccountError, setHasAccountError] =
-        useState(false);
+    const [accountError, setAccountError] =
+        useState<string | null>(null);
 
-    const [hasTransactionError, setHasTransactionError] =
-        useState(false);
+    const [
+        transactionError,
+        setTransactionError,
+    ] = useState<string | null>(null);
 
+
+    const getErrorMessage = useCallback((
+        code?: string,
+    ): string => {
+        if (
+            code &&
+            tErrors.has(code)
+        ) {
+            return tErrors(code);
+        }
+
+        return tErrors("fallback");
+    }, [tErrors]);
+
+    /*
+     * Load account information only when
+     * this page is opened for a specific account.
+     */
     useEffect(() => {
         if (!accountId) {
             return;
@@ -69,7 +96,7 @@ export default function TransactionsPage() {
 
         const loadAccount = async () => {
             setIsAccountLoading(true);
-            setHasAccountError(false);
+            setAccountError(null);
 
             try {
                 const response =
@@ -80,14 +107,21 @@ export default function TransactionsPage() {
                 }
 
                 if (!response.success) {
-                    setHasAccountError(true);
+                    setAccountError(
+                        getErrorMessage(
+                            response.code,
+                        ),
+                    );
+
                     return;
                 }
 
                 setAccount(response.data);
             } catch {
                 if (mounted) {
-                    setHasAccountError(true);
+                    setAccountError(
+                        tErrors("fallback"),
+                    );
                 }
             } finally {
                 if (mounted) {
@@ -101,23 +135,31 @@ export default function TransactionsPage() {
         return () => {
             mounted = false;
         };
-    }, [accountId, getAccount]);
+    }, [accountId, getAccount, getErrorMessage, tErrors]);
 
+    /*
+     * Load transactions.
+     *
+     * accountId exists:
+     *     GET /transactions/accounts/{accountId}/transactions
+     *
+     * accountId does not exist:
+     *     GET /transactions
+     */
     useEffect(() => {
-        if (!accountId) {
-            return;
-        }
-
         let mounted = true;
 
         const loadTransactions = async () => {
             setIsTransactionLoading(true);
-            setHasTransactionError(false);
+            setTransactionError(null);
 
             try {
-                const response =
-                    await getAccountTransactions(
+                const response = accountId
+                    ? await getAccountTransactions(
                         accountId,
+                        filters,
+                    )
+                    : await getUserTransactions(
                         filters,
                     );
 
@@ -126,14 +168,21 @@ export default function TransactionsPage() {
                 }
 
                 if (!response.success) {
-                    setHasTransactionError(true);
+                    setTransactionError(
+                        getErrorMessage(
+                            response.code,
+                        ),
+                    );
+
                     return;
                 }
 
                 setResult(response.data);
             } catch {
                 if (mounted) {
-                    setHasTransactionError(true);
+                    setTransactionError(
+                        tErrors("fallback"),
+                    );
                 }
             } finally {
                 if (mounted) {
@@ -147,11 +196,7 @@ export default function TransactionsPage() {
         return () => {
             mounted = false;
         };
-    }, [
-        accountId,
-        filters,
-        getAccountTransactions,
-    ]);
+    }, [accountId, filters, getAccountTransactions, getErrorMessage, getUserTransactions, tErrors]);
 
     const handleFilterChange = (
         nextFilters: TransactionFilters,
@@ -170,38 +215,15 @@ export default function TransactionsPage() {
         }));
     };
 
-    if (!accountId) {
-        return (
-            <section className="space-y-6">
-                <Link
-                    href={ROUTES.DASHBOARD}
-                    className="
-                        inline-flex
-                        items-center
-                        gap-2
-                        text-sm
-                        text-text-muted
-                        hover:text-text-primary
-                    "
-                >
-                    <ArrowLeft className="h-4 w-4" />
-                    {t("back")}
-                </Link>
-
-                <div className="rounded-lg border border-border bg-surface p-8 text-center">
-                    <p className="text-sm text-text-muted">
-                        {t("invalidAccount")}
-                    </p>
-                </div>
-            </section>
-        );
-    }
+    const backHref = accountId
+        ? ROUTES.ACCOUNT.DETAIL(accountId)
+        : ROUTES.DASHBOARD;
 
     return (
         <section className="space-y-6">
             <div className="space-y-2">
                 <Link
-                    href={ROUTES.ACCOUNT.DETAIL(accountId)}
+                    href={backHref}
                     className="
                         inline-flex
                         items-center
@@ -217,35 +239,51 @@ export default function TransactionsPage() {
 
                 <div>
                     <h1 className="text-2xl font-semibold text-text-primary">
-                        {t("title")}
+                        {accountId
+                            ? t("accountTitle")
+                            : t("title")}
                     </h1>
 
                     <p className="mt-1 text-sm text-text-muted">
-                        {t("accountTransactions")}
+                        {accountId
+                            ? t("accountTransactions")
+                            : t("userTransactions")}
                     </p>
                 </div>
             </div>
 
-            {isAccountLoading && (
-                <AccountSummarySkeleton />
+            {accountId && (
+                <>
+                    {isAccountLoading && (
+                        <AccountSummarySkeleton />
+                    )}
+
+                    {!isAccountLoading &&
+                        !accountError &&
+                        account && (
+                            <AccountSummary
+                                account={account}
+                            />
+                        )}
+
+                    {!isAccountLoading &&
+                        accountError && (
+                            <div
+                                className="
+                                    rounded-lg
+                                    border
+                                    border-border
+                                    bg-surface
+                                    p-6
+                                "
+                            >
+                                <p className="text-sm text-danger">
+                                    {accountError}
+                                </p>
+                            </div>
+                        )}
+                </>
             )}
-
-            {!isAccountLoading &&
-                !hasAccountError &&
-                account && (
-                    <AccountSummary
-                        account={account}
-                    />
-                )}
-
-            {!isAccountLoading &&
-                hasAccountError && (
-                    <div className="rounded-lg border border-border bg-surface p-6">
-                        <p className="text-sm text-text-muted">
-                            {t("accountLoadError")}
-                        </p>
-                    </div>
-                )}
 
             <TransactionFilter
                 filters={filters}
@@ -253,21 +291,46 @@ export default function TransactionsPage() {
             />
 
             <TransactionList
-                transactions={result?.content ?? []}
+                transactions={
+                    result?.content ?? []
+                }
                 isLoading={isTransactionLoading}
-                hasError={hasTransactionError}
+                hasError={
+                    transactionError !== null
+                }
             />
 
+            {transactionError && (
+                <div
+                    className="
+                        rounded-lg
+                        border
+                        border-border
+                        bg-surface
+                        p-6
+                    "
+                >
+                    <p className="text-sm text-danger">
+                        {transactionError}
+                    </p>
+                </div>
+            )}
+
             {!isTransactionLoading &&
-                !hasTransactionError &&
+                !transactionError &&
                 result &&
                 result.totalPages > 1 && (
                     <TransactionPagination
                         page={result.page}
-                        totalPages={result.totalPages}
-                        onPageChange={handlePageChange}
+                        totalPages={
+                            result.totalPages
+                        }
+                        onPageChange={
+                            handlePageChange
+                        }
                     />
                 )}
+
         </section>
     );
 }

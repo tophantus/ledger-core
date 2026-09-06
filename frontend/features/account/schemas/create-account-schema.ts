@@ -1,0 +1,12 @@
+import {z} from "zod";
+
+export const createAccountSchema = z.object({
+    currency: z
+        .string()
+        .trim()
+        .length(3, "Currency must be 3 characters")
+        .toUpperCase(),
+});
+
+export type CreateAccountForm =
+    z.infer<typeof createAccountSchema>;

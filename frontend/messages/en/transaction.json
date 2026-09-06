@@ -1,22 +1,90 @@
 {
   "back": "Back",
   "title": "Transactions",
+  "userTransactions": "All transactions across your accounts.",
+  "accountTitle": "Account transactions",
   "accountTransactions": "Transaction history for this account.",
-  "invalidAccount": "Invalid account.",
   "recent": {
     "title": "Recent transactions",
     "viewAll": "View all",
-    "empty": "No transactions yet.",
-    "loadError": "Unable to load recent transactions."
+    "empty": "No transactions yet."
+  },
+  "actions": {
+    "title": "Quick actions",
+    "transfer": "Transfer",
+    "transferDescription": "Send money to another account.",
+    "withdraw": "Withdraw",
+    "withdrawDescription": "Withdraw money from your account."
+  },
+  "transfer": {
+    "title": "Transfer money",
+    "description": "Send money to another account.",
+
+    "steps": {
+      "transfer": "Transfer",
+      "confirm": "Confirm",
+      "result": "Complete"
+    },
+
+    "sourceAccount": "Source account",
+    "noAccounts": "You don't have any active accounts.",
+
+    "destinationAccount": "Destination account number",
+    "destinationPlaceholder": "Enter account number",
+
+    "recipient": "Recipient",
+
+    "amount": "Amount",
+    "availableBalance": "Available balance",
+    "amountExceedsBalance": "Transfer amount cannot exceed your available balance.",
+
+    "reference": "Reference",
+
+    "descriptionField": "Description",
+    "descriptionPlaceholder": "Optional description",
+
+    "check": "Check",
+    "continue": "Continue",
+
+    "confirmTitle": "Confirm transfer",
+    "confirmDescription": "Enter the OTP to confirm this transfer.",
+    "otp": "OTP",
+    "otpPlaceholder": "Enter OTP",
+    "confirm": "Confirm transfer",
+
+    "successTitle": "Transfer successful",
+    "successDescription": "Your transfer has been completed successfully.",
+
+    "transactionId": "Transaction ID",
+    "status": "Status",
+
+    "viewTransactions": "View transactions",
+    "newTransfer": "New transfer"
   },
   "list": {
     "empty": "No transactions found.",
     "loadError": "Unable to load transactions."
   },
+  "detail": {
+    "title": "Transaction details",
+    "description": "View detailed information about this transaction.",
+    "reference": "Reference",
+    "type": "Type",
+    "status": "Status",
+    "amount": "Amount",
+    "sourceAccount": "Source account",
+    "destinationAccount": "Destination account",
+    "descriptionField": "Description",
+    "createdAt": "Created at",
+    "completedAt": "Completed at",
+    "transactionId": "Transaction ID"
+  },
   "filters": {
     "type": "Type",
     "status": "Status",
     "currency": "Currency",
+    "from": "From",
+    "to": "To",
     "allTypes": "All types",
     "allStatuses": "All statuses",
     "clear": "Clear"

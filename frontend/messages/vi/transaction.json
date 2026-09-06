@@ -1,22 +1,90 @@
 {
   "back": "Quay lại",
   "title": "Giao dịch",
+  "userTransactions": "Tất cả giao dịch của các tài khoản.",
+  "accountTitle": "Giao dịch tài khoản",
   "accountTransactions": "Lịch sử giao dịch của tài khoản này.",
-  "invalidAccount": "Tài khoản không hợp lệ.",
   "recent": {
     "title": "Giao dịch gần đây",
     "viewAll": "Xem tất cả",
-    "empty": "Chưa có giao dịch nào.",
-    "loadError": "Không thể tải các giao dịch gần đây."
+    "empty": "Chưa có giao dịch nào."
+  },
+  "actions": {
+    "title": "Thao tác nhanh",
+    "transfer": "Chuyển tiền",
+    "transferDescription": "Chuyển tiền đến tài khoản khác.",
+    "withdraw": "Rút tiền",
+    "withdrawDescription": "Rút tiền từ tài khoản của bạn."
+  },
+  "transfer": {
+    "title": "Chuyển tiền",
+    "description": "Chuyển tiền đến một tài khoản khác.",
+
+    "steps": {
+      "transfer": "Chuyển tiền",
+      "confirm": "Xác nhận",
+      "result": "Hoàn tất"
+    },
+
+    "sourceAccount": "Tài khoản nguồn",
+    "noAccounts": "Bạn không có tài khoản nào đang hoạt động.",
+
+    "destinationAccount": "Số tài khoản nhận",
+    "destinationPlaceholder": "Nhập số tài khoản",
+
+    "recipient": "Người nhận",
+
+    "amount": "Số tiền",
+    "availableBalance": "Số dư khả dụng",
+    "amountExceedsBalance": "Số tiền chuyển không được vượt quá số dư khả dụng.",
+
+    "reference": "Mã tham chiếu",
+
+    "descriptionField": "Nội dung",
+    "descriptionPlaceholder": "Nội dung tùy chọn",
+
+    "check": "Kiểm tra",
+    "continue": "Tiếp tục",
+
+    "confirmTitle": "Xác nhận chuyển tiền",
+    "confirmDescription": "Nhập mã OTP để xác nhận giao dịch chuyển tiền này.",
+    "otp": "Mã OTP",
+    "otpPlaceholder": "Nhập mã OTP",
+    "confirm": "Xác nhận chuyển tiền",
+
+    "successTitle": "Chuyển tiền thành công",
+    "successDescription": "Giao dịch chuyển tiền đã được thực hiện thành công.",
+
+    "transactionId": "Mã giao dịch",
+    "status": "Trạng thái",
+
+    "viewTransactions": "Xem giao dịch",
+    "newTransfer": "Chuyển tiền mới"
   },
   "list": {
     "empty": "Không tìm thấy giao dịch nào.",
     "loadError": "Không thể tải danh sách giao dịch."
   },
+  "detail": {
+    "title": "Chi tiết giao dịch",
+    "description": "Xem thông tin chi tiết của giao dịch này.",
+    "reference": "Mã tham chiếu",
+    "type": "Loại giao dịch",
+    "status": "Trạng thái",
+    "amount": "Số tiền",
+    "sourceAccount": "Tài khoản nguồn",
+    "destinationAccount": "Tài khoản nhận",
+    "descriptionField": "Nội dung",
+    "createdAt": "Thời gian tạo",
+    "completedAt": "Thời gian hoàn tất",
+    "transactionId": "Mã giao dịch"
+  },
   "filters": {
     "type": "Loại giao dịch",
     "status": "Trạng thái",
     "currency": "Loại tiền",
+    "from": "Từ ngày",
+    "to": "Đến ngày",
     "allTypes": "Tất cả loại",
     "allStatuses": "Tất cả trạng thái",
     "clear": "Xóa bộ lọc"

@@ -11,7 +11,7 @@ public record AccountResponse(
         UUID userId,
         String accountNo,
         String currency,
-        BigDecimal balance,
+        String balance,
         AccountStatus status,
         Instant createdAt,
         Instant updatedAt

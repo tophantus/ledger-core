@@ -7,6 +7,8 @@ import {
 import {useTranslations} from "next-intl";
 
 import type {Transaction} from "../types/transaction";
+import {Link} from "@/i18n/routing";
+import {ROUTES} from "@/lib/constants/routes";
 
 interface TransactionRowProps {
     transaction: Transaction;
@@ -14,13 +16,17 @@ interface TransactionRowProps {
 
 function formatAmount(
     amount: string,
-    type: Transaction["type"],
+    incoming: boolean | null,
 ): string {
-    const isIncoming =
-        type === "DEPOSIT" ||
-        type === "REFUND";
+    if (incoming === true) {
+        return `+ ${amount}`;
+    }
 
-    return `${isIncoming ? "+" : "-"}${amount}`;
+    if (incoming === false) {
+        return `- ${amount}`;
+    }
+
+    return amount;
 }
 
 function formatDate(value: string): string {
@@ -32,52 +38,60 @@ export function TransactionRow({
                                }: TransactionRowProps) {
     const t = useTranslations("transaction");
 
-    const isIncoming =
-        transaction.type === "DEPOSIT" ||
-        transaction.type === "REFUND";
+    const isIncoming = transaction.incoming !== null && transaction.incoming;
+    const isOutgoing = transaction.incoming !== null && !transaction.incoming;
 
     return (
-        <div className="flex gap-4 border-b border-border py-5 last:border-b-0">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-secondary">
+        <Link
+            href={ROUTES.TRANSACTION.DETAIL(
+                transaction.id,
+            )}
+            className="flex gap-4 border-b border-border py-5"
+        >
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-background-subtle">
                 {isIncoming ? (
-                    <ArrowDownLeft className="h-5 w-5 text-text-primary" />
-                ) : (
-                    <ArrowUpRight className="h-5 w-5 text-text-primary" />
-                )}
+                    <ArrowDownLeft className="h-5 w-5 text-success" />
+                ) : isOutgoing ? (
+                    <ArrowUpRight className="h-5 w-5 text-danger" />
+                ) : null}
             </div>
 
             <div className="min-w-0 flex-1">
                 <div className="flex flex-col justify-between gap-2 sm:flex-row">
                     <div className="min-w-0">
-                        <p className="truncate text-sm font-medium text-text-primary">
-                            {t(
-                                `types.${transaction.type}`,
-                            )}
+                        <p className="truncate text-sm font-medium text-primary">
+                            {t(`types.${transaction.type}`)}
                         </p>
 
-                        <p className="truncate text-xs text-text-muted">
+                        <p className="truncate text-xs text-muted">
                             {transaction.reference}
                         </p>
 
                         {transaction.description && (
-                            <p className="mt-1 truncate text-xs text-text-muted">
-                                {
-                                    transaction.description
-                                }
+                            <p className="mt-1 truncate text-xs text-muted">
+                                {transaction.description}
                             </p>
                         )}
                     </div>
 
                     <div className="shrink-0 text-left sm:text-right">
-                        <p className="text-sm font-semibold text-text-primary">
+                        <p
+                            className={`text-sm font-semibold ${
+                                isIncoming
+                                    ? "text-success"
+                                    : isOutgoing
+                                        ? "text-danger"
+                                        : "text-foreground"
+                            }`}
+                        >
                             {formatAmount(
                                 transaction.amount,
-                                transaction.type,
+                                transaction.incoming,
                             )}{" "}
                             {transaction.currency}
                         </p>
 
-                        <p className="text-xs text-text-muted">
+                        <p className="text-xs text-muted">
                             {t(
                                 `statuses.${transaction.status}`,
                             )}
@@ -85,12 +99,10 @@ export function TransactionRow({
                     </div>
                 </div>
 
-                <p className="mt-2 text-xs text-text-muted">
-                    {formatDate(
-                        transaction.createdAt,
-                    )}
+                <p className="mt-2 text-xs text-muted">
+                    {formatDate(transaction.createdAt)}
                 </p>
             </div>
-        </div>
+        </Link>
     );
 }

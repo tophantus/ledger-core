@@ -23,12 +23,7 @@
   },
 
   "navigation": {
-    "home": "Home",
-    "accounts": "Accounts",
-    "transfer": "Transfer",
-    "deposit": "Deposit",
-    "withdraw": "Withdraw",
-    "transactions": "Transactions",
-    "settings": "Settings"
+    "dashboard": "Dashboard",
+    "transactions": "Transactions"
   }
 }

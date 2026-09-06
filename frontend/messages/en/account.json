@@ -2,8 +2,6 @@
   "accountNumber": "Account number",
   "balance": "Balance",
   "status": "Status",
-  "empty": "You don't have any accounts yet.",
-  "loadError": "Unable to load your accounts. Please try again.",
   "statuses": {
     "ACTIVE": "Active",
     "BLOCKED": "Blocked",
@@ -18,6 +16,19 @@
     "status": "Status",
     "createdAt": "Created at",
     "updatedAt": "Updated at",
-    "loadError": "Unable to load this account."
+    "actions": {
+      "open": "Open account actions",
+      "block": "Block account",
+      "activate": "Activate account",
+      "close": "Close account"
+    }
+  },
+  "create": {
+    "title": "Create account",
+    "description": "Open a new bank account.",
+    "currency": "Currency",
+    "submit": "Create account",
+    "cancel": "Cancel",
+    "close": "Close"
   }
 }

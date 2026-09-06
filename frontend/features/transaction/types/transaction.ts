@@ -23,6 +23,7 @@ export interface Transaction {
     amount: string;
     currency: string;
     description: string | null;
+    incoming: boolean;
     createdAt: string;
     completedAt: string | null;
 }

@@ -1,6 +1,7 @@
 package com.example.ledgercore.account.query.handler;
 
 import com.example.ledgercore.account.entity.Account;
+import com.example.ledgercore.account.enums.AccountStatus;
 import com.example.ledgercore.account.query.dto.AccountHolderResponse;
 import com.example.ledgercore.account.query.dto.GetAccountHolderQuery;
 import com.example.ledgercore.account.query.port.inbound.GetAccountHolderUseCase;
@@ -35,6 +36,12 @@ public class GetAccountHolderHandler
                                         ErrorCode.ACCOUNT_NOT_FOUND
                                 )
                         );
+
+        if (account.getStatus() != AccountStatus.ACTIVE) {
+            throw new BusinessException(
+                    ErrorCode.ACCOUNT_NOT_ACTIVE
+            );
+        }
 
         String fullName =
                 accountHolderProfilePort.getFullName(

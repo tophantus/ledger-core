@@ -2,8 +2,6 @@
   "accountNumber": "Số tài khoản",
   "balance": "Số dư",
   "status": "Trạng thái",
-  "empty": "Bạn chưa có tài khoản nào.",
-  "loadError": "Không thể tải danh sách tài khoản. Vui lòng thử lại.",
   "statuses": {
     "ACTIVE": "Đang hoạt động",
     "BLOCKED": "Đã khóa",
@@ -18,6 +16,19 @@
     "status": "Trạng thái",
     "createdAt": "Ngày tạo",
     "updatedAt": "Cập nhật lần cuối",
-    "loadError": "Không thể tải thông tin tài khoản."
+    "actions": {
+      "open": "Mở thao tác tài khoản",
+      "block": "Khóa tài khoản",
+      "activate": "Kích hoạt tài khoản",
+      "close": "Đóng tài khoản"
+    }
+  },
+  "create": {
+    "title": "Tạo tài khoản",
+    "description": "Mở một tài khoản ngân hàng mới.",
+    "currency": "Loại tiền",
+    "submit": "Tạo tài khoản",
+    "cancel": "Hủy",
+    "close": "Đóng"
   }
 }

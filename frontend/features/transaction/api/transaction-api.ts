@@ -97,4 +97,22 @@ export const transactionApi = {
 
         return response.data;
     },
+
+    getUserTransactions: async (
+        filters: TransactionFilters = {},
+    ): Promise<
+        ApiResponse<PageResponse<Transaction>>
+    > => {
+        const response =
+            await apiClient.get<
+                ApiResponse<PageResponse<Transaction>>
+            >(
+                API_ENDPOINTS.TRANSACTION.USER_TRANSACTIONS,
+                {
+                    params: filters,
+                },
+            );
+
+        return response.data;
+    },
 };

@@ -55,7 +55,7 @@ public class CreateAccountHandler implements CreateAccountUseCase {
                 savedAccount.getUserId(),
                 savedAccount.getAccountNo(),
                 savedAccount.getCurrency(),
-                savedAccount.getBalance(),
+                savedAccount.getBalance().toPlainString(),
                 savedAccount.getStatus(),
                 savedAccount.getCreatedAt(),
                 savedAccount.getUpdatedAt()
