@@ -1,8 +1,10 @@
 package com.example.ledgercore.account.adapter.inbound.rest;
 
 import com.example.ledgercore.account.adapter.inbound.rest.dto.AdminAccountFilterRequest;
-import com.example.ledgercore.account.query.dto.AdminAccountResponse;
+import com.example.ledgercore.account.query.dto.AdminAccountDetailResponse;
 import com.example.ledgercore.account.query.dto.AdminAccountFilter;
+import com.example.ledgercore.account.query.dto.AdminAccountResponse;
+import com.example.ledgercore.account.query.port.inbound.GetAdminAccountDetailUseCase;
 import com.example.ledgercore.account.query.port.inbound.GetAdminAccountsUseCase;
 import com.example.ledgercore.common.dto.PageResponse;
 import com.example.ledgercore.common.response.ApiResponse;
@@ -11,6 +13,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/admin/accounts")
@@ -21,7 +25,11 @@ import org.springframework.web.bind.annotation.*;
 )
 public class AdminAccountController {
 
-    private final GetAdminAccountsUseCase getAdminAccountsUseCase;
+    private final GetAdminAccountsUseCase
+            getAdminAccountsUseCase;
+
+    private final GetAdminAccountDetailUseCase
+            getAdminAccountDetailUseCase;
 
     @GetMapping
     @Operation(
@@ -33,6 +41,7 @@ public class AdminAccountController {
             > getAccounts(
             @ModelAttribute AdminAccountFilterRequest request
     ) {
+
         PageResponse<AdminAccountResponse> response =
                 getAdminAccountsUseCase.execute(
                         new AdminAccountFilter(
@@ -49,6 +58,30 @@ public class AdminAccountController {
                 ApiResponse.success(
                         response,
                         "Accounts retrieved successfully"
+                )
+        );
+    }
+
+    @GetMapping("/{accountId}")
+    @Operation(
+            summary = "Get account details",
+            description = "Get account details including account owner information"
+    )
+    public ResponseEntity<
+            ApiResponse<AdminAccountDetailResponse>
+            > getAccount(
+            @PathVariable UUID accountId
+    ) {
+
+        AdminAccountDetailResponse response =
+                getAdminAccountDetailUseCase.execute(
+                        accountId
+                );
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        response,
+                        "Account details retrieved successfully"
                 )
         );
     }
