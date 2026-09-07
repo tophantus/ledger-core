@@ -12,4 +12,8 @@ import java.util.Map;
 public class SystemLedgerAccountProperties {
 
     private Map<String, String> cashCodes;
+
+    private Map<String, String> interestExpenseCodes;
+
+    private Map<String, String> interestPayableCodes;
 }
