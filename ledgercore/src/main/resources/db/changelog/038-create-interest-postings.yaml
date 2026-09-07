@@ -46,8 +46,6 @@ databaseChangeLog:
               - column:
                   name: transaction_id
                   type: UUID
-                  constraints:
-                    nullable: false
 
               - column:
                   name: posted_at

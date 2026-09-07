@@ -53,6 +53,13 @@ public class InterestAccrual {
     private UUID accountId;
 
     @Column(
+            name = "currency",
+            nullable = false,
+            length = 3
+    )
+    private String currency;
+
+    @Column(
             name = "business_date",
             nullable = false
     )

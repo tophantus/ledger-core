@@ -73,10 +73,7 @@ public class InterestPosting {
     )
     private BigDecimal interestAmount;
 
-    @Column(
-            name = "transaction_id",
-            nullable = false
-    )
+    @Column(name = "transaction_id")
     private UUID transactionId;
 
     @Column(name = "posted_at")

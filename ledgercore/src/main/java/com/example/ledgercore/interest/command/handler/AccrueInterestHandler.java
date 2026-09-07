@@ -74,6 +74,7 @@ public class AccrueInterestHandler
                 InterestAccrual.builder()
                         .runId(command.runId())
                         .accountId(command.accountId())
+                        .currency(command.currency())
                         .businessDate(command.businessDate())
                         .interestConfigId(config.getId())
                         .principalAmount(principal)
