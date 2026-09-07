@@ -29,6 +29,28 @@
       "page": "Page {current} of {total}",
       "previous": "Previous",
       "next": "Next"
+    },
+    "detail": {
+      "title": "Account Details",
+      "loading": "Loading account details...",
+      "loadError": "Unable to load account details.",
+      "back": "Back",
+      "accountInformation": "Account Information",
+      "ownerInformation": "Account Owner",
+      "fields": {
+        "accountNo": "Account Number",
+        "currency": "Currency",
+        "balance": "Balance",
+        "status": "Status",
+        "ledgerAccountId": "Ledger Account ID",
+        "createdAt": "Created At",
+        "updatedAt": "Updated At"
+      },
+      "statuses": {
+        "ACTIVE": "Active",
+        "BLOCKED": "Blocked",
+        "CLOSED": "Closed"
+      }
     }
   }
 }

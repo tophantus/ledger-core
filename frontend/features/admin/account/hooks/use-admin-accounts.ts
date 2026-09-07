@@ -17,7 +17,18 @@ export function useAdminAccounts() {
         [],
     );
 
+    const getAdminAccountDetail =
+        useCallback(
+            async (accountId: string) => {
+                return adminAccountApi.getAccountDetail(
+                    accountId,
+                );
+            },
+            [],
+        );
+
     return {
         getAdminAccounts,
+        getAdminAccountDetail,
     };
 }

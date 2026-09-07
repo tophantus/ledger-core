@@ -51,6 +51,8 @@ export const API_ENDPOINTS = {
     ADMIN: {
         ACCOUNT: {
             BASE: "/api/v1/admin/accounts",
+            BY_ID: (accountId: string) =>
+                `/api/v1/admin/accounts/${accountId}`,
         },
     },
 } as const;

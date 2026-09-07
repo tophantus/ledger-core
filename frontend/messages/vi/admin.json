@@ -29,6 +29,28 @@
       "page": "Trang {current} / {total}",
       "previous": "Trước",
       "next": "Sau"
+    },
+    "detail": {
+      "title": "Chi tiết tài khoản",
+      "loading": "Đang tải thông tin tài khoản...",
+      "loadError": "Không thể tải thông tin tài khoản.",
+      "back": "Quay lại",
+      "accountInformation": "Thông tin tài khoản",
+      "ownerInformation": "Thông tin chủ tài khoản",
+      "fields": {
+        "accountNo": "Số tài khoản",
+        "currency": "Loại tiền",
+        "balance": "Số dư",
+        "status": "Trạng thái",
+        "ledgerAccountId": "ID tài khoản sổ cái",
+        "createdAt": "Ngày tạo",
+        "updatedAt": "Ngày cập nhật"
+      },
+      "statuses": {
+        "ACTIVE": "Đang hoạt động",
+        "BLOCKED": "Đã khóa",
+        "CLOSED": "Đã đóng"
+      }
     }
   }
 }

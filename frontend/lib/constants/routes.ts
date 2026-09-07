@@ -24,6 +24,8 @@ export const ROUTES = {
         DASHBOARD: "/admin/dashboard",
         USERS: "/admin/users",
         ACCOUNTS: "/admin/accounts",
+        ACCOUNT_DETAIL: (accountId: string) =>
+            `/admin/accounts/${accountId}`,
         TRANSACTIONS: "/admin/transactions",
         RECONCILIATION: "/admin/reconciliation",
     },

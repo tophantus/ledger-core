@@ -26,5 +26,24 @@ export interface AdminAccountFilters {
     size?: number;
 }
 
+export interface AdminAccountUserInfo {
+    id: string;
+    email: string;
+    fullName: string;
+    avatarUrl: string | null;
+}
+
+export interface AdminAccountDetail {
+    id: string;
+    accountNo: string;
+    currency: string;
+    balance: string;
+    status: AccountStatus;
+    ledgerAccountId: string;
+    createdAt: string;
+    updatedAt: string;
+    user: AdminAccountUserInfo;
+}
+
 export type AdminAccountPageResponse =
     ApiResponse<PageResponse<AdminAccount>>;
