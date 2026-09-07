@@ -49,6 +49,15 @@ public class InterestRun {
     )
     private InterestRunStatus status;
 
+    @Column(name = "last_processed_id")
+    private UUID lastProcessedId;
+
+    @Column(
+            name = "processed_count",
+            nullable = false
+    )
+    private Long processedCount;
+
     @Column(
             name = "started_at",
             nullable = false
@@ -60,24 +69,6 @@ public class InterestRun {
 
     @Column(name = "completed_at")
     private Instant completedAt;
-
-    @Column(
-            name = "total_accounts",
-            nullable = false
-    )
-    private Integer totalAccounts;
-
-    @Column(
-            name = "successful_accounts",
-            nullable = false
-    )
-    private Integer successfulAccounts;
-
-    @Column(
-            name = "failed_accounts",
-            nullable = false
-    )
-    private Integer failedAccounts;
 
     @Column(
             name = "created_at",
@@ -92,28 +83,32 @@ public class InterestRun {
             createdAt = Instant.now();
         }
 
-        if (heartbeatAt == null) {
-            heartbeatAt = startedAt;
+        if (processedCount == null) {
+            processedCount = 0L;
         }
+    }
+
+    public void start(Instant startedAt) {
+        this.status = InterestRunStatus.RUNNING;
+        this.startedAt = startedAt;
+        this.heartbeatAt = startedAt;
     }
 
     public void heartbeat(Instant heartbeatAt) {
         this.heartbeatAt = heartbeatAt;
     }
 
-    public void complete(
-            Instant completedAt
+    public void updateProgress(
+            UUID lastProcessedId,
+            long processedCount
     ) {
+        this.lastProcessedId = lastProcessedId;
+        this.processedCount = processedCount;
+    }
+
+    public void complete(Instant completedAt) {
         this.status = InterestRunStatus.COMPLETED;
         this.completedAt = completedAt;
         this.heartbeatAt = completedAt;
-    }
-
-    public void fail(
-            Instant failedAt
-    ) {
-        this.status = InterestRunStatus.FAILED;
-        this.completedAt = failedAt;
-        this.heartbeatAt = failedAt;
     }
 }
