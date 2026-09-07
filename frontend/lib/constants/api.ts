@@ -48,4 +48,21 @@ export const API_ENDPOINTS = {
         WITHDRAW:
             "/api/v1/transactions/withdraw",
     },
+    ADMIN: {
+        ACCOUNT: {
+            BASE: "/api/v1/admin/accounts",
+            BY_ID: (accountId: string) =>
+                `/api/v1/admin/accounts/${accountId}`,
+        },
+        TRANSACTION: {
+            DEPOSIT: "/api/v1/admin/transactions/deposits",
+        },
+        RECONCILIATION: {
+            SUMMARY: "/api/v1/admin/reconciliation/summary",
+            EXCEPTIONS: "/api/v1/admin/reconciliation/exceptions",
+        },
+        BUSINESS_DAY: {
+            CLOSE: "/api/v1/admin/business-days/close",
+        },
+    },
 } as const;

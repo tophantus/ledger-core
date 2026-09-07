@@ -113,8 +113,8 @@ business-day:
 
 reconciliation:
   scheduler:
-    enabled: false
-    fixed-delay: 1000
+    enabled: true
+    fixed-delay: 10000
 
 app:
   webhook:

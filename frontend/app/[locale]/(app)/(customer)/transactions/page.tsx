@@ -20,10 +20,10 @@ import {useAccountTransactions} from "@/features/transaction/hooks/use-account-t
 import {useUserTransactions} from "@/features/transaction/hooks/use-user-transactions";
 
 import type {
-    PageResponse,
     Transaction,
     TransactionFilters,
 } from "@/features/transaction/types/transaction";
+import {PageResponse} from "@/lib/api/types";
 
 export default function TransactionsPage() {
     const t = useTranslations("transaction");

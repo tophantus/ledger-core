@@ -1,10 +1,12 @@
 package com.example.ledgercore.reconciliation.adapter.inbound.rest;
 
+import com.example.ledgercore.common.dto.PageResponse;
 import com.example.ledgercore.common.response.ApiResponse;
 import com.example.ledgercore.reconciliation.enums.ReconciliationErrorCode;
 import com.example.ledgercore.reconciliation.enums.ReconciliationTargetType;
 import com.example.ledgercore.reconciliation.query.dto.ReconciliationExceptionResponse;
 import com.example.ledgercore.reconciliation.query.dto.ReconciliationRunSummaryResponse;
+import com.example.ledgercore.reconciliation.query.dto.ReconciliationSummaryResponse;
 import com.example.ledgercore.reconciliation.query.port.inbound.GetReconciliationExceptionsUseCase;
 import com.example.ledgercore.reconciliation.query.port.inbound.GetReconciliationSummaryUseCase;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,15 +37,17 @@ public class AdminReconciliationController {
     @GetMapping("/summary")
     @Operation(
             summary = "Get reconciliation summary",
-            description = "Get reconciliation runs for a business date"
+            description = "Get reconciliation runs for a business date, "
+                    + "or the latest available business date when omitted"
     )
     public ResponseEntity<
-            ApiResponse<List<ReconciliationRunSummaryResponse>>
+            ApiResponse<ReconciliationSummaryResponse>
             > getSummary(
-            @RequestParam LocalDate businessDate
+            @RequestParam(required = false)
+            LocalDate businessDate
     ) {
 
-        List<ReconciliationRunSummaryResponse> response =
+        ReconciliationSummaryResponse response =
                 getReconciliationSummaryUseCase.execute(
                         businessDate
                 );
@@ -62,7 +66,7 @@ public class AdminReconciliationController {
             description = "Get reconciliation exceptions with pagination and optional filters"
     )
     public ResponseEntity<
-            ApiResponse<Page<ReconciliationExceptionResponse>>
+            ApiResponse<PageResponse<ReconciliationExceptionResponse>>
             > getExceptions(
             @RequestParam(required = false)
             LocalDate businessDate,
@@ -80,7 +84,7 @@ public class AdminReconciliationController {
             int size
     ) {
 
-        Page<ReconciliationExceptionResponse> response =
+        PageResponse<ReconciliationExceptionResponse> response =
                 getReconciliationExceptionsUseCase.execute(
                         businessDate,
                         targetType,

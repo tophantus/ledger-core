@@ -1,0 +1,160 @@
+{
+  "dashboard": {
+    "title": "Admin Dashboard",
+    "description": "Monitor daily operations and system activities.",
+
+    "businessDay": {
+      "title": "Business Day",
+      "description": "Manage the current business day."
+    }
+  },
+  "account": {
+    "title": "Accounts",
+    "description": "Manage and monitor bank accounts.",
+    "loading": "Loading accounts...",
+    "empty": "No accounts found.",
+    "loadError": "Unable to load accounts.",
+    "filters": {
+      "accountNoPlaceholder": "Search by account number",
+      "currencyPlaceholder": "Currency",
+      "userIdPlaceholder": "User ID",
+      "allStatuses": "All statuses",
+      "clear": "Clear"
+    },
+    "statuses": {
+      "ACTIVE": "Active",
+      "BLOCKED": "Blocked",
+      "CLOSED": "Closed"
+    },
+    "table": {
+      "accountNo": "Account number",
+      "currency": "Currency",
+      "balance": "Balance",
+      "status": "Status",
+      "userId": "User ID"
+    },
+    "pagination": {
+      "total": "{count} accounts",
+      "page": "Page {current} of {total}",
+      "previous": "Previous",
+      "next": "Next"
+    },
+    "detail": {
+      "title": "Account Details",
+      "loading": "Loading account details...",
+      "loadError": "Unable to load account details.",
+      "back": "Back",
+      "deposit": "Deposit Money",
+      "accountInformation": "Account Information",
+      "ownerInformation": "Account Owner",
+      "fields": {
+        "accountNo": "Account Number",
+        "currency": "Currency",
+        "balance": "Balance",
+        "status": "Status",
+        "ledgerAccountId": "Ledger Account ID",
+        "createdAt": "Created At",
+        "updatedAt": "Updated At"
+      },
+      "statuses": {
+        "ACTIVE": "Active",
+        "BLOCKED": "Blocked",
+        "CLOSED": "Closed"
+      }
+    },
+    "deposit": {
+      "title": "Deposit Money",
+      "amount": "Amount",
+      "amountPlaceholder": "Enter amount",
+      "amountRequired": "Please enter an amount",
+      "invalidAmount": "Invalid amount",
+      "amountMustBePositive": "Amount must be greater than zero",
+      "currency": "Currency",
+      "cancel": "Cancel",
+      "submit": "Deposit",
+      "submitting": "Depositing...",
+      "close": "Close",
+      "success": {
+        "title": "Deposit Successful",
+        "description": "The money has been successfully deposited into the account."
+      }
+    }
+  },
+  "reconciliation": {
+    "title": "Reconciliation",
+    "description": "Monitor reconciliation results and review reconciliation exceptions.",
+    "businessDate": "Business Date",
+
+    "summary": {
+      "title": "Reconciliation Summary",
+      "description": "Overview of reconciliation runs for the selected business date.",
+      "loading": "Loading reconciliation summary...",
+      "loadError": "Failed to load reconciliation summary.",
+      "empty": "No reconciliation runs found for this business date.",
+      "processed": "Processed",
+      "status": "Status"
+    },
+
+    "exceptions": {
+      "title": "Reconciliation Exceptions",
+      "description": "Review discrepancies detected during reconciliation.",
+      "loading": "Loading reconciliation exceptions...",
+      "loadError": "Failed to load reconciliation exceptions.",
+      "empty": "No reconciliation exceptions found.",
+
+      "filters": {
+        "targetType": "Target Type",
+        "allTargetTypes": "All Target Types",
+        "errorCode": "Error Code",
+        "allErrorCodes": "All Error Codes",
+        "clear": "Clear Filters"
+      },
+
+      "table": {
+        "targetType": "Target Type",
+        "targetId": "Target ID",
+        "errorCode": "Error Code",
+        "expected": "Expected",
+        "actual": "Actual",
+        "message": "Message",
+        "createdAt": "Created At"
+      },
+
+      "pagination": {
+        "page": "Page {current} of {total}",
+        "previous": "Previous",
+        "next": "Next"
+      }
+    },
+
+    "types": {
+      "TRANSACTION_JOURNAL": "Transaction → Journal",
+      "JOURNAL_BALANCE": "Journal → Balance",
+      "ACCOUNT_BALANCE": "Account Balance"
+    },
+
+    "statuses": {
+      "PENDING": "Pending",
+      "RUNNING": "Running",
+      "COMPLETED": "Completed"
+    },
+
+    "targetTypes": {
+      "TRANSACTION": "Transaction",
+      "JOURNAL": "Journal",
+      "ACCOUNT": "Account"
+    },
+
+    "errorCodes": {
+      "JOURNAL_NOT_FOUND": "Journal Not Found",
+      "TRANSACTION_AMOUNT_MISMATCH": "Transaction Amount Mismatch",
+      "BUSINESS_DATE_MISMATCH": "Business Date Mismatch",
+      "JOURNAL_NOT_BALANCED": "Journal Not Balanced",
+      "BALANCE_MISMATCH": "Balance Mismatch",
+      "OPENING_BALANCE_MISMATCH": "Opening Balance Mismatch"
+    }
+  },
+  "businessDay": {
+    "close": "Close Business Day"
+  }
+}

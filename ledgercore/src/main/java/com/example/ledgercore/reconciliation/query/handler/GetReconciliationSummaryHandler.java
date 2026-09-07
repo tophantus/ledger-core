@@ -1,6 +1,7 @@
 package com.example.ledgercore.reconciliation.query.handler;
 
 import com.example.ledgercore.reconciliation.query.dto.ReconciliationRunSummaryResponse;
+import com.example.ledgercore.reconciliation.query.dto.ReconciliationSummaryResponse;
 import com.example.ledgercore.reconciliation.query.port.inbound.GetReconciliationSummaryUseCase;
 import com.example.ledgercore.reconciliation.query.repository.ReconciliationRunQueryRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,21 +20,43 @@ public class GetReconciliationSummaryHandler
 
     @Override
     @Transactional(readOnly = true)
-    public List<ReconciliationRunSummaryResponse> execute(
+    public ReconciliationSummaryResponse execute(
             LocalDate businessDate
     ) {
 
-        return repository
-                .findSummaryByBusinessDate(businessDate)
-                .stream()
-                .map(data ->
-                        new ReconciliationRunSummaryResponse(
-                                data.getId(),
-                                data.getType(),
-                                data.getStatus(),
-                                data.getProcessedCount()
+        LocalDate targetBusinessDate =
+                businessDate != null
+                        ? businessDate
+                        : repository
+                        .findLatestBusinessDate()
+                        .orElse(null);
+
+        if (targetBusinessDate == null) {
+            return new ReconciliationSummaryResponse(
+                    null,
+                    List.of()
+            );
+        }
+
+        List<ReconciliationRunSummaryResponse> runs =
+                repository
+                        .findSummaryByBusinessDate(
+                                targetBusinessDate
                         )
-                )
-                .toList();
+                        .stream()
+                        .map(data ->
+                                new ReconciliationRunSummaryResponse(
+                                        data.getId(),
+                                        data.getType(),
+                                        data.getStatus(),
+                                        data.getProcessedCount()
+                                )
+                        )
+                        .toList();
+
+        return new ReconciliationSummaryResponse(
+                targetBusinessDate,
+                runs
+        );
     }
 }

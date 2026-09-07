@@ -1,12 +1,11 @@
 import {apiClient} from "@/lib/api/axios";
 import {API_ENDPOINTS} from "@/lib/constants/api";
-import type {ApiResponse} from "@/lib/api/types";
+import type {ApiResponse, PageResponse} from "@/lib/api/types";
 
 import type {
     ConfirmTransferRequest,
     CreateTransferIntentRequest,
     CreateTransferIntentResult,
-    PageResponse,
     Transaction,
     TransactionFilters,
     WithdrawMoneyRequest,

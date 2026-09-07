@@ -24,6 +24,13 @@
 
   "navigation": {
     "dashboard": "Dashboard",
-    "transactions": "Transactions"
+    "transactions": "Transactions",
+    "admin": {
+      "dashboard": "Dashboard",
+      "users": "Users",
+      "accounts": "Accounts",
+      "transactions": "Transactions",
+      "reconciliation": "Reconciliation"
+    }
   }
 }

@@ -1,0 +1,160 @@
+{
+  "dashboard": {
+    "title": "Bảng điều khiển quản trị",
+    "description": "Theo dõi hoạt động hàng ngày và tình trạng hệ thống.",
+
+    "businessDay": {
+      "title": "Ngày nghiệp vụ",
+      "description": "Quản lý ngày nghiệp vụ hiện tại."
+    }
+  },
+  "account": {
+    "title": "Tài khoản",
+    "description": "Quản lý và theo dõi các tài khoản ngân hàng.",
+    "loading": "Đang tải tài khoản...",
+    "empty": "Không tìm thấy tài khoản.",
+    "loadError": "Không thể tải danh sách tài khoản.",
+    "filters": {
+      "accountNoPlaceholder": "Tìm theo số tài khoản",
+      "currencyPlaceholder": "Loại tiền",
+      "userIdPlaceholder": "ID người dùng",
+      "allStatuses": "Tất cả trạng thái",
+      "clear": "Xóa bộ lọc"
+    },
+    "statuses": {
+      "ACTIVE": "Đang hoạt động",
+      "BLOCKED": "Đã khóa",
+      "CLOSED": "Đã đóng"
+    },
+    "table": {
+      "accountNo": "Số tài khoản",
+      "currency": "Loại tiền",
+      "balance": "Số dư",
+      "status": "Trạng thái",
+      "userId": "ID người dùng"
+    },
+    "pagination": {
+      "total": "{count} tài khoản",
+      "page": "Trang {current} / {total}",
+      "previous": "Trước",
+      "next": "Sau"
+    },
+    "detail": {
+      "title": "Chi tiết tài khoản",
+      "loading": "Đang tải thông tin tài khoản...",
+      "loadError": "Không thể tải thông tin tài khoản.",
+      "back": "Quay lại",
+      "deposit": "Nạp tiền",
+      "accountInformation": "Thông tin tài khoản",
+      "ownerInformation": "Chủ tài khoản",
+      "fields": {
+        "accountNo": "Số tài khoản",
+        "currency": "Loại tiền",
+        "balance": "Số dư",
+        "status": "Trạng thái",
+        "ledgerAccountId": "ID tài khoản sổ cái",
+        "createdAt": "Ngày tạo",
+        "updatedAt": "Ngày cập nhật"
+      },
+      "statuses": {
+        "ACTIVE": "Đang hoạt động",
+        "BLOCKED": "Đã khóa",
+        "CLOSED": "Đã đóng"
+      }
+    },
+    "deposit": {
+      "title": "Nạp tiền vào tài khoản",
+      "amount": "Số tiền",
+      "amountPlaceholder": "Nhập số tiền",
+      "amountRequired": "Vui lòng nhập số tiền",
+      "invalidAmount": "Số tiền không hợp lệ",
+      "amountMustBePositive": "Số tiền phải lớn hơn 0",
+      "currency": "Loại tiền",
+      "cancel": "Hủy",
+      "submit": "Nạp tiền",
+      "submitting": "Đang nạp tiền...",
+      "close": "Đóng",
+      "success": {
+        "title": "Nạp tiền thành công",
+        "description": "Số tiền đã được nạp thành công vào tài khoản."
+      }
+    }
+  },
+  "reconciliation": {
+    "title": "Đối soát",
+    "description": "Theo dõi kết quả đối soát và kiểm tra các ngoại lệ đối soát.",
+    "businessDate": "Ngày nghiệp vụ",
+
+    "summary": {
+      "title": "Tổng quan đối soát",
+      "description": "Tổng quan các lần chạy đối soát trong ngày nghiệp vụ đã chọn.",
+      "loading": "Đang tải tổng quan đối soát...",
+      "loadError": "Không thể tải tổng quan đối soát.",
+      "empty": "Không tìm thấy lần chạy đối soát nào trong ngày nghiệp vụ này.",
+      "processed": "Đã xử lý",
+      "status": "Trạng thái"
+    },
+
+    "exceptions": {
+      "title": "Ngoại lệ đối soát",
+      "description": "Kiểm tra các sai lệch được phát hiện trong quá trình đối soát.",
+      "loading": "Đang tải các ngoại lệ đối soát...",
+      "loadError": "Không thể tải các ngoại lệ đối soát.",
+      "empty": "Không tìm thấy ngoại lệ đối soát nào.",
+
+      "filters": {
+        "targetType": "Loại đối tượng",
+        "allTargetTypes": "Tất cả loại đối tượng",
+        "errorCode": "Mã lỗi",
+        "allErrorCodes": "Tất cả mã lỗi",
+        "clear": "Xóa bộ lọc"
+      },
+
+      "table": {
+        "targetType": "Loại đối tượng",
+        "targetId": "ID đối tượng",
+        "errorCode": "Mã lỗi",
+        "expected": "Giá trị kỳ vọng",
+        "actual": "Giá trị thực tế",
+        "message": "Thông báo",
+        "createdAt": "Thời gian tạo"
+      },
+
+      "pagination": {
+        "page": "Trang {current} / {total}",
+        "previous": "Trước",
+        "next": "Sau"
+      }
+    },
+
+    "types": {
+      "TRANSACTION_JOURNAL": "Giao dịch → Bút toán",
+      "JOURNAL_BALANCE": "Bút toán → Số dư",
+      "ACCOUNT_BALANCE": "Số dư tài khoản"
+    },
+
+    "statuses": {
+      "PENDING": "Đang chờ",
+      "RUNNING": "Đang chạy",
+      "COMPLETED": "Đã hoàn thành"
+    },
+
+    "targetTypes": {
+      "TRANSACTION": "Giao dịch",
+      "JOURNAL": "Bút toán",
+      "ACCOUNT": "Tài khoản"
+    },
+
+    "errorCodes": {
+      "JOURNAL_NOT_FOUND": "Không tìm thấy bút toán",
+      "TRANSACTION_AMOUNT_MISMATCH": "Sai lệch số tiền giao dịch",
+      "BUSINESS_DATE_MISMATCH": "Sai lệch ngày nghiệp vụ",
+      "JOURNAL_NOT_BALANCED": "Bút toán không cân bằng",
+      "BALANCE_MISMATCH": "Sai lệch số dư",
+      "OPENING_BALANCE_MISMATCH": "Sai lệch số dư đầu kỳ"
+    }
+  },
+  "businessDay": {
+    "close": "Đóng ngày nghiệp vụ"
+  }
+}
