@@ -2,6 +2,8 @@ package com.example.ledgercore.account.query.handler;
 
 import com.example.ledgercore.account.entity.Account;
 import com.example.ledgercore.account.enums.AccountStatus;
+import com.example.ledgercore.account.port.outbound.ProductAccountInfo;
+import com.example.ledgercore.account.port.outbound.ProductAccountPort;
 import com.example.ledgercore.account.query.dto.AccountResponse;
 import com.example.ledgercore.account.query.dto.GetAccountQuery;
 import com.example.ledgercore.account.query.repository.AccountQueryRepository;
@@ -27,19 +29,31 @@ class GetAccountHandlerTest {
     @Mock
     private AccountQueryRepository accountQueryRepository;
 
+    @Mock
+    private ProductAccountPort productAccountPort;
+
     private GetAccountHandler handler;
 
     private UUID userId;
     private UUID accountId;
+    private UUID productId;
+
+    private String accountNo;
+    private String productCode;
 
     @BeforeEach
     void setUp() {
         handler = new GetAccountHandler(
-                accountQueryRepository
+                accountQueryRepository,
+                productAccountPort
         );
 
         userId = UUID.randomUUID();
         accountId = UUID.randomUUID();
+        productId = UUID.randomUUID();
+
+        accountNo = "1000000001";
+        productCode = "CURRENT";
     }
 
     @Test
@@ -47,14 +61,24 @@ class GetAccountHandlerTest {
         Account account = account(
                 accountId,
                 userId,
-                "1000000001",
+                productId,
+                accountNo,
                 "VND",
                 new BigDecimal("500000"),
                 AccountStatus.ACTIVE
         );
 
+        ProductAccountInfo product =
+                new ProductAccountInfo(
+                        productId,
+                        productCode
+                );
+
         when(accountQueryRepository.findById(accountId))
                 .thenReturn(Optional.of(account));
+
+        when(productAccountPort.getActiveProduct(productId))
+                .thenReturn(product);
 
         AccountResponse response =
                 handler.execute(
@@ -64,19 +88,55 @@ class GetAccountHandlerTest {
                         )
                 );
 
-        assertEquals(account.getId(), response.id());
-        assertEquals(account.getUserId(), response.userId());
-        assertEquals(account.getAccountNo(), response.accountNo());
-        assertEquals(account.getCurrency(), response.currency());
-        assertEquals(account.getBalance().toPlainString(), response.balance());
-        assertEquals(account.getStatus(), response.status());
-        assertEquals(account.getCreatedAt(), response.createdAt());
-        assertEquals(account.getUpdatedAt(), response.updatedAt());
+        assertAll(
+                () -> assertEquals(
+                        account.getId(),
+                        response.id()
+                ),
+                () -> assertEquals(
+                        account.getUserId(),
+                        response.userId()
+                ),
+                () -> assertEquals(
+                        account.getAccountNo(),
+                        response.accountNo()
+                ),
+                () -> assertEquals(
+                        productCode,
+                        response.productCode()
+                ),
+                () -> assertEquals(
+                        account.getCurrency(),
+                        response.currency()
+                ),
+                () -> assertEquals(
+                        account.getBalance().toPlainString(),
+                        response.balance()
+                ),
+                () -> assertEquals(
+                        account.getStatus(),
+                        response.status()
+                ),
+                () -> assertEquals(
+                        account.getCreatedAt(),
+                        response.createdAt()
+                ),
+                () -> assertEquals(
+                        account.getUpdatedAt(),
+                        response.updatedAt()
+                )
+        );
 
         verify(accountQueryRepository)
                 .findById(accountId);
 
-        verifyNoMoreInteractions(accountQueryRepository);
+        verify(productAccountPort)
+                .getActiveProduct(productId);
+
+        verifyNoMoreInteractions(
+                accountQueryRepository,
+                productAccountPort
+        );
     }
 
     @Test
@@ -103,7 +163,11 @@ class GetAccountHandlerTest {
         verify(accountQueryRepository)
                 .findById(accountId);
 
-        verifyNoMoreInteractions(accountQueryRepository);
+        verifyNoInteractions(productAccountPort);
+
+        verifyNoMoreInteractions(
+                accountQueryRepository
+        );
     }
 
     @Test
@@ -113,7 +177,8 @@ class GetAccountHandlerTest {
         Account account = account(
                 accountId,
                 ownerId,
-                "1000000001",
+                productId,
+                accountNo,
                 "VND",
                 new BigDecimal("500000"),
                 AccountStatus.ACTIVE
@@ -141,12 +206,117 @@ class GetAccountHandlerTest {
         verify(accountQueryRepository)
                 .findById(accountId);
 
-        verifyNoMoreInteractions(accountQueryRepository);
+        verifyNoInteractions(productAccountPort);
+
+        verifyNoMoreInteractions(
+                accountQueryRepository
+        );
+    }
+
+    @Test
+    void shouldThrowWhenProductNotFound() {
+        Account account = account(
+                accountId,
+                userId,
+                productId,
+                accountNo,
+                "VND",
+                new BigDecimal("500000"),
+                AccountStatus.ACTIVE
+        );
+
+        when(accountQueryRepository.findById(accountId))
+                .thenReturn(Optional.of(account));
+
+        when(productAccountPort.getActiveProduct(productId))
+                .thenThrow(
+                        new BusinessException(
+                                ErrorCode.PRODUCT_NOT_FOUND
+                        )
+                );
+
+        BusinessException exception =
+                assertThrows(
+                        BusinessException.class,
+                        () -> handler.execute(
+                                new GetAccountQuery(
+                                        userId,
+                                        accountId
+                                )
+                        )
+                );
+
+        assertEquals(
+                ErrorCode.PRODUCT_NOT_FOUND,
+                exception.getErrorCode()
+        );
+
+        verify(accountQueryRepository)
+                .findById(accountId);
+
+        verify(productAccountPort)
+                .getActiveProduct(productId);
+
+        verifyNoMoreInteractions(
+                accountQueryRepository,
+                productAccountPort
+        );
+    }
+
+    @Test
+    void shouldThrowWhenProductIsNotActive() {
+        Account account = account(
+                accountId,
+                userId,
+                productId,
+                accountNo,
+                "VND",
+                new BigDecimal("500000"),
+                AccountStatus.ACTIVE
+        );
+
+        when(accountQueryRepository.findById(accountId))
+                .thenReturn(Optional.of(account));
+
+        when(productAccountPort.getActiveProduct(productId))
+                .thenThrow(
+                        new BusinessException(
+                                ErrorCode.PRODUCT_NOT_ACTIVE
+                        )
+                );
+
+        BusinessException exception =
+                assertThrows(
+                        BusinessException.class,
+                        () -> handler.execute(
+                                new GetAccountQuery(
+                                        userId,
+                                        accountId
+                                )
+                        )
+                );
+
+        assertEquals(
+                ErrorCode.PRODUCT_NOT_ACTIVE,
+                exception.getErrorCode()
+        );
+
+        verify(accountQueryRepository)
+                .findById(accountId);
+
+        verify(productAccountPort)
+                .getActiveProduct(productId);
+
+        verifyNoMoreInteractions(
+                accountQueryRepository,
+                productAccountPort
+        );
     }
 
     private Account account(
             UUID accountId,
             UUID userId,
+            UUID productId,
             String accountNo,
             String currency,
             BigDecimal balance,
@@ -157,6 +327,7 @@ class GetAccountHandlerTest {
         return Account.builder()
                 .id(accountId)
                 .userId(userId)
+                .productId(productId)
                 .accountNo(accountNo)
                 .currency(currency)
                 .balance(balance)

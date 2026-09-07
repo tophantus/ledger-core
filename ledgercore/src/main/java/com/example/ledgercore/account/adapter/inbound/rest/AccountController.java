@@ -54,13 +54,17 @@ public class AccountController {
             @AuthenticationPrincipal AuthPrincipal principal,
             @Valid @RequestBody CreateAccountCommand command
     ) {
-        CreateAccountCommand actualCommand = new CreateAccountCommand(
-                principal.getUserId(),
-                command.currency()
-        );
+        CreateAccountCommand actualCommand =
+                new CreateAccountCommand(
+                        principal.getUserId(),
+                        command.productId(),
+                        command.currency()
+                );
 
         AccountResponse response =
-                createAccountUseCase.execute(actualCommand);
+                createAccountUseCase.execute(
+                        actualCommand
+                );
 
         return ResponseEntity.ok(
                 ApiResponse.success(
