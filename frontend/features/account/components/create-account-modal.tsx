@@ -2,11 +2,15 @@
 
 import {X} from "lucide-react";
 import {useState} from "react";
-import {useForm} from "react-hook-form";
+import {
+    Controller,
+    useForm,
+} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useTranslations} from "next-intl";
 
 import {Button} from "@/components/ui/button";
+import {ProductSelect} from "@/features/product/components/product-select";
 
 import {useCreateAccount} from "../hooks/use-create-account";
 import {
@@ -19,6 +23,11 @@ interface CreateAccountModalProps {
     onClose: () => void;
     onSuccess: () => void;
 }
+
+const DEFAULT_VALUES: CreateAccountForm = {
+    productId: "",
+    currency: "VND",
+};
 
 const SUPPORTED_CURRENCIES = [
     "VND",
@@ -41,6 +50,7 @@ export function CreateAccountModal({
 
     const {
         register,
+        control,
         handleSubmit,
         reset,
         formState: {
@@ -51,18 +61,12 @@ export function CreateAccountModal({
         resolver: zodResolver(
             createAccountSchema,
         ),
-        defaultValues: {
-            currency: "VND",
-        },
+        defaultValues: DEFAULT_VALUES,
     });
 
     const handleClose = () => {
-        reset({
-            currency: "VND",
-        });
-
+        reset(DEFAULT_VALUES);
         setErrorMessage(null);
-
         onClose();
     };
 
@@ -74,7 +78,10 @@ export function CreateAccountModal({
         try {
             const response =
                 await createAccount({
-                    currency: values.currency,
+                    productId:
+                    values.productId,
+                    currency:
+                    values.currency,
                 });
 
             if (!response.success) {
@@ -88,10 +95,7 @@ export function CreateAccountModal({
                 return;
             }
 
-            reset({
-                currency: "VND",
-            });
-
+            reset(DEFAULT_VALUES);
             setErrorMessage(null);
 
             onSuccess();
@@ -155,7 +159,9 @@ export function CreateAccountModal({
                         </h2>
 
                         <p className="mt-1 text-sm text-muted">
-                            {t("create.description")}
+                            {t(
+                                "create.description",
+                            )}
                         </p>
                     </div>
 
@@ -205,59 +211,103 @@ export function CreateAccountModal({
                         </div>
                     )}
 
-                    <div>
-                        <label
-                            htmlFor="create-account-currency"
-                            className="
-                                mb-2
-                                block
-                                text-sm
-                                font-medium
-                                text-foreground
-                            "
-                        >
-                            {t("create.currency")}
-                        </label>
-
-                        <select
-                            id="create-account-currency"
-                            {...register("currency")}
-                            className="
-                                w-full
-                                rounded-md
-                                border
-                                border-border
-                                bg-background
-                                px-3
-                                py-2.5
-                                text-sm
-                                text-foreground
-                                outline-none
-                                transition
-                                focus:ring-2
-                                focus:ring-primary/20
-                            "
-                        >
-                            {SUPPORTED_CURRENCIES.map(
-                                (currency) => (
-                                    <option
-                                        key={currency}
-                                        value={currency}
-                                    >
-                                        {currency}
-                                    </option>
-                                ),
+                    <div className="space-y-6">
+                        <Controller
+                            name="productId"
+                            control={control}
+                            render={({
+                                         field,
+                                         fieldState,
+                                     }) => (
+                                <ProductSelect
+                                    value={
+                                        field.value
+                                    }
+                                    onChange={
+                                        field.onChange
+                                    }
+                                    disabled={
+                                        isSubmitting
+                                    }
+                                    error={
+                                        fieldState
+                                            .error
+                                            ?.message
+                                    }
+                                />
                             )}
-                        </select>
+                        />
 
-                        {errors.currency && (
-                            <p className="mt-1 text-xs text-danger">
-                                {
-                                    errors.currency
-                                        .message
+                        <div>
+                            <label
+                                htmlFor="create-account-currency"
+                                className="
+                                    mb-2
+                                    block
+                                    text-sm
+                                    font-medium
+                                    text-foreground
+                                "
+                            >
+                                {t(
+                                    "create.currency",
+                                )}
+                            </label>
+
+                            <select
+                                id="create-account-currency"
+                                {...register(
+                                    "currency",
+                                )}
+                                disabled={
+                                    isSubmitting
                                 }
-                            </p>
-                        )}
+                                className="
+                                    w-full
+                                    rounded-md
+                                    border
+                                    border-border
+                                    bg-background
+                                    px-3
+                                    py-2.5
+                                    text-sm
+                                    text-foreground
+                                    outline-none
+                                    transition
+                                    focus:ring-2
+                                    focus:ring-primary/20
+                                    disabled:cursor-not-allowed
+                                    disabled:opacity-60
+                                "
+                            >
+                                {SUPPORTED_CURRENCIES.map(
+                                    (currency) => (
+                                        <option
+                                            key={
+                                                currency
+                                            }
+                                            value={
+                                                currency
+                                            }
+                                        >
+                                            {
+                                                currency
+                                            }
+                                        </option>
+                                    ),
+                                )}
+                            </select>
+
+                            {errors.currency && (
+                                <p className="mt-1 text-xs text-danger">
+                                    {
+                                        errors
+                                            .currency
+                                            .message
+                                    }
+                                </p>
+                            )}
+                        </div>
                     </div>
 
                     <div className="mt-6 flex justify-end gap-3">
@@ -267,14 +317,18 @@ export function CreateAccountModal({
                             onClick={handleClose}
                             disabled={isSubmitting}
                         >
-                            {t("create.cancel")}
+                            {t(
+                                "create.cancel",
+                            )}
                         </Button>
 
                         <Button
                             type="submit"
                             loading={isSubmitting}
                         >
-                            {t("create.submit")}
+                            {t(
+                                "create.submit",
+                            )}
                         </Button>
                     </div>
                 </form>

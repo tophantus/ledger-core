@@ -8,7 +8,8 @@ export async function getMessages(locale: Locale) {
         account,
         transaction,
         errors,
-        admin
+        admin,
+        product
     ] = await Promise.all([
         import(`../messages/${locale}/common.json`),
         import(`../messages/${locale}/dashboard.json`),
@@ -17,6 +18,7 @@ export async function getMessages(locale: Locale) {
         import(`../messages/${locale}/transaction.json`),
         import(`../messages/${locale}/errors.json`),
         import(`../messages/${locale}/admin.json`),
+        import(`../messages/${locale}/product.json`),
     ]);
 
     return {
@@ -26,6 +28,7 @@ export async function getMessages(locale: Locale) {
         account: account.default,
         transaction: transaction.default,
         errors: errors.default,
-        admin: admin.default
+        admin: admin.default,
+        product: product.default,
     };
 }

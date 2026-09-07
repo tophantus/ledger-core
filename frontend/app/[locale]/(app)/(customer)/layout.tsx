@@ -8,6 +8,7 @@ import {useUserStore} from "@/features/user/stores/user-store";
 import {hasAdminAccess} from "@/features/user/utils/user-role";
 import {useRouter} from "@/i18n/routing";
 import {ROUTES} from "@/lib/constants/routes";
+import { useProduct } from "@/features/product/hooks/use-product";
 
 export default function CustomerLayout({
                                            children,
@@ -21,6 +22,28 @@ export default function CustomerLayout({
 
     const adminAccess =
         hasAdminAccess(currentUser);
+
+    const {
+        initialized,
+        getActiveProducts,
+    } = useProduct();
+
+    useEffect(() => {
+        if (
+            !currentUser ||
+            adminAccess ||
+            initialized
+        ) {
+            return;
+        }
+
+        void getActiveProducts();
+    }, [
+        currentUser,
+        adminAccess,
+        initialized,
+        getActiveProducts,
+    ]);
 
     useEffect(() => {
         if (!currentUser) {

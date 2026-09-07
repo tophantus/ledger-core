@@ -1,0 +1,10 @@
+{
+  "select": {
+    "label": "Sản phẩm",
+    "placeholder": "Chọn sản phẩm"
+  },
+  "names": {
+    "CURRENT": "Tài khoản thanh toán",
+    "SAVINGS": "Tài khoản tiết kiệm"
+  }
+}
