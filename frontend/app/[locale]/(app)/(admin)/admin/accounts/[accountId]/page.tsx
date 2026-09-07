@@ -1,10 +1,18 @@
 "use client";
 
-import {useEffect, useState} from "react";
-import {ArrowLeft} from "lucide-react";
+import {
+    useCallback,
+    useEffect,
+    useState,
+} from "react";
+import {
+    ArrowLeft,
+    WalletCards,
+} from "lucide-react";
 import {useTranslations} from "next-intl";
 
 import {Button} from "@/components/ui/button";
+import {AdminDepositModal} from "@/features/admin/account/components/admin-deposit-modal";
 import {useAdminAccounts} from "@/features/admin/account/hooks/use-admin-accounts";
 import type {AdminAccountDetail} from "@/features/admin/account/types/admin-account";
 import {useRouter} from "@/i18n/routing";
@@ -25,11 +33,14 @@ export default function AdminAccountDetailPage({
 
     const router = useRouter();
 
-    const {getAdminAccountDetail} =
-        useAdminAccounts();
+    const {
+        getAdminAccountDetail,
+    } = useAdminAccounts();
 
     const [account, setAccount] =
-        useState<AdminAccountDetail | null>(null);
+        useState<AdminAccountDetail | null>(
+            null,
+        );
 
     const [loading, setLoading] =
         useState(true);
@@ -37,24 +48,22 @@ export default function AdminAccountDetailPage({
     const [error, setError] =
         useState(false);
 
-    useEffect(() => {
-        let mounted = true;
+    const [depositModalOpen, setDepositModalOpen] =
+        useState(false);
 
-        const loadAccount = async () => {
-            const {accountId} = await params;
+    const [accountId, setAccountId] =
+        useState<string | null>(null);
 
+    const loadAccount = useCallback(
+        async (id: string) => {
             try {
                 setLoading(true);
                 setError(false);
 
                 const response =
                     await getAdminAccountDetail(
-                        accountId,
+                        id,
                     );
-
-                if (!mounted) {
-                    return;
-                }
 
                 if (!response.success) {
                     setError(true);
@@ -63,22 +72,49 @@ export default function AdminAccountDetailPage({
 
                 setAccount(response.data);
             } catch {
-                if (mounted) {
-                    setError(true);
-                }
+                setError(true);
             } finally {
-                if (mounted) {
-                    setLoading(false);
-                }
+                setLoading(false);
             }
+        },
+        [getAdminAccountDetail],
+    );
+
+    useEffect(() => {
+        let mounted = true;
+
+        const load = async () => {
+            const {accountId: id} =
+                await params;
+
+            if (!mounted) {
+                return;
+            }
+
+            setAccountId(id);
+            await loadAccount(id);
         };
 
-        loadAccount();
+        void load();
 
         return () => {
             mounted = false;
         };
-    }, [getAdminAccountDetail, params]);
+    }, [params, loadAccount]);
+
+    const handleBack = () => {
+        router.push(
+            ROUTES.ADMIN.ACCOUNTS,
+        );
+    };
+
+    const handleDepositSuccess = async () => {
+        if (!accountId) {
+            return;
+        }
+
+        await loadAccount(accountId);
+    };
 
     if (loading) {
         return (
@@ -94,11 +130,7 @@ export default function AdminAccountDetailPage({
                 <Button
                     type="button"
                     variant="outline"
-                    onClick={() =>
-                        router.push(
-                            ROUTES.ADMIN.ACCOUNTS,
-                        )
-                    }
+                    onClick={handleBack}
                 >
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     {t("back")}
@@ -123,32 +155,51 @@ export default function AdminAccountDetailPage({
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center gap-4">
+            {/* Header */}
+            <div
+                className="
+                    flex
+                    flex-col
+                    gap-4
+                    sm:flex-row
+                    sm:items-center
+                    sm:justify-between
+                "
+            >
+                <div className="flex items-center gap-4">
+                    <Button
+                        type="button"
+                        variant="outline"
+                        onClick={handleBack}
+                    >
+                        <ArrowLeft className="mr-2 h-4 w-4" />
+                        {t("back")}
+                    </Button>
+
+                    <div>
+                        <h1 className="text-2xl font-semibold text-primary">
+                            {t("title")}
+                        </h1>
+
+                        <p className="mt-1 text-sm text-muted">
+                            {account.accountNo}
+                        </p>
+                    </div>
+                </div>
+
                 <Button
                     type="button"
-                    variant="outline"
                     onClick={() =>
-                        router.push(
-                            ROUTES.ADMIN.ACCOUNTS,
-                        )
+                        setDepositModalOpen(true)
                     }
                 >
-                    <ArrowLeft className="mr-2 h-4 w-4" />
-                    {t("back")}
+                    <WalletCards className="mr-2 h-4 w-4" />
+                    {t("deposit")}
                 </Button>
-
-                <div>
-                    <h1 className="text-2xl font-semibold text-primary">
-                        {t("title")}
-                    </h1>
-
-                    <p className="mt-1 text-sm text-muted">
-                        {account.accountNo}
-                    </p>
-                </div>
             </div>
 
-            <div
+            {/* Account information */}
+            <section
                 className="
                     rounded-lg
                     border
@@ -162,51 +213,78 @@ export default function AdminAccountDetailPage({
                     </h2>
                 </div>
 
-                <div className="grid gap-6 p-6 sm:grid-cols-2 lg:grid-cols-3">
+                <div
+                    className="
+                        grid
+                        gap-6
+                        p-6
+                        sm:grid-cols-2
+                        lg:grid-cols-3
+                    "
+                >
                     <DetailItem
-                        label={t("fields.accountNo")}
-                        value={account.accountNo}
+                        label={t(
+                            "fields.accountNo",
+                        )}
+                        value={
+                            account.accountNo
+                        }
                     />
 
                     <DetailItem
-                        label={t("fields.currency")}
+                        label={t(
+                            "fields.currency",
+                        )}
                         value={account.currency}
                     />
 
                     <DetailItem
-                        label={t("fields.balance")}
+                        label={t(
+                            "fields.balance",
+                        )}
                         value={`${account.balance} ${account.currency}`}
                     />
 
                     <DetailItem
-                        label={t("fields.status")}
+                        label={t(
+                            "fields.status",
+                        )}
                         value={t(
                             `statuses.${account.status}`,
                         )}
                     />
 
                     <DetailItem
-                        label={t("fields.ledgerAccountId")}
-                        value={account.ledgerAccountId}
+                        label={t(
+                            "fields.ledgerAccountId",
+                        )}
+                        value={
+                            account.ledgerAccountId
+                        }
                     />
 
                     <DetailItem
-                        label={t("fields.createdAt")}
-                        value={new Date(
+                        label={t(
+                            "fields.createdAt",
+                        )}
+                        value={formatDate(
                             account.createdAt,
-                        ).toLocaleString()}
+                        )}
                     />
 
                     <DetailItem
-                        label={t("fields.updatedAt")}
-                        value={new Date(
+                        label={t(
+                            "fields.updatedAt",
+                        )}
+                        value={formatDate(
                             account.updatedAt,
-                        ).toLocaleString()}
+                        )}
                     />
                 </div>
-            </div>
+            </section>
 
-            <div
+            {/* Owner information */}
+            <section
                 className="
                     rounded-lg
                     border
@@ -223,11 +301,18 @@ export default function AdminAccountDetailPage({
                 <div className="flex items-center gap-4 p-6">
                     {account.user.avatarUrl ? (
                         <img
-                            src={account.user.avatarUrl}
-                            alt={account.user.fullName}
+                            src={
+                                account.user
+                                    .avatarUrl
+                            }
+                            alt={
+                                account.user
+                                    .fullName
+                            }
                             className="
                                 h-14
                                 w-14
+                                shrink-0
                                 rounded-full
                                 object-cover
                             "
@@ -238,6 +323,7 @@ export default function AdminAccountDetailPage({
                                 flex
                                 h-14
                                 w-14
+                                shrink-0
                                 items-center
                                 justify-center
                                 rounded-full
@@ -247,27 +333,56 @@ export default function AdminAccountDetailPage({
                                 text-muted
                             "
                         >
-                            {account.user.fullName
-                                .charAt(0)
-                                .toUpperCase()}
+                            {getInitial(
+                                account.user
+                                    .fullName,
+                            )}
                         </div>
                     )}
 
-                    <div className="space-y-1">
+                    <div className="min-w-0 space-y-1">
                         <p className="font-medium text-primary">
-                            {account.user.fullName}
+                            {
+                                account.user
+                                    .fullName
+                            }
                         </p>
 
-                        <p className="text-sm text-muted">
-                            {account.user.email}
+                        <p className="break-all text-sm text-muted">
+                            {
+                                account.user
+                                    .email
+                            }
                         </p>
 
-                        <p className="text-xs text-muted">
+                        <p className="break-all font-mono text-xs text-muted">
                             {account.user.id}
                         </p>
                     </div>
                 </div>
-            </div>
+            </section>
+
+            {/* Deposit modal */}
+            {depositModalOpen && (
+                <AdminDepositModal
+                    open
+                    accountId={account.id}
+                    accountNo={
+                        account.accountNo
+                    }
+                    currency={
+                        account.currency
+                    }
+                    onClose={() =>
+                        setDepositModalOpen(
+                            false,
+                        )
+                    }
+                    onSuccess={
+                        handleDepositSuccess
+                    }
+                />
+            )}
         </div>
     );
 }
@@ -282,7 +397,7 @@ function DetailItem({
                         value,
                     }: DetailItemProps) {
     return (
-        <div className="space-y-1">
+        <div className="min-w-0 space-y-1">
             <p className="text-sm text-muted">
                 {label}
             </p>
@@ -291,5 +406,22 @@ function DetailItem({
                 {value}
             </p>
         </div>
+    );
+}
+
+function formatDate(
+    value: string,
+): string {
+    return new Date(value).toLocaleString();
+}
+
+function getInitial(
+    fullName: string,
+): string {
+    return (
+        fullName
+            .trim()
+            .charAt(0)
+            .toUpperCase() || "?"
     );
 }

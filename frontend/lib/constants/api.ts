@@ -54,5 +54,8 @@ export const API_ENDPOINTS = {
             BY_ID: (accountId: string) =>
                 `/api/v1/admin/accounts/${accountId}`,
         },
+        TRANSACTION: {
+            DEPOSIT: "/api/v1/admin/transactions/deposits",
+        },
     },
 } as const;

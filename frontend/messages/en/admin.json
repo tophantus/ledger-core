@@ -35,6 +35,7 @@
       "loading": "Loading account details...",
       "loadError": "Unable to load account details.",
       "back": "Back",
+      "deposit": "Deposit Money",
       "accountInformation": "Account Information",
       "ownerInformation": "Account Owner",
       "fields": {
@@ -50,6 +51,23 @@
         "ACTIVE": "Active",
         "BLOCKED": "Blocked",
         "CLOSED": "Closed"
+      }
+    },
+    "deposit": {
+      "title": "Deposit Money",
+      "amount": "Amount",
+      "amountPlaceholder": "Enter amount",
+      "amountRequired": "Please enter an amount",
+      "invalidAmount": "Invalid amount",
+      "amountMustBePositive": "Amount must be greater than zero",
+      "currency": "Currency",
+      "cancel": "Cancel",
+      "submit": "Deposit",
+      "submitting": "Depositing...",
+      "close": "Close",
+      "success": {
+        "title": "Deposit Successful",
+        "description": "The money has been successfully deposited into the account."
       }
     }
   }

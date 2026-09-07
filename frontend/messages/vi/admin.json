@@ -35,8 +35,9 @@
       "loading": "Đang tải thông tin tài khoản...",
       "loadError": "Không thể tải thông tin tài khoản.",
       "back": "Quay lại",
+      "deposit": "Nạp tiền",
       "accountInformation": "Thông tin tài khoản",
-      "ownerInformation": "Thông tin chủ tài khoản",
+      "ownerInformation": "Chủ tài khoản",
       "fields": {
         "accountNo": "Số tài khoản",
         "currency": "Loại tiền",
@@ -50,6 +51,23 @@
         "ACTIVE": "Đang hoạt động",
         "BLOCKED": "Đã khóa",
         "CLOSED": "Đã đóng"
+      }
+    },
+    "deposit": {
+      "title": "Nạp tiền vào tài khoản",
+      "amount": "Số tiền",
+      "amountPlaceholder": "Nhập số tiền",
+      "amountRequired": "Vui lòng nhập số tiền",
+      "invalidAmount": "Số tiền không hợp lệ",
+      "amountMustBePositive": "Số tiền phải lớn hơn 0",
+      "currency": "Loại tiền",
+      "cancel": "Hủy",
+      "submit": "Nạp tiền",
+      "submitting": "Đang nạp tiền...",
+      "close": "Đóng",
+      "success": {
+        "title": "Nạp tiền thành công",
+        "description": "Số tiền đã được nạp thành công vào tài khoản."
       }
     }
   }
