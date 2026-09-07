@@ -10,6 +10,7 @@ import com.example.ledgercore.ledger.command.repository.JournalEntryLineCommandR
 import com.example.ledgercore.ledger.entity.JournalEntry;
 import com.example.ledgercore.ledger.entity.JournalEntryLine;
 import com.example.ledgercore.ledger.enums.EntryType;
+import com.example.ledgercore.ledger.enums.JournalSourceType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,7 +43,8 @@ public class RecordTransferHandler
 
         JournalEntry journalEntry =
                 JournalEntry.builder()
-                        .transactionId(command.transactionId())
+                        .sourceType(JournalSourceType.TRANSACTION)
+                        .sourceId(command.transactionId())
                         .businessDate(command.businessDate())
                         .build();
 
