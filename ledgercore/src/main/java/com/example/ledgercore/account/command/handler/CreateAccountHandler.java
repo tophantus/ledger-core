@@ -78,20 +78,18 @@ public class CreateAccountHandler
                 accountCommandRepository.save(account);
 
         return toResponse(
-                savedAccount,
-                product.code()
+                savedAccount
         );
     }
 
     private AccountResponse toResponse(
-            Account account,
-            String productCode
+            Account account
     ) {
         return new AccountResponse(
                 account.getId(),
                 account.getUserId(),
                 account.getAccountNo(),
-                productCode,
+                account.getProductId(),
                 account.getCurrency(),
                 account.getBalance().toPlainString(),
                 account.getStatus(),

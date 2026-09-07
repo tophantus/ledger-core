@@ -37,6 +37,7 @@ public class GetUserActiveAccountsHandler implements GetUserActiveAccountsUseCas
         return new AccountSummaryResponse(
                 account.getId(),
                 account.getAccountNo(),
+                account.getProductId(),
                 account.getCurrency(),
                 account.getBalance().toPlainString(),
                 account.getStatus()

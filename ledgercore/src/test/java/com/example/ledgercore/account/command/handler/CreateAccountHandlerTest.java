@@ -135,8 +135,8 @@ class CreateAccountHandlerTest {
                         response.userId()
                 ),
                 () -> assertEquals(
-                        productCode,
-                        response.productCode()
+                        productId,
+                        response.productId()
                 ),
                 () -> assertEquals(
                         accountNo,

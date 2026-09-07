@@ -9,7 +9,7 @@ public record AccountResponse(
         UUID id,
         UUID userId,
         String accountNo,
-        String productCode,
+        UUID productId,
         String currency,
         String balance,
         AccountStatus status,

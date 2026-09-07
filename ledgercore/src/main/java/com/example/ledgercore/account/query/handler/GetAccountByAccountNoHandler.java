@@ -1,7 +1,5 @@
 package com.example.ledgercore.account.query.handler;
 
-import com.example.ledgercore.account.port.outbound.ProductAccountInfo;
-import com.example.ledgercore.account.port.outbound.ProductAccountPort;
 import com.example.ledgercore.account.entity.Account;
 import com.example.ledgercore.account.query.dto.AccountResponse;
 import com.example.ledgercore.account.query.dto.GetAccountByAccountNoQuery;
@@ -19,8 +17,6 @@ public class GetAccountByAccountNoHandler
         implements GetAccountByAccountNoUseCase {
 
     private final AccountQueryRepository accountQueryRepository;
-    private final ProductAccountPort
-            productAccountPort;
 
     @Override
     @Transactional(readOnly = true)
@@ -34,20 +30,16 @@ public class GetAccountByAccountNoHandler
         if (!account.getUserId().equals(query.userId())) {
             throw new BusinessException(ErrorCode.ACCESS_DENIED);
         }
-        ProductAccountInfo product =
-                productAccountPort.getActiveProduct(
-                        account.getProductId()
-                );
 
-        return toResponse(account, product.code());
+        return toResponse(account);
     }
 
-    private AccountResponse toResponse(Account account, String productCode) {
+    private AccountResponse toResponse(Account account) {
         return new AccountResponse(
                 account.getId(),
                 account.getUserId(),
                 account.getAccountNo(),
-                productCode,
+                account.getProductId(),
                 account.getCurrency(),
                 account.getBalance().toPlainString(),
                 account.getStatus(),
