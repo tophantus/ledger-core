@@ -48,4 +48,9 @@ export const API_ENDPOINTS = {
         WITHDRAW:
             "/api/v1/transactions/withdraw",
     },
+    ADMIN: {
+        ACCOUNT: {
+            BASE: "/api/v1/admin/accounts",
+        },
+    },
 } as const;

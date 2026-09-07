@@ -24,6 +24,13 @@
 
   "navigation": {
     "dashboard": "Trang chủ",
-    "transactions": "Giao dịch"
+    "transactions": "Giao dịch",
+    "admin": {
+      "dashboard": "Tổng quan",
+      "users": "Người dùng",
+      "accounts": "Tài khoản",
+      "transactions": "Giao dịch",
+      "reconciliation": "Đối soát"
+    }
   }
 }

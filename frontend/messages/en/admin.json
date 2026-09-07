@@ -1,0 +1,34 @@
+{
+  "account": {
+    "title": "Accounts",
+    "description": "Manage and monitor bank accounts.",
+    "loading": "Loading accounts...",
+    "empty": "No accounts found.",
+    "loadError": "Unable to load accounts.",
+    "filters": {
+      "accountNoPlaceholder": "Search by account number",
+      "currencyPlaceholder": "Currency",
+      "userIdPlaceholder": "User ID",
+      "allStatuses": "All statuses",
+      "clear": "Clear"
+    },
+    "statuses": {
+      "ACTIVE": "Active",
+      "BLOCKED": "Blocked",
+      "CLOSED": "Closed"
+    },
+    "table": {
+      "accountNo": "Account number",
+      "currency": "Currency",
+      "balance": "Balance",
+      "status": "Status",
+      "userId": "User ID"
+    },
+    "pagination": {
+      "total": "{count} accounts",
+      "page": "Page {current} of {total}",
+      "previous": "Previous",
+      "next": "Next"
+    }
+  }
+}

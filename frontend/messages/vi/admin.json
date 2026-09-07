@@ -1,0 +1,34 @@
+{
+  "account": {
+    "title": "Tài khoản",
+    "description": "Quản lý và theo dõi các tài khoản ngân hàng.",
+    "loading": "Đang tải tài khoản...",
+    "empty": "Không tìm thấy tài khoản.",
+    "loadError": "Không thể tải danh sách tài khoản.",
+    "filters": {
+      "accountNoPlaceholder": "Tìm theo số tài khoản",
+      "currencyPlaceholder": "Loại tiền",
+      "userIdPlaceholder": "ID người dùng",
+      "allStatuses": "Tất cả trạng thái",
+      "clear": "Xóa bộ lọc"
+    },
+    "statuses": {
+      "ACTIVE": "Đang hoạt động",
+      "BLOCKED": "Đã khóa",
+      "CLOSED": "Đã đóng"
+    },
+    "table": {
+      "accountNo": "Số tài khoản",
+      "currency": "Loại tiền",
+      "balance": "Số dư",
+      "status": "Trạng thái",
+      "userId": "ID người dùng"
+    },
+    "pagination": {
+      "total": "{count} tài khoản",
+      "page": "Trang {current} / {total}",
+      "previous": "Trước",
+      "next": "Sau"
+    }
+  }
+}

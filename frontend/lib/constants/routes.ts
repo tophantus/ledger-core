@@ -19,4 +19,12 @@ export const ROUTES = {
         DETAIL: (transactionId: string) =>
             `/transactions/${transactionId}`,
     },
+
+    ADMIN: {
+        DASHBOARD: "/admin/dashboard",
+        USERS: "/admin/users",
+        ACCOUNTS: "/admin/accounts",
+        TRANSACTIONS: "/admin/transactions",
+        RECONCILIATION: "/admin/reconciliation",
+    },
 } as const;

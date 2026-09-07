@@ -1,17 +1,16 @@
 "use client"
 
-import {BottomBar} from "@/components/layout/bottom-bar";
-import {LeftSidebar} from "@/components/layout/left-sidebar";
+import {AdminLeftSidebar} from "@/components/layout/admin-left-sidebar";
 import {Topbar} from "@/components/layout/topbar";
+import { useRouter } from "@/i18n/routing";
 import {ReactNode, useEffect} from "react";
 import {useUserStore} from "@/features/user/stores/user-store";
-import {hasAdminAccess} from "@/features/user/utils/user-role";
-import {useRouter} from "@/i18n/routing";
+import { hasAdminAccess } from "@/features/user/utils/user-role";
 import {ROUTES} from "@/lib/constants/routes";
 
-export default function CustomerLayout({
-                                           children,
-                                       }: Readonly<{
+export default function AdminLayout({
+                                        children,
+                                    }: Readonly<{
     children: ReactNode;
 }>) {
     const router = useRouter();
@@ -27,9 +26,9 @@ export default function CustomerLayout({
             return;
         }
 
-        if (adminAccess) {
+        if (!adminAccess) {
             router.replace(
-                ROUTES.ADMIN.DASHBOARD,
+                ROUTES.DASHBOARD,
             );
         }
     }, [
@@ -38,7 +37,7 @@ export default function CustomerLayout({
         router,
     ]);
 
-    if (!currentUser || adminAccess) {
+    if (!currentUser || !adminAccess) {
         return null;
     }
     return (
@@ -46,7 +45,7 @@ export default function CustomerLayout({
             <Topbar />
 
             <div className="flex">
-                <LeftSidebar />
+                <AdminLeftSidebar />
 
                 <main
                     className="
@@ -63,8 +62,6 @@ export default function CustomerLayout({
                     </div>
                 </main>
             </div>
-
-            <BottomBar />
         </div>
     );
 }

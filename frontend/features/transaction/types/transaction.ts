@@ -1,4 +1,4 @@
-import type {ApiResponse} from "@/lib/api/types";
+import type {ApiResponse, PageResponse} from "@/lib/api/types";
 
 export type TransactionType =
     | "TRANSFER"
@@ -26,14 +26,6 @@ export interface Transaction {
     incoming: boolean;
     createdAt: string;
     completedAt: string | null;
-}
-
-export interface PageResponse<T> {
-    content: T[];
-    page: number;
-    size: number;
-    totalElements: number;
-    totalPages: number;
 }
 
 export interface TransactionFilters {
