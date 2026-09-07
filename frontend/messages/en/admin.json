@@ -1,4 +1,13 @@
 {
+  "dashboard": {
+    "title": "Admin Dashboard",
+    "description": "Monitor daily operations and system activities.",
+
+    "businessDay": {
+      "title": "Business Day",
+      "description": "Manage the current business day."
+    }
+  },
   "account": {
     "title": "Accounts",
     "description": "Manage and monitor bank accounts.",
@@ -144,5 +153,8 @@
       "BALANCE_MISMATCH": "Balance Mismatch",
       "OPENING_BALANCE_MISMATCH": "Opening Balance Mismatch"
     }
+  },
+  "businessDay": {
+    "close": "Close Business Day"
   }
 }

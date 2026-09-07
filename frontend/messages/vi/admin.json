@@ -1,4 +1,13 @@
 {
+  "dashboard": {
+    "title": "Bảng điều khiển quản trị",
+    "description": "Theo dõi hoạt động hàng ngày và tình trạng hệ thống.",
+
+    "businessDay": {
+      "title": "Ngày nghiệp vụ",
+      "description": "Quản lý ngày nghiệp vụ hiện tại."
+    }
+  },
   "account": {
     "title": "Tài khoản",
     "description": "Quản lý và theo dõi các tài khoản ngân hàng.",
@@ -144,5 +153,8 @@
       "BALANCE_MISMATCH": "Sai lệch số dư",
       "OPENING_BALANCE_MISMATCH": "Sai lệch số dư đầu kỳ"
     }
+  },
+  "businessDay": {
+    "close": "Đóng ngày nghiệp vụ"
   }
 }
