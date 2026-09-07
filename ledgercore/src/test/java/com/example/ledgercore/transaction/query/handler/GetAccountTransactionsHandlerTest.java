@@ -124,11 +124,15 @@ class GetAccountTransactionsHandlerTest {
                 any(Pageable.class)
         )).thenReturn(page);
 
-        when(transactionQueryMapper.toResponse(transaction1))
-                .thenReturn(response1);
+        when(transactionQueryMapper.toResponse(
+                transaction1,
+                false
+        )).thenReturn(response1);
 
-        when(transactionQueryMapper.toResponse(transaction2))
-                .thenReturn(response2);
+        when(transactionQueryMapper.toResponse(
+                transaction2,
+                true
+        )).thenReturn(response2);
 
         PageResponse<TransactionResponse> result =
                 handler.execute(query);
@@ -147,10 +151,10 @@ class GetAccountTransactionsHandlerTest {
                 .verifyAccess(userId, accountId);
 
         verify(transactionQueryMapper)
-                .toResponse(transaction1);
+                .toResponse(transaction1, false);
 
         verify(transactionQueryMapper)
-                .toResponse(transaction2);
+                .toResponse(transaction2, true);
     }
 
     @Test

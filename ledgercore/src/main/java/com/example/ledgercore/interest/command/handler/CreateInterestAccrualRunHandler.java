@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.time.LocalDate;
 
 @Service
@@ -32,6 +33,7 @@ public class CreateInterestAccrualRunHandler
                         .businessDate(businessDate)
                         .status(InterestRunStatus.PENDING)
                         .processedCount(0L)
+                        .createdAt(Instant.now())
                         .build();
 
         interestRunCommandRepository.save(interestRun);

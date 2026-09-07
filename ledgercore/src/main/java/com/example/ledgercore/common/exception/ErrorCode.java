@@ -167,6 +167,30 @@ public enum ErrorCode {
             HttpStatus.NOT_FOUND
     ),
 
+    INTEREST_RUN_NOT_FOUND(
+            "INTEREST_008",
+            "Interest run not found",
+            HttpStatus.NOT_FOUND
+    ),
+
+    INTEREST_RUN_ALREADY_EXISTS(
+            "INTEREST_009",
+            "Interest run already exists",
+            HttpStatus.CONFLICT
+    ),
+
+    INVALID_INTEREST_RUN_STATUS(
+            "INTEREST_010",
+            "Invalid interest run status",
+            HttpStatus.CONFLICT
+    ),
+
+    INTEREST_RUN_ALREADY_COMPLETED(
+            "INTEREST_011",
+            "Interest run already completed",
+            HttpStatus.CONFLICT
+    ),
+
     // Ledger
 
     LEDGER_ACCOUNT_NOT_FOUND(

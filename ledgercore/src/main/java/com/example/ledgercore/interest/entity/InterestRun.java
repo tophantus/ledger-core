@@ -53,14 +53,12 @@ public class InterestRun {
     private UUID lastProcessedId;
 
     @Column(
-            name = "processed_count",
-            nullable = false
+            name = "processed_count"
     )
     private Long processedCount;
 
     @Column(
-            name = "started_at",
-            nullable = false
+            name = "started_at"
     )
     private Instant startedAt;
 
@@ -94,16 +92,14 @@ public class InterestRun {
         this.heartbeatAt = startedAt;
     }
 
-    public void heartbeat(Instant heartbeatAt) {
-        this.heartbeatAt = heartbeatAt;
-    }
-
     public void updateProgress(
             UUID lastProcessedId,
-            long processedCount
+            long processedCount,
+            Instant heartbeatAt
     ) {
         this.lastProcessedId = lastProcessedId;
         this.processedCount = processedCount;
+        this.heartbeatAt = heartbeatAt;
     }
 
     public void complete(Instant completedAt) {

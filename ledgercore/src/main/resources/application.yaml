@@ -120,7 +120,20 @@ business-day:
 reconciliation:
   scheduler:
     enabled: true
-    fixed-delay: 10000
+    fixed-delay: 1s
+
+  run:
+    batch-size: 500
+    lease-duration: 5m
+
+interest:
+  scheduler:
+    enabled: true
+    fixed-delay: 1s
+
+  run:
+    batch-size: 500
+    lease-duration: 5m
 
 app:
   webhook:

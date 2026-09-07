@@ -126,7 +126,7 @@ public class AccrueInterestHandler
         if (command.productId() == null) {
 
             throw new IllegalArgumentException(
-                    "productCode must not be null"
+                    "productId must not be null"
             );
         }
 

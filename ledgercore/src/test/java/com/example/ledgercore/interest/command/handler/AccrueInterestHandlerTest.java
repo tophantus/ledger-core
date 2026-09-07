@@ -423,12 +423,12 @@ class AccrueInterestHandlerTest {
     }
 
     @Test
-    void shouldRejectBlankProductCode() {
+    void shouldRejectNullProductId() {
         AccrueInterestCommand invalidCommand =
                 new AccrueInterestCommand(
                         runId,
                         accountId,
-                        productId,
+                        null,
                         "VND",
                         businessDate
                 );
@@ -437,7 +437,7 @@ class AccrueInterestHandlerTest {
                 () -> handler.execute(invalidCommand)
         )
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("productCode must not be blank");
+                .hasMessage("productId must not be null");
 
         verifyNoInteractions(
                 interestAccrualCommandRepository,
@@ -463,7 +463,7 @@ class AccrueInterestHandlerTest {
                 () -> handler.execute(invalidCommand)
         )
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("productCode must not be blank");
+                .hasMessage("productId must not be null");
     }
 
     @Test

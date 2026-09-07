@@ -41,4 +41,18 @@ public interface AccountQueryRepository
             UUID id,
             UUID userId
     );
+
+    @Query("""
+            SELECT a
+            FROM Account a
+            WHERE a.status = :status
+              AND (:lastProcessedId IS NULL
+                   OR a.id > :lastProcessedId)
+            ORDER BY a.id ASC
+            """)
+    List<Account> findInterestEligibleBatch(
+            @Param("status") AccountStatus status,
+            @Param("lastProcessedId") UUID lastProcessedId,
+            org.springframework.data.domain.Pageable pageable
+    );
 }
