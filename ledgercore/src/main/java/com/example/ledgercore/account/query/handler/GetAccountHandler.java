@@ -29,6 +29,7 @@ public class GetAccountHandler implements GetAccountUseCase {
             throw new BusinessException(ErrorCode.ACCESS_DENIED);
         }
 
+
         return toResponse(account);
     }
 
@@ -37,6 +38,7 @@ public class GetAccountHandler implements GetAccountUseCase {
                 account.getId(),
                 account.getUserId(),
                 account.getAccountNo(),
+                account.getProductId(),
                 account.getCurrency(),
                 account.getBalance().toPlainString(),
                 account.getStatus(),

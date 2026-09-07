@@ -1,0 +1,127 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 042-seed-interest-system-ledger-accounts
+      author: tu
+
+      changes:
+
+        # Interest Expense - VND
+
+        - insert:
+            tableName: ledger_accounts
+            columns:
+              - column:
+                  name: id
+                  valueComputed: gen_random_uuid()
+              - column:
+                  name: code
+                  value: INTEREST_EXPENSE_VND
+              - column:
+                  name: name
+                  value: Interest Expense VND
+              - column:
+                  name: type
+                  value: EXPENSE
+              - column:
+                  name: currency
+                  value: VND
+              - column:
+                  name: status
+                  value: ACTIVE
+              - column:
+                  name: created_at
+                  valueDate: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_at
+                  valueDate: CURRENT_TIMESTAMP
+
+        # Interest Expense - USD
+
+        - insert:
+            tableName: ledger_accounts
+            columns:
+              - column:
+                  name: id
+                  valueComputed: gen_random_uuid()
+              - column:
+                  name: code
+                  value: INTEREST_EXPENSE_USD
+              - column:
+                  name: name
+                  value: Interest Expense USD
+              - column:
+                  name: type
+                  value: EXPENSE
+              - column:
+                  name: currency
+                  value: USD
+              - column:
+                  name: status
+                  value: ACTIVE
+              - column:
+                  name: created_at
+                  valueDate: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_at
+                  valueDate: CURRENT_TIMESTAMP
+
+        # Interest Payable - VND
+
+        - insert:
+            tableName: ledger_accounts
+            columns:
+              - column:
+                  name: id
+                  valueComputed: gen_random_uuid()
+              - column:
+                  name: code
+                  value: INTEREST_PAYABLE_VND
+              - column:
+                  name: name
+                  value: Interest Payable VND
+              - column:
+                  name: type
+                  value: LIABILITY
+              - column:
+                  name: currency
+                  value: VND
+              - column:
+                  name: status
+                  value: ACTIVE
+              - column:
+                  name: created_at
+                  valueDate: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_at
+                  valueDate: CURRENT_TIMESTAMP
+
+        # Interest Payable - USD
+
+        - insert:
+            tableName: ledger_accounts
+            columns:
+              - column:
+                  name: id
+                  valueComputed: gen_random_uuid()
+              - column:
+                  name: code
+                  value: INTEREST_PAYABLE_USD
+              - column:
+                  name: name
+                  value: Interest Payable USD
+              - column:
+                  name: type
+                  value: LIABILITY
+              - column:
+                  name: currency
+                  value: USD
+              - column:
+                  name: status
+                  value: ACTIVE
+              - column:
+                  name: created_at
+                  valueDate: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_at
+                  valueDate: CURRENT_TIMESTAMP

@@ -71,3 +71,19 @@ databaseChangeLog:
       file: db/changelog/035-add-reconciliation-run-heartbeat.yaml
   - include:
       file: db/changelog/036-refactor-journal-entry-source.yaml
+  - include:
+      file: db/changelog/037-create-interest-configs.yaml
+  - include:
+      file: db/changelog/038-create-interest-postings.yaml
+  - include:
+      file: db/changelog/039-create-interest-accruals.yaml
+  - include:
+      file: db/changelog/040-seed-interest-configs.yaml
+  - include:
+      file: db/changelog/041-create-interest-runs.yaml
+  - include:
+      file: db/changelog/042-seed-interest-system-ledger-accounts.yaml
+  - include:
+      file: db/changelog/043-create-products-and-use-product-id.yaml
+  - include:
+      file: db/changelog/044-update-interest-runs.yaml

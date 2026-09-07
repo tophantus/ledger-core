@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Map;
+
 @Service
 @RequiredArgsConstructor
 public class SystemLedgerAccountService {
@@ -19,9 +21,39 @@ public class SystemLedgerAccountService {
 
     @Transactional(readOnly = true)
     public LedgerAccount getCashAccount(String currency) {
-        String code = systemLedgerAccountProperties
-                        .getCashCodes()
-                        .get(currency);
+        return getAccount(
+                systemLedgerAccountProperties.getCashCodes(),
+                currency
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public LedgerAccount getInterestExpenseAccount(
+            String currency
+    ) {
+        return getAccount(
+                systemLedgerAccountProperties
+                        .getInterestExpenseCodes(),
+                currency
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public LedgerAccount getInterestPayableAccount(
+            String currency
+    ) {
+        return getAccount(
+                systemLedgerAccountProperties
+                        .getInterestPayableCodes(),
+                currency
+        );
+    }
+
+    private LedgerAccount getAccount(
+            Map<String, String> accountCodes,
+            String currency
+    ) {
+        String code = accountCodes.get(currency);
 
         if (code == null) {
             throw new BusinessException(
@@ -43,6 +75,7 @@ public class SystemLedgerAccountService {
 
         if (account.getStatus()
                 != LedgerAccountStatus.ACTIVE) {
+
             throw new BusinessException(
                     ErrorCode.LEDGER_ACCOUNT_NOT_ACTIVE
             );

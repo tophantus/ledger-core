@@ -9,6 +9,7 @@ export interface Account {
     id: string;
     userId: string;
     accountNo: string;
+    productId: string;
     currency: string;
     balance: string;
     status: AccountStatus;
@@ -19,6 +20,7 @@ export interface Account {
 export interface AccountSummary {
     id: string;
     accountNo: string;
+    productId: string;
     currency: string;
     balance: string;
     status: AccountStatus;
@@ -30,6 +32,7 @@ export interface AccountHolder {
 }
 
 export interface CreateAccountRequest {
+    productId: string;
     currency: string;
 }
 

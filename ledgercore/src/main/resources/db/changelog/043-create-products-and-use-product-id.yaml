@@ -1,0 +1,228 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 043-create-products-and-use-product-id
+      author: tu
+
+      changes:
+
+        # ============================================================
+        # Products
+        # ============================================================
+
+        - createTable:
+            tableName: products
+
+            columns:
+
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_products
+                    nullable: false
+
+              - column:
+                  name: code
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: name
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: status
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+        - addUniqueConstraint:
+            tableName: products
+            columnNames: code
+            constraintName: uk_products_code
+
+        - createIndex:
+            tableName: products
+            indexName: idx_products_status
+            columns:
+              - column:
+                  name: status
+
+        - sql:
+            sql: >
+              ALTER TABLE products
+              ADD CONSTRAINT chk_products_status
+              CHECK (
+                status IN (
+                  'ACTIVE',
+                  'INACTIVE'
+                )
+              );
+
+        # ============================================================
+        # Seed Products
+        # ============================================================
+
+        - sql:
+            sql: |
+              INSERT INTO products (
+                  id,
+                  code,
+                  name,
+                  status,
+                  created_at,
+                  updated_at
+              )
+              VALUES (
+                  gen_random_uuid(),
+                  'SAVINGS',
+                  'Savings Account',
+                  'ACTIVE',
+                  CURRENT_TIMESTAMP,
+                  CURRENT_TIMESTAMP
+              )
+              ON CONFLICT (code) DO NOTHING;
+
+        - sql:
+            sql: |
+              INSERT INTO products (
+                  id,
+                  code,
+                  name,
+                  status,
+                  created_at,
+                  updated_at
+              )
+              VALUES (
+                  gen_random_uuid(),
+                  'CURRENT',
+                  'Current Account',
+                  'ACTIVE',
+                  CURRENT_TIMESTAMP,
+                  CURRENT_TIMESTAMP
+              )
+              ON CONFLICT (code) DO NOTHING;
+
+        # ============================================================
+        # Accounts: product_code -> product_id
+        # ============================================================
+
+        - addColumn:
+            tableName: accounts
+            columns:
+              - column:
+                  name: product_id
+                  type: UUID
+
+        - sql:
+            sql: |
+              UPDATE accounts a
+              SET product_id = p.id
+              FROM products p
+              WHERE p.code = 'CURRENT'
+                AND a.product_id IS NULL;
+
+        - addForeignKeyConstraint:
+            baseTableName: accounts
+            baseColumnNames: product_id
+            referencedTableName: products
+            referencedColumnNames: id
+            constraintName: fk_accounts_product
+
+        - addNotNullConstraint:
+            tableName: accounts
+            columnName: product_id
+            columnDataType: UUID
+
+        - createIndex:
+            tableName: accounts
+            indexName: idx_accounts_product_id
+            columns:
+              - column:
+                  name: product_id
+
+        # ============================================================
+        # Interest Configs: product_code -> product_id
+        # ============================================================
+
+        - addColumn:
+            tableName: interest_configs
+            columns:
+              - column:
+                  name: product_id
+                  type: UUID
+
+        - sql:
+            sql: |
+              UPDATE interest_configs ic
+              SET product_id = p.id
+              FROM products p
+              WHERE ic.product_code = p.code
+                AND ic.product_id IS NULL;
+
+        - addForeignKeyConstraint:
+            baseTableName: interest_configs
+            baseColumnNames: product_id
+            referencedTableName: products
+            referencedColumnNames: id
+            constraintName: fk_interest_configs_product
+
+        - addNotNullConstraint:
+            tableName: interest_configs
+            columnName: product_id
+            columnDataType: UUID
+
+        # Remove old uniqueness constraint
+
+        - dropUniqueConstraint:
+            tableName: interest_configs
+            constraintName: uk_interest_configs_product_currency_effective_from
+
+        # Remove old lookup index
+
+        - dropIndex:
+            tableName: interest_configs
+            indexName: idx_interest_configs_lookup
+
+        # Remove product_code
+
+        - dropColumn:
+            tableName: interest_configs
+            columnName: product_code
+
+        # New uniqueness constraint
+
+        - addUniqueConstraint:
+            tableName: interest_configs
+            columnNames: product_id, currency, effective_from
+            constraintName: uk_interest_configs_product_currency_effective_from
+
+        - createIndex:
+            tableName: interest_configs
+            indexName: idx_interest_configs_lookup
+            columns:
+              - column:
+                  name: product_id
+
+              - column:
+                  name: currency
+
+              - column:
+                  name: effective_from

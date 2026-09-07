@@ -1,0 +1,41 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 044-update-interest-runs
+      author: tu
+
+      changes:
+
+        - sql:
+            sql: >
+              ALTER TABLE interest_runs
+              DROP CONSTRAINT chk_interest_runs_status;
+
+        - sql:
+            sql: >
+              ALTER TABLE interest_runs
+              DROP CONSTRAINT chk_interest_runs_account_counts;
+
+        - dropColumn:
+            tableName: interest_runs
+            columnName: total_accounts
+
+        - dropColumn:
+            tableName: interest_runs
+            columnName: successful_accounts
+
+        - dropColumn:
+            tableName: interest_runs
+            columnName: failed_accounts
+
+        - addColumn:
+            tableName: interest_runs
+            columns:
+
+              - column:
+                  name: last_processed_id
+                  type: UUID
+
+              - column:
+                  name: processed_count
+                  type: BIGINT

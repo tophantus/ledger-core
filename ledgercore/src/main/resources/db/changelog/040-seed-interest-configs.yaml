@@ -1,0 +1,131 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 040-seed-interest-configs
+      author: tu
+
+      changes:
+
+        - insert:
+            tableName: interest_configs
+            columns:
+              - column:
+                  name: id
+                  valueComputed: gen_random_uuid()
+              - column:
+                  name: product_code
+                  value: SAVINGS
+              - column:
+                  name: currency
+                  value: VND
+              - column:
+                  name: interest_rate
+                  valueNumeric: 0.030000
+              - column:
+                  name: day_count_convention
+                  value: ACTUAL_365
+              - column:
+                  name: effective_from
+                  valueDate: "2026-01-01"
+              - column:
+                  name: effective_to
+                  valueDate: null
+              - column:
+                  name: created_at
+                  valueComputed: "TIMESTAMPTZ '2026-01-01 00:00:00+00'"
+              - column:
+                  name: updated_at
+                  valueComputed: "TIMESTAMPTZ '2026-01-01 00:00:00+00'"
+
+        - insert:
+            tableName: interest_configs
+            columns:
+              - column:
+                  name: id
+                  valueComputed: gen_random_uuid()
+              - column:
+                  name: product_code
+                  value: CURRENT
+              - column:
+                  name: currency
+                  value: VND
+              - column:
+                  name: interest_rate
+                  valueNumeric: 0.001000
+              - column:
+                  name: day_count_convention
+                  value: ACTUAL_365
+              - column:
+                  name: effective_from
+                  valueDate: "2026-01-01"
+              - column:
+                  name: effective_to
+                  valueDate: null
+              - column:
+                  name: created_at
+                  valueComputed: "TIMESTAMPTZ '2026-01-01 00:00:00+00'"
+              - column:
+                  name: updated_at
+                  valueComputed: "TIMESTAMPTZ '2026-01-01 00:00:00+00'"
+
+        - insert:
+            tableName: interest_configs
+            columns:
+              - column:
+                  name: id
+                  valueComputed: gen_random_uuid()
+              - column:
+                  name: product_code
+                  value: SAVINGS
+              - column:
+                  name: currency
+                  value: USD
+              - column:
+                  name: interest_rate
+                  valueNumeric: 0.020000
+              - column:
+                  name: day_count_convention
+                  value: ACTUAL_365
+              - column:
+                  name: effective_from
+                  valueDate: "2026-01-01"
+              - column:
+                  name: effective_to
+                  valueDate: null
+              - column:
+                  name: created_at
+                  valueComputed: "TIMESTAMPTZ '2026-01-01 00:00:00+00'"
+              - column:
+                  name: updated_at
+                  valueComputed: "TIMESTAMPTZ '2026-01-01 00:00:00+00'"
+
+        - insert:
+            tableName: interest_configs
+            columns:
+              - column:
+                  name: id
+                  valueComputed: gen_random_uuid()
+              - column:
+                  name: product_code
+                  value: CURRENT
+              - column:
+                  name: currency
+                  value: USD
+              - column:
+                  name: interest_rate
+                  valueNumeric: 0.000500
+              - column:
+                  name: day_count_convention
+                  value: ACTUAL_365
+              - column:
+                  name: effective_from
+                  valueDate: "2026-01-01"
+              - column:
+                  name: effective_to
+                  valueDate: null
+              - column:
+                  name: created_at
+                  valueComputed: "TIMESTAMPTZ '2026-01-01 00:00:00+00'"
+              - column:
+                  name: updated_at
+                  valueComputed: "TIMESTAMPTZ '2026-01-01 00:00:00+00'"

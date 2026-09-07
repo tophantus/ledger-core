@@ -1,0 +1,99 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 037-create-interest-configs
+      author: tu
+
+      changes:
+
+        - createTable:
+            tableName: interest_configs
+
+            columns:
+
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_interest_configs
+                    nullable: false
+
+              - column:
+                  name: product_code
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: currency
+                  type: VARCHAR(3)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: interest_rate
+                  type: DECIMAL(10,6)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: day_count_convention
+                  type: VARCHAR(30)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: effective_from
+                  type: DATE
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: effective_to
+                  type: DATE
+
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+        - addUniqueConstraint:
+            tableName: interest_configs
+            columnNames: product_code, currency, effective_from
+            constraintName: uk_interest_configs_product_currency_effective_from
+
+        - createIndex:
+            tableName: interest_configs
+            indexName: idx_interest_configs_lookup
+            columns:
+              - column:
+                  name: product_code
+
+              - column:
+                  name: currency
+
+              - column:
+                  name: effective_from
+
+        - sql:
+            sql: >
+              ALTER TABLE interest_configs
+              ADD CONSTRAINT chk_interest_configs_rate
+              CHECK (interest_rate >= 0);
+
+        - sql:
+            sql: >
+              ALTER TABLE interest_configs
+              ADD CONSTRAINT chk_interest_configs_effective_period
+              CHECK (
+                effective_to IS NULL
+                OR effective_from < effective_to
+              );

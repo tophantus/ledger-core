@@ -6,14 +6,37 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface AccountDailyBalanceQueryRepository
         extends JpaRepository<
         AccountDailyBalance,
         AccountDailyBalance.AccountDailyBalanceId> {
+
+    @Query(
+            value = """
+                SELECT COALESCE(
+                    (
+                        SELECT closing_balance
+                        FROM account_daily_balances
+                        WHERE account_id = :accountId
+                          AND business_date <= :businessDate
+                        ORDER BY business_date DESC
+                        LIMIT 1
+                    ),
+                    0
+                )
+                """,
+            nativeQuery = true
+    )
+    BigDecimal findEffectiveClosingBalance(
+            @Param("accountId") UUID accountId,
+            @Param("businessDate") LocalDate businessDate
+    );
 
     @Query(
             value = """

@@ -84,6 +84,12 @@ ledger:
     cash-codes:
       VND: CASH_VND
       USD: CASH_USD
+    interest-expense-codes:
+      VND: INTEREST_EXPENSE_VND
+      USD: INTEREST_EXPENSE_USD
+    interest-payable-codes:
+      VND: INTEREST_PAYABLE_VND
+      USD: INTEREST_PAYABLE_USD
 
 auth:
   refresh-token:
@@ -114,7 +120,20 @@ business-day:
 reconciliation:
   scheduler:
     enabled: true
-    fixed-delay: 10000
+    fixed-delay: 1s
+
+  run:
+    batch-size: 500
+    lease-duration: 5m
+
+interest:
+  scheduler:
+    enabled: true
+    fixed-delay: 1s
+
+  run:
+    batch-size: 500
+    lease-duration: 5m
 
 app:
   webhook:

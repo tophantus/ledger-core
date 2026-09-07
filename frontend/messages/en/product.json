@@ -1,0 +1,10 @@
+{
+  "select": {
+    "label": "Product",
+    "placeholder": "Select a product"
+  },
+  "names": {
+    "CURRENT": "Payment Account",
+    "SAVINGS": "Savings Account"
+  }
+}

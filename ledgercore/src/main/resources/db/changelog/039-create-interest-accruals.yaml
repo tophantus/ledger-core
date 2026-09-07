@@ -1,0 +1,157 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 039-create-interest-accruals
+      author: tu
+
+      changes:
+
+        - createTable:
+            tableName: interest_accruals
+
+            columns:
+
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_interest_accruals
+                    nullable: false
+
+              - column:
+                  name: account_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: currency
+                  type: VARCHAR(3)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: business_date
+                  type: DATE
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: interest_config_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: principal_amount
+                  type: DECIMAL(19,4)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: interest_rate
+                  type: DECIMAL(10,6)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: interest_amount
+                  type: DECIMAL(19,4)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: journal_entry_id
+                  type: UUID
+
+              - column:
+                  name: posting_id
+                  type: UUID
+
+              - column:
+                  name: run_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: interest_accruals
+            baseColumnNames: account_id
+            referencedTableName: accounts
+            referencedColumnNames: id
+            constraintName: fk_interest_accruals_account
+
+        - addForeignKeyConstraint:
+            baseTableName: interest_accruals
+            baseColumnNames: interest_config_id
+            referencedTableName: interest_configs
+            referencedColumnNames: id
+            constraintName: fk_interest_accruals_config
+
+        - addForeignKeyConstraint:
+            baseTableName: interest_accruals
+            baseColumnNames: journal_entry_id
+            referencedTableName: journal_entries
+            referencedColumnNames: id
+            constraintName: fk_interest_accruals_journal_entry
+
+        - addForeignKeyConstraint:
+            baseTableName: interest_accruals
+            baseColumnNames: posting_id
+            referencedTableName: interest_postings
+            referencedColumnNames: id
+            constraintName: fk_interest_accruals_posting
+
+        - addUniqueConstraint:
+            tableName: interest_accruals
+            columnNames: account_id, business_date
+            constraintName: uk_interest_accruals_account_business_date
+
+        - createIndex:
+            tableName: interest_accruals
+            indexName: idx_interest_accruals_account_date
+            columns:
+              - column:
+                  name: account_id
+
+              - column:
+                  name: business_date
+
+        - createIndex:
+            tableName: interest_accruals
+            indexName: idx_interest_accruals_business_date
+            columns:
+              - column:
+                  name: business_date
+
+        - createIndex:
+            tableName: interest_accruals
+            indexName: idx_interest_accruals_posting_id
+            columns:
+              - column:
+                  name: posting_id
+
+        - sql:
+            sql: >
+              ALTER TABLE interest_accruals
+              ADD CONSTRAINT chk_interest_accruals_principal
+              CHECK (principal_amount >= 0);
+
+        - sql:
+            sql: >
+              ALTER TABLE interest_accruals
+              ADD CONSTRAINT chk_interest_accruals_rate
+              CHECK (interest_rate >= 0);
+
+        - sql:
+            sql: >
+              ALTER TABLE interest_accruals
+              ADD CONSTRAINT chk_interest_accruals_amount
+              CHECK (interest_amount >= 0);

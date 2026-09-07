@@ -31,6 +31,9 @@ class GetAccountHandlerTest {
 
     private UUID userId;
     private UUID accountId;
+    private UUID productId;
+
+    private String accountNo;
 
     @BeforeEach
     void setUp() {
@@ -40,6 +43,9 @@ class GetAccountHandlerTest {
 
         userId = UUID.randomUUID();
         accountId = UUID.randomUUID();
+        productId = UUID.randomUUID();
+
+        accountNo = "1000000001";
     }
 
     @Test
@@ -47,7 +53,8 @@ class GetAccountHandlerTest {
         Account account = account(
                 accountId,
                 userId,
-                "1000000001",
+                productId,
+                accountNo,
                 "VND",
                 new BigDecimal("500000"),
                 AccountStatus.ACTIVE
@@ -64,19 +71,51 @@ class GetAccountHandlerTest {
                         )
                 );
 
-        assertEquals(account.getId(), response.id());
-        assertEquals(account.getUserId(), response.userId());
-        assertEquals(account.getAccountNo(), response.accountNo());
-        assertEquals(account.getCurrency(), response.currency());
-        assertEquals(account.getBalance().toPlainString(), response.balance());
-        assertEquals(account.getStatus(), response.status());
-        assertEquals(account.getCreatedAt(), response.createdAt());
-        assertEquals(account.getUpdatedAt(), response.updatedAt());
+        assertAll(
+                () -> assertEquals(
+                        account.getId(),
+                        response.id()
+                ),
+                () -> assertEquals(
+                        account.getUserId(),
+                        response.userId()
+                ),
+                () -> assertEquals(
+                        account.getAccountNo(),
+                        response.accountNo()
+                ),
+                () -> assertEquals(
+                        account.getProductId(),
+                        response.productId()
+                ),
+                () -> assertEquals(
+                        account.getCurrency(),
+                        response.currency()
+                ),
+                () -> assertEquals(
+                        account.getBalance().toPlainString(),
+                        response.balance()
+                ),
+                () -> assertEquals(
+                        account.getStatus(),
+                        response.status()
+                ),
+                () -> assertEquals(
+                        account.getCreatedAt(),
+                        response.createdAt()
+                ),
+                () -> assertEquals(
+                        account.getUpdatedAt(),
+                        response.updatedAt()
+                )
+        );
 
         verify(accountQueryRepository)
                 .findById(accountId);
 
-        verifyNoMoreInteractions(accountQueryRepository);
+        verifyNoMoreInteractions(
+                accountQueryRepository
+        );
     }
 
     @Test
@@ -103,7 +142,9 @@ class GetAccountHandlerTest {
         verify(accountQueryRepository)
                 .findById(accountId);
 
-        verifyNoMoreInteractions(accountQueryRepository);
+        verifyNoMoreInteractions(
+                accountQueryRepository
+        );
     }
 
     @Test
@@ -113,7 +154,8 @@ class GetAccountHandlerTest {
         Account account = account(
                 accountId,
                 ownerId,
-                "1000000001",
+                productId,
+                accountNo,
                 "VND",
                 new BigDecimal("500000"),
                 AccountStatus.ACTIVE
@@ -141,12 +183,15 @@ class GetAccountHandlerTest {
         verify(accountQueryRepository)
                 .findById(accountId);
 
-        verifyNoMoreInteractions(accountQueryRepository);
+        verifyNoMoreInteractions(
+                accountQueryRepository
+        );
     }
 
     private Account account(
             UUID accountId,
             UUID userId,
+            UUID productId,
             String accountNo,
             String currency,
             BigDecimal balance,
@@ -157,6 +202,7 @@ class GetAccountHandlerTest {
         return Account.builder()
                 .id(accountId)
                 .userId(userId)
+                .productId(productId)
                 .accountNo(accountNo)
                 .currency(currency)
                 .balance(balance)

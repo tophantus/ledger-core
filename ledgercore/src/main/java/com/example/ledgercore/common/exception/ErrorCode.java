@@ -103,6 +103,18 @@ public enum ErrorCode {
             HttpStatus.CONFLICT
     ),
 
+    PRODUCT_NOT_FOUND(
+            "PRODUCT_001",
+            "Product not found",
+            HttpStatus.NOT_FOUND
+    ),
+
+    PRODUCT_NOT_ACTIVE(
+            "PRODUCT_002",
+            "Product is not active",
+            HttpStatus.CONFLICT
+    ),
+
     BUSINESS_DAY_NOT_FOUND(
             "BUSINESS_DAY_001",
             "Current business day not found",
@@ -130,6 +142,52 @@ public enum ErrorCode {
     NEXT_BUSINESS_DAY_ALREADY_EXISTS(
             "BUSINESS_DAY_005",
             "Next business day already exists",
+            HttpStatus.CONFLICT
+    ),
+
+    BUSINESS_DAY_NEXT_NOT_FOUND(
+            "BUSINESS_DAY_008",
+            "Next business day not found",
+            HttpStatus.NOT_FOUND
+    ),
+
+    // Account Daily Balance
+
+    ACCOUNT_DAILY_BALANCE_NOT_FOUND(
+            "ACCOUNT_010",
+            "Account daily balance not found",
+            HttpStatus.NOT_FOUND
+    ),
+
+    // Interest
+
+    INTEREST_CONFIG_NOT_FOUND(
+            "INTEREST_001",
+            "Applicable interest configuration not found",
+            HttpStatus.NOT_FOUND
+    ),
+
+    INTEREST_RUN_NOT_FOUND(
+            "INTEREST_008",
+            "Interest run not found",
+            HttpStatus.NOT_FOUND
+    ),
+
+    INTEREST_RUN_ALREADY_EXISTS(
+            "INTEREST_009",
+            "Interest run already exists",
+            HttpStatus.CONFLICT
+    ),
+
+    INVALID_INTEREST_RUN_STATUS(
+            "INTEREST_010",
+            "Invalid interest run status",
+            HttpStatus.CONFLICT
+    ),
+
+    INTEREST_RUN_ALREADY_COMPLETED(
+            "INTEREST_011",
+            "Interest run already completed",
             HttpStatus.CONFLICT
     ),
 

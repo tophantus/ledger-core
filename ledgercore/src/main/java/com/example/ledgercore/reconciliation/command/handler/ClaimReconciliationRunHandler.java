@@ -1,42 +1,61 @@
 package com.example.ledgercore.reconciliation.command.handler;
 
+import com.example.ledgercore.reconciliation.command.dto.ClaimedReconciliationRun;
 import com.example.ledgercore.reconciliation.command.port.inbound.ClaimReconciliationRunUseCase;
 import com.example.ledgercore.reconciliation.command.repository.ReconciliationRunCommandRepository;
+import com.example.ledgercore.reconciliation.config.ReconciliationRunProperties;
 import com.example.ledgercore.reconciliation.entity.ReconciliationRun;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Duration;
 import java.time.Instant;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class ClaimReconciliationRunHandler
         implements ClaimReconciliationRunUseCase {
 
-    private static final Duration HEARTBEAT_TIMEOUT =
-            Duration.ofMinutes(5);
-
     private final ReconciliationRunCommandRepository repository;
+    private final ReconciliationRunProperties properties;
 
     @Override
     @Transactional
-    public ReconciliationRun execute(Instant now) {
+    public Optional<ClaimedReconciliationRun> execute(
+            Instant claimAt
+    ) {
 
-        Instant staleBefore =
-                now.minus(HEARTBEAT_TIMEOUT);
-
-        ReconciliationRun run =
-                repository.findClaimableRun(staleBefore)
-                        .orElse(null);
-
-        if (run == null) {
-            return null;
+        if (claimAt == null) {
+            throw new IllegalArgumentException(
+                    "claimAt must not be null"
+            );
         }
 
-        run.start(now);
+        Instant staleBefore =
+                claimAt.minus(
+                        properties.getLeaseDuration()
+                );
 
-        return run;
+        Optional<ReconciliationRun> optionalRun =
+                repository.findClaimableRun(staleBefore);
+
+        if (optionalRun.isEmpty()) {
+            return Optional.empty();
+        }
+
+        ReconciliationRun run = optionalRun.get();
+
+        run.start(claimAt);
+
+        return Optional.of(
+                new ClaimedReconciliationRun(
+                        run.getId(),
+                        run.getBusinessDate(),
+                        run.getType(),
+                        run.getLastProcessedId(),
+                        run.getProcessedCount()
+                )
+        );
     }
 }

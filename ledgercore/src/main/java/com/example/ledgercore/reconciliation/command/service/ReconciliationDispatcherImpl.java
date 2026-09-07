@@ -2,7 +2,7 @@ package com.example.ledgercore.reconciliation.command.service;
 
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
-import com.example.ledgercore.reconciliation.entity.ReconciliationRun;
+import com.example.ledgercore.reconciliation.command.dto.ClaimedReconciliationRun;
 import com.example.ledgercore.reconciliation.enums.ReconciliationType;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +22,6 @@ public class ReconciliationDispatcherImpl
     public ReconciliationDispatcherImpl(
             List<ReconciliationProcessor> processors
     ) {
-
         Map<ReconciliationType, ReconciliationProcessor> map =
                 new EnumMap<>(ReconciliationType.class);
 
@@ -46,10 +45,16 @@ public class ReconciliationDispatcherImpl
     }
 
     @Override
-    public void dispatch(ReconciliationRun run) {
+    public void dispatch(ClaimedReconciliationRun run) {
+
+        if (run == null) {
+            throw new IllegalArgumentException(
+                    "run must not be null"
+            );
+        }
 
         ReconciliationProcessor processor =
-                processors.get(run.getType());
+                processors.get(run.type());
 
         if (processor == null) {
             throw new BusinessException(

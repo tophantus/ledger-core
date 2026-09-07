@@ -1,8 +1,8 @@
 package com.example.ledgercore.reconciliation.command.service;
 
-import com.example.ledgercore.reconciliation.entity.ReconciliationRun;
+import com.example.ledgercore.reconciliation.command.dto.ClaimedReconciliationRun;
 
 public interface ReconciliationDispatcher {
 
-    void dispatch(ReconciliationRun run);
+    void dispatch(ClaimedReconciliationRun run);
 }

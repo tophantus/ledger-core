@@ -39,6 +39,7 @@ public class GetAccountByAccountNoHandler
                 account.getId(),
                 account.getUserId(),
                 account.getAccountNo(),
+                account.getProductId(),
                 account.getCurrency(),
                 account.getBalance().toPlainString(),
                 account.getStatus(),

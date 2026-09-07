@@ -4,6 +4,7 @@ import java.util.UUID;
 
 public record CreateAccountCommand(
         UUID userId,
+        UUID productId,
         String currency
 ) {
 }

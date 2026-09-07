@@ -27,6 +27,7 @@ export function useCreateAccount() {
         const summary: AccountSummary = {
             id: account.id,
             accountNo: account.accountNo,
+            productId: account.productId,
             currency: account.currency,
             balance: account.balance,
             status: account.status,

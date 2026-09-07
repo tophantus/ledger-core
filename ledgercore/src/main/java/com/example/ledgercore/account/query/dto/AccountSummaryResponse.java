@@ -8,6 +8,7 @@ import java.util.UUID;
 public record AccountSummaryResponse(
         UUID id,
         String accountNo,
+        UUID productId,
         String currency,
         String balance,
         AccountStatus status

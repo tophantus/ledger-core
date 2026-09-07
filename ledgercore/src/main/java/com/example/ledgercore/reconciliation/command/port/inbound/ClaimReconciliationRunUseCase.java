@@ -1,12 +1,13 @@
 package com.example.ledgercore.reconciliation.command.port.inbound;
 
-import com.example.ledgercore.reconciliation.entity.ReconciliationRun;
+import com.example.ledgercore.reconciliation.command.dto.ClaimedReconciliationRun;
 
 import java.time.Instant;
+import java.util.Optional;
 
 public interface ClaimReconciliationRunUseCase {
 
-    ReconciliationRun execute(
-            Instant now
+    Optional<ClaimedReconciliationRun> execute(
+            Instant claimAt
     );
 }

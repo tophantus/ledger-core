@@ -1,10 +1,11 @@
 package com.example.ledgercore.reconciliation.command.service;
 
+import com.example.ledgercore.reconciliation.command.dto.ClaimedReconciliationRun;
 import com.example.ledgercore.reconciliation.command.port.inbound.CompleteReconciliationRunUseCase;
 import com.example.ledgercore.reconciliation.command.port.inbound.HeartbeatReconciliationRunUseCase;
 import com.example.ledgercore.reconciliation.command.port.inbound.ProcessTransactionJournalBatchUseCase;
 import com.example.ledgercore.reconciliation.command.port.inbound.ProcessTransactionJournalBatchUseCase.BatchResult;
-import com.example.ledgercore.reconciliation.entity.ReconciliationRun;
+import com.example.ledgercore.reconciliation.config.ReconciliationRunProperties;
 import com.example.ledgercore.reconciliation.enums.ReconciliationType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,8 +20,6 @@ import java.util.UUID;
 public class TransactionJournalProcessor
         implements ReconciliationProcessor {
 
-    private static final int BATCH_SIZE = 500;
-
     private final ProcessTransactionJournalBatchUseCase
             processBatchUseCase;
 
@@ -30,22 +29,24 @@ public class TransactionJournalProcessor
     private final CompleteReconciliationRunUseCase
             completeRunUseCase;
 
+    private final ReconciliationRunProperties reconciliationRunProperties;
+
     @Override
     public ReconciliationType getType() {
         return ReconciliationType.TRANSACTION_JOURNAL;
     }
 
     @Override
-    public void process(ReconciliationRun run) {
+    public void process(ClaimedReconciliationRun run) {
 
-        UUID runId = run.getId();
-        UUID lastProcessedId = run.getLastProcessedId();
-        long processedCount = run.getProcessedCount();
+        UUID runId = run.runId();
+        UUID lastProcessedId = run.lastProcessedId();
+        long processedCount = run.processedCount();
 
         log.info(
                 "Starting transaction journal reconciliation: runId={}, businessDate={}, lastProcessedId={}, processedCount={}",
                 runId,
-                run.getBusinessDate(),
+                run.businessDate(),
                 lastProcessedId,
                 processedCount
         );
@@ -55,16 +56,16 @@ public class TransactionJournalProcessor
             BatchResult result =
                     processBatchUseCase.execute(
                             runId,
-                            run.getBusinessDate(),
+                            run.businessDate(),
                             lastProcessedId,
                             processedCount,
-                            BATCH_SIZE
+                            reconciliationRunProperties.getBatchSize()
                     );
 
             log.info(
                     "Processed transaction journal reconciliation batch: runId={}, businessDate={}, lastProcessedId={}, processedCount={}, completed={}",
                     runId,
-                    run.getBusinessDate(),
+                    run.businessDate(),
                     result.lastProcessedId(),
                     result.processedCount(),
                     result.completed()
@@ -85,7 +86,7 @@ public class TransactionJournalProcessor
                 log.info(
                         "Completed transaction journal reconciliation: runId={}, businessDate={}, processedCount={}",
                         runId,
-                        run.getBusinessDate(),
+                        run.businessDate(),
                         result.processedCount()
                 );
 
