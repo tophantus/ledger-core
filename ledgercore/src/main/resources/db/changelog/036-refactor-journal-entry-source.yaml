@@ -1,0 +1,36 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 036-refactor-journal-entry-source
+      author: tu
+
+      changes:
+
+        - dropUniqueConstraint:
+            tableName: journal_entries
+            constraintName: uk_journal_entries_transaction_id
+
+        - dropColumn:
+            tableName: journal_entries
+            columnName: transaction_id
+
+        - addColumn:
+            tableName: journal_entries
+            columns:
+
+              - column:
+                  name: source_type
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: source_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+        - addUniqueConstraint:
+            tableName: journal_entries
+            columnNames: source_type, source_id
+            constraintName: uk_journal_entries_source

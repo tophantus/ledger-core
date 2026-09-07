@@ -11,6 +11,7 @@ import com.example.ledgercore.ledger.entity.JournalEntry;
 import com.example.ledgercore.ledger.entity.JournalEntryLine;
 import com.example.ledgercore.ledger.entity.LedgerAccount;
 import com.example.ledgercore.ledger.enums.EntryType;
+import com.example.ledgercore.ledger.enums.JournalSourceType;
 import com.example.ledgercore.ledger.service.SystemLedgerAccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -45,7 +46,8 @@ public class RecordWithdrawHandler
 
         JournalEntry journalEntry =
                 JournalEntry.builder()
-                        .transactionId(command.transactionId())
+                        .sourceType(JournalSourceType.TRANSACTION)
+                        .sourceId(command.transactionId())
                         .businessDate(command.businessDate())
                         .build();
 

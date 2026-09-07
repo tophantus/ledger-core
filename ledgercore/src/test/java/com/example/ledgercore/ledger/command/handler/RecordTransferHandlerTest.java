@@ -9,6 +9,7 @@ import com.example.ledgercore.ledger.command.repository.JournalEntryLineCommandR
 import com.example.ledgercore.ledger.entity.JournalEntry;
 import com.example.ledgercore.ledger.entity.JournalEntryLine;
 import com.example.ledgercore.ledger.enums.EntryType;
+import com.example.ledgercore.ledger.enums.JournalSourceType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -87,7 +88,8 @@ class RecordTransferHandlerTest {
         JournalEntry savedJournalEntry =
                 JournalEntry.builder()
                         .id(journalEntryId)
-                        .transactionId(transactionId)
+                        .sourceType(JournalSourceType.TRANSACTION)
+                        .sourceId(transactionId)
                         .businessDate(BUSINESS_DATE)
                         .build();
 
@@ -117,8 +119,14 @@ class RecordTransferHandlerTest {
 
         assertEquals(
                 transactionId,
-                journalEntry.getTransactionId()
+                journalEntry.getSourceId()
         );
+
+        assertEquals(
+                JournalSourceType.TRANSACTION,
+                journalEntry.getSourceType()
+        );
+
 
         assertEquals(
                 BUSINESS_DATE,

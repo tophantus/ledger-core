@@ -28,7 +28,7 @@ public class GetJournalsForReconciliationHandler
         }
 
         return repository
-                .findForReconciliation(transactionIds)
+                .findForBalanceReconciliation(transactionIds)
                 .stream()
                 .map(row -> new ReconciliationJournalData(
                         row.getId(),

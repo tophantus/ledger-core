@@ -69,3 +69,5 @@ databaseChangeLog:
       file: db/changelog/034-add-reconciliation.yaml
   - include:
       file: db/changelog/035-add-reconciliation-run-heartbeat.yaml
+  - include:
+      file: db/changelog/036-refactor-journal-entry-source.yaml

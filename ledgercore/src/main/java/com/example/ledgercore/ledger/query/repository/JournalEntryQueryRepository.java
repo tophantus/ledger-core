@@ -16,11 +16,12 @@ public interface JournalEntryQueryRepository
     @Query("""
             SELECT
                 j.id AS id,
-                j.transactionId AS transactionId,
+                j.sourceId AS transactionId,
                 COALESCE(
                     SUM(
                         CASE
-                            WHEN l.entryType = com.example.ledgercore.ledger.enums.EntryType.DEBIT
+                            WHEN l.entryType =
+                                com.example.ledgercore.ledger.enums.EntryType.DEBIT
                             THEN l.amount
                             ELSE 0
                         END
@@ -30,7 +31,8 @@ public interface JournalEntryQueryRepository
                 COALESCE(
                     SUM(
                         CASE
-                            WHEN l.entryType = com.example.ledgercore.ledger.enums.EntryType.CREDIT
+                            WHEN l.entryType =
+                                com.example.ledgercore.ledger.enums.EntryType.CREDIT
                             THEN l.amount
                             ELSE 0
                         END
@@ -41,13 +43,15 @@ public interface JournalEntryQueryRepository
             FROM JournalEntry j
             LEFT JOIN JournalEntryLine l
                 ON l.journalEntryId = j.id
-            WHERE j.transactionId IN :transactionIds
+            WHERE j.sourceType =
+                com.example.ledgercore.ledger.enums.JournalSourceType.TRANSACTION
+              AND j.sourceId IN :transactionIds
             GROUP BY
                 j.id,
-                j.transactionId,
+                j.sourceId,
                 j.businessDate
             """)
-    List<JournalReconciliationProjection> findForReconciliation(
+    List<JournalReconciliationProjection> findForBalanceReconciliation(
             @Param("transactionIds") List<UUID> transactionIds
     );
 

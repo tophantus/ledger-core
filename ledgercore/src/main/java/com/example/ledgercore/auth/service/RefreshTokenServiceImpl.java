@@ -79,12 +79,15 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     @Override
     public void revoke(String rawToken) {
-        RefreshToken refreshToken = findToken(rawToken);
+        String tokenHash = hash(rawToken);
 
-        if (!refreshToken.isRevoked()) {
-            refreshToken.revoke();
-            refreshTokenRepository.save(refreshToken);
-        }
+        refreshTokenRepository
+                .findByTokenHash(tokenHash)
+                .ifPresent(refreshToken -> {
+                    if (!refreshToken.isRevoked()) {
+                        refreshToken.revoke();
+                    }
+                });
     }
 
     @Override

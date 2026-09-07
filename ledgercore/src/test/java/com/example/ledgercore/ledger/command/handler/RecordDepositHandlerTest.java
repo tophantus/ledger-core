@@ -10,6 +10,7 @@ import com.example.ledgercore.ledger.entity.JournalEntry;
 import com.example.ledgercore.ledger.entity.JournalEntryLine;
 import com.example.ledgercore.ledger.entity.LedgerAccount;
 import com.example.ledgercore.ledger.enums.EntryType;
+import com.example.ledgercore.ledger.enums.JournalSourceType;
 import com.example.ledgercore.ledger.service.SystemLedgerAccountService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -93,7 +94,8 @@ class RecordDepositHandlerTest {
         JournalEntry savedJournalEntry =
                 JournalEntry.builder()
                         .id(journalEntryId)
-                        .transactionId(transactionId)
+                        .sourceType(JournalSourceType.TRANSACTION)
+                        .sourceId(transactionId)
                         .businessDate(BUSINESS_DATE)
                         .build();
 
@@ -122,7 +124,12 @@ class RecordDepositHandlerTest {
 
         assertEquals(
                 transactionId,
-                journalEntry.getTransactionId()
+                journalEntry.getSourceId()
+        );
+
+        assertEquals(
+                JournalSourceType.TRANSACTION,
+                journalEntry.getSourceType()
         );
 
         assertEquals(
