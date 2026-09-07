@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface ReconciliationRunQueryRepository
@@ -25,4 +26,10 @@ public interface ReconciliationRunQueryRepository
     List<ReconciliationRunSummaryProjection> findSummaryByBusinessDate(
             @Param("businessDate") LocalDate businessDate
     );
+
+    @Query("""
+            SELECT MAX(r.businessDate)
+            FROM ReconciliationRun r
+            """)
+    Optional<LocalDate> findLatestBusinessDate();
 }
