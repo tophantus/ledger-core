@@ -6,8 +6,6 @@ public enum JournalSourceType {
 
     INTEREST_ACCRUAL,
 
-    INTEREST_POSTING,
-
     FEE,
 
     EOD_ADJUSTMENT
