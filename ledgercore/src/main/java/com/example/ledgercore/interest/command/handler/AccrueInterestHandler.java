@@ -58,7 +58,7 @@ public class AccrueInterestHandler
 
         InterestConfig config =
                 interestConfigService.getApplicableConfig(
-                        command.productCode(),
+                        command.productId(),
                         command.currency(),
                         command.businessDate()
                 );
@@ -123,11 +123,10 @@ public class AccrueInterestHandler
             );
         }
 
-        if (command.productCode() == null
-                || command.productCode().isBlank()) {
+        if (command.productId() == null) {
 
             throw new IllegalArgumentException(
-                    "productCode must not be blank"
+                    "productCode must not be null"
             );
         }
 

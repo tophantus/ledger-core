@@ -49,6 +49,7 @@ class AccrueInterestHandlerTest {
 
     private UUID runId;
     private UUID accountId;
+    private UUID productId;
     private UUID configId;
     private UUID journalEntryId;
     private LocalDate businessDate;
@@ -67,6 +68,7 @@ class AccrueInterestHandlerTest {
 
         runId = UUID.randomUUID();
         accountId = UUID.randomUUID();
+        productId = UUID.randomUUID();
         configId = UUID.randomUUID();
         journalEntryId = UUID.randomUUID();
         businessDate = LocalDate.of(2026, 9, 7);
@@ -74,7 +76,7 @@ class AccrueInterestHandlerTest {
         command = new AccrueInterestCommand(
                 runId,
                 accountId,
-                "SAVINGS",
+                productId,
                 "VND",
                 businessDate
         );
@@ -98,7 +100,7 @@ class AccrueInterestHandlerTest {
         InterestConfig config =
                 InterestConfig.builder()
                         .id(configId)
-                        .productCode("SAVINGS")
+                        .productId(productId)
                         .currency("VND")
                         .interestRate(
                                 new BigDecimal("0.030000")
@@ -143,7 +145,7 @@ class AccrueInterestHandlerTest {
 
         when(
                 interestConfigService.getApplicableConfig(
-                        "SAVINGS",
+                        productId,
                         "VND",
                         businessDate
                 )
@@ -230,7 +232,7 @@ class AccrueInterestHandlerTest {
         InterestConfig config =
                 InterestConfig.builder()
                         .id(configId)
-                        .productCode("SAVINGS")
+                        .productId(productId)
                         .currency("VND")
                         .interestRate(
                                 new BigDecimal("0.030000")
@@ -277,7 +279,7 @@ class AccrueInterestHandlerTest {
 
         when(
                 interestConfigService.getApplicableConfig(
-                        "SAVINGS",
+                        productId,
                         "VND",
                         businessDate
                 )
@@ -374,7 +376,7 @@ class AccrueInterestHandlerTest {
                 new AccrueInterestCommand(
                         null,
                         accountId,
-                        "SAVINGS",
+                        productId,
                         "VND",
                         businessDate
                 );
@@ -400,7 +402,7 @@ class AccrueInterestHandlerTest {
                 new AccrueInterestCommand(
                         runId,
                         null,
-                        "SAVINGS",
+                        productId,
                         "VND",
                         businessDate
                 );
@@ -426,7 +428,7 @@ class AccrueInterestHandlerTest {
                 new AccrueInterestCommand(
                         runId,
                         accountId,
-                        " ",
+                        productId,
                         "VND",
                         businessDate
                 );
@@ -470,7 +472,7 @@ class AccrueInterestHandlerTest {
                 new AccrueInterestCommand(
                         runId,
                         accountId,
-                        "SAVINGS",
+                        productId,
                         " ",
                         businessDate
                 );
@@ -496,7 +498,7 @@ class AccrueInterestHandlerTest {
                 new AccrueInterestCommand(
                         runId,
                         accountId,
-                        "SAVINGS",
+                        productId,
                         null,
                         businessDate
                 );
@@ -514,7 +516,7 @@ class AccrueInterestHandlerTest {
                 new AccrueInterestCommand(
                         runId,
                         accountId,
-                        "SAVINGS",
+                        productId,
                         "VND",
                         null
                 );

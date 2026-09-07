@@ -41,11 +41,10 @@ public class InterestConfig {
     private UUID id;
 
     @Column(
-            name = "product_code",
-            nullable = false,
-            length = 50
+            name = "product_id",
+            nullable = false
     )
-    private String productCode;
+    private UUID productId;
 
     @Column(
             nullable = false,

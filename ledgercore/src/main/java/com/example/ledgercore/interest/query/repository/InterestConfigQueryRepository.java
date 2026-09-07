@@ -13,19 +13,19 @@ public interface InterestConfigQueryRepository
         extends JpaRepository<InterestConfig, UUID> {
 
     @Query("""
-            SELECT c
-            FROM InterestConfig c
-            WHERE c.productCode = :productCode
-              AND c.currency = :currency
-              AND c.effectiveFrom <= :businessDate
-              AND (
-                    c.effectiveTo IS NULL
-                    OR :businessDate < c.effectiveTo
-                  )
-            ORDER BY c.effectiveFrom DESC
-            """)
+        SELECT c
+        FROM InterestConfig c
+        WHERE c.productId = :productId
+          AND c.currency = :currency
+          AND c.effectiveFrom <= :businessDate
+          AND (
+                c.effectiveTo IS NULL
+                OR :businessDate < c.effectiveTo
+              )
+        ORDER BY c.effectiveFrom DESC
+        """)
     Optional<InterestConfig> findApplicableConfig(
-            @Param("productCode") String productCode,
+            @Param("productId") UUID productId,
             @Param("currency") String currency,
             @Param("businessDate") LocalDate businessDate
     );

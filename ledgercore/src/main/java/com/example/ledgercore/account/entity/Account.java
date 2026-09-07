@@ -1,8 +1,6 @@
 package com.example.ledgercore.account.entity;
 
 import com.example.ledgercore.account.enums.AccountStatus;
-import com.example.ledgercore.ledger.entity.LedgerAccount;
-import com.example.ledgercore.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -33,6 +31,12 @@ public class Account {
 
     @Column(name = "user_id", nullable = false)
     private UUID userId;
+
+    @Column(
+            name = "product_id",
+            nullable = false
+    )
+    private UUID productId;
 
     @Column(name = "account_no", nullable = false, length = 30)
     private String accountNo;

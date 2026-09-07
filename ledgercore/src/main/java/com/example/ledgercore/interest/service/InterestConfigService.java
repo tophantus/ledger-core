@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -16,12 +17,12 @@ public class InterestConfigService {
     private final InterestConfigQueryRepository repository;
 
     public InterestConfig getApplicableConfig(
-            String productCode,
+            UUID productId,
             String currency,
             LocalDate businessDate
     ) {
         return repository.findApplicableConfig(
-                        productCode,
+                        productId,
                         currency,
                         businessDate
                 )

@@ -6,7 +6,8 @@ import java.util.UUID;
 public record AccrueInterestCommand(
         UUID runId,
         UUID accountId,
-        String productCode,
+        UUID productId,
         String currency,
         LocalDate businessDate
-) {}
+) {
+}

@@ -103,6 +103,18 @@ public enum ErrorCode {
             HttpStatus.CONFLICT
     ),
 
+    PRODUCT_NOT_FOUND(
+            "PRODUCT_001",
+            "Product not found",
+            HttpStatus.NOT_FOUND
+    ),
+
+    PRODUCT_NOT_ACTIVE(
+            "PRODUCT_002",
+            "Product is not active",
+            HttpStatus.CONFLICT
+    ),
+
     BUSINESS_DAY_NOT_FOUND(
             "BUSINESS_DAY_001",
             "Current business day not found",

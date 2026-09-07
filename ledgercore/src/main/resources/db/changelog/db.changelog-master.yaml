@@ -83,3 +83,5 @@ databaseChangeLog:
       file: db/changelog/041-create-interest-runs.yaml
   - include:
       file: db/changelog/042-seed-interest-system-ledger-accounts.yaml
+  - include:
+      file: db/changelog/043-create-products-and-use-product-id.yaml
