@@ -57,5 +57,9 @@ export const API_ENDPOINTS = {
         TRANSACTION: {
             DEPOSIT: "/api/v1/admin/transactions/deposits",
         },
+        RECONCILIATION: {
+            SUMMARY: "/api/v1/admin/reconciliation/summary",
+            EXCEPTIONS: "/api/v1/admin/reconciliation/exceptions",
+        },
     },
 } as const;
