@@ -5,7 +5,6 @@ import java.util.UUID;
 public record SignUpResponse(
         UUID userId,
         String email,
-        boolean active,
-        String message
+        boolean active
 ) {
 }

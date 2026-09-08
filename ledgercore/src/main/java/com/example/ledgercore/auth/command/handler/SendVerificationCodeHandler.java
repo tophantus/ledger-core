@@ -1,7 +1,7 @@
 package com.example.ledgercore.auth.command.handler;
 
-import com.example.ledgercore.auth.command.dto.ResendVerificationCodeCommand;
-import com.example.ledgercore.auth.command.port.inbound.ResendVerificationCodeUseCase;
+import com.example.ledgercore.auth.command.dto.SendVerificationCodeCommand;
+import com.example.ledgercore.auth.command.port.inbound.SendVerificationCodeUseCase;
 import com.example.ledgercore.auth.command.port.outbound.EmailVerificationPort;
 import com.example.ledgercore.auth.command.port.outbound.UserAuthenticationPort;
 import com.example.ledgercore.auth.command.port.outbound.VerificationRateLimitPort;
@@ -13,8 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class ResendVerificationCodeHandler
-        implements ResendVerificationCodeUseCase {
+public class SendVerificationCodeHandler
+        implements SendVerificationCodeUseCase {
 
     private final UserAuthenticationPort userAuthenticationPort;
     private final EmailVerificationPort emailVerificationPort;
@@ -22,7 +22,7 @@ public class ResendVerificationCodeHandler
 
     @Override
     @Transactional
-    public void execute(ResendVerificationCodeCommand command) {
+    public void execute(SendVerificationCodeCommand command) {
 
         UserAuthenticationPort.UserAuthenticationInfo user =
                 userAuthenticationPort
