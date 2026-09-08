@@ -463,6 +463,12 @@ public enum ErrorCode {
             HttpStatus.CONFLICT
     ),
 
+    ATM_TERMINAL_ALREADY_INACTIVE(
+            "ATM_004",
+            "ATM terminal is already inactive",
+            HttpStatus.CONFLICT
+    ),
+
     // System
 
     INTERNAL_ERROR(
