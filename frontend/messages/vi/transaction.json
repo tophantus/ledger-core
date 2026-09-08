@@ -83,6 +83,7 @@
     "type": "Loại giao dịch",
     "status": "Trạng thái",
     "currency": "Loại tiền",
+    "allCurrencies": "Tất cả loại tiền",
     "from": "Từ ngày",
     "to": "Đến ngày",
     "allTypes": "Tất cả loại",

@@ -4,7 +4,7 @@ import {useState} from "react";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {CheckCircle2, X} from "lucide-react";
 import {useTranslations} from "next-intl";
-import {useForm} from "react-hook-form";
+import {Controller, useForm} from "react-hook-form";
 
 import {Button} from "@/components/ui/button";
 import {useAdminTransactions} from "@/features/admin/transaction/hooks/use-admin-transactions";
@@ -14,6 +14,7 @@ import {
     adminDepositSchema,
     type AdminDepositFormValues,
 } from "../schemas/admin-deposit-schema";
+import { MoneyInput } from "@/components/ui/money-input";
 
 interface AdminDepositModalProps {
     open: boolean;
@@ -48,11 +49,10 @@ export function AdminDepositModal({
         useState(false);
 
     const {
-        register,
+        control,
         handleSubmit,
         reset,
         formState: {
-            errors,
             isSubmitting,
         },
     } = useForm<AdminDepositFormValues>({
@@ -60,6 +60,7 @@ export function AdminDepositModal({
             adminDepositSchema,
         ),
         defaultValues: {
+            accountId,
             amount: "",
         },
     });
@@ -104,8 +105,7 @@ export function AdminDepositModal({
 
             const response =
                 await deposit({
-                    destinationAccountId:
-                    accountId,
+                    destinationAccountId: values.accountId,
                     amount: values.amount,
                     currency,
                     reference:
@@ -148,7 +148,7 @@ export function AdminDepositModal({
                     event.target ===
                     event.currentTarget
                 ) {
-                    handleClose();
+                    void handleClose();
                 }
             }}
         >
@@ -291,50 +291,31 @@ export function AdminDepositModal({
                                     {t("amount")}
                                 </label>
 
-                                <input
-                                    id="deposit-amount"
-                                    type="text"
-                                    inputMode="decimal"
-                                    autoFocus
-                                    disabled={
-                                        isSubmitting
-                                    }
-                                    placeholder={t(
-                                        "amountPlaceholder",
+                                <Controller
+                                    name="amount"
+                                    control={control}
+                                    render={({field, fieldState}) => (
+                                        <MoneyInput
+                                            id="deposit-amount"
+                                            value={field.value}
+                                            currency={currency}
+                                            onChange={field.onChange}
+                                            error={
+                                                fieldState.error
+                                                    ? t(
+                                                        fieldState.error.message ??
+                                                        "invalidAmount",
+                                                    )
+                                                    : undefined
+                                            }
+                                            placeholder={t(
+                                                "amountPlaceholder",
+                                            )}
+                                            autoFocus
+                                            disabled={isSubmitting}
+                                        />
                                     )}
-                                    {...register(
-                                        "amount",
-                                    )}
-                                    className="
-                                        h-10
-                                        w-full
-                                        rounded-md
-                                        border
-                                        border-border
-                                        bg-surface
-                                        px-3
-                                        text-sm
-                                        text-primary
-                                        outline-none
-                                        placeholder:text-muted
-                                        disabled:cursor-not-allowed
-                                        disabled:opacity-50
-                                    "
                                 />
-
-                                {errors.amount && (
-                                    <p
-                                        role="alert"
-                                        className="text-sm text-danger"
-                                    >
-                                        {t(
-                                            errors
-                                                .amount
-                                                .message ??
-                                            "invalidAmount",
-                                        )}
-                                    </p>
-                                )}
                             </div>
 
                             <div className="space-y-2">

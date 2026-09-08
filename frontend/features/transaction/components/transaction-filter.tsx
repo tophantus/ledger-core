@@ -8,6 +8,7 @@ import type {
     TransactionType,
 } from "../types/transaction";
 import React from "react";
+import {SUPPORTED_CURRENCIES} from "@/lib/constants/currency";
 
 interface TransactionFilterProps {
     filters: TransactionFilters;
@@ -74,11 +75,9 @@ export function TransactionFilter({
     };
 
     const handleCurrencyChange = (
-        event: React.ChangeEvent<HTMLInputElement>,
+        event: React.ChangeEvent<HTMLSelectElement>,
     ) => {
-        const value = event.target.value
-            .trim()
-            .toUpperCase();
+        const value = event.target.value;
 
         onChange({
             ...filters,
@@ -269,27 +268,38 @@ export function TransactionFilter({
                         {t("filters.currency")}
                     </label>
 
-                    <input
+                    <select
                         id="transaction-currency"
-                        type="text"
-                        maxLength={3}
                         value={filters.currency ?? ""}
                         onChange={handleCurrencyChange}
-                        placeholder="VND"
                         className="
-                            w-full
-                            rounded-md
-                            border
-                            border-border
-                            bg-background
-                            px-3
-                            py-2
-                            text-sm
-                            uppercase
-                            text-text-primary
-                            outline-none
-                        "
-                    />
+            w-full
+            rounded-md
+            border
+            border-border
+            bg-background
+            px-3
+            py-2
+            text-sm
+            text-text-primary
+            outline-none
+        "
+                    >
+                        <option value="">
+                            {t("filters.allCurrencies")}
+                        </option>
+
+                        {SUPPORTED_CURRENCIES.map(
+                            (currency) => (
+                                <option
+                                    key={currency}
+                                    value={currency}
+                                >
+                                    {currency}
+                                </option>
+                            ),
+                        )}
+                    </select>
                 </div>
 
                 <div>

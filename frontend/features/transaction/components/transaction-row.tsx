@@ -4,11 +4,13 @@ import {
     ArrowDownLeft,
     ArrowUpRight,
 } from "lucide-react";
-import {useTranslations} from "next-intl";
+import {useLocale, useTranslations} from "next-intl";
 
 import type {Transaction} from "../types/transaction";
 import {Link} from "@/i18n/routing";
 import {ROUTES} from "@/lib/constants/routes";
+
+import {formatMoney} from "@/lib/utils/currency";
 
 interface TransactionRowProps {
     transaction: Transaction;
@@ -38,8 +40,15 @@ export function TransactionRow({
                                }: TransactionRowProps) {
     const t = useTranslations("transaction");
 
+    const locale = useLocale();
+
     const isIncoming = transaction.incoming !== null && transaction.incoming;
     const isOutgoing = transaction.incoming !== null && !transaction.incoming;
+
+    const amount = formatMoney(
+        transaction.amount,
+        transaction.currency,
+        locale)
 
     return (
         <Link
@@ -85,10 +94,9 @@ export function TransactionRow({
                             }`}
                         >
                             {formatAmount(
-                                transaction.amount,
+                                amount,
                                 transaction.incoming,
-                            )}{" "}
-                            {transaction.currency}
+                            )}
                         </p>
 
                         <p className="text-xs text-muted">

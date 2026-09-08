@@ -6,18 +6,6 @@ export function isZeroAmount(
     );
 }
 
-export function isPositiveAmount(
-    amount: string,
-): boolean {
-    const value = amount.trim();
-
-    if (!/^\d+(?:\.\d+)?$/.test(value)) {
-        return false;
-    }
-
-    return !isZeroAmount(value);
-}
-
 export function isAmountLessThanOrEqual(
     amount: string,
     balance: string,

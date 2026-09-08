@@ -16,6 +16,7 @@
     "loadError": "Không thể tải danh sách tài khoản.",
     "filters": {
       "accountNoPlaceholder": "Tìm theo số tài khoản",
+      "allCurrencies": "Tất cả loại tiền",
       "currencyPlaceholder": "Loại tiền",
       "userIdPlaceholder": "ID người dùng",
       "allStatuses": "Tất cả trạng thái",

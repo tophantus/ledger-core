@@ -1,7 +1,7 @@
 "use client";
 
 import {ArrowLeft} from "lucide-react";
-import {useTranslations} from "next-intl";
+import {useLocale, useTranslations} from "next-intl";
 
 import {Link} from "@/i18n/routing";
 import {ROUTES} from "@/lib/constants/routes";
@@ -10,6 +10,9 @@ import {AccountActions} from "@/features/account/components/account-actions";
 import {useAccountStore} from "../stores/account-store";
 import {useProductStore} from "@/features/product/store/product-store";
 import {getProductColor} from "@/lib/utils/product";
+
+import {formatMoney} from "@/lib/utils/currency";
+import {getAccountStatusColor} from "@/lib/utils/account";
 
 interface AccountDetailsProps {
     onClosed: () => void;
@@ -20,6 +23,8 @@ export function AccountDetails({
                                }: AccountDetailsProps) {
     const t = useTranslations("account");
     const tProduct = useTranslations("product");
+
+    const locale = useLocale();
 
     const account = useAccountStore(
         (state) => state.currentAccount,
@@ -118,8 +123,11 @@ export function AccountDetails({
                         </p>
 
                         <p className="mt-1 text-2xl font-semibold text-primary">
-                            {account.balance}{" "}
-                            {account.currency}
+                            {formatMoney(
+                                account.balance,
+                                account.currency,
+                                locale,
+                            )}
                         </p>
                     </div>
 
@@ -148,7 +156,7 @@ export function AccountDetails({
                             {t("details.status")}
                         </p>
 
-                        <p className="mt-1 font-medium text-primary">
+                        <p className={`mt-1 font-medium ${getAccountStatusColor(account.status, "text")}`}>
                             {t(
                                 `statuses.${account.status}`,
                             )}
@@ -167,17 +175,17 @@ export function AccountDetails({
                         </p>
                     </div>
 
-                    <div>
-                        <p className="text-sm text-muted">
-                            {t("details.updatedAt")}
-                        </p>
+                    {/*<div>*/}
+                    {/*    <p className="text-sm text-muted">*/}
+                    {/*        {t("details.updatedAt")}*/}
+                    {/*    </p>*/}
 
-                        <p className="mt-1 font-medium text-primary">
-                            {new Date(
-                                account.updatedAt,
-                            ).toLocaleString()}
-                        </p>
-                    </div>
+                    {/*    <p className="mt-1 font-medium text-primary">*/}
+                    {/*        {new Date(*/}
+                    {/*            account.updatedAt,*/}
+                    {/*        ).toLocaleString()}*/}
+                    {/*    </p>*/}
+                    {/*</div>*/}
                 </div>
             </div>
         </section>

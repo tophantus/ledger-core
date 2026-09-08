@@ -83,6 +83,7 @@
     "type": "Type",
     "status": "Status",
     "currency": "Currency",
+    "allCurrencies": "All currencies",
     "from": "From",
     "to": "To",
     "allTypes": "All types",

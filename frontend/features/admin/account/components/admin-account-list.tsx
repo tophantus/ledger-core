@@ -1,11 +1,12 @@
 "use client";
 
-import {useTranslations} from "next-intl";
+import {useLocale, useTranslations} from "next-intl";
 
 import {useRouter} from "@/i18n/routing";
 import {ROUTES} from "@/lib/constants/routes";
 
 import type {AdminAccount} from "../types/admin-account";
+import {formatMoney} from "@/lib/utils/currency";
 
 interface AdminAccountListProps {
     accounts: AdminAccount[];
@@ -17,6 +18,9 @@ export function AdminAccountList({
                                      loading,
                                  }: AdminAccountListProps) {
     const t = useTranslations("admin.account");
+
+    const locale = useLocale();
+
     const router = useRouter();
 
     if (loading) {
@@ -110,7 +114,11 @@ export function AdminAccountList({
                         </td>
 
                         <td className="px-4 py-3 text-primary">
-                            {account.balance}
+                            {
+                                formatMoney(
+                                    account.balance,
+                                    account.currency,
+                                    locale)}
                         </td>
 
                         <td className="px-4 py-3 text-primary">

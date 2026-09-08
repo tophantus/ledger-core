@@ -16,6 +16,7 @@
     "loadError": "Unable to load accounts.",
     "filters": {
       "accountNoPlaceholder": "Search by account number",
+      "allCurrencies": "All currencies",
       "currencyPlaceholder": "Currency",
       "userIdPlaceholder": "User ID",
       "allStatuses": "All statuses",
