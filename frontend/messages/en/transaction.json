@@ -46,6 +46,7 @@
     "descriptionPlaceholder": "Optional description",
 
     "check": "Check",
+    "change": "Change",
     "continue": "Continue",
 
     "confirmTitle": "Confirm transfer",
@@ -82,6 +83,7 @@
     "transactionId": "Transaction ID"
   },
   "filters": {
+    "title": "Filters",
     "type": "Type",
     "status": "Status",
     "currency": "Currency",

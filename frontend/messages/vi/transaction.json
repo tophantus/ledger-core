@@ -33,7 +33,7 @@
     "destinationPlaceholder": "Nhập số tài khoản",
 
     "sameSourceDestination": "Tài khoản nhận không được trùng với tài khoản nguồn.",
-    
+
     "recipient": "Người nhận",
 
     "amount": "Số tiền",
@@ -46,6 +46,7 @@
     "descriptionPlaceholder": "Nội dung tùy chọn",
 
     "check": "Kiểm tra",
+    "change": "Thay đổi",
     "continue": "Tiếp tục",
 
     "confirmTitle": "Xác nhận chuyển tiền",
@@ -82,6 +83,7 @@
     "transactionId": "Mã giao dịch"
   },
   "filters": {
+    "title": "Bộ lọc",
     "type": "Loại giao dịch",
     "status": "Trạng thái",
     "currency": "Loại tiền",

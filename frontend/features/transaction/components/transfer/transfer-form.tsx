@@ -46,6 +46,7 @@ interface TransferFormProps {
     ) => void;
 
     onFindHolder: () => void;
+    onChangeDestination: () => void;
     onCreateIntent: () => void;
 }
 
@@ -60,6 +61,7 @@ export function TransferForm({
                                  detailsForm,
                                  onAccountChange,
                                  onFindHolder,
+                                 onChangeDestination,
                                  onCreateIntent,
                              }: TransferFormProps) {
     const t =
@@ -100,6 +102,14 @@ export function TransferForm({
         );
 
         onFindHolder();
+    };
+
+    const handleChangeDestination = () => {
+        destinationForm.clearErrors(
+            "destinationAccountNo",
+        );
+
+        onChangeDestination();
     };
 
     return (
@@ -226,6 +236,7 @@ export function TransferForm({
                             {...destinationForm.register(
                                 "destinationAccountNo",
                             )}
+                            disabled={Boolean(holder) || isHolderLoading}
                             className="
                                 min-w-0
                                 flex-1
@@ -244,17 +255,23 @@ export function TransferForm({
                             )}
                         />
 
-                        <Button
-                            type="submit"
-                            variant="outline"
-                            loading={
-                                isHolderLoading
-                            }
-                        >
-                            {t(
-                                "transfer.check",
-                            )}
-                        </Button>
+                        {holder ? (
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={handleChangeDestination}
+                            >
+                                {t("transfer.change")}
+                            </Button>
+                        ) : (
+                            <Button
+                                type="submit"
+                                variant="outline"
+                                loading={isHolderLoading}
+                            >
+                                {t("transfer.check")}
+                            </Button>
+                        )}
                     </div>
 
                     {destinationForm

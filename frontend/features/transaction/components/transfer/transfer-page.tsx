@@ -328,6 +328,15 @@ export default function TransferPageContent() {
             },
         );
 
+    const handleChangeDestination = () => {
+        setHolder(null);
+        setError(null);
+
+        destinationForm.reset({
+            destinationAccountNo: "",
+        });
+    };
+
     const handleCreateIntent =
         detailsForm.handleSubmit(
             async (values) => {
@@ -550,6 +559,9 @@ export default function TransferPageContent() {
                     }
                     onFindHolder={
                         handleFindHolder
+                    }
+                    onChangeDestination={
+                        handleChangeDestination
                     }
                     onCreateIntent={
                         handleCreateIntent
