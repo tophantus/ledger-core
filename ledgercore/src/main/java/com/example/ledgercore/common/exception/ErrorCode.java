@@ -457,6 +457,12 @@ public enum ErrorCode {
             HttpStatus.NOT_FOUND
     ),
 
+    ATM_TERMINAL_ALREADY_ACTIVE(
+            "ATM_003",
+            "ATM terminal is already active",
+            HttpStatus.CONFLICT
+    ),
+
     // System
 
     INTERNAL_ERROR(
