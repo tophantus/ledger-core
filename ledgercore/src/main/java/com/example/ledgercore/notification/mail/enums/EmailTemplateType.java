@@ -27,6 +27,18 @@ public enum EmailTemplateType {
                     "destinationAccountNo",
                     "amount"
             )
+    ),
+
+    WITHDRAWAL_CODE(
+            "withdrawal-code",
+            "Your withdrawal code",
+            List.of(
+                    "fullName",
+                    "withdrawalReference",
+                    "withdrawalCode",
+                    "amount",
+                    "expiresAt"
+            )
     );
 
     private final String templateName;

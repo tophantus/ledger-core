@@ -42,7 +42,7 @@ public class SendOtpNotificationHandler
                 );
 
         UserNotificationInfo user =
-                userNotificationPort.getUser(
+                userNotificationPort.getUserByDestination(
                         event.destination(),
                         event.channel()
                 );
