@@ -446,9 +446,15 @@ public enum ErrorCode {
     // ATM Terminal
 
     ATM_TERMINAL_ALREADY_EXISTS(
-            "WITHDRAWAL_014",
+            "ATM_001",
             "ATM terminal already exists",
             HttpStatus.CONFLICT
+    ),
+
+    ATM_TERMINAL_NOT_FOUND(
+            "ATM_002",
+            "ATM terminal not found",
+            HttpStatus.NOT_FOUND
     ),
 
     // System
