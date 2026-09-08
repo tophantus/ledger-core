@@ -12,6 +12,8 @@ public enum ErrorCode {
             HttpStatus.BAD_REQUEST
     ),
 
+    // User
+
     USER_NOT_FOUND(
             "USER_001",
             "User not found",
@@ -36,11 +38,15 @@ public enum ErrorCode {
             HttpStatus.NOT_FOUND
     ),
 
+    // Role
+
     ROLE_NOT_FOUND(
             "ROLE_001",
             "Role not found",
             HttpStatus.NOT_FOUND
     ),
+
+    // OTP
 
     OTP_INVALID(
             "OTP_001",
@@ -59,6 +65,8 @@ public enum ErrorCode {
             "OTP verification is locked",
             HttpStatus.CONFLICT
     ),
+
+    // Account
 
     ACCOUNT_NOT_FOUND(
             "ACCOUNT_001",
@@ -109,6 +117,16 @@ public enum ErrorCode {
             HttpStatus.BAD_REQUEST
     ),
 
+    // Account Daily Balance
+
+    ACCOUNT_DAILY_BALANCE_NOT_FOUND(
+            "ACCOUNT_010",
+            "Account daily balance not found",
+            HttpStatus.NOT_FOUND
+    ),
+
+    // Product
+
     PRODUCT_NOT_FOUND(
             "PRODUCT_001",
             "Product not found",
@@ -120,6 +138,8 @@ public enum ErrorCode {
             "Product is not active",
             HttpStatus.CONFLICT
     ),
+
+    // Business Day
 
     BUSINESS_DAY_NOT_FOUND(
             "BUSINESS_DAY_001",
@@ -157,14 +177,6 @@ public enum ErrorCode {
             HttpStatus.NOT_FOUND
     ),
 
-    // Account Daily Balance
-
-    ACCOUNT_DAILY_BALANCE_NOT_FOUND(
-            "ACCOUNT_010",
-            "Account daily balance not found",
-            HttpStatus.NOT_FOUND
-    ),
-
     // Interest
 
     INTEREST_CONFIG_NOT_FOUND(
@@ -174,25 +186,19 @@ public enum ErrorCode {
     ),
 
     INTEREST_RUN_NOT_FOUND(
-            "INTEREST_008",
+            "INTEREST_002",
             "Interest run not found",
             HttpStatus.NOT_FOUND
     ),
 
-    INTEREST_RUN_ALREADY_EXISTS(
-            "INTEREST_009",
-            "Interest run already exists",
-            HttpStatus.CONFLICT
-    ),
-
     INVALID_INTEREST_RUN_STATUS(
-            "INTEREST_010",
+            "INTEREST_003",
             "Invalid interest run status",
             HttpStatus.CONFLICT
     ),
 
     INTEREST_RUN_ALREADY_COMPLETED(
-            "INTEREST_011",
+            "INTEREST_004",
             "Interest run already completed",
             HttpStatus.CONFLICT
     ),
@@ -285,10 +291,24 @@ public enum ErrorCode {
             HttpStatus.CONFLICT
     ),
 
-    INVALID_CREDENTIALS(
-            "AUTH_001",
-            "Invalid credentials",
-            HttpStatus.UNAUTHORIZED
+    // Withdrawal
+
+    WITHDRAWAL_REQUEST_NOT_FOUND(
+            "WITHDRAWAL_001",
+            "Withdrawal request not found",
+            HttpStatus.NOT_FOUND
+    ),
+
+    WITHDRAWAL_REQUEST_NOT_PENDING(
+            "WITHDRAWAL_002",
+            "Withdrawal request is not pending",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    WITHDRAWAL_REQUEST_EXPIRED(
+            "WITHDRAWAL_003",
+            "Withdrawal request has expired",
+            HttpStatus.BAD_REQUEST
     ),
 
     // Webhook
@@ -321,6 +341,14 @@ public enum ErrorCode {
             "WEBHOOK_005",
             "Webhook endpoint is disabled",
             HttpStatus.CONFLICT
+    ),
+
+    // Authentication and Authorization
+
+    INVALID_CREDENTIALS(
+            "AUTH_001",
+            "Invalid credentials",
+            HttpStatus.UNAUTHORIZED
     ),
 
     USER_NOT_ACTIVE(
@@ -401,6 +429,8 @@ public enum ErrorCode {
             HttpStatus.BAD_REQUEST
     ),
 
+    // Reconciliation
+
     RECONCILIATION_PROCESSOR_NOT_FOUND(
             "RECONCILIATION_001",
             "Reconciliation processor not found",
@@ -412,6 +442,8 @@ public enum ErrorCode {
             "Reconciliation run not found",
             HttpStatus.NOT_FOUND
     ),
+
+    // System
 
     INTERNAL_ERROR(
             "SYSTEM_001",

@@ -95,3 +95,7 @@ databaseChangeLog:
       file: db/changelog/047-create-withdrawal-intents.yaml
   - include:
       file: db/changelog/048-add-hold-amount-to-accounts.yaml
+  - include:
+      file: db/changelog/049-create-withdrawal-executions.yaml
+  - include:
+      file: db/changelog/050-allow-null-started-at-in-interest-runs.yaml

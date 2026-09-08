@@ -15,6 +15,10 @@ import java.util.UUID;
                 @UniqueConstraint(
                         name = "uk_withdrawal_intents_request_id",
                         columnNames = "withdrawal_request_id"
+                ),
+                @UniqueConstraint(
+                        name = "uk_withdrawal_intents_reference",
+                        columnNames = "withdrawal_reference"
                 )
         },
         indexes = {
@@ -33,10 +37,6 @@ import java.util.UUID;
                 @Index(
                         name = "idx_withdrawal_intents_expires_at",
                         columnList = "expires_at"
-                ),
-                @Index(
-                        name = "idx_withdrawal_intents_transaction_id",
-                        columnList = "transaction_id"
                 )
         }
 )
@@ -56,6 +56,13 @@ public class WithdrawalIntent {
             nullable = false
     )
     private UUID withdrawalRequestId;
+
+    @Column(
+            name = "withdrawal_reference",
+            nullable = false,
+            length = 50
+    )
+    private String withdrawalReference;
 
     @Column(
             name = "user_id",
@@ -114,9 +121,6 @@ public class WithdrawalIntent {
     @Column(name = "completed_at")
     private Instant completedAt;
 
-    @Column(name = "transaction_id")
-    private UUID transactionId;
-
     @Version
     @Column(nullable = false)
     @Builder.Default
@@ -127,15 +131,11 @@ public class WithdrawalIntent {
     }
 
     public boolean isExpired(Instant now) {
-        return now.isAfter(expiresAt);
+        return !now.isBefore(expiresAt);
     }
 
-    public void complete(
-            UUID transactionId,
-            Instant now
-    ) {
+    public void complete(Instant now) {
         this.status = WithdrawalIntentStatus.COMPLETED;
-        this.transactionId = transactionId;
         this.completedAt = now;
     }
 

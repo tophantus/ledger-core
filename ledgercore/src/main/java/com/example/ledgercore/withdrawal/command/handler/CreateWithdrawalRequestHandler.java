@@ -9,14 +9,15 @@ import com.example.ledgercore.withdrawal.command.port.outbound.WithdrawalAccount
 import com.example.ledgercore.withdrawal.command.port.outbound.WithdrawalAccountPort;
 import com.example.ledgercore.withdrawal.command.port.outbound.WithdrawalOtpPort;
 import com.example.ledgercore.withdrawal.command.repository.WithdrawalRequestCommandRepository;
+import com.example.ledgercore.withdrawal.config.WithdrawalRequestProperties;
 import com.example.ledgercore.withdrawal.entity.WithdrawalRequest;
 import com.example.ledgercore.withdrawal.enums.WithdrawalRequestStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.Clock;
-import java.time.Duration;
 import java.time.Instant;
 
 @Service
@@ -28,6 +29,8 @@ public class CreateWithdrawalRequestHandler
     private final WithdrawalAccountPort withdrawalAccountPort;
     private final WithdrawalOtpPort withdrawalOtpPort;
     private final Clock clock;
+
+    private final WithdrawalRequestProperties withdrawalRequestProperties;
 
     @Override
     @Transactional
@@ -62,7 +65,7 @@ public class CreateWithdrawalRequestHandler
         Instant now = Instant.now(clock);
 
         Instant expiresAt = now.plus(
-                Duration.ofMinutes(5)
+                withdrawalRequestProperties.getExpiration()
         );
 
         WithdrawalRequest request = WithdrawalRequest.builder()
@@ -93,7 +96,7 @@ public class CreateWithdrawalRequestHandler
         );
     }
 
-    private void validateAmount(java.math.BigDecimal amount) {
+    private void validateAmount(BigDecimal amount) {
         if (amount == null
                 || amount.signum() <= 0) {
             throw new BusinessException(

@@ -1,0 +1,12 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 050-allow-null-started-at-in-interest-runs
+      author: tu
+
+      changes:
+
+        - dropNotNullConstraint:
+            tableName: interest_runs
+            columnName: started_at
+            columnDataType: TIMESTAMP WITH TIME ZONE

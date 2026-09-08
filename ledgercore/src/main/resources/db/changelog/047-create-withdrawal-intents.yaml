@@ -25,6 +25,12 @@ databaseChangeLog:
                     nullable: false
 
               - column:
+                  name: withdrawal_reference
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+
+              - column:
                   name: user_id
                   type: UUID
                   constraints:
@@ -78,10 +84,6 @@ databaseChangeLog:
                   type: TIMESTAMP WITH TIME ZONE
 
               - column:
-                  name: transaction_id
-                  type: UUID
-
-              - column:
                   name: version
                   type: BIGINT
                   defaultValueNumeric: 0
@@ -92,6 +94,11 @@ databaseChangeLog:
             tableName: withdrawal_intents
             columnNames: withdrawal_request_id
             constraintName: uk_withdrawal_intents_request_id
+
+        - addUniqueConstraint:
+            tableName: withdrawal_intents
+            columnNames: withdrawal_reference
+            constraintName: uk_withdrawal_intents_reference
 
         - createIndex:
             indexName: idx_withdrawal_intents_user_id
@@ -120,10 +127,3 @@ databaseChangeLog:
             columns:
               - column:
                   name: expires_at
-
-        - createIndex:
-            indexName: idx_withdrawal_intents_transaction_id
-            tableName: withdrawal_intents
-            columns:
-              - column:
-                  name: transaction_id
