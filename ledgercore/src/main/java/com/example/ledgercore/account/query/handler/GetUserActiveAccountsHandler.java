@@ -1,7 +1,7 @@
 package com.example.ledgercore.account.query.handler;
 
-import com.example.ledgercore.account.entity.Account;
 import com.example.ledgercore.account.enums.AccountStatus;
+import com.example.ledgercore.account.mapper.AccountMapper;
 import com.example.ledgercore.account.query.dto.AccountSummaryResponse;
 import com.example.ledgercore.account.query.dto.GetActiveUserAccountsQuery;
 import com.example.ledgercore.account.query.port.inbound.GetUserActiveAccountsUseCase;
@@ -29,18 +29,7 @@ public class GetUserActiveAccountsHandler implements GetUserActiveAccountsUseCas
                         AccountStatus.CLOSED
                 )
                 .stream()
-                .map(this::toResponse)
+                .map(AccountMapper::toSummaryResponse)
                 .toList();
-    }
-
-    private AccountSummaryResponse toResponse(Account account) {
-        return new AccountSummaryResponse(
-                account.getId(),
-                account.getAccountNo(),
-                account.getProductId(),
-                account.getCurrency(),
-                account.getBalance().toPlainString(),
-                account.getStatus()
-        );
     }
 }

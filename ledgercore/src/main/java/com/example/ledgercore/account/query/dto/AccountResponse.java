@@ -12,6 +12,8 @@ public record AccountResponse(
         UUID productId,
         String currency,
         String balance,
+        String holdAmount,
+        String availableBalance,
         AccountStatus status,
         Instant createdAt,
         Instant updatedAt

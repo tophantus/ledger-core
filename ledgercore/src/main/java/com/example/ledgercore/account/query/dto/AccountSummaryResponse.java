@@ -2,7 +2,6 @@ package com.example.ledgercore.account.query.dto;
 
 import com.example.ledgercore.account.enums.AccountStatus;
 
-import java.math.BigDecimal;
 import java.util.UUID;
 
 public record AccountSummaryResponse(
@@ -11,6 +10,8 @@ public record AccountSummaryResponse(
         UUID productId,
         String currency,
         String balance,
+        String holdAmount,
+        String availableBalance,
         AccountStatus status
 ) {
 }

@@ -1,6 +1,7 @@
 package com.example.ledgercore.account.query.handler;
 
 import com.example.ledgercore.account.entity.Account;
+import com.example.ledgercore.account.mapper.AccountMapper;
 import com.example.ledgercore.account.query.dto.AccountResponse;
 import com.example.ledgercore.account.query.dto.GetAccountByAccountNoQuery;
 import com.example.ledgercore.account.query.port.inbound.GetAccountByAccountNoUseCase;
@@ -31,20 +32,6 @@ public class GetAccountByAccountNoHandler
             throw new BusinessException(ErrorCode.ACCESS_DENIED);
         }
 
-        return toResponse(account);
-    }
-
-    private AccountResponse toResponse(Account account) {
-        return new AccountResponse(
-                account.getId(),
-                account.getUserId(),
-                account.getAccountNo(),
-                account.getProductId(),
-                account.getCurrency(),
-                account.getBalance().toPlainString(),
-                account.getStatus(),
-                account.getCreatedAt(),
-                account.getUpdatedAt()
-        );
+        return AccountMapper.toResponse(account);
     }
 }

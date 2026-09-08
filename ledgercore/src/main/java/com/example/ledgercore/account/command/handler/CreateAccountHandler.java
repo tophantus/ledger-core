@@ -5,6 +5,7 @@ import com.example.ledgercore.account.command.port.inbound.CreateAccountUseCase;
 import com.example.ledgercore.account.command.port.outbound.*;
 import com.example.ledgercore.account.command.repository.AccountCommandRepository;
 import com.example.ledgercore.account.entity.Account;
+import com.example.ledgercore.account.mapper.AccountMapper;
 import com.example.ledgercore.account.port.outbound.ProductAccountInfo;
 import com.example.ledgercore.account.port.outbound.ProductAccountPort;
 import com.example.ledgercore.account.query.dto.AccountResponse;
@@ -21,20 +22,15 @@ import java.util.UUID;
 public class CreateAccountHandler
         implements CreateAccountUseCase {
 
-    private final AccountCommandRepository
-            accountCommandRepository;
+    private final AccountCommandRepository accountCommandRepository;
+    private final AccountNumberGeneratorPort accountNumberGeneratorPort;
 
-    private final AccountNumberGeneratorPort
-            accountNumberGeneratorPort;
+    private final UserAccountPort userAccountPort;
 
-    private final UserAccountPort
-            userAccountPort;
+    private final LedgerAccountPort ledgerAccountPort;
 
-    private final LedgerAccountPort
-            ledgerAccountPort;
+    private final ProductAccountPort productAccountPort;
 
-    private final ProductAccountPort
-            productAccountPort;
 
     @Override
     @Transactional
@@ -77,24 +73,8 @@ public class CreateAccountHandler
         Account savedAccount =
                 accountCommandRepository.save(account);
 
-        return toResponse(
+        return AccountMapper.toResponse(
                 savedAccount
-        );
-    }
-
-    private AccountResponse toResponse(
-            Account account
-    ) {
-        return new AccountResponse(
-                account.getId(),
-                account.getUserId(),
-                account.getAccountNo(),
-                account.getProductId(),
-                account.getCurrency(),
-                account.getBalance().toPlainString(),
-                account.getStatus(),
-                account.getCreatedAt(),
-                account.getUpdatedAt()
         );
     }
 
