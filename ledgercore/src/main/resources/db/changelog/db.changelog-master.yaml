@@ -87,3 +87,5 @@ databaseChangeLog:
       file: db/changelog/043-create-products-and-use-product-id.yaml
   - include:
       file: db/changelog/044-update-interest-runs.yaml
+  - include:
+      file: db/changelog/045-add-version-to-transfer-intents.yaml
