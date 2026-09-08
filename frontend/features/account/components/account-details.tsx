@@ -7,11 +7,12 @@ import {Link} from "@/i18n/routing";
 import {ROUTES} from "@/lib/constants/routes";
 
 import {AccountActions} from "@/features/account/components/account-actions";
+import {ProductBadge} from "@/features/product/components/product-badge";
 import {useAccountStore} from "../stores/account-store";
 
-import {formatMoney} from "@/lib/utils/currency";
 import {getAccountStatusColor} from "@/lib/utils/account";
-import {ProductBadge} from "@/features/product/components/product-badge";
+import {formatMoney} from "@/lib/utils/currency";
+import {ReactNode} from "react";
 
 interface AccountDetailsProps {
     onClosed: () => void;
@@ -21,7 +22,6 @@ export function AccountDetails({
                                    onClosed,
                                }: AccountDetailsProps) {
     const t = useTranslations("account");
-
     const locale = useLocale();
 
     const account = useAccountStore(
@@ -34,6 +34,7 @@ export function AccountDetails({
 
     return (
         <section className="space-y-6">
+            {/* Back */}
             <Link
                 href={ROUTES.DASHBOARD}
                 className="
@@ -41,15 +42,27 @@ export function AccountDetails({
                     items-center
                     gap-2
                     text-sm
-                    text-muted
-                    hover:text-primary
+                    text-text-secondary
+                    transition-colors
+                    hover:text-text-primary
                 "
             >
                 <ArrowLeft className="h-4 w-4" />
                 {t("details.back")}
             </Link>
 
-            <div className="rounded-lg border border-border bg-surface">
+            {/* Account */}
+            <div
+                className="
+                    overflow-hidden
+                    rounded-xl
+                    border
+                    border-border
+                    bg-surface
+                    shadow-sm
+                "
+            >
+                {/* Header */}
                 <div
                     className="
                         flex
@@ -62,97 +75,204 @@ export function AccountDetails({
                         py-5
                     "
                 >
-                    <div>
-                        <p className="text-sm text-muted">
+                    <div className="min-w-0">
+                        <p className="text-xs font-medium text-text-muted">
                             {t("details.title")}
                         </p>
 
-                        <h1 className="mt-1 text-xl font-semibold text-primary">
+                        <h1 className="mt-1 truncate text-xl font-semibold tracking-tight text-text-primary">
                             {account.accountNo}
                         </h1>
 
-                        <ProductBadge
-                            productId={account.productId}
-                        />
+                        <div className="mt-2">
+                            <ProductBadge
+                                productId={account.productId}
+                            />
+                        </div>
                     </div>
 
-                    <AccountActions
-                        onClosed={onClosed}
+                    <div className="shrink-0">
+                        <AccountActions
+                            onClosed={onClosed}
+                        />
+                    </div>
+                </div>
+
+                {/* Balance */}
+                <div
+                    className="
+                        grid
+                        gap-6
+                        border-b
+                        border-border
+                        p-6
+                        sm:grid-cols-3
+                    "
+                >
+                    <BalanceItem
+                        label={t(
+                            "details.availableBalance",
+                        )}
+                        value={formatMoney(
+                            account.availableBalance,
+                            account.currency,
+                            locale,
+                        )}
+                        primary
+                    />
+
+                    <BalanceItem
+                        label={t("details.balance")}
+                        value={formatMoney(
+                            account.balance,
+                            account.currency,
+                            locale,
+                        )}
+                    />
+
+                    <BalanceItem
+                        label={t("details.holdAmount")}
+                        value={formatMoney(
+                            account.holdAmount,
+                            account.currency,
+                            locale,
+                        )}
                     />
                 </div>
 
-                <div className="grid gap-6 p-6 sm:grid-cols-2 lg:grid-cols-3">
-                    <div>
-                        <p className="text-sm text-muted">
-                            {t("details.balance")}
-                        </p>
+                {/* Information */}
+                <div
+                    className="
+                        grid
+                        gap-6
+                        p-6
+                        sm:grid-cols-2
+                        lg:grid-cols-3
+                    "
+                >
+                    <DetailItem
+                        label={t(
+                            "details.accountNumber",
+                        )}
+                        value={account.accountNo}
+                    />
 
-                        <p className="mt-1 text-2xl font-semibold text-primary">
-                            {formatMoney(
-                                account.balance,
-                                account.currency,
-                                locale,
+                    <DetailItem
+                        label={t("details.currency")}
+                        value={account.currency}
+                    />
+
+                    <DetailItem
+                        label={t("details.status")}
+                    >
+                        <span
+                            className={`
+                                inline-flex
+                                rounded-full
+                                px-2.5
+                                py-1
+                                text-xs
+                                font-medium
+                                ${getAccountStatusColor(
+                                account.status,
+                                "text-background",
                             )}
-                        </p>
-                    </div>
-
-                    <div>
-                        <p className="text-sm text-muted">
-                            {t("details.accountNumber")}
-                        </p>
-
-                        <p className="mt-1 font-medium text-primary">
-                            {account.accountNo}
-                        </p>
-                    </div>
-
-                    <div>
-                        <p className="text-sm text-muted">
-                            {t("details.currency")}
-                        </p>
-
-                        <p className="mt-1 font-medium text-primary">
-                            {account.currency}
-                        </p>
-                    </div>
-
-                    <div>
-                        <p className="text-sm text-muted">
-                            {t("details.status")}
-                        </p>
-
-                        <p className={`mt-1 font-medium ${getAccountStatusColor(account.status, "text")}`}>
+                            `}
+                        >
                             {t(
                                 `statuses.${account.status}`,
                             )}
-                        </p>
-                    </div>
+                        </span>
+                    </DetailItem>
 
-                    <div>
-                        <p className="text-sm text-muted">
-                            {t("details.createdAt")}
-                        </p>
+                    <DetailItem
+                        label={t("details.createdAt")}
+                        value={formatDate(
+                            account.createdAt,
+                            locale,
+                        )}
+                    />
 
-                        <p className="mt-1 font-medium text-primary">
-                            {new Date(
-                                account.createdAt,
-                            ).toLocaleString()}
-                        </p>
-                    </div>
-
-                    {/*<div>*/}
-                    {/*    <p className="text-sm text-muted">*/}
-                    {/*        {t("details.updatedAt")}*/}
-                    {/*    </p>*/}
-
-                    {/*    <p className="mt-1 font-medium text-primary">*/}
-                    {/*        {new Date(*/}
-                    {/*            account.updatedAt,*/}
-                    {/*        ).toLocaleString()}*/}
-                    {/*    </p>*/}
-                    {/*</div>*/}
+                    {/*<DetailItem*/}
+                    {/*    label={t("details.updatedAt")}*/}
+                    {/*    value={formatDate(*/}
+                    {/*        account.updatedAt,*/}
+                    {/*        locale,*/}
+                    {/*    )}*/}
+                    {/*/>*/}
                 </div>
             </div>
         </section>
+    );
+}
+
+interface BalanceItemProps {
+    label: string;
+    value: string;
+    primary?: boolean;
+}
+
+function BalanceItem({
+                         label,
+                         value,
+                         primary = false,
+                     }: BalanceItemProps) {
+    return (
+        <div className="min-w-0">
+            <p className="text-sm text-text-muted">
+                {label}
+            </p>
+
+            <p
+                className={`
+                    mt-1
+                    truncate
+                    font-semibold
+                    tracking-tight
+                    ${
+                    primary
+                        ? "text-2xl text-text-primary"
+                        : "text-lg text-text-primary"
+                }
+                `}
+            >
+                {value}
+            </p>
+        </div>
+    );
+}
+
+interface DetailItemProps {
+    label: string;
+    value?: string;
+    children?: ReactNode;
+}
+
+function DetailItem({
+                        label,
+                        value,
+                        children,
+                    }: DetailItemProps) {
+    return (
+        <div className="min-w-0 space-y-1">
+            <p className="text-sm text-text-muted">
+                {label}
+            </p>
+
+            {children ?? (
+                <p className="break-all text-sm font-medium text-text-primary">
+                    {value}
+                </p>
+            )}
+        </div>
+    );
+}
+
+function formatDate(
+    value: string,
+    locale: string,
+): string {
+    return new Date(value).toLocaleString(
+        locale,
     );
 }

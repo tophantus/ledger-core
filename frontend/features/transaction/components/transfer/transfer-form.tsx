@@ -23,6 +23,7 @@ import type {
 } from "@/features/transaction/schemas/transfer-schema";
 
 import {formatMoney} from "@/lib/utils/currency";
+import {isAmountGreaterThanZero} from "@/lib/utils/money";
 
 interface TransferFormProps {
     accounts: AccountSummary[];
@@ -180,7 +181,7 @@ export function TransferForm({
                             outline-none
                         "
                     >
-                        {accounts.map(
+                        {accounts.filter((a) => isAmountGreaterThanZero(a.availableBalance)).map(
                             (account) => (
                                 <option
                                     key={
@@ -195,7 +196,7 @@ export function TransferForm({
                                     }{" "}
                                     -{" "}
                                     {formatMoney(
-                                        account.balance,
+                                        account.availableBalance,
                                         account.currency,
                                         locale,
                                     )}

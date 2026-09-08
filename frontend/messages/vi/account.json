@@ -1,6 +1,8 @@
 {
   "accountNumber": "Số tài khoản",
   "balance": "Số dư",
+  "availableBalance": "Số dư khả dụng",
+  "holdAmount": "Đang giữ",
   "status": "Trạng thái",
   "statuses": {
     "ACTIVE": "Đang hoạt động",
@@ -11,7 +13,9 @@
     "title": "Chi tiết tài khoản",
     "back": "Quay lại",
     "accountNumber": "Số tài khoản",
+    "availableBalance": "Số dư khả dụng",
     "balance": "Số dư",
+    "holdAmount": "Đang giữ",
     "currency": "Loại tiền",
     "status": "Trạng thái",
     "createdAt": "Ngày tạo",

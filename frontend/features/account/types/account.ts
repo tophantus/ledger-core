@@ -12,6 +12,8 @@ export interface Account {
     productId: string;
     currency: string;
     balance: string;
+    holdAmount: string;
+    availableBalance: string;
     status: AccountStatus;
     createdAt: string;
     updatedAt: string;
@@ -23,6 +25,8 @@ export interface AccountSummary {
     productId: string;
     currency: string;
     balance: string;
+    holdAmount: string;
+    availableBalance: string;
     status: AccountStatus;
 }
 
