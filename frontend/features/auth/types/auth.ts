@@ -9,7 +9,7 @@ export interface VerifyEmailRequest {
     otp: string;
 }
 
-export interface ResendVerificationCodeRequest {
+export interface SendVerificationCodeRequest {
     email: string;
 }
 

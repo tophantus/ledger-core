@@ -6,7 +6,7 @@ import type {
     LoginRequest,
     LoginResponse,
     LogoutResponse,
-    ResendVerificationCodeRequest,
+    SendVerificationCodeRequest,
     SignUpRequest,
     SignUpResponse,
     TokenResponse,
@@ -40,13 +40,13 @@ export const authApi = {
         return response.data;
     },
 
-    resendVerificationCode: async (
-        request: ResendVerificationCodeRequest,
+    sendVerificationCode: async (
+        request: SendVerificationCodeRequest,
     ): Promise<ApiResponse<void>> => {
         const response = await apiClient.post<
             ApiResponse<void>
         >(
-            API_ENDPOINTS.AUTH.RESEND_VERIFICATION_CODE,
+            API_ENDPOINTS.AUTH.SEND_VERIFICATION_CODE,
             request,
         );
 
