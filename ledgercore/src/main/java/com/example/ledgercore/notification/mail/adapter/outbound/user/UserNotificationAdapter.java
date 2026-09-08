@@ -42,8 +42,9 @@ public class UserNotificationAdapter
                 getCurrentUserUseCase.execute(userId);
 
         return new UserNotificationByIdInfo(
-                user.profile().fullName(),
-                user.email()
+                user.email(),
+                user.profile().fullName()
+
         );
     }
 

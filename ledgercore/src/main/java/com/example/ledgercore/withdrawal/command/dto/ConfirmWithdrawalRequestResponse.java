@@ -1,4 +1,4 @@
-package com.example.ledgercore.withdrawal.query.dto;
+package com.example.ledgercore.withdrawal.command.dto;
 
 import com.example.ledgercore.withdrawal.enums.WithdrawalRequestStatus;
 

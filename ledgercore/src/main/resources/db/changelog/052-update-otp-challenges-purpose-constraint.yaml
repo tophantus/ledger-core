@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - changeSet:
+      id: 052-update-otp-challenges-purpose-constraint
+      author: tu
+      changes:
+        - sql:
+            sql: |
+              ALTER TABLE otp_challenges
+              DROP CONSTRAINT chk_otp_challenges_purpose;
+
+              ALTER TABLE otp_challenges
+              ADD CONSTRAINT chk_otp_challenges_purpose
+              CHECK (
+                  purpose IN (
+                      'EMAIL_VERIFICATION',
+                      'RESET_PASSWORD',
+                      'CONFIRM_TRANSFER',
+                      'CONFIRM_WITHDRAWAL_REQUEST',
+                      'CHANGE_EMAIL',
+                      'CHANGE_PHONE',
+                      'TWO_FACTOR_AUTH'
+                  )
+              );

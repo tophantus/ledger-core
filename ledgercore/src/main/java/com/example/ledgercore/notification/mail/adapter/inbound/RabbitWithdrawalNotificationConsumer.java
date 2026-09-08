@@ -18,9 +18,7 @@ public class RabbitWithdrawalNotificationConsumer {
 
     @RabbitListener(
             queues = WithdrawalCodeMailRabbitConfig
-                    .WITHDRAWAL_CODE_MAIL_QUEUE,
-            containerFactory =
-                    "withdrawalCodeMailRabbitListenerContainerFactory"
+                    .WITHDRAWAL_CODE_MAIL_QUEUE
     )
     public void consume(
             WithdrawalNotificationEvent event

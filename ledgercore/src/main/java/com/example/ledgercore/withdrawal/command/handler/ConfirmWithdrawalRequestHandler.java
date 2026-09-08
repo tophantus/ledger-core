@@ -15,7 +15,7 @@ import com.example.ledgercore.withdrawal.config.WithdrawalIntentProperties;
 import com.example.ledgercore.withdrawal.entity.WithdrawalIntent;
 import com.example.ledgercore.withdrawal.entity.WithdrawalRequest;
 import com.example.ledgercore.withdrawal.enums.WithdrawalIntentStatus;
-import com.example.ledgercore.withdrawal.query.dto.ConfirmWithdrawalRequestResponse;
+import com.example.ledgercore.withdrawal.command.dto.ConfirmWithdrawalRequestResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

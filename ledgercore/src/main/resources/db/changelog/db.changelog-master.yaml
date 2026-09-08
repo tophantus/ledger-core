@@ -101,3 +101,5 @@ databaseChangeLog:
       file: db/changelog/050-allow-null-started-at-in-interest-runs.yaml
   - include:
       file: db/changelog/051-create-atm-terminals.yaml
+  - include:
+      file: db/changelog/052-update-otp-challenges-purpose-constraint.yaml

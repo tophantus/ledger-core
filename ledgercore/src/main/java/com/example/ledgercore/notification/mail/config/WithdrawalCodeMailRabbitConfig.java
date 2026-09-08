@@ -43,6 +43,7 @@ public class WithdrawalCodeMailRabbitConfig {
     @Bean
     public Binding withdrawalCodeMailBinding(
             Queue withdrawalCodeMailQueue,
+            @Qualifier("withdrawalExchange")
             TopicExchange withdrawalExchange
     ) {
         return BindingBuilder

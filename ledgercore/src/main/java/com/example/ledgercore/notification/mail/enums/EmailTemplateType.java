@@ -29,6 +29,17 @@ public enum EmailTemplateType {
             )
     ),
 
+    CONFIRM_WITHDRAWAL_REQUEST(
+            "confirm-withdrawal-request",
+            "Confirm your withdrawal request",
+            List.of(
+                    "otp",
+                    "fullName",
+                    "expiresInMinutes"
+            )
+    ),
+
+
     WITHDRAWAL_CODE(
             "withdrawal-code",
             "Your withdrawal code",
