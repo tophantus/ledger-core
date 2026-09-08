@@ -10,6 +10,7 @@ public record AdminAccountResponse(
         UUID id,
         UUID userId,
         String accountNo,
+        UUID productId,
         String currency,
         BigDecimal balance,
         AccountStatus status,

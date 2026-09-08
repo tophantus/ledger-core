@@ -41,6 +41,7 @@ public class GetAdminAccountDetailHandler
         return new AdminAccountDetailResponse(
                 account.getId(),
                 account.getAccountNo(),
+                account.getProductId(),
                 account.getCurrency(),
                 account.getBalance(),
                 account.getStatus(),
