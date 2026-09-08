@@ -1,11 +1,13 @@
 "use client";
 
 import {useLocale, useTranslations} from "next-intl";
+import type {ReactNode} from "react";
 
 import {ProductBadge} from "@/features/product/components/product-badge";
 import type {AdminAccountDetail} from "@/features/admin/account/types/admin-account";
+
+import {getAccountStatusColor} from "@/lib/utils/account";
 import {formatMoney} from "@/lib/utils/currency";
-import {ReactNode} from "react";
 
 interface Props {
     account: AdminAccountDetail;
@@ -63,6 +65,16 @@ export function AdminAccountInformation({
                 />
 
                 <DetailItem
+                    label={t("fields.availableBalance")}
+                    value={formatMoney(
+                        account.availableBalance,
+                        account.currency,
+                        locale,
+                    )}
+                    valueClassName="text-lg"
+                />
+
+                <DetailItem
                     label={t("fields.balance")}
                     value={formatMoney(
                         account.balance,
@@ -72,11 +84,36 @@ export function AdminAccountInformation({
                 />
 
                 <DetailItem
-                    label={t("fields.status")}
-                    value={t(
-                        `statuses.${account.status}`,
+                    label={t("fields.holdAmount")}
+                    value={formatMoney(
+                        account.holdAmount,
+                        account.currency,
+                        locale,
                     )}
                 />
+
+                <DetailItem
+                    label={t("fields.status")}
+                >
+                    <span
+                        className={`
+                            inline-flex
+                            rounded-full
+                            px-2.5
+                            py-1
+                            text-xs
+                            font-medium
+                            ${getAccountStatusColor(
+                            account.status,
+                            "text-background",
+                        )}
+                        `}
+                    >
+                        {t(
+                            `statuses.${account.status}`,
+                        )}
+                    </span>
+                </DetailItem>
 
                 <DetailItem
                     label={t("fields.ledgerAccountId")}
@@ -91,13 +128,13 @@ export function AdminAccountInformation({
                     )}
                 />
 
-                <DetailItem
-                    label={t("fields.updatedAt")}
-                    value={formatDate(
-                        account.updatedAt,
-                        locale,
-                    )}
-                />
+                {/*<DetailItem*/}
+                {/*    label={t("fields.updatedAt")}*/}
+                {/*    value={formatDate(*/}
+                {/*        account.updatedAt,*/}
+                {/*        locale,*/}
+                {/*    )}*/}
+                {/*/>*/}
             </div>
         </section>
     );
@@ -106,12 +143,14 @@ export function AdminAccountInformation({
 interface DetailItemProps {
     label: string;
     value?: string;
+    valueClassName?: string;
     children?: ReactNode;
 }
 
 function DetailItem({
                         label,
                         value,
+                        valueClassName = "",
                         children,
                     }: DetailItemProps) {
     return (
@@ -121,7 +160,15 @@ function DetailItem({
             </p>
 
             {children ?? (
-                <p className="break-all text-sm font-medium text-primary">
+                <p
+                    className={`
+                        break-all
+                        text-sm
+                        font-medium
+                        text-primary
+                        ${valueClassName}
+                    `}
+                >
                     {value}
                 </p>
             )}

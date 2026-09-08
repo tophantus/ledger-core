@@ -31,7 +31,9 @@
       "accountNo": "Số tài khoản",
       "product": "Sản phẩm",
       "currency": "Loại tiền",
+      "availableBalance": "Số dư khả dụng",
       "balance": "Số dư",
+      "holdAmount": "Đang giữ",
       "status": "Trạng thái",
       "userId": "ID người dùng"
     },
@@ -54,6 +56,8 @@
         "product": "Sản phẩm",
         "currency": "Loại tiền",
         "balance": "Số dư",
+        "availableBalance": "Số dư khả dụng",
+        "holdAmount": "Đang giữ",
         "status": "Trạng thái",
         "ledgerAccountId": "ID tài khoản sổ cái",
         "createdAt": "Ngày tạo",
