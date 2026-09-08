@@ -32,6 +32,8 @@
     "destinationAccount": "Destination account number",
     "destinationPlaceholder": "Enter account number",
 
+    "sameSourceDestination": "Destination account cannot be the same as the source account.",
+
     "recipient": "Recipient",
 
     "amount": "Amount",

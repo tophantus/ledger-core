@@ -67,6 +67,41 @@ export function TransferForm({
 
     const locale = useLocale();
 
+    const handleFindHolder = () => {
+        const destination =
+            destinationForm.getValues(
+                "destinationAccountNo",
+            );
+
+        if (
+            selectedAccount &&
+            destination === selectedAccount.accountNo
+        ) {
+            destinationForm.setError(
+                "destinationAccountNo",
+                {
+                    type: "manual",
+                    message: t(
+                        "transfer.sameSourceDestination",
+                    ),
+                },
+            );
+
+            destinationForm.setValue(
+                "destinationAccountNo",
+                "",
+            );
+
+            return;
+        }
+
+        destinationForm.clearErrors(
+            "destinationAccountNo",
+        );
+
+        onFindHolder();
+    };
+
     return (
         <div className="rounded-lg border border-border bg-surface p-6">
             {/* Source account */}
@@ -166,7 +201,7 @@ export function TransferForm({
             <form
                 onSubmit={(event) => {
                     event.preventDefault();
-                    onFindHolder();
+                    handleFindHolder();
                 }}
             >
                 <div className="mt-6">

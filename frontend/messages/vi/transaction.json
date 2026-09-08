@@ -32,6 +32,8 @@
     "destinationAccount": "Số tài khoản nhận",
     "destinationPlaceholder": "Nhập số tài khoản",
 
+    "sameSourceDestination": "Tài khoản nhận không được trùng với tài khoản nguồn.",
+    
     "recipient": "Người nhận",
 
     "amount": "Số tiền",
