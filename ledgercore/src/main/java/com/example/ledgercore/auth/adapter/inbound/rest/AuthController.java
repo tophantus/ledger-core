@@ -27,7 +27,7 @@ public class AuthController {
 
     private final SignUpUseCase signUpUseCase;
     private final VerifyEmailUseCase verifyEmailUseCase;
-    private final ResendVerificationCodeUseCase resendVerificationCodeUseCase;
+    private final SendVerificationCodeUseCase sendVerificationCodeUseCase;
     private final UpdatePasswordUseCase updatePasswordUseCase;
     private final LoginUseCase loginUseCase;
     private final RefreshTokenUseCase refreshTokenUseCase;
@@ -37,7 +37,7 @@ public class AuthController {
     @PostMapping("/sign-up")
     @Operation(
             summary = "Sign up",
-            description = "Create a new user account and send verification OTP"
+            description = "Create a new user account"
     )
     public ResponseEntity<ApiResponse<SignUpResponse>> signUp(
             @RequestBody SignUpCommand command
@@ -78,15 +78,15 @@ public class AuthController {
         );
     }
 
-    @PostMapping("/verify-email/resend")
+    @PostMapping("/verify-email/send")
     @Operation(
-            summary = "Resend email verification code",
-            description = "Resend the verification code to the user's email"
+            summary = "Send email verification code",
+            description = "Send an email verification code to the user's email"
     )
-    public ResponseEntity<ApiResponse<Void>> resendVerificationCode(
-            @RequestBody ResendVerificationCodeCommand command
+    public ResponseEntity<ApiResponse<Void>> sendVerificationCode(
+            @RequestBody SendVerificationCodeCommand command
     ) {
-        resendVerificationCodeUseCase.execute(command);
+        sendVerificationCodeUseCase.execute(command);
 
         return ResponseEntity.ok(
                 ApiResponse.success(

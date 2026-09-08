@@ -1,6 +1,6 @@
 "use client";
 
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {useTranslations} from "next-intl";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
@@ -10,7 +10,7 @@ import {ROUTES} from "@/lib/constants/routes";
 import {Button} from "@/components/ui/button";
 
 import {useVerifyEmail} from "../hooks/use-verify-email";
-import {useResendVerificationCode} from "../hooks/use-resend-verification-code";
+import {useSendVerificationCode} from "../hooks/use-send-verification-code";
 import {
     verifyEmailSchema,
     type VerifyEmailFormValues,
@@ -27,8 +27,8 @@ export function VerifyEmailForm() {
     const tErrors = useTranslations("errors");
 
     const {verifyEmail} = useVerifyEmail();
-    const {resendVerificationCode} =
-        useResendVerificationCode();
+    const {sendVerificationCode} =
+        useSendVerificationCode();
 
     const pendingVerification = useAuthStore(
         (state) => state.pendingVerification,
@@ -48,6 +48,59 @@ export function VerifyEmailForm() {
     } = useForm<VerifyEmailFormValues>({
         resolver: zodResolver(verifyEmailSchema),
     });
+
+    const hasSentInitialCode = useRef(false);
+
+    useEffect(() => {
+        if (
+            !pendingVerification ||
+            hasSentInitialCode.current
+        ) {
+            return;
+        }
+
+        hasSentInitialCode.current = true;
+
+        const sendInitialCode = async () => {
+            setIsResending(true);
+
+            try {
+                const result =
+                    await sendVerificationCode({
+                        email: pendingVerification.email,
+                    });
+
+                if (!result.success) {
+                    setError("root", {
+                        message:
+                            result.code &&
+                            tErrors.has(result.code)
+                                ? tErrors(result.code)
+                                : tErrors("fallback"),
+                    });
+
+                    return;
+                }
+
+                setResendCooldown(
+                    RESEND_COOLDOWN_SECONDS,
+                );
+            } catch {
+                setError("root", {
+                    message: tErrors("fallback"),
+                });
+            } finally {
+                setIsResending(false);
+            }
+        };
+
+        void sendInitialCode();
+    }, [
+        pendingVerification,
+        sendVerificationCode,
+        setError,
+        tErrors,
+    ]);
 
     useEffect(() => {
         if (!pendingVerification) {
@@ -116,7 +169,7 @@ export function VerifyEmailForm() {
 
         try {
             const result =
-                await resendVerificationCode({
+                await sendVerificationCode({
                     email: pendingVerification.email,
                 });
 

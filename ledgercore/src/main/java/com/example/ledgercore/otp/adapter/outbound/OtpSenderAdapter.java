@@ -35,8 +35,6 @@ public class OtpSenderAdapter implements OtpSenderPort {
         String encryptedOtp =
                 encryptionService.encrypt(otp);
 
-        log.debug("OTP: {}", otp);
-
         OtpNotificationEvent event =
                 new OtpNotificationEvent(
                         otpChallengeId,

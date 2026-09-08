@@ -3,7 +3,9 @@ package com.example.ledgercore.notification.mail.command.handler;
 import com.example.ledgercore.common.encryption.EncryptionService;
 import com.example.ledgercore.notification.mail.command.port.inbound.SendOtpNotificationUseCase;
 import com.example.ledgercore.notification.mail.command.port.outbound.TransferIntentQueryPort;
+import com.example.ledgercore.notification.mail.command.port.outbound.UserNotificationPort;
 import com.example.ledgercore.notification.mail.command.port.outbound.dto.TransferIntentNotificationInfo;
+import com.example.ledgercore.notification.mail.command.port.outbound.dto.UserNotificationInfo;
 import com.example.ledgercore.notification.mail.enums.EmailTemplateType;
 import com.example.ledgercore.notification.mail.service.EmailNotificationService;
 import com.example.ledgercore.otp.enums.OtpChannel;
@@ -22,6 +24,7 @@ public class SendOtpNotificationHandler
     private final EmailNotificationService emailNotificationService;
     private final EncryptionService encryptionService;
     private final TransferIntentQueryPort transferIntentQueryPort;
+    private final UserNotificationPort userNotificationPort;
 
     @Override
     public void execute(OtpNotificationEvent event) {
@@ -35,9 +38,16 @@ public class SendOtpNotificationHandler
                         event.encryptedOtp()
                 );
 
+        UserNotificationInfo user =
+                userNotificationPort.getUser(
+                        event.destination(),
+                        event.channel()
+                );
+
         Map<String, Object> variables =
                 buildVariables(
                         event,
+                        user.fullName(),
                         otp
                 );
 
@@ -50,17 +60,20 @@ public class SendOtpNotificationHandler
 
     private Map<String, Object> buildVariables(
             OtpNotificationEvent event,
+            String fullName,
             String otp
     ) {
         if (event.purpose() == OtpPurpose.CONFIRM_TRANSFER) {
             return buildTransferConfirmationVariables(
                     event,
+                    fullName,
                     otp
             );
         }
 
         return Map.of(
                 "otp", otp,
+                "fullName", fullName,
                 "expiresInMinutes",
                 event.purpose()
                         .getExpiration()
@@ -70,6 +83,7 @@ public class SendOtpNotificationHandler
 
     private Map<String, Object> buildTransferConfirmationVariables(
             OtpNotificationEvent event,
+            String fullName,
             String otp
     ) {
         TransferIntentNotificationInfo intent =
@@ -79,6 +93,7 @@ public class SendOtpNotificationHandler
 
         return Map.of(
                 "otp", otp,
+                "fullName", fullName,
                 "expiresInMinutes",
                 event.purpose()
                         .getExpiration()

@@ -3,7 +3,6 @@ package com.example.ledgercore.auth.command.handler;
 import com.example.ledgercore.auth.command.dto.SignUpCommand;
 import com.example.ledgercore.auth.command.dto.SignUpResponse;
 import com.example.ledgercore.auth.command.port.inbound.SignUpUseCase;
-import com.example.ledgercore.auth.command.port.outbound.EmailVerificationPort;
 import com.example.ledgercore.auth.command.port.outbound.UserAuthenticationPort;
 import com.example.ledgercore.auth.service.PasswordService;
 import com.example.ledgercore.common.exception.BusinessException;
@@ -18,7 +17,6 @@ public class SignUpHandler implements SignUpUseCase {
 
     private final UserAuthenticationPort userAuthenticationPort;
     private final PasswordService passwordService;
-    private final EmailVerificationPort emailVerificationPort;
 
     @Override
     @Transactional
@@ -35,17 +33,10 @@ public class SignUpHandler implements SignUpUseCase {
                 )
         ).orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
-        emailVerificationPort.sendVerificationCode(
-                userInfo.userId(),
-                userInfo.email()
-
-        );
-
         return new SignUpResponse(
                 userInfo.userId(),
                 userInfo.email(),
-                userInfo.active(),
-                "OTP sent successfully"
+                userInfo.active()
         );
     }
 }
