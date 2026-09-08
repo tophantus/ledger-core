@@ -93,3 +93,5 @@ databaseChangeLog:
       file: db/changelog/046-create-withdrawal-requests.yaml
   - include:
       file: db/changelog/047-create-withdrawal-intents.yaml
+  - include:
+      file: db/changelog/048-add-hold-amount-to-accounts.yaml

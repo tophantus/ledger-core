@@ -52,6 +52,15 @@ public class Account {
     @Builder.Default
     private BigDecimal balance = BigDecimal.ZERO;
 
+    @Column(
+            name = "hold_amount",
+            nullable = false,
+            precision = 19,
+            scale = 4
+    )
+    @Builder.Default
+    private BigDecimal holdAmount = BigDecimal.ZERO;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     @Builder.Default
