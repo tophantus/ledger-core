@@ -99,3 +99,5 @@ databaseChangeLog:
       file: db/changelog/049-create-withdrawal-executions.yaml
   - include:
       file: db/changelog/050-allow-null-started-at-in-interest-runs.yaml
+  - include:
+      file: db/changelog/051-create-atm-terminals.yaml
