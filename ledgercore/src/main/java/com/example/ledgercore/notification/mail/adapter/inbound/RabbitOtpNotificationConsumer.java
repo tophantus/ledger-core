@@ -1,7 +1,7 @@
 package com.example.ledgercore.notification.mail.adapter.inbound;
 
 import com.example.ledgercore.notification.mail.command.port.inbound.SendOtpNotificationUseCase;
-import com.example.ledgercore.notification.mail.config.MailRabbitConfig;
+import com.example.ledgercore.notification.mail.config.OtpMailRabbitConfig;
 import com.example.ledgercore.otp.event.OtpNotificationEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +17,7 @@ public class RabbitOtpNotificationConsumer {
             sendOtpNotificationUseCase;
 
     @RabbitListener(
-            queues = MailRabbitConfig.MAIL_QUEUE
+            queues = OtpMailRabbitConfig.OTP_MAIL_QUEUE
     )
     public void consume(OtpNotificationEvent event) {
         log.info(

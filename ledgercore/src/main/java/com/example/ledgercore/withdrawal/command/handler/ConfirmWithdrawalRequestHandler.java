@@ -4,6 +4,7 @@ import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.withdrawal.command.dto.ConfirmWithdrawalRequestCommand;
 import com.example.ledgercore.withdrawal.command.port.inbound.ConfirmWithdrawalRequestUseCase;
+import com.example.ledgercore.withdrawal.command.port.outbound.WithdrawalNotificationPort;
 import com.example.ledgercore.withdrawal.command.port.outbound.WithdrawalOtpPort;
 import com.example.ledgercore.withdrawal.command.repository.WithdrawalIntentCommandRepository;
 import com.example.ledgercore.withdrawal.command.repository.WithdrawalRequestCommandRepository;
@@ -35,6 +36,8 @@ public class ConfirmWithdrawalRequestHandler
             withdrawalIntentCommandRepository;
 
     private final WithdrawalOtpPort withdrawalOtpPort;
+
+    private final WithdrawalNotificationPort withdrawalNotificationPort;
 
     private final WithdrawalReferenceGenerator
             withdrawalReferenceGenerator;
@@ -118,6 +121,16 @@ public class ConfirmWithdrawalRequestHandler
         intent = withdrawalIntentCommandRepository.save(intent);
 
         request.confirm(now);
+
+        withdrawalNotificationPort.sendWithdrawalCode(
+                intent.getId(),
+                intent.getUserId(),
+                intent.getWithdrawalReference(),
+                withdrawalCode,
+                intent.getAmount(),
+                intent.getCurrency(),
+                intent.getExpiresAt()
+        );
 
         return new ConfirmWithdrawalRequestResponse(
                 request.getId(),
