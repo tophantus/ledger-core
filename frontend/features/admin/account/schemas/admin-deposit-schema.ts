@@ -2,6 +2,7 @@ import {z} from "zod";
 
 export const adminDepositSchema =
     z.object({
+        accountId: z.uuid("Invalid account"),
         amount: z
             .string()
             .trim()

@@ -17,6 +17,7 @@ import {
     createAccountSchema,
     type CreateAccountForm,
 } from "../schemas/create-account-schema";
+import {SUPPORTED_CURRENCIES} from "@/lib/constants/currency";
 
 interface CreateAccountModalProps {
     open: boolean;
@@ -28,11 +29,6 @@ const DEFAULT_VALUES: CreateAccountForm = {
     productId: "",
     currency: "VND",
 };
-
-const SUPPORTED_CURRENCIES = [
-    "VND",
-    "USD",
-] as const;
 
 export function CreateAccountModal({
                                        open,

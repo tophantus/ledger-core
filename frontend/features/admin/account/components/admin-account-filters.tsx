@@ -6,6 +6,7 @@ import type {
     AccountStatus,
     AdminAccountFilters as AdminAccountFilterValues,
 } from "../types/admin-account";
+import {SUPPORTED_CURRENCIES} from "@/lib/constants/currency";
 
 interface AdminAccountFiltersProps {
     filters: AdminAccountFilterValues;
@@ -29,7 +30,7 @@ const inputClassName = `
     bg-surface
     px-3
     text-sm
-    text-primary
+    text-foreground
     outline-none
     placeholder:text-muted
     focus:border-primary
@@ -90,25 +91,32 @@ export function AdminAccountFilters({
                 ))}
             </select>
 
-            <input
-                type="text"
+            <select
                 value={filters.currency ?? ""}
                 onChange={(event) =>
                     onChange({
                         ...filters,
                         currency:
-                            event.target.value
-                                .toUpperCase() ||
+                            event.target.value ||
                             undefined,
                         page: 0,
                     })
                 }
-                placeholder={t(
-                    "filters.currencyPlaceholder",
-                )}
-                maxLength={3}
-                className={`${inputClassName} uppercase`}
-            />
+                className={inputClassName}
+            >
+                <option value="">
+                    {t("filters.allCurrencies")}
+                </option>
+
+                {SUPPORTED_CURRENCIES.map((currency) => (
+                    <option
+                        key={currency}
+                        value={currency}
+                    >
+                        {currency}
+                    </option>
+                ))}
+            </select>
         </div>
     );
 }

@@ -32,6 +32,8 @@
     "destinationAccount": "Destination account number",
     "destinationPlaceholder": "Enter account number",
 
+    "sameSourceDestination": "Destination account cannot be the same as the source account.",
+
     "recipient": "Recipient",
 
     "amount": "Amount",
@@ -44,6 +46,7 @@
     "descriptionPlaceholder": "Optional description",
 
     "check": "Check",
+    "change": "Change",
     "continue": "Continue",
 
     "confirmTitle": "Confirm transfer",
@@ -80,9 +83,11 @@
     "transactionId": "Transaction ID"
   },
   "filters": {
+    "title": "Filters",
     "type": "Type",
     "status": "Status",
     "currency": "Currency",
+    "allCurrencies": "All currencies",
     "from": "From",
     "to": "To",
     "allTypes": "All types",

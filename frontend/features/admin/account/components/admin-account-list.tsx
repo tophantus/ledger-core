@@ -1,11 +1,13 @@
 "use client";
 
-import {useTranslations} from "next-intl";
+import {useLocale, useTranslations} from "next-intl";
 
 import {useRouter} from "@/i18n/routing";
 import {ROUTES} from "@/lib/constants/routes";
 
 import type {AdminAccount} from "../types/admin-account";
+import {ProductBadge} from "@/features/product/components/product-badge";
+import {formatMoney} from "@/lib/utils/currency";
 
 interface AdminAccountListProps {
     accounts: AdminAccount[];
@@ -17,6 +19,9 @@ export function AdminAccountList({
                                      loading,
                                  }: AdminAccountListProps) {
     const t = useTranslations("admin.account");
+
+    const locale = useLocale();
+
     const router = useRouter();
 
     if (loading) {
@@ -42,6 +47,10 @@ export function AdminAccountList({
                 <tr className="text-left text-muted">
                     <th className="px-4 py-3">
                         {t("table.accountNo")}
+                    </th>
+
+                    <th className="px-4 py-3">
+                        {t("table.product")}
                     </th>
 
                     <th className="px-4 py-3">
@@ -89,20 +98,26 @@ export function AdminAccountList({
                             }
                         }}
                         className="
-                                cursor-pointer
-                                border-b
-                                border-border
-                                last:border-0
-                                transition
-                                hover:bg-background
-                                focus:outline-none
-                                focus:ring-2
-                                focus:ring-inset
-                                focus:ring-primary
-                            "
+                            cursor-pointer
+                            border-b
+                            border-border
+                            last:border-0
+                            transition
+                            hover:bg-background
+                            focus:outline-none
+                            focus:ring-2
+                            focus:ring-inset
+                            focus:ring-primary
+                        "
                     >
                         <td className="px-4 py-3 font-medium text-primary">
                             {account.accountNo}
+                        </td>
+
+                        <td className="px-4 py-3">
+                            <ProductBadge
+                                productId={account.productId}
+                            />
                         </td>
 
                         <td className="px-4 py-3 text-primary">
@@ -110,7 +125,11 @@ export function AdminAccountList({
                         </td>
 
                         <td className="px-4 py-3 text-primary">
-                            {account.balance}
+                            {formatMoney(
+                                account.balance,
+                                account.currency,
+                                locale,
+                            )}
                         </td>
 
                         <td className="px-4 py-3 text-primary">

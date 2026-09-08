@@ -8,6 +8,7 @@ import com.example.ledgercore.notification.mail.command.port.outbound.dto.Transf
 import com.example.ledgercore.notification.mail.command.port.outbound.dto.UserNotificationInfo;
 import com.example.ledgercore.notification.mail.enums.EmailTemplateType;
 import com.example.ledgercore.notification.mail.service.EmailNotificationService;
+import com.example.ledgercore.notification.mail.service.MoneyFormatter;
 import com.example.ledgercore.otp.enums.OtpChannel;
 import com.example.ledgercore.otp.enums.OtpPurpose;
 import com.example.ledgercore.otp.event.OtpNotificationEvent;
@@ -25,6 +26,8 @@ public class SendOtpNotificationHandler
     private final EncryptionService encryptionService;
     private final TransferIntentQueryPort transferIntentQueryPort;
     private final UserNotificationPort userNotificationPort;
+
+    private final MoneyFormatter moneyFormatter;
 
     @Override
     public void execute(OtpNotificationEvent event) {
@@ -101,9 +104,10 @@ public class SendOtpNotificationHandler
                 "destinationAccountNo",
                 intent.destinationAccountNo(),
                 "amount",
-                intent.amount(),
-                "currency",
-                intent.currency(),
+                moneyFormatter.format(
+                        intent.amount(),
+                        intent.currency()
+                ),
                 "reference",
                 intent.reference(),
                 "description",

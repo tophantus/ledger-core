@@ -9,6 +9,7 @@ import java.util.UUID;
 public record AdminAccountDetailResponse(
         UUID id,
         String accountNo,
+        UUID productId,
         String currency,
         BigDecimal balance,
         AccountStatus status,

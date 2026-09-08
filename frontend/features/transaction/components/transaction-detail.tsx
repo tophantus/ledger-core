@@ -1,12 +1,14 @@
 "use client";
 
 import {ArrowLeft} from "lucide-react";
-import {useTranslations} from "next-intl";
+import {useLocale, useTranslations} from "next-intl";
 
 import {Link} from "@/i18n/routing";
 import {ROUTES} from "@/lib/constants/routes";
 
 import type {Transaction} from "../types/transaction";
+
+import {formatMoney} from "@/lib/utils/currency";
 
 interface TransactionDetailProps {
     transaction: Transaction;
@@ -16,6 +18,8 @@ export function TransactionDetail({
                                       transaction,
                                   }: TransactionDetailProps) {
     const t = useTranslations("transaction");
+
+    const locale = useLocale();
 
     const typeLabel = t(
         `types.${transaction.type}`,
@@ -76,7 +80,11 @@ export function TransactionDetail({
 
                     <DetailRow
                         label={t("detail.amount")}
-                        value={`${transaction.amount} ${transaction.currency}`}
+                        value={
+                            formatMoney(
+                                transaction.amount,
+                                transaction.currency,
+                                locale)}
                     />
 
                     <DetailRow

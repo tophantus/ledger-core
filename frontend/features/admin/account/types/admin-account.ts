@@ -9,6 +9,7 @@ export interface AdminAccount {
     id: string;
     userId: string;
     accountNo: string;
+    productId: string;
     currency: string;
     balance: string;
     status: AccountStatus;
@@ -36,6 +37,7 @@ export interface AdminAccountUserInfo {
 export interface AdminAccountDetail {
     id: string;
     accountNo: string;
+    productId: string;
     currency: string;
     balance: string;
     status: AccountStatus;

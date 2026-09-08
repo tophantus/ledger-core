@@ -16,6 +16,7 @@
     "loadError": "Không thể tải danh sách tài khoản.",
     "filters": {
       "accountNoPlaceholder": "Tìm theo số tài khoản",
+      "allCurrencies": "Tất cả loại tiền",
       "currencyPlaceholder": "Loại tiền",
       "userIdPlaceholder": "ID người dùng",
       "allStatuses": "Tất cả trạng thái",
@@ -28,6 +29,7 @@
     },
     "table": {
       "accountNo": "Số tài khoản",
+      "product": "Sản phẩm",
       "currency": "Loại tiền",
       "balance": "Số dư",
       "status": "Trạng thái",
@@ -49,6 +51,7 @@
       "ownerInformation": "Chủ tài khoản",
       "fields": {
         "accountNo": "Số tài khoản",
+        "product": "Sản phẩm",
         "currency": "Loại tiền",
         "balance": "Số dư",
         "status": "Trạng thái",

@@ -1,18 +1,15 @@
 import {z} from "zod";
+import {SUPPORTED_CURRENCIES} from "@/lib/constants/currency";
 
 export const createAccountSchema = z.object({
-    productId: z
-        .string()
-        .uuid("Invalid product"),
+    productId: z.uuid("Invalid product"),
 
-    currency: z
-        .string()
-        .trim()
-        .length(
-            3,
-            "Currency must be 3 characters",
-        )
-        .toUpperCase(),
+    currency: z.enum(
+        SUPPORTED_CURRENCIES,
+        {
+            error: "Invalid currency",
+        },
+    ),
 });
 
 export type CreateAccountForm =

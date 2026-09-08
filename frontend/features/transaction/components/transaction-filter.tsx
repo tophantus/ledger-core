@@ -7,7 +7,9 @@ import type {
     TransactionStatus,
     TransactionType,
 } from "../types/transaction";
-import React from "react";
+import React, {useState} from "react";
+import {SUPPORTED_CURRENCIES} from "@/lib/constants/currency";
+import {ChevronDown, ChevronUp} from "lucide-react";
 
 interface TransactionFilterProps {
     filters: TransactionFilters;
@@ -36,6 +38,8 @@ export function TransactionFilter({
     const t = useTranslations("transaction");
 
     const today = getTodayLocal();
+
+    const [expanded, setExpanded] = useState(false);
 
     const fromDate = filters.from
         ? toDateLocal(filters.from)
@@ -74,11 +78,9 @@ export function TransactionFilter({
     };
 
     const handleCurrencyChange = (
-        event: React.ChangeEvent<HTMLInputElement>,
+        event: React.ChangeEvent<HTMLSelectElement>,
     ) => {
-        const value = event.target.value
-            .trim()
-            .toUpperCase();
+        const value = event.target.value;
 
         onChange({
             ...filters,
@@ -175,204 +177,259 @@ export function TransactionFilter({
     };
 
     return (
-        <div className="rounded-lg border border-border bg-surface p-4">
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                <div>
-                    <label
-                        htmlFor="transaction-type"
-                        className="mb-2 block text-sm font-medium text-text-primary"
-                    >
-                        {t("filters.type")}
-                    </label>
+        <div className="rounded-lg border border-border overflow-hidden bg-surface">
+            <button
+                type="button"
+                onClick={() =>
+                    setExpanded((current) => !current)
+                }
+                className="
+                flex
+                w-full
+                items-center
+                justify-between
+                px-4
+                py-3
+                text-left
+                transition
+                hover:bg-background-subtle
+            "
+            >
+            <span className="text-sm font-medium text-text-primary">
+                {t("filters.title")}
+            </span>
 
-                    <select
-                        id="transaction-type"
-                        value={filters.type ?? ""}
-                        onChange={handleTypeChange}
-                        className="
-                            w-full
-                            rounded-md
-                            border
-                            border-border
-                            bg-background
-                            px-3
-                            py-2
-                            text-sm
-                            text-text-primary
-                            outline-none
-                        "
-                    >
-                        <option value="">
-                            {t("filters.allTypes")}
-                        </option>
+                {expanded ? (
+                    <ChevronUp className="h-4 w-4 text-muted" />
+                ) : (
+                    <ChevronDown className="h-4 w-4 text-muted" />
+                )}
+            </button>
 
-                        {TRANSACTION_TYPES.map((type) => (
-                            <option
-                                key={type}
-                                value={type}
+            {expanded && (
+                <div className="border-t border-border p-4">
+                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                        {/* Type */}
+                        <div>
+                            <label
+                                htmlFor="transaction-type"
+                                className="mb-2 block text-sm font-medium text-text-primary"
                             >
-                                {t(`types.${type}`)}
-                            </option>
-                        ))}
-                    </select>
-                </div>
+                                {t("filters.type")}
+                            </label>
 
-                <div>
-                    <label
-                        htmlFor="transaction-status"
-                        className="mb-2 block text-sm font-medium text-text-primary"
-                    >
-                        {t("filters.status")}
-                    </label>
+                            <select
+                                id="transaction-type"
+                                value={filters.type ?? ""}
+                                onChange={handleTypeChange}
+                                className="
+                                w-full
+                                rounded-md
+                                border
+                                border-border
+                                bg-background
+                                px-3
+                                py-2
+                                text-sm
+                                text-text-primary
+                                outline-none
+                            "
+                            >
+                                <option value="">
+                                    {t("filters.allTypes")}
+                                </option>
 
-                    <select
-                        id="transaction-status"
-                        value={filters.status ?? ""}
-                        onChange={handleStatusChange}
-                        className="
-                            w-full
-                            rounded-md
-                            border
-                            border-border
-                            bg-background
-                            px-3
-                            py-2
-                            text-sm
-                            text-text-primary
-                            outline-none
-                        "
-                    >
-                        <option value="">
-                            {t("filters.allStatuses")}
-                        </option>
+                                {TRANSACTION_TYPES.map(
+                                    (type) => (
+                                        <option
+                                            key={type}
+                                            value={type}
+                                        >
+                                            {t(
+                                                `types.${type}`,
+                                            )}
+                                        </option>
+                                    ),
+                                )}
+                            </select>
+                        </div>
 
-                        {TRANSACTION_STATUSES.map(
-                            (status) => (
-                                <option
-                                    key={status}
-                                    value={status}
-                                >
+                        {/* Status */}
+                        {/*<div>*/}
+                        {/*    <label*/}
+                        {/*        htmlFor="transaction-status"*/}
+                        {/*        className="mb-2 block text-sm font-medium text-text-primary"*/}
+                        {/*    >*/}
+                        {/*        {t("filters.status")}*/}
+                        {/*    </label>*/}
+
+                        {/*    <select*/}
+                        {/*        id="transaction-status"*/}
+                        {/*        value={filters.status ?? ""}*/}
+                        {/*        onChange={handleStatusChange}*/}
+                        {/*        className="*/}
+                        {/*        w-full*/}
+                        {/*        rounded-md*/}
+                        {/*        border*/}
+                        {/*        border-border*/}
+                        {/*        bg-background*/}
+                        {/*        px-3*/}
+                        {/*        py-2*/}
+                        {/*        text-sm*/}
+                        {/*        text-text-primary*/}
+                        {/*        outline-none*/}
+                        {/*    "*/}
+                        {/*    >*/}
+                        {/*        <option value="">*/}
+                        {/*            {t("filters.allStatuses")}*/}
+                        {/*        </option>*/}
+
+                        {/*        {TRANSACTION_STATUSES.map(*/}
+                        {/*            (status) => (*/}
+                        {/*                <option*/}
+                        {/*                    key={status}*/}
+                        {/*                    value={status}*/}
+                        {/*                >*/}
+                        {/*                    {t(*/}
+                        {/*                        `statuses.${status}`,*/}
+                        {/*                    )}*/}
+                        {/*                </option>*/}
+                        {/*            ),*/}
+                        {/*        )}*/}
+                        {/*    </select>*/}
+                        {/*</div>*/}
+
+                        {/* Currency */}
+                        <div>
+                            <label
+                                htmlFor="transaction-currency"
+                                className="mb-2 block text-sm font-medium text-text-primary"
+                            >
+                                {t("filters.currency")}
+                            </label>
+
+                            <select
+                                id="transaction-currency"
+                                value={filters.currency ?? ""}
+                                onChange={handleCurrencyChange}
+                                className="
+                                w-full
+                                rounded-md
+                                border
+                                border-border
+                                bg-background
+                                px-3
+                                py-2
+                                text-sm
+                                text-text-primary
+                                outline-none
+                            "
+                            >
+                                <option value="">
                                     {t(
-                                        `statuses.${status}`,
+                                        "filters.allCurrencies",
                                     )}
                                 </option>
-                            ),
-                        )}
-                    </select>
+
+                                {SUPPORTED_CURRENCIES.map(
+                                    (currency) => (
+                                        <option
+                                            key={currency}
+                                            value={currency}
+                                        >
+                                            {currency}
+                                        </option>
+                                    ),
+                                )}
+                            </select>
+                        </div>
+
+                        {/* From */}
+                        <div>
+                            <label
+                                htmlFor="transaction-from"
+                                className="mb-2 block text-sm font-medium text-text-primary"
+                            >
+                                {t("filters.from")}
+                            </label>
+
+                            <input
+                                id="transaction-from"
+                                type="date"
+                                value={fromDate ?? ""}
+                                max={toDate ?? today}
+                                onChange={handleFromChange}
+                                className="
+                                w-full
+                                rounded-md
+                                border
+                                border-border
+                                bg-background
+                                px-3
+                                py-2
+                                text-sm
+                                text-text-primary
+                                outline-none
+                            "
+                            />
+                        </div>
+
+                        {/* To */}
+                        <div>
+                            <label
+                                htmlFor="transaction-to"
+                                className="mb-2 block text-sm font-medium text-text-primary"
+                            >
+                                {t("filters.to")}
+                            </label>
+
+                            <input
+                                id="transaction-to"
+                                type="date"
+                                value={toDate ?? ""}
+                                min={fromDate}
+                                max={today}
+                                onChange={handleToChange}
+                                className="
+                                w-full
+                                rounded-md
+                                border
+                                border-border
+                                bg-background
+                                px-3
+                                py-2
+                                text-sm
+                                text-text-primary
+                                outline-none
+                            "
+                            />
+                        </div>
+
+                        {/* Clear */}
+                        <div className="flex items-end">
+                            <button
+                                type="button"
+                                onClick={handleClear}
+                                className="
+                                w-full
+                                rounded-md
+                                border
+                                border-border
+                                px-3
+                                py-2
+                                text-sm
+                                font-medium
+                                text-text-primary
+                                transition
+                                hover:bg-secondary
+                            "
+                            >
+                                {t("filters.clear")}
+                            </button>
+                        </div>
+                    </div>
                 </div>
-
-                <div>
-                    <label
-                        htmlFor="transaction-currency"
-                        className="mb-2 block text-sm font-medium text-text-primary"
-                    >
-                        {t("filters.currency")}
-                    </label>
-
-                    <input
-                        id="transaction-currency"
-                        type="text"
-                        maxLength={3}
-                        value={filters.currency ?? ""}
-                        onChange={handleCurrencyChange}
-                        placeholder="VND"
-                        className="
-                            w-full
-                            rounded-md
-                            border
-                            border-border
-                            bg-background
-                            px-3
-                            py-2
-                            text-sm
-                            uppercase
-                            text-text-primary
-                            outline-none
-                        "
-                    />
-                </div>
-
-                <div>
-                    <label
-                        htmlFor="transaction-from"
-                        className="mb-2 block text-sm font-medium text-text-primary"
-                    >
-                        {t("filters.from")}
-                    </label>
-
-                    <input
-                        id="transaction-from"
-                        type="date"
-                        value={fromDate ?? ""}
-                        max={toDate ?? today}
-                        onChange={handleFromChange}
-                        className="
-                            w-full
-                            rounded-md
-                            border
-                            border-border
-                            bg-background
-                            px-3
-                            py-2
-                            text-sm
-                            text-text-primary
-                            outline-none
-                        "
-                    />
-                </div>
-
-                <div>
-                    <label
-                        htmlFor="transaction-to"
-                        className="mb-2 block text-sm font-medium text-text-primary"
-                    >
-                        {t("filters.to")}
-                    </label>
-
-                    <input
-                        id="transaction-to"
-                        type="date"
-                        value={toDate ?? ""}
-                        min={fromDate}
-                        max={today}
-                        onChange={handleToChange}
-                        className="
-                            w-full
-                            rounded-md
-                            border
-                            border-border
-                            bg-background
-                            px-3
-                            py-2
-                            text-sm
-                            text-text-primary
-                            outline-none
-                        "
-                    />
-                </div>
-
-                <div className="flex items-end">
-                    <button
-                        type="button"
-                        onClick={handleClear}
-                        className="
-                            w-full
-                            rounded-md
-                            border
-                            border-border
-                            px-3
-                            py-2
-                            text-sm
-                            font-medium
-                            text-text-primary
-                            transition
-                            hover:bg-secondary
-                        "
-                    >
-                        {t("filters.clear")}
-                    </button>
-                </div>
-            </div>
+            )}
         </div>
     );
 }

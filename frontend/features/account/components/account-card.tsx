@@ -1,14 +1,15 @@
 "use client";
 
-import {useTranslations} from "next-intl";
+import {useLocale, useTranslations} from "next-intl";
 
 import {Link} from "@/i18n/routing";
 import {ROUTES} from "@/lib/constants/routes";
 
 import type {AccountSummary} from "../types/account";
 import {getAccountStatusColor} from "@/lib/utils/account";
-import {useProductStore} from "@/features/product/store/product-store";
-import {getProductColor} from "@/lib/utils/product";
+
+import {formatMoney} from "@/lib/utils/currency";
+import {ProductBadge} from "@/features/product/components/product-badge";
 
 interface AccountCardProps {
     account: AccountSummary;
@@ -18,21 +19,7 @@ export function AccountCard({
                                 account,
                             }: AccountCardProps) {
     const t = useTranslations("account");
-    const tProduct = useTranslations("product");
-
-
-    const product = useProductStore(
-        (state) =>
-            state.productMap.get(account.productId),
-    );
-
-    if (!product) {
-        return null;
-    }
-
-    const productName = tProduct(
-        `names.${product.code}`,
-    );
+    const locale = useLocale();
 
     return (
         <Link
@@ -61,20 +48,9 @@ export function AccountCard({
                         {account.accountNo}
                     </p>
 
-                    <div
-                        className={`
-                        shrink-0
-                        rounded-full
-                        px-2.5
-                        py-1
-                        text-xs
-                        font-medium
-                        ${getProductColor(product.code, "text")}
-                        ${getProductColor(product.code, "background")}
-                    `}
-                    >
-                        {productName}
-                    </div>
+                    <ProductBadge
+                        productId={account.productId}
+                    />
                 </div>
 
                 <span
@@ -99,7 +75,11 @@ export function AccountCard({
                 </p>
 
                 <p className="mt-1 text-2xl font-semibold text-text-primary">
-                    {account.balance} {account.currency}
+                    {formatMoney(
+                        account.balance,
+                        account.currency,
+                        locale,
+                    )}
                 </p>
             </div>
 
@@ -118,7 +98,7 @@ export function AccountCard({
                 >
                     {t(`statuses.${account.status}`)}
                 </span>
-                <div className={`w-full h-4 rounded-full ${getAccountStatusColor(account.status, "background")}`}/>
+                <div className={`w-full h-2 mt-2 rounded-full ${getAccountStatusColor(account.status, "background")}`}/>
             </div>
         </Link>
     );

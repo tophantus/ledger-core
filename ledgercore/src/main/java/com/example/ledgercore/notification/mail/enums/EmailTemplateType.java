@@ -25,8 +25,7 @@ public enum EmailTemplateType {
                     "fullName",
                     "expiresInMinutes",
                     "destinationAccountNo",
-                    "amount",
-                    "currency"
+                    "amount"
             )
     );
 

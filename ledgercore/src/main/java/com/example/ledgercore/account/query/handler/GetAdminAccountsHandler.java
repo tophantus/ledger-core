@@ -126,6 +126,7 @@ public class GetAdminAccountsHandler
                 account.getId(),
                 account.getUserId(),
                 account.getAccountNo(),
+                account.getProductId(),
                 account.getCurrency(),
                 account.getBalance(),
                 account.getStatus(),
