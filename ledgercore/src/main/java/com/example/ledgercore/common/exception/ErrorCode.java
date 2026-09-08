@@ -103,6 +103,12 @@ public enum ErrorCode {
             HttpStatus.CONFLICT
     ),
 
+    ACCOUNT_CURRENCY_MISMATCH(
+            "ACCOUNT_008",
+            "Account currency mismatch",
+            HttpStatus.BAD_REQUEST
+    ),
+
     PRODUCT_NOT_FOUND(
             "PRODUCT_001",
             "Product not found",
