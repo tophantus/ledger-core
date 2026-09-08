@@ -12,6 +12,7 @@ public enum EmailTemplateType {
             "Verify your email",
             List.of(
                     "otp",
+                    "fullName",
                     "expiresInMinutes"
             )
     ),
@@ -21,6 +22,7 @@ public enum EmailTemplateType {
             "Confirm your transfer",
             List.of(
                     "otp",
+                    "fullName",
                     "expiresInMinutes",
                     "destinationAccountNo",
                     "amount",

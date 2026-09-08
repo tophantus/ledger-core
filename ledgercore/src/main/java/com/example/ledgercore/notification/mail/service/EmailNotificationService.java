@@ -49,7 +49,6 @@ public class EmailNotificationService {
             Context context = new Context();
             context.setVariable("appName", appName);
             context.setVariable("year", Year.now().getValue());
-            context.setVariable("email", recipient);
             variables.forEach(context::setVariable);
 
             String htmlContent = templateEngine.process(
