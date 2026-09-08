@@ -8,11 +8,10 @@ import {ROUTES} from "@/lib/constants/routes";
 
 import {AccountActions} from "@/features/account/components/account-actions";
 import {useAccountStore} from "../stores/account-store";
-import {useProductStore} from "@/features/product/store/product-store";
-import {getProductColor} from "@/lib/utils/product";
 
 import {formatMoney} from "@/lib/utils/currency";
 import {getAccountStatusColor} from "@/lib/utils/account";
+import {ProductBadge} from "@/features/product/components/product-badge";
 
 interface AccountDetailsProps {
     onClosed: () => void;
@@ -22,7 +21,6 @@ export function AccountDetails({
                                    onClosed,
                                }: AccountDetailsProps) {
     const t = useTranslations("account");
-    const tProduct = useTranslations("product");
 
     const locale = useLocale();
 
@@ -30,22 +28,9 @@ export function AccountDetails({
         (state) => state.currentAccount,
     );
 
-    const product = useProductStore(
-        (state) =>
-            account
-                ? state.productMap.get(
-                    account.productId,
-                )
-                : undefined,
-    );
-
     if (!account) {
         return null;
     }
-
-    const productName = product
-        ? tProduct(`names.${product.code}`)
-        : null;
 
     return (
         <section className="space-y-6">
@@ -86,29 +71,9 @@ export function AccountDetails({
                             {account.accountNo}
                         </h1>
 
-                        {product && (
-                            <span
-                                className={`
-                                    mt-2
-                                    inline-flex
-                                    rounded-full
-                                    px-2.5
-                                    py-1
-                                    text-xs
-                                    font-medium
-                                    ${getProductColor(
-                                    product.code,
-                                    "text",
-                                )}
-                                    ${getProductColor(
-                                    product.code,
-                                    "background",
-                                )}
-                                `}
-                            >
-                                {productName}
-                            </span>
-                        )}
+                        <ProductBadge
+                            productId={account.productId}
+                        />
                     </div>
 
                     <AccountActions

@@ -29,6 +29,7 @@
     },
     "table": {
       "accountNo": "Số tài khoản",
+      "product": "Sản phẩm",
       "currency": "Loại tiền",
       "balance": "Số dư",
       "status": "Trạng thái",
@@ -50,6 +51,7 @@
       "ownerInformation": "Chủ tài khoản",
       "fields": {
         "accountNo": "Số tài khoản",
+        "product": "Sản phẩm",
         "currency": "Loại tiền",
         "balance": "Số dư",
         "status": "Trạng thái",

@@ -7,10 +7,9 @@ import {ROUTES} from "@/lib/constants/routes";
 
 import type {AccountSummary} from "../types/account";
 import {getAccountStatusColor} from "@/lib/utils/account";
-import {useProductStore} from "@/features/product/store/product-store";
-import {getProductColor} from "@/lib/utils/product";
 
 import {formatMoney} from "@/lib/utils/currency";
+import {ProductBadge} from "@/features/product/components/product-badge";
 
 interface AccountCardProps {
     account: AccountSummary;
@@ -20,22 +19,7 @@ export function AccountCard({
                                 account,
                             }: AccountCardProps) {
     const t = useTranslations("account");
-    const tProduct = useTranslations("product");
-
     const locale = useLocale();
-
-    const product = useProductStore(
-        (state) =>
-            state.productMap.get(account.productId),
-    );
-
-    if (!product) {
-        return null;
-    }
-
-    const productName = tProduct(
-        `names.${product.code}`,
-    );
 
     return (
         <Link
@@ -64,20 +48,9 @@ export function AccountCard({
                         {account.accountNo}
                     </p>
 
-                    <div
-                        className={`
-                        shrink-0
-                        rounded-full
-                        px-2.5
-                        py-1
-                        text-xs
-                        font-medium
-                        ${getProductColor(product.code, "text")}
-                        ${getProductColor(product.code, "background")}
-                    `}
-                    >
-                        {productName}
-                    </div>
+                    <ProductBadge
+                        productId={account.productId}
+                    />
                 </div>
 
                 <span

@@ -2,9 +2,10 @@
 
 import {useLocale, useTranslations} from "next-intl";
 
+import {ProductBadge} from "@/features/product/components/product-badge";
+import type {AdminAccountDetail} from "@/features/admin/account/types/admin-account";
 import {formatMoney} from "@/lib/utils/currency";
-import {AdminAccountDetail} from "@/features/admin/account/types/admin-account";
-
+import {ReactNode} from "react";
 
 interface Props {
     account: AdminAccountDetail;
@@ -49,6 +50,14 @@ export function AdminAccountInformation({
                 />
 
                 <DetailItem
+                    label={t("fields.product")}
+                >
+                    <ProductBadge
+                        productId={account.productId}
+                    />
+                </DetailItem>
+
+                <DetailItem
                     label={t("fields.currency")}
                     value={account.currency}
                 />
@@ -70,9 +79,7 @@ export function AdminAccountInformation({
                 />
 
                 <DetailItem
-                    label={t(
-                        "fields.ledgerAccountId",
-                    )}
+                    label={t("fields.ledgerAccountId")}
                     value={account.ledgerAccountId}
                 />
 
@@ -98,12 +105,14 @@ export function AdminAccountInformation({
 
 interface DetailItemProps {
     label: string;
-    value: string;
+    value?: string;
+    children?: ReactNode;
 }
 
 function DetailItem({
                         label,
                         value,
+                        children,
                     }: DetailItemProps) {
     return (
         <div className="min-w-0 space-y-1">
@@ -111,9 +120,11 @@ function DetailItem({
                 {label}
             </p>
 
-            <p className="break-all text-sm font-medium text-primary">
-                {value}
-            </p>
+            {children ?? (
+                <p className="break-all text-sm font-medium text-primary">
+                    {value}
+                </p>
+            )}
         </div>
     );
 }

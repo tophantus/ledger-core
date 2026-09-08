@@ -7,6 +7,7 @@ import {ReactNode, useEffect} from "react";
 import {useUserStore} from "@/features/user/stores/user-store";
 import { hasAdminAccess } from "@/features/user/utils/user-role";
 import {ROUTES} from "@/lib/constants/routes";
+import {useProduct} from "@/features/product/hooks/use-product";
 
 export default function AdminLayout({
                                         children,
@@ -20,6 +21,28 @@ export default function AdminLayout({
 
     const adminAccess =
         hasAdminAccess(currentUser);
+
+    const {
+        initialized,
+        getActiveProducts,
+    } = useProduct();
+
+    useEffect(() => {
+        if (
+            !currentUser ||
+            !adminAccess ||
+            initialized
+        ) {
+            return;
+        }
+
+        void getActiveProducts();
+    }, [
+        currentUser,
+        adminAccess,
+        initialized,
+        getActiveProducts,
+    ]);
 
     useEffect(() => {
         if (!currentUser) {

@@ -29,6 +29,7 @@
     },
     "table": {
       "accountNo": "Account number",
+      "product": "Product",
       "currency": "Currency",
       "balance": "Balance",
       "status": "Status",
@@ -50,6 +51,7 @@
       "ownerInformation": "Account Owner",
       "fields": {
         "accountNo": "Account Number",
+        "product": "Product",
         "currency": "Currency",
         "balance": "Balance",
         "status": "Status",
