@@ -1,0 +1,101 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 046-create-withdrawal-requests
+      author: tu
+
+      changes:
+
+        - createTable:
+            tableName: withdrawal_requests
+            columns:
+
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                    primaryKeyName: pk_withdrawal_requests
+
+              - column:
+                  name: user_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: account_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: amount
+                  type: NUMERIC(19,4)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: currency
+                  type: VARCHAR(3)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: status
+                  type: VARCHAR(20)
+                  defaultValue: PENDING
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: expires_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: confirmed_at
+                  type: TIMESTAMP WITH TIME ZONE
+
+              - column:
+                  name: version
+                  type: BIGINT
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+
+        - createIndex:
+            indexName: idx_withdrawal_requests_user_id
+            tableName: withdrawal_requests
+            columns:
+              - column:
+                  name: user_id
+
+        - createIndex:
+            indexName: idx_withdrawal_requests_account_id
+            tableName: withdrawal_requests
+            columns:
+              - column:
+                  name: account_id
+
+        - createIndex:
+            indexName: idx_withdrawal_requests_status
+            tableName: withdrawal_requests
+            columns:
+              - column:
+                  name: status
+
+        - createIndex:
+            indexName: idx_withdrawal_requests_expires_at
+            tableName: withdrawal_requests
+            columns:
+              - column:
+                  name: expires_at

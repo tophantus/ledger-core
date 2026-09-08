@@ -89,3 +89,7 @@ databaseChangeLog:
       file: db/changelog/044-update-interest-runs.yaml
   - include:
       file: db/changelog/045-add-version-to-transfer-intents.yaml
+  - include:
+      file: db/changelog/046-create-withdrawal-requests.yaml
+  - include:
+      file: db/changelog/047-create-withdrawal-intents.yaml

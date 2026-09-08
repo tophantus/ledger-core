@@ -1,0 +1,129 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 047-create-withdrawal-intents
+      author: tu
+
+      changes:
+
+        - createTable:
+            tableName: withdrawal_intents
+            columns:
+
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                    primaryKeyName: pk_withdrawal_intents
+
+              - column:
+                  name: withdrawal_request_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: user_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: account_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: amount
+                  type: NUMERIC(19,4)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: currency
+                  type: VARCHAR(3)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: withdrawal_code_hash
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: status
+                  type: VARCHAR(20)
+                  defaultValue: READY
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: expires_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: completed_at
+                  type: TIMESTAMP WITH TIME ZONE
+
+              - column:
+                  name: transaction_id
+                  type: UUID
+
+              - column:
+                  name: version
+                  type: BIGINT
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+
+        - addUniqueConstraint:
+            tableName: withdrawal_intents
+            columnNames: withdrawal_request_id
+            constraintName: uk_withdrawal_intents_request_id
+
+        - createIndex:
+            indexName: idx_withdrawal_intents_user_id
+            tableName: withdrawal_intents
+            columns:
+              - column:
+                  name: user_id
+
+        - createIndex:
+            indexName: idx_withdrawal_intents_account_id
+            tableName: withdrawal_intents
+            columns:
+              - column:
+                  name: account_id
+
+        - createIndex:
+            indexName: idx_withdrawal_intents_status
+            tableName: withdrawal_intents
+            columns:
+              - column:
+                  name: status
+
+        - createIndex:
+            indexName: idx_withdrawal_intents_expires_at
+            tableName: withdrawal_intents
+            columns:
+              - column:
+                  name: expires_at
+
+        - createIndex:
+            indexName: idx_withdrawal_intents_transaction_id
+            tableName: withdrawal_intents
+            columns:
+              - column:
+                  name: transaction_id
