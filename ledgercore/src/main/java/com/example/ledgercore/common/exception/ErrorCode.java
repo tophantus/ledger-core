@@ -443,6 +443,14 @@ public enum ErrorCode {
             HttpStatus.NOT_FOUND
     ),
 
+    // ATM Terminal
+
+    ATM_TERMINAL_ALREADY_EXISTS(
+            "WITHDRAWAL_014",
+            "ATM terminal already exists",
+            HttpStatus.CONFLICT
+    ),
+
     // System
 
     INTERNAL_ERROR(
