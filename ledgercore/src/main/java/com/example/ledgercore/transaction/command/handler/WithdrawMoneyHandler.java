@@ -65,6 +65,12 @@ public class WithdrawMoneyHandler
                         command.sourceAccountId()
                 );
 
+        if (userId != withdrawInfo.userId()) {
+            throw new BusinessException(
+                    ErrorCode.ACCESS_DENIED
+            );
+        }
+
         validateWithdraw(
                 command,
                 withdrawInfo
@@ -133,7 +139,7 @@ public class WithdrawMoneyHandler
             );
         }
 
-        if (withdrawInfo.balance()
+        if (withdrawInfo.availableBalance()
                 .compareTo(command.amount()) < 0) {
 
             throw new BusinessException(

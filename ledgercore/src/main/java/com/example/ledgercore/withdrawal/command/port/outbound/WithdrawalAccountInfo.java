@@ -5,6 +5,7 @@ import java.util.UUID;
 
 public record WithdrawalAccountInfo(
         UUID accountId,
+        UUID userId,
         String currency,
         BigDecimal balance
 ) {

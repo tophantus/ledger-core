@@ -211,7 +211,7 @@ public class ConfirmTransferExecutionService {
             );
         }
 
-        if (transferInfo.sourceBalance()
+        if (transferInfo.sourceAvailableBalance()
                 .compareTo(intent.getAmount()) < 0) {
 
             throw new BusinessException(

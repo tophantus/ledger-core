@@ -1,6 +1,7 @@
 package com.example.ledgercore.account.query.handler;
 
 import com.example.ledgercore.account.entity.Account;
+import com.example.ledgercore.account.enums.AccountStatus;
 import com.example.ledgercore.account.query.dto.AccountWithdrawInfo;
 import com.example.ledgercore.account.query.port.inbound.GetWithdrawAccountInfoUseCase;
 import com.example.ledgercore.account.query.repository.AccountQueryRepository;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Service
@@ -22,12 +24,11 @@ public class GetWithdrawAccountInfoHandler
     @Override
     @Transactional(readOnly = true)
     public AccountWithdrawInfo execute(
-            UUID userId,
             UUID accountId
     ) {
         Account account =
                 accountQueryRepository
-                        .findByIdAndUserId(accountId, userId)
+                        .findById(accountId)
                         .orElseThrow(() ->
                                 new BusinessException(
                                         ErrorCode.ACCOUNT_NOT_FOUND
@@ -35,16 +36,21 @@ public class GetWithdrawAccountInfoHandler
                         );
 
         if (account.getStatus()
-                != com.example.ledgercore.account.enums.AccountStatus.ACTIVE) {
+                != AccountStatus.ACTIVE) {
             throw new BusinessException(
                     ErrorCode.ACCOUNT_NOT_ACTIVE
             );
         }
 
+        BigDecimal availableBalance =
+                account.getBalance()
+                        .subtract(account.getHoldAmount());
+
         return new AccountWithdrawInfo(
                 account.getId(),
+                account.getUserId(),
                 account.getCurrency(),
-                account.getBalance()
+                availableBalance
         );
     }
 }

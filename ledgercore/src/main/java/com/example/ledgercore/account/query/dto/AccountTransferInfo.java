@@ -7,6 +7,6 @@ public record AccountTransferInfo(
         UUID sourceAccountId,
         UUID destinationAccountId,
         String currency,
-        BigDecimal sourceBalance
+        BigDecimal sourceAvailableBalance
 ) {
 }

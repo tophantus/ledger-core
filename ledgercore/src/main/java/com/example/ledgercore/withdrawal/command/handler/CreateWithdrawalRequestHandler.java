@@ -38,9 +38,14 @@ public class CreateWithdrawalRequestHandler
 
         WithdrawalAccountInfo account =
                 withdrawalAccountPort.getWithdrawalInfo(
-                        command.userId(),
                         command.accountId()
                 );
+
+        if (!account.userId().equals(command.userId())) {
+            throw new BusinessException(
+                    ErrorCode.ACCESS_DENIED
+            );
+        }
 
         if (!account.currency().equals(command.currency())) {
             throw new BusinessException(

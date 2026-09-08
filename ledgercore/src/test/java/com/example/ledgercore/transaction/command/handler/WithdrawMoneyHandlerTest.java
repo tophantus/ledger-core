@@ -668,6 +668,7 @@ class WithdrawMoneyHandlerTest {
         )).thenReturn(
                 new AccountWithdrawPort.WithdrawAccountInfo(
                         accountId,
+                        userId,
                         currency,
                         balance
                 )

@@ -7,7 +7,6 @@ import java.util.UUID;
 public interface GetWithdrawAccountInfoUseCase {
 
     AccountWithdrawInfo execute(
-            UUID userId,
             UUID accountId
     );
 }

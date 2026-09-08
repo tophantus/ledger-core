@@ -148,7 +148,7 @@ public class CreateTransferIntentHandler
             );
         }
 
-        if (transferInfo.sourceBalance()
+        if (transferInfo.sourceAvailableBalance()
                 .compareTo(command.amount()) < 0) {
 
             throw new BusinessException(
