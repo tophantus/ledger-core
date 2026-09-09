@@ -38,4 +38,8 @@ public interface WithdrawalIntentCommandRepository
             @Param("now") Instant now,
             @Param("limit") int limit
     );
+
+    Optional<WithdrawalIntent> findByWithdrawalReference(
+            String withdrawalReference
+    );
 }

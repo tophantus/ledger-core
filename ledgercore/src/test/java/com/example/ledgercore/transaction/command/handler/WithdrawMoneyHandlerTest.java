@@ -22,7 +22,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -33,23 +32,27 @@ import static org.mockito.Mockito.*;
 class WithdrawMoneyHandlerTest {
 
     @Mock
-    private TransactionCommandRepository transactionCommandRepository;
+    private TransactionCommandRepository
+            transactionCommandRepository;
 
     @Mock
-    private AccountWithdrawPort accountWithdrawPort;
+    private AccountWithdrawPort
+            accountWithdrawPort;
 
     @Mock
-    private LedgerWithdrawPort ledgerWithdrawPort;
+    private LedgerWithdrawPort
+            ledgerWithdrawPort;
 
     @Mock
-    private TransactionEventPort transactionEventPort;
+    private TransactionEventPort
+            transactionEventPort;
 
     @Mock
-    private BusinessDayPort businessDayPort;
+    private BusinessDayPort
+            businessDayPort;
 
     private WithdrawMoneyHandler handler;
 
-    private UUID userId;
     private UUID accountId;
     private UUID transactionId;
 
@@ -66,7 +69,6 @@ class WithdrawMoneyHandlerTest {
                 businessDayPort
         );
 
-        userId = UUID.randomUUID();
         accountId = UUID.randomUUID();
         transactionId = UUID.randomUUID();
     }
@@ -82,45 +84,59 @@ class WithdrawMoneyHandlerTest {
                         "Cash withdrawal"
                 );
 
-        mockNewWithdraw(
-                "WD-001",
-                new BigDecimal("1000"),
-                "VND"
-        );
-
         when(businessDayPort.getCurrentBusinessDate())
                 .thenReturn(BUSINESS_DATE);
 
         mockSaveTransaction();
 
         TransactionResponse response =
-                handler.execute(userId, command);
+                handler.execute(command);
 
         assertNotNull(response);
-        assertEquals(transactionId, response.id());
-        assertEquals("WD-001", response.reference());
+
+        assertEquals(
+                transactionId,
+                response.id()
+        );
+
+        assertEquals(
+                "WD-001",
+                response.reference()
+        );
+
         assertEquals(
                 TransactionType.WITHDRAW,
                 response.type()
         );
+
         assertEquals(
                 TransactionStatus.COMPLETED,
                 response.status()
         );
+
         assertEquals(
                 accountId,
                 response.sourceAccountId()
         );
+
         assertEquals(
                 new BigDecimal("100"),
                 response.amount()
         );
-        assertEquals("VND", response.currency());
+
+        assertEquals(
+                "VND",
+                response.currency()
+        );
+
         assertEquals(
                 "Cash withdrawal",
                 response.description()
         );
-        assertNotNull(response.completedAt());
+
+        assertNotNull(
+                response.completedAt()
+        );
 
         ArgumentCaptor<MoneyTransaction> captor =
                 ArgumentCaptor.forClass(
@@ -134,13 +150,43 @@ class WithdrawMoneyHandlerTest {
                 captor.getValue();
 
         assertEquals(
-                BUSINESS_DATE,
-                transaction.getBusinessDate()
+                "WD-001",
+                transaction.getReference()
+        );
+
+        assertEquals(
+                TransactionType.WITHDRAW,
+                transaction.getType()
         );
 
         assertEquals(
                 TransactionStatus.COMPLETED,
                 transaction.getStatus()
+        );
+
+        assertEquals(
+                BUSINESS_DATE,
+                transaction.getBusinessDate()
+        );
+
+        assertEquals(
+                accountId,
+                transaction.getSourceAccountId()
+        );
+
+        assertEquals(
+                new BigDecimal("100"),
+                transaction.getAmount()
+        );
+
+        assertEquals(
+                "VND",
+                transaction.getCurrency()
+        );
+
+        assertEquals(
+                "Cash withdrawal",
+                transaction.getDescription()
         );
 
         verify(accountWithdrawPort)
@@ -178,12 +224,6 @@ class WithdrawMoneyHandlerTest {
                         "WD-002",
                         null
                 );
-
-        mockNewWithdraw(
-                "WD-002",
-                new BigDecimal("1000"),
-                "VND"
-        );
 
         when(businessDayPort.getCurrentBusinessDate())
                 .thenReturn(BUSINESS_DATE);
@@ -235,299 +275,26 @@ class WithdrawMoneyHandlerTest {
         }).when(transactionCommandRepository)
                 .save(any(MoneyTransaction.class));
 
-        handler.execute(userId, command);
+        handler.execute(command);
 
         verify(transactionCommandRepository)
                 .save(any(MoneyTransaction.class));
-    }
-
-    @Test
-    void shouldReturnExistingWithdrawTransaction() {
-
-        MoneyTransaction existing =
-                MoneyTransaction.builder()
-                        .id(transactionId)
-                        .reference("WD-003")
-                        .type(TransactionType.WITHDRAW)
-                        .status(TransactionStatus.COMPLETED)
-                        .sourceAccountId(accountId)
-                        .amount(new BigDecimal("100"))
-                        .currency("VND")
-                        .build();
-
-        when(transactionCommandRepository.findByReference(
-                "WD-003"
-        )).thenReturn(Optional.of(existing));
-
-        WithdrawMoneyCommand command =
-                command(
-                        "100",
-                        "VND",
-                        "WD-003",
-                        null
-                );
-
-        doNothing().when(accountWithdrawPort)
-                .verifySourceAccountAccess(
-                        userId,
-                        accountId
-                );
-
-        TransactionResponse response =
-                handler.execute(
-                        userId,
-                        command
-                );
-
-        assertEquals(
-                transactionId,
-                response.id()
-        );
-
-        assertEquals(
-                "WD-003",
-                response.reference()
-        );
-
-        assertEquals(
-                TransactionType.WITHDRAW,
-                response.type()
-        );
-
-        assertEquals(
-                TransactionStatus.COMPLETED,
-                response.status()
-        );
 
         verify(accountWithdrawPort)
-                .verifySourceAccountAccess(
-                        userId,
-                        accountId
+                .withdraw(
+                        accountId,
+                        new BigDecimal("100"),
+                        BUSINESS_DATE
                 );
 
-        verify(accountWithdrawPort, never())
-                .getWithdrawInfo(any(), any());
-
-        verify(accountWithdrawPort, never())
-                .withdraw(any(), any(), any());
-
-        verify(ledgerWithdrawPort, never())
+        verify(ledgerWithdrawPort)
                 .recordWithdraw(
-                        any(),
-                        any(),
-                        any(),
-                        any(),
-                        any()
-                );
-
-        verify(transactionCommandRepository, never())
-                .save(any());
-
-        verifyNoInteractions(
-                businessDayPort,
-                transactionEventPort
-        );
-    }
-
-    @Test
-    void shouldThrowWhenExistingReferenceBelongsToAnotherTransactionType() {
-
-        MoneyTransaction existing =
-                MoneyTransaction.builder()
-                        .id(transactionId)
-                        .reference("REF-001")
-                        .type(TransactionType.DEPOSIT)
-                        .status(TransactionStatus.COMPLETED)
-                        .build();
-
-        when(transactionCommandRepository.findByReference(
-                "REF-001"
-        )).thenReturn(Optional.of(existing));
-
-        WithdrawMoneyCommand command =
-                command(
-                        "100",
+                        transactionId,
+                        accountId,
+                        new BigDecimal("100"),
                         "VND",
-                        "REF-001",
-                        null
+                        BUSINESS_DATE
                 );
-
-        BusinessException exception =
-                assertThrows(
-                        BusinessException.class,
-                        () -> handler.execute(
-                                userId,
-                                command
-                        )
-                );
-
-        assertEquals(
-                ErrorCode.TRANSACTION_REFERENCE_ALREADY_EXISTS,
-                exception.getErrorCode()
-        );
-
-        verifyNoInteractions(
-                accountWithdrawPort,
-                ledgerWithdrawPort,
-                transactionEventPort,
-                businessDayPort
-        );
-    }
-
-    @Test
-    void shouldThrowWhenAmountIsZero() {
-
-        WithdrawMoneyCommand command =
-                command(
-                        "0",
-                        "VND",
-                        "WD-004",
-                        null
-                );
-
-        BusinessException exception =
-                assertThrows(
-                        BusinessException.class,
-                        () -> handler.execute(
-                                userId,
-                                command
-                        )
-                );
-
-        assertEquals(
-                ErrorCode.INVALID_WITHDRAW_AMOUNT,
-                exception.getErrorCode()
-        );
-
-        verifyNoInteractions(
-                transactionCommandRepository,
-                accountWithdrawPort,
-                ledgerWithdrawPort,
-                transactionEventPort,
-                businessDayPort
-        );
-    }
-
-    @Test
-    void shouldThrowWhenAmountIsNegative() {
-
-        WithdrawMoneyCommand command =
-                command(
-                        "-100",
-                        "VND",
-                        "WD-005",
-                        null
-                );
-
-        BusinessException exception =
-                assertThrows(
-                        BusinessException.class,
-                        () -> handler.execute(
-                                userId,
-                                command
-                        )
-                );
-
-        assertEquals(
-                ErrorCode.INVALID_WITHDRAW_AMOUNT,
-                exception.getErrorCode()
-        );
-
-        verifyNoInteractions(
-                transactionCommandRepository,
-                accountWithdrawPort,
-                ledgerWithdrawPort,
-                transactionEventPort,
-                businessDayPort
-        );
-    }
-
-    @Test
-    void shouldThrowWhenCurrencyDoesNotMatch() {
-
-        WithdrawMoneyCommand command =
-                command(
-                        "100",
-                        "USD",
-                        "WD-006",
-                        null
-                );
-
-        mockNewWithdraw(
-                "WD-006",
-                new BigDecimal("1000"),
-                "VND"
-        );
-
-        BusinessException exception =
-                assertThrows(
-                        BusinessException.class,
-                        () -> handler.execute(
-                                userId,
-                                command
-                        )
-                );
-
-        assertEquals(
-                ErrorCode.TRANSACTION_CURRENCY_MISMATCH,
-                exception.getErrorCode()
-        );
-
-        verify(transactionCommandRepository, never())
-                .save(any());
-
-        verify(accountWithdrawPort, never())
-                .withdraw(any(), any(), any());
-
-        verifyNoInteractions(
-                ledgerWithdrawPort,
-                transactionEventPort,
-                businessDayPort
-        );
-    }
-
-    @Test
-    void shouldThrowWhenBalanceIsInsufficient() {
-
-        WithdrawMoneyCommand command =
-                command(
-                        "1000",
-                        "VND",
-                        "WD-007",
-                        null
-                );
-
-        mockNewWithdraw(
-                "WD-007",
-                new BigDecimal("500"),
-                "VND"
-        );
-
-        BusinessException exception =
-                assertThrows(
-                        BusinessException.class,
-                        () -> handler.execute(
-                                userId,
-                                command
-                        )
-                );
-
-        assertEquals(
-                ErrorCode.ACCOUNT_INSUFFICIENT_BALANCE,
-                exception.getErrorCode()
-        );
-
-        verify(transactionCommandRepository, never())
-                .save(any());
-
-        verify(accountWithdrawPort, never())
-                .withdraw(any(), any(), any());
-
-        verifyNoInteractions(
-                ledgerWithdrawPort,
-                transactionEventPort,
-                businessDayPort
-        );
     }
 
     @Test
@@ -537,25 +304,16 @@ class WithdrawMoneyHandlerTest {
                 command(
                         "100",
                         "VND",
-                        "WD-008",
+                        "WD-003",
                         "withdraw"
                 );
-
-        mockNewWithdraw(
-                "WD-008",
-                new BigDecimal("1000"),
-                "VND"
-        );
 
         when(businessDayPort.getCurrentBusinessDate())
                 .thenReturn(BUSINESS_DATE);
 
         mockSaveTransaction();
 
-        handler.execute(
-                userId,
-                command
-        );
+        handler.execute(command);
 
         ArgumentCaptor<MoneyTransaction> captor =
                 ArgumentCaptor.forClass(
@@ -573,6 +331,9 @@ class WithdrawMoneyHandlerTest {
                 transaction.getBusinessDate()
         );
 
+        verify(businessDayPort)
+                .getCurrentBusinessDate();
+
         verify(ledgerWithdrawPort)
                 .recordWithdraw(
                         transactionId,
@@ -584,31 +345,22 @@ class WithdrawMoneyHandlerTest {
     }
 
     @Test
-    void shouldPublishCompletedEvent() {
+    void shouldPublishWithdrawCompletedEvent() {
 
         WithdrawMoneyCommand command =
                 command(
                         "100",
                         "VND",
-                        "WD-009",
+                        "WD-004",
                         "withdraw"
                 );
-
-        mockNewWithdraw(
-                "WD-009",
-                new BigDecimal("1000"),
-                "VND"
-        );
 
         when(businessDayPort.getCurrentBusinessDate())
                 .thenReturn(BUSINESS_DATE);
 
         mockSaveTransaction();
 
-        handler.execute(
-                userId,
-                command
-        );
+        handler.execute(command);
 
         ArgumentCaptor<WithdrawCompletedEvent> captor =
                 ArgumentCaptor.forClass(
@@ -629,7 +381,7 @@ class WithdrawMoneyHandlerTest {
         );
 
         assertEquals(
-                "WD-009",
+                "WD-004",
                 event.reference()
         );
 
@@ -653,25 +405,144 @@ class WithdrawMoneyHandlerTest {
         );
     }
 
-    private void mockNewWithdraw(
-            String reference,
-            BigDecimal balance,
-            String currency
-    ) {
-        when(transactionCommandRepository.findByReference(
-                reference
-        )).thenReturn(Optional.empty());
+    @Test
+    void shouldThrowWhenAmountIsZero() {
 
-        when(accountWithdrawPort.getWithdrawInfo(
-                userId,
-                accountId
-        )).thenReturn(
-                new AccountWithdrawPort.WithdrawAccountInfo(
+        WithdrawMoneyCommand command =
+                command(
+                        "0",
+                        "VND",
+                        "WD-005",
+                        null
+                );
+
+        BusinessException exception =
+                assertThrows(
+                        BusinessException.class,
+                        () -> handler.execute(command)
+                );
+
+        assertEquals(
+                ErrorCode.INVALID_WITHDRAW_AMOUNT,
+                exception.getErrorCode()
+        );
+
+        verifyNoInteractions(
+                transactionCommandRepository,
+                accountWithdrawPort,
+                ledgerWithdrawPort,
+                transactionEventPort,
+                businessDayPort
+        );
+    }
+
+    @Test
+    void shouldThrowWhenAmountIsNegative() {
+
+        WithdrawMoneyCommand command =
+                command(
+                        "-100",
+                        "VND",
+                        "WD-006",
+                        null
+                );
+
+        BusinessException exception =
+                assertThrows(
+                        BusinessException.class,
+                        () -> handler.execute(command)
+                );
+
+        assertEquals(
+                ErrorCode.INVALID_WITHDRAW_AMOUNT,
+                exception.getErrorCode()
+        );
+
+        verifyNoInteractions(
+                transactionCommandRepository,
+                accountWithdrawPort,
+                ledgerWithdrawPort,
+                transactionEventPort,
+                businessDayPort
+        );
+    }
+
+    @Test
+    void shouldCallDependenciesInCorrectOrder() {
+
+        WithdrawMoneyCommand command =
+                command(
+                        "100",
+                        "VND",
+                        "WD-007",
+                        "withdraw"
+                );
+
+        when(businessDayPort.getCurrentBusinessDate())
+                .thenReturn(BUSINESS_DATE);
+
+        mockSaveTransaction();
+
+        handler.execute(command);
+
+        var inOrder = inOrder(
+                businessDayPort,
+                transactionCommandRepository,
+                accountWithdrawPort,
+                ledgerWithdrawPort,
+                transactionEventPort
+        );
+
+        inOrder.verify(businessDayPort)
+                .getCurrentBusinessDate();
+
+        inOrder.verify(transactionCommandRepository)
+                .save(any(MoneyTransaction.class));
+
+        inOrder.verify(accountWithdrawPort)
+                .withdraw(
                         accountId,
-                        userId,
-                        currency,
-                        balance
-                )
+                        new BigDecimal("100"),
+                        BUSINESS_DATE
+                );
+
+        inOrder.verify(ledgerWithdrawPort)
+                .recordWithdraw(
+                        transactionId,
+                        accountId,
+                        new BigDecimal("100"),
+                        "VND",
+                        BUSINESS_DATE
+                );
+
+        inOrder.verify(transactionEventPort)
+                .publishWithdrawCompleted(
+                        any(WithdrawCompletedEvent.class)
+                );
+    }
+
+    @Test
+    void shouldNotInteractWithDependenciesWhenAmountIsInvalid() {
+
+        WithdrawMoneyCommand command =
+                command(
+                        "-1",
+                        "VND",
+                        "WD-008",
+                        null
+                );
+
+        assertThrows(
+                BusinessException.class,
+                () -> handler.execute(command)
+        );
+
+        verifyNoInteractions(
+                transactionCommandRepository,
+                accountWithdrawPort,
+                ledgerWithdrawPort,
+                transactionEventPort,
+                businessDayPort
         );
     }
 

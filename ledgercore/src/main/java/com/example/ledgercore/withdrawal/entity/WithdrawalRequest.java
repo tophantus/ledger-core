@@ -101,7 +101,7 @@ public class WithdrawalRequest {
     }
 
     public boolean isExpired(Instant now) {
-        return now.isAfter(expiresAt);
+        return !now.isBefore(expiresAt);
     }
 
     public void confirm(Instant now) {

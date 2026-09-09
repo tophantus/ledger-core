@@ -337,6 +337,42 @@ public enum ErrorCode {
             HttpStatus.BAD_REQUEST
     ),
 
+    WITHDRAWAL_INTENT_NOT_FOUND(
+            "WITHDRAWAL_004",
+            "Withdrawal intent not found",
+            HttpStatus.NOT_FOUND
+    ),
+
+    WITHDRAWAL_INTENT_NOT_READY(
+            "WITHDRAWAL_005",
+            "Withdrawal intent is not ready",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    WITHDRAWAL_INTENT_EXPIRED(
+            "WITHDRAWAL_006",
+            "Withdrawal intent has expired",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    WITHDRAWAL_CODE_INVALID(
+            "WITHDRAWAL_007",
+            "Withdrawal code is invalid",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    WITHDRAWAL_AMOUNT_MISMATCH(
+            "WITHDRAWAL_008",
+            "Withdrawal amount does not match the withdrawal intent",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    WITHDRAWAL_ALREADY_EXECUTED(
+            "WITHDRAWAL_009",
+            "Withdrawal has already been executed",
+            HttpStatus.CONFLICT
+    ),
+
     // Webhook
 
     INVALID_WEBHOOK_URL(

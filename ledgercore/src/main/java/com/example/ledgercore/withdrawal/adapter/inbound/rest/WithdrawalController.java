@@ -4,12 +4,11 @@ import com.example.ledgercore.auth.security.AuthPrincipal;
 import com.example.ledgercore.common.response.ApiResponse;
 import com.example.ledgercore.withdrawal.adapter.inbound.rest.dto.ConfirmWithdrawalRequest;
 import com.example.ledgercore.withdrawal.adapter.inbound.rest.dto.CreateWithdrawalRequest;
-import com.example.ledgercore.withdrawal.command.dto.ConfirmWithdrawalRequestCommand;
-import com.example.ledgercore.withdrawal.command.dto.ConfirmWithdrawalRequestResponse;
-import com.example.ledgercore.withdrawal.command.dto.CreateWithdrawalRequestCommand;
-import com.example.ledgercore.withdrawal.command.dto.WithdrawalRequestResponse;
+import com.example.ledgercore.withdrawal.adapter.inbound.rest.dto.ExecuteWithdrawalRequest;
+import com.example.ledgercore.withdrawal.command.dto.*;
 import com.example.ledgercore.withdrawal.command.port.inbound.ConfirmWithdrawalRequestUseCase;
 import com.example.ledgercore.withdrawal.command.port.inbound.CreateWithdrawalRequestUseCase;
+import com.example.ledgercore.withdrawal.command.port.inbound.ExecuteWithdrawalUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -34,6 +33,9 @@ public class WithdrawalController {
 
     private final ConfirmWithdrawalRequestUseCase
             confirmWithdrawalRequestUseCase;
+
+    private final ExecuteWithdrawalUseCase
+            executeWithdrawalUseCase;
 
     @PostMapping("/requests")
     @Operation(
@@ -85,6 +87,35 @@ public class WithdrawalController {
                 ApiResponse.success(
                         response,
                         "Withdrawal request confirmed successfully"
+                )
+        );
+    }
+
+    @PostMapping("/execute")
+    @Operation(
+            summary = "Execute withdrawal",
+            description = "Execute a confirmed withdrawal intent through an authenticated ATM terminal"
+    )
+    public ResponseEntity<ApiResponse<ExecuteWithdrawalResponse>> executeWithdrawal(
+            @RequestHeader("X-ATM-Terminal") String terminalCode,
+            @RequestHeader("X-ATM-Credential") String credential,
+            @Valid @RequestBody ExecuteWithdrawalRequest request
+    ) {
+        ExecuteWithdrawalResponse response =
+                executeWithdrawalUseCase.execute(
+                        new ExecuteWithdrawalCommand(
+                                terminalCode,
+                                credential,
+                                request.withdrawalReference(),
+                                request.withdrawalCode(),
+                                request.amount()
+                        )
+                );
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        response,
+                        "Withdrawal executed successfully"
                 )
         );
     }
