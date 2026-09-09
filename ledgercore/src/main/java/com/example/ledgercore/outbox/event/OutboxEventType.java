@@ -8,6 +8,8 @@ import com.example.ledgercore.transaction.config.TransactionRabbitConfig;
 import com.example.ledgercore.transaction.event.DepositCompletedEvent;
 import com.example.ledgercore.transaction.event.TransferCompletedEvent;
 import com.example.ledgercore.transaction.event.WithdrawCompletedEvent;
+import com.example.ledgercore.withdrawal.config.WithdrawalRabbitConfig;
+import com.example.ledgercore.withdrawal.event.WithdrawalNotificationEvent;
 import lombok.Getter;
 
 @Getter
@@ -23,6 +25,19 @@ public enum OutboxEventType {
             OtpNotificationEvent.class,
             OtpRabbitConfig.OTP_EXCHANGE,
             OtpRabbitConfig.OTP_NOTIFICATION_ROUTING_KEY
+    ),
+
+    // =========================
+    // WITHDRAWAL
+    // =========================
+
+    WITHDRAWAL_CODE_NOTIFICATION_REQUESTED(
+            "WITHDRAWAL_CODE_NOTIFICATION_REQUESTED",
+            OutboxAggregateType.WITHDRAWAL,
+            WithdrawalNotificationEvent.class,
+            WithdrawalRabbitConfig.WITHDRAWAL_EXCHANGE,
+            WithdrawalRabbitConfig
+                    .WITHDRAWAL_CODE_NOTIFICATION_ROUTING_KEY
     ),
 
     // =========================

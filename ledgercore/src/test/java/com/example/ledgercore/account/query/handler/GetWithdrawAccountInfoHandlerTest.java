@@ -45,27 +45,35 @@ class GetWithdrawAccountInfoHandlerTest {
         BigDecimal balance =
                 new BigDecimal("1000000");
 
+        BigDecimal holdAmount =
+                new BigDecimal("200000");
+
+        BigDecimal expectedAvailableBalance =
+                new BigDecimal("800000");
+
         Account account = Account.builder()
                 .id(accountId)
                 .userId(userId)
                 .currency("VND")
                 .balance(balance)
+                .holdAmount(holdAmount)
                 .status(AccountStatus.ACTIVE)
                 .build();
 
-        when(accountQueryRepository
-                .findByIdAndUserId(accountId, userId))
+        when(accountQueryRepository.findById(accountId))
                 .thenReturn(Optional.of(account));
 
         AccountWithdrawInfo response =
-                handler.execute(
-                        userId,
-                        accountId
-                );
+                handler.execute(accountId);
 
         assertEquals(
                 accountId,
                 response.accountId()
+        );
+
+        assertEquals(
+                userId,
+                response.userId()
         );
 
         assertEquals(
@@ -74,32 +82,25 @@ class GetWithdrawAccountInfoHandlerTest {
         );
 
         assertEquals(
-                balance,
-                response.balance()
+                expectedAvailableBalance,
+                response.availableBalance()
         );
 
         verify(accountQueryRepository)
-                .findByIdAndUserId(
-                        accountId,
-                        userId
-                );
+                .findById(accountId);
 
         verifyNoMoreInteractions(accountQueryRepository);
     }
 
     @Test
     void shouldThrowWhenAccountNotFound() {
-        when(accountQueryRepository
-                .findByIdAndUserId(accountId, userId))
+        when(accountQueryRepository.findById(accountId))
                 .thenReturn(Optional.empty());
 
         BusinessException exception =
                 assertThrows(
                         BusinessException.class,
-                        () -> handler.execute(
-                                userId,
-                                accountId
-                        )
+                        () -> handler.execute(accountId)
                 );
 
         assertEquals(
@@ -108,10 +109,7 @@ class GetWithdrawAccountInfoHandlerTest {
         );
 
         verify(accountQueryRepository)
-                .findByIdAndUserId(
-                        accountId,
-                        userId
-                );
+                .findById(accountId);
 
         verifyNoMoreInteractions(accountQueryRepository);
     }
@@ -123,20 +121,17 @@ class GetWithdrawAccountInfoHandlerTest {
                 .userId(userId)
                 .currency("VND")
                 .balance(new BigDecimal("1000000"))
+                .holdAmount(new BigDecimal("200000"))
                 .status(AccountStatus.BLOCKED)
                 .build();
 
-        when(accountQueryRepository
-                .findByIdAndUserId(accountId, userId))
+        when(accountQueryRepository.findById(accountId))
                 .thenReturn(Optional.of(account));
 
         BusinessException exception =
                 assertThrows(
                         BusinessException.class,
-                        () -> handler.execute(
-                                userId,
-                                accountId
-                        )
+                        () -> handler.execute(accountId)
                 );
 
         assertEquals(
@@ -145,10 +140,7 @@ class GetWithdrawAccountInfoHandlerTest {
         );
 
         verify(accountQueryRepository)
-                .findByIdAndUserId(
-                        accountId,
-                        userId
-                );
+                .findById(accountId);
 
         verifyNoMoreInteractions(accountQueryRepository);
     }

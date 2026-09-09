@@ -30,6 +30,8 @@ export function useCreateAccount() {
             productId: account.productId,
             currency: account.currency,
             balance: account.balance,
+            availableBalance: account.availableBalance,
+            holdAmount: account.holdAmount,
             status: account.status,
         };
 

@@ -12,6 +12,8 @@ public enum ErrorCode {
             HttpStatus.BAD_REQUEST
     ),
 
+    // User
+
     USER_NOT_FOUND(
             "USER_001",
             "User not found",
@@ -36,11 +38,15 @@ public enum ErrorCode {
             HttpStatus.NOT_FOUND
     ),
 
+    // Role
+
     ROLE_NOT_FOUND(
             "ROLE_001",
             "Role not found",
             HttpStatus.NOT_FOUND
     ),
+
+    // OTP
 
     OTP_INVALID(
             "OTP_001",
@@ -59,6 +65,8 @@ public enum ErrorCode {
             "OTP verification is locked",
             HttpStatus.CONFLICT
     ),
+
+    // Account
 
     ACCOUNT_NOT_FOUND(
             "ACCOUNT_001",
@@ -103,6 +111,48 @@ public enum ErrorCode {
             HttpStatus.CONFLICT
     ),
 
+    ACCOUNT_CURRENCY_MISMATCH(
+            "ACCOUNT_008",
+            "Account currency mismatch",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    ACCOUNT_HOLD_AMOUNT_INSUFFICIENT(
+            "ACCOUNT_009",
+            "Account hold amount is insufficient",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    // Account Daily Balance
+
+    ACCOUNT_DAILY_BALANCE_NOT_FOUND(
+            "ACCOUNT_010",
+            "Account daily balance not found",
+            HttpStatus.NOT_FOUND
+    ),
+
+    // Hold
+
+    ACCOUNT_HOLD_NOT_FOUND(
+            "HOLD_001",
+            "Account hold not found",
+            HttpStatus.NOT_FOUND
+    ),
+
+    ACCOUNT_HOLD_NOT_ACTIVE(
+            "HOLD_002",
+            "Account hold is not active",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    INVALID_HOLD_AMOUNT(
+            "HOLD_003",
+            "Hold amount must be greater than zero",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    // Product
+
     PRODUCT_NOT_FOUND(
             "PRODUCT_001",
             "Product not found",
@@ -114,6 +164,8 @@ public enum ErrorCode {
             "Product is not active",
             HttpStatus.CONFLICT
     ),
+
+    // Business Day
 
     BUSINESS_DAY_NOT_FOUND(
             "BUSINESS_DAY_001",
@@ -151,14 +203,6 @@ public enum ErrorCode {
             HttpStatus.NOT_FOUND
     ),
 
-    // Account Daily Balance
-
-    ACCOUNT_DAILY_BALANCE_NOT_FOUND(
-            "ACCOUNT_010",
-            "Account daily balance not found",
-            HttpStatus.NOT_FOUND
-    ),
-
     // Interest
 
     INTEREST_CONFIG_NOT_FOUND(
@@ -168,25 +212,19 @@ public enum ErrorCode {
     ),
 
     INTEREST_RUN_NOT_FOUND(
-            "INTEREST_008",
+            "INTEREST_002",
             "Interest run not found",
             HttpStatus.NOT_FOUND
     ),
 
-    INTEREST_RUN_ALREADY_EXISTS(
-            "INTEREST_009",
-            "Interest run already exists",
-            HttpStatus.CONFLICT
-    ),
-
     INVALID_INTEREST_RUN_STATUS(
-            "INTEREST_010",
+            "INTEREST_003",
             "Invalid interest run status",
             HttpStatus.CONFLICT
     ),
 
     INTEREST_RUN_ALREADY_COMPLETED(
-            "INTEREST_011",
+            "INTEREST_004",
             "Interest run already completed",
             HttpStatus.CONFLICT
     ),
@@ -279,10 +317,60 @@ public enum ErrorCode {
             HttpStatus.CONFLICT
     ),
 
-    INVALID_CREDENTIALS(
-            "AUTH_001",
-            "Invalid credentials",
-            HttpStatus.UNAUTHORIZED
+    // Withdrawal
+
+    WITHDRAWAL_REQUEST_NOT_FOUND(
+            "WITHDRAWAL_001",
+            "Withdrawal request not found",
+            HttpStatus.NOT_FOUND
+    ),
+
+    WITHDRAWAL_REQUEST_NOT_PENDING(
+            "WITHDRAWAL_002",
+            "Withdrawal request is not pending",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    WITHDRAWAL_REQUEST_EXPIRED(
+            "WITHDRAWAL_003",
+            "Withdrawal request has expired",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    WITHDRAWAL_INTENT_NOT_FOUND(
+            "WITHDRAWAL_004",
+            "Withdrawal intent not found",
+            HttpStatus.NOT_FOUND
+    ),
+
+    WITHDRAWAL_INTENT_NOT_READY(
+            "WITHDRAWAL_005",
+            "Withdrawal intent is not ready",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    WITHDRAWAL_INTENT_EXPIRED(
+            "WITHDRAWAL_006",
+            "Withdrawal intent has expired",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    WITHDRAWAL_CODE_INVALID(
+            "WITHDRAWAL_007",
+            "Withdrawal code is invalid",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    WITHDRAWAL_AMOUNT_MISMATCH(
+            "WITHDRAWAL_008",
+            "Withdrawal amount does not match the withdrawal intent",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    WITHDRAWAL_ALREADY_EXECUTED(
+            "WITHDRAWAL_009",
+            "Withdrawal has already been executed",
+            HttpStatus.CONFLICT
     ),
 
     // Webhook
@@ -315,6 +403,14 @@ public enum ErrorCode {
             "WEBHOOK_005",
             "Webhook endpoint is disabled",
             HttpStatus.CONFLICT
+    ),
+
+    // Authentication and Authorization
+
+    INVALID_CREDENTIALS(
+            "AUTH_001",
+            "Invalid credentials",
+            HttpStatus.UNAUTHORIZED
     ),
 
     USER_NOT_ACTIVE(
@@ -395,6 +491,8 @@ public enum ErrorCode {
             HttpStatus.BAD_REQUEST
     ),
 
+    // Reconciliation
+
     RECONCILIATION_PROCESSOR_NOT_FOUND(
             "RECONCILIATION_001",
             "Reconciliation processor not found",
@@ -406,6 +504,46 @@ public enum ErrorCode {
             "Reconciliation run not found",
             HttpStatus.NOT_FOUND
     ),
+
+    // ATM Terminal
+
+    ATM_TERMINAL_ALREADY_EXISTS(
+            "ATM_001",
+            "ATM terminal already exists",
+            HttpStatus.CONFLICT
+    ),
+
+    ATM_TERMINAL_NOT_FOUND(
+            "ATM_002",
+            "ATM terminal not found",
+            HttpStatus.NOT_FOUND
+    ),
+
+    ATM_TERMINAL_ALREADY_ACTIVE(
+            "ATM_003",
+            "ATM terminal is already active",
+            HttpStatus.CONFLICT
+    ),
+
+    ATM_TERMINAL_ALREADY_INACTIVE(
+            "ATM_004",
+            "ATM terminal is already inactive",
+            HttpStatus.CONFLICT
+    ),
+
+    ATM_TERMINAL_NOT_ACTIVE(
+            "ATM_005",
+            "ATM terminal is not active",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    ATM_AUTHENTICATION_FAILED(
+            "ATM_006",
+            "ATM terminal authentication failed",
+            HttpStatus.UNAUTHORIZED
+    ),
+
+    // System
 
     INTERNAL_ERROR(
             "SYSTEM_001",

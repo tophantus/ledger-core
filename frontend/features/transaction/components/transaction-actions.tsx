@@ -8,9 +8,26 @@ import {useTranslations} from "next-intl";
 
 import {Link} from "@/i18n/routing";
 import {ROUTES} from "@/lib/constants/routes";
+import {useAccountStore} from "@/features/account/stores/account-store";
+import {isAmountGreaterThanZero} from "@/lib/utils/money";
 
 export function TransactionActions() {
     const t = useTranslations("transaction");
+
+    const accounts = useAccountStore(
+        (state) => state.accounts,
+    );
+
+    const hasAvailableAccount = accounts.some(
+        (account) =>
+            isAmountGreaterThanZero(
+                account.availableBalance,
+            ),
+    );
+
+    if (!hasAvailableAccount) {
+        return null;
+    }
 
     return (
         <div className="rounded-lg border border-border bg-surface p-5">

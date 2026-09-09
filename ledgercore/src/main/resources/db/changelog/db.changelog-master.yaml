@@ -87,3 +87,23 @@ databaseChangeLog:
       file: db/changelog/043-create-products-and-use-product-id.yaml
   - include:
       file: db/changelog/044-update-interest-runs.yaml
+  - include:
+      file: db/changelog/045-add-version-to-transfer-intents.yaml
+  - include:
+      file: db/changelog/046-create-withdrawal-requests.yaml
+  - include:
+      file: db/changelog/047-create-withdrawal-intents.yaml
+  - include:
+      file: db/changelog/048-add-hold-amount-to-accounts.yaml
+  - include:
+      file: db/changelog/049-create-withdrawal-executions.yaml
+  - include:
+      file: db/changelog/050-allow-null-started-at-in-interest-runs.yaml
+  - include:
+      file: db/changelog/051-create-atm-terminals.yaml
+  - include:
+      file: db/changelog/052-update-otp-challenges-purpose-constraint.yaml
+  - include:
+      file: db/changelog/053-create-account-holds.yaml
+  - include:
+      file: db/changelog/054-add-hold-id-to-withdrawal-intents.yaml

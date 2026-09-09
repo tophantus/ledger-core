@@ -1,0 +1,17 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 048-add-hold-amount-to-accounts
+      author: ledgercore
+
+      changes:
+
+        - addColumn:
+            tableName: accounts
+            columns:
+              - column:
+                  name: hold_amount
+                  type: NUMERIC(19,4)
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false

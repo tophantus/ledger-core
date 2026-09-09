@@ -50,7 +50,7 @@ public class AccountTransferAdapter
                 info.sourceAccountId(),
                 info.destinationAccountId(),
                 info.currency(),
-                info.sourceBalance()
+                info.sourceAvailableBalance()
         );
     }
 

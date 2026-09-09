@@ -95,7 +95,7 @@ class GetTransferAccountInfoHandlerTest {
 
         assertEquals(
                 new BigDecimal("1000000"),
-                response.sourceBalance()
+                response.sourceAvailableBalance()
         );
 
         verify(accountQueryRepository)

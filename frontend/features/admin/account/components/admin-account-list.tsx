@@ -2,12 +2,14 @@
 
 import {useLocale, useTranslations} from "next-intl";
 
+import {ProductBadge} from "@/features/product/components/product-badge";
 import {useRouter} from "@/i18n/routing";
 import {ROUTES} from "@/lib/constants/routes";
 
-import type {AdminAccount} from "../types/admin-account";
-import {ProductBadge} from "@/features/product/components/product-badge";
+import {getAccountStatusColor} from "@/lib/utils/account";
 import {formatMoney} from "@/lib/utils/currency";
+
+import type {AdminAccount} from "../types/admin-account";
 
 interface AdminAccountListProps {
     accounts: AdminAccount[];
@@ -19,9 +21,7 @@ export function AdminAccountList({
                                      loading,
                                  }: AdminAccountListProps) {
     const t = useTranslations("admin.account");
-
     const locale = useLocale();
-
     const router = useRouter();
 
     if (loading) {
@@ -45,27 +45,35 @@ export function AdminAccountList({
             <table className="w-full text-sm">
                 <thead className="border-b border-border">
                 <tr className="text-left text-muted">
-                    <th className="px-4 py-3">
+                    <th className="whitespace-nowrap px-4 py-3">
                         {t("table.accountNo")}
                     </th>
 
-                    <th className="px-4 py-3">
+                    <th className="whitespace-nowrap px-4 py-3">
                         {t("table.product")}
                     </th>
 
-                    <th className="px-4 py-3">
+                    <th className="whitespace-nowrap px-4 py-3">
                         {t("table.currency")}
                     </th>
 
-                    <th className="px-4 py-3">
+                    <th className="whitespace-nowrap px-4 py-3">
+                        {t("table.availableBalance")}
+                    </th>
+
+                    <th className="whitespace-nowrap px-4 py-3">
                         {t("table.balance")}
                     </th>
 
-                    <th className="px-4 py-3">
+                    <th className="whitespace-nowrap px-4 py-3">
+                        {t("table.holdAmount")}
+                    </th>
+
+                    <th className="whitespace-nowrap px-4 py-3">
                         {t("table.status")}
                     </th>
 
-                    <th className="px-4 py-3">
+                    <th className="whitespace-nowrap px-4 py-3">
                         {t("table.userId")}
                     </th>
                 </tr>
@@ -102,7 +110,7 @@ export function AdminAccountList({
                             border-b
                             border-border
                             last:border-0
-                            transition
+                            transition-colors
                             hover:bg-background
                             focus:outline-none
                             focus:ring-2
@@ -124,7 +132,15 @@ export function AdminAccountList({
                             {account.currency}
                         </td>
 
-                        <td className="px-4 py-3 text-primary">
+                        <td className="whitespace-nowrap px-4 py-3 font-medium text-primary">
+                            {formatMoney(
+                                account.availableBalance,
+                                account.currency,
+                                locale,
+                            )}
+                        </td>
+
+                        <td className="whitespace-nowrap px-4 py-3 text-primary">
                             {formatMoney(
                                 account.balance,
                                 account.currency,
@@ -132,10 +148,33 @@ export function AdminAccountList({
                             )}
                         </td>
 
-                        <td className="px-4 py-3 text-primary">
-                            {t(
-                                `statuses.${account.status}`,
+                        <td className="whitespace-nowrap px-4 py-3 text-primary">
+                            {formatMoney(
+                                account.holdAmount,
+                                account.currency,
+                                locale,
                             )}
+                        </td>
+
+                        <td className="px-4 py-3">
+                            <span
+                                className={`
+                                    inline-flex
+                                    rounded-full
+                                    px-2.5
+                                    py-1
+                                    text-xs
+                                    font-medium
+                                    ${getAccountStatusColor(
+                                    account.status,
+                                    "text-background",
+                                )}
+                                `}
+                            >
+                                {t(
+                                    `statuses.${account.status}`,
+                                )}
+                            </span>
                         </td>
 
                         <td className="px-4 py-3 font-mono text-xs text-muted">

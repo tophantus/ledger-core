@@ -24,8 +24,9 @@ public interface AccountWithdrawPort {
 
     record WithdrawAccountInfo(
             UUID accountId,
+            UUID userId,
             String currency,
-            BigDecimal balance
+            BigDecimal availableBalance
     ) {
     }
 }

@@ -7,7 +7,6 @@ import com.example.ledgercore.transaction.adapter.inbound.rest.dto.TransactionFi
 import com.example.ledgercore.transaction.command.dto.*;
 import com.example.ledgercore.transaction.command.port.inbound.ConfirmTransferUseCase;
 import com.example.ledgercore.transaction.command.port.inbound.CreateTransferIntentUseCase;
-import com.example.ledgercore.transaction.command.port.inbound.WithdrawMoneyUseCase;
 import com.example.ledgercore.transaction.query.dto.*;
 import com.example.ledgercore.transaction.query.port.inbound.GetAccountTransactionsUseCase;
 import com.example.ledgercore.transaction.query.port.inbound.GetTransactionByReferenceUseCase;
@@ -34,7 +33,6 @@ public class TransactionController {
 
     private final CreateTransferIntentUseCase createTransferIntentUseCase;
     private final ConfirmTransferUseCase confirmTransferUseCase;
-    private final WithdrawMoneyUseCase withdrawMoneyUseCase;
 
     private final GetTransactionUseCase getTransactionUseCase;
     private final GetTransactionByReferenceUseCase
@@ -101,30 +99,6 @@ public class TransactionController {
                 )
         );
     }
-
-    @PostMapping("/withdraw")
-    @Operation(
-            summary = "Withdraw money",
-            description = "Withdraw money from the authenticated user's account"
-    )
-    public ResponseEntity<ApiResponse<TransactionResponse>> withdraw(
-            @AuthenticationPrincipal AuthPrincipal principal,
-            @Valid @RequestBody WithdrawMoneyCommand command
-    ) {
-        TransactionResponse response =
-                withdrawMoneyUseCase.execute(
-                        principal.getUserId(),
-                        command
-                );
-
-        return ResponseEntity.ok(
-                ApiResponse.success(
-                        response,
-                        "Money withdrawn successfully"
-                )
-        );
-    }
-
 
     @GetMapping("/{transactionId}")
     @Operation(

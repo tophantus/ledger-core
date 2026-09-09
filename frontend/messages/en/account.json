@@ -1,6 +1,8 @@
 {
   "accountNumber": "Account number",
   "balance": "Balance",
+  "availableBalance": "Available Balance",
+  "holdAmount": "On Hold",
   "status": "Status",
   "statuses": {
     "ACTIVE": "Active",
@@ -11,7 +13,9 @@
     "title": "Account details",
     "back": "Back",
     "accountNumber": "Account number",
+    "availableBalance": "Available Balance",
     "balance": "Balance",
+    "holdAmount": "On Hold",
     "currency": "Currency",
     "status": "Status",
     "createdAt": "Created at",

@@ -1,6 +1,7 @@
 package com.example.ledgercore.account.query.handler;
 
 import com.example.ledgercore.account.entity.Account;
+import com.example.ledgercore.account.mapper.AdminAccountMapper;
 import com.example.ledgercore.account.query.dto.AdminAccountFilter;
 import com.example.ledgercore.account.query.dto.AdminAccountResponse;
 import com.example.ledgercore.account.query.port.inbound.GetAdminAccountsUseCase;
@@ -51,7 +52,7 @@ public class GetAdminAccountsHandler
         return new PageResponse<>(
                 accountPage.getContent()
                         .stream()
-                        .map(this::toResponse)
+                        .map(AdminAccountMapper::toResponse)
                         .toList(),
                 accountPage.getNumber(),
                 accountPage.getSize(),
@@ -117,23 +118,6 @@ public class GetAdminAccountsHandler
         }
 
         return specification;
-    }
-
-    private AdminAccountResponse toResponse(
-            Account account
-    ) {
-        return new AdminAccountResponse(
-                account.getId(),
-                account.getUserId(),
-                account.getAccountNo(),
-                account.getProductId(),
-                account.getCurrency(),
-                account.getBalance(),
-                account.getStatus(),
-                account.getLedgerAccountId(),
-                account.getCreatedAt(),
-                account.getUpdatedAt()
-        );
     }
 
     private void validateFilter(

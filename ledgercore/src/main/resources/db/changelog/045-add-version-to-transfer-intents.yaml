@@ -1,0 +1,18 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 045-add-version-to-transfer-intents
+      author: tu
+
+      changes:
+
+        - addColumn:
+            tableName: transfer_intents
+            columns:
+
+              - column:
+                  name: version
+                  type: BIGINT
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false

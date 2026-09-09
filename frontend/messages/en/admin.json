@@ -31,7 +31,9 @@
       "accountNo": "Account number",
       "product": "Product",
       "currency": "Currency",
+      "availableBalance": "Available Balance",
       "balance": "Balance",
+      "holdAmount": "On Hold",
       "status": "Status",
       "userId": "User ID"
     },
@@ -54,6 +56,8 @@
         "product": "Product",
         "currency": "Currency",
         "balance": "Balance",
+        "availableBalance": "Available Balance",
+        "holdAmount": "On Hold",
         "status": "Status",
         "ledgerAccountId": "Ledger Account ID",
         "createdAt": "Created At",

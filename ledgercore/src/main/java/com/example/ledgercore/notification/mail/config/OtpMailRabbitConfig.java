@@ -10,42 +10,42 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class MailRabbitConfig {
+public class OtpMailRabbitConfig {
 
-    public static final String MAIL_QUEUE =
-            "notification.mail.queue";
+    public static final String OTP_MAIL_QUEUE =
+            "notification.mail.otp.queue";
 
-    public static final String MAIL_DLX =
-            "notification.mail.dlx";
+    public static final String OTP_MAIL_DLX =
+            "notification.mail.otp.dlx";
 
-    public static final String MAIL_DLQ =
-            "notification.mail.dlq";
+    public static final String OTP_MAIL_DLQ =
+            "notification.mail.otp.dlq";
 
-    public static final String MAIL_DLQ_ROUTING_KEY =
-            "notification.mail.dlq";
+    public static final String OTP_MAIL_DLQ_ROUTING_KEY =
+            "notification.mail.otp.dlq";
 
     @Bean
-    public Queue mailQueue() {
+    public Queue otpMailQueue() {
         return QueueBuilder
-                .durable(MAIL_QUEUE)
+                .durable(OTP_MAIL_QUEUE)
                 .withArgument(
                         "x-dead-letter-exchange",
-                        MAIL_DLX
+                        OTP_MAIL_DLX
                 )
                 .withArgument(
                         "x-dead-letter-routing-key",
-                        MAIL_DLQ_ROUTING_KEY
+                        OTP_MAIL_DLQ_ROUTING_KEY
                 )
                 .build();
     }
 
     @Bean
-    public Binding mailBinding(
-            Queue mailQueue,
+    public Binding otpMailBinding(
+            Queue otpMailQueue,
             TopicExchange otpExchange
     ) {
         return BindingBuilder
-                .bind(mailQueue)
+                .bind(otpMailQueue)
                 .to(otpExchange)
                 .with(
                         OtpRabbitConfig
@@ -54,25 +54,27 @@ public class MailRabbitConfig {
     }
 
     @Bean
-    public TopicExchange mailDlx() {
-        return new TopicExchange(MAIL_DLX);
+    public TopicExchange otpMailDlx() {
+        return new TopicExchange(OTP_MAIL_DLX);
     }
 
     @Bean
-    public Queue mailDlq() {
+    public Queue otpMailDlq() {
         return QueueBuilder
-                .durable(MAIL_DLQ)
+                .durable(OTP_MAIL_DLQ)
                 .build();
     }
 
     @Bean
-    public Binding mailDlqBinding(
-            Queue mailDlq,
-            TopicExchange mailDlx
+    public Binding otpMailDlqBinding(
+            Queue otpMailDlq,
+            TopicExchange otpMailDlx
     ) {
         return BindingBuilder
-                .bind(mailDlq)
-                .to(mailDlx)
-                .with(MAIL_DLQ_ROUTING_KEY);
+                .bind(otpMailDlq)
+                .to(otpMailDlx)
+                .with(
+                        OTP_MAIL_DLQ_ROUTING_KEY
+                );
     }
 }

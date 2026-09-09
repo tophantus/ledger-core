@@ -36,14 +36,14 @@ public class AccountWithdrawAdapter
     ) {
         AccountWithdrawInfo info =
                 getWithdrawAccountInfoUseCase.execute(
-                        userId,
                         sourceAccountId
                 );
 
         return new AccountWithdrawPort.WithdrawAccountInfo(
                 info.accountId(),
+                info.userId(),
                 info.currency(),
-                info.balance()
+                info.availableBalance()
         );
     }
 

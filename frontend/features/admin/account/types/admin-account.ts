@@ -12,6 +12,8 @@ export interface AdminAccount {
     productId: string;
     currency: string;
     balance: string;
+    holdAmount: string;
+    availableBalance: string;
     status: AccountStatus;
     ledgerAccountId: string;
     createdAt: string;
@@ -40,6 +42,8 @@ export interface AdminAccountDetail {
     productId: string;
     currency: string;
     balance: string;
+    holdAmount: string;
+    availableBalance: string;
     status: AccountStatus;
     ledgerAccountId: string;
     createdAt: string;

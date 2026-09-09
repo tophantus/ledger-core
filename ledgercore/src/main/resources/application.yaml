@@ -135,6 +135,19 @@ interest:
     batch-size: 500
     lease-duration: 5m
 
+withdrawal:
+  request:
+    expiration: 5m
+
+  intent:
+    expiration: 10m
+
+  expiration:
+    batch-size: 100
+    scheduler:
+      enabled: true
+      fixed-delay: 10s
+
 app:
   webhook:
     allow-http: true

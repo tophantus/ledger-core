@@ -1,0 +1,66 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 051-create-atm-terminals
+      author: tu
+
+      changes:
+
+        - createTable:
+            tableName: atm_terminals
+            columns:
+
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                    primaryKeyName: pk_atm_terminals
+
+              - column:
+                  name: terminal_code
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: credential_hash
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: status
+                  type: VARCHAR(20)
+                  defaultValue: ACTIVE
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: location
+                  type: VARCHAR(255)
+
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+        - addUniqueConstraint:
+            tableName: atm_terminals
+            columnNames: terminal_code
+            constraintName: uk_atm_terminals_terminal_code
+
+        - createIndex:
+            tableName: atm_terminals
+            indexName: idx_atm_terminals_status
+            columns:
+              - column:
+                  name: status

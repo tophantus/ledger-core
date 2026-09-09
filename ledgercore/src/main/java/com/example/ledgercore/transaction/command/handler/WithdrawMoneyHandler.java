@@ -2,8 +2,6 @@ package com.example.ledgercore.transaction.command.handler;
 
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
-import com.example.ledgercore.common.lock.DistributedLock;
-import com.example.ledgercore.common.lock.LockKeyPrefix;
 import com.example.ledgercore.transaction.command.dto.WithdrawMoneyCommand;
 import com.example.ledgercore.transaction.command.port.inbound.WithdrawMoneyUseCase;
 import com.example.ledgercore.transaction.command.port.outbound.AccountWithdrawPort;
@@ -22,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -36,39 +33,11 @@ public class WithdrawMoneyHandler
     private final BusinessDayPort businessDayPort;
 
     @Override
-    @DistributedLock(
-            keys = "#command.sourceAccountId",
-            prefix = LockKeyPrefix.ACCOUNT
-    )
     @Transactional
     public TransactionResponse execute(
-            UUID userId,
             WithdrawMoneyCommand command
     ) {
         validateAmount(command);
-
-        MoneyTransaction existingTransaction =
-                transactionCommandRepository
-                        .findByReference(command.reference())
-                        .orElse(null);
-
-        if (existingTransaction != null) {
-            return handleExistingTransaction(
-                    userId,
-                    existingTransaction
-            );
-        }
-
-        AccountWithdrawPort.WithdrawAccountInfo withdrawInfo =
-                accountWithdrawPort.getWithdrawInfo(
-                        userId,
-                        command.sourceAccountId()
-                );
-
-        validateWithdraw(
-                command,
-                withdrawInfo
-        );
 
         LocalDate businessDate =
                 businessDayPort.getCurrentBusinessDate();
@@ -121,27 +90,6 @@ public class WithdrawMoneyHandler
         }
     }
 
-    private void validateWithdraw(
-            WithdrawMoneyCommand command,
-            AccountWithdrawPort.WithdrawAccountInfo withdrawInfo
-    ) {
-        if (!withdrawInfo.currency()
-                .equals(command.currency())) {
-
-            throw new BusinessException(
-                    ErrorCode.TRANSACTION_CURRENCY_MISMATCH
-            );
-        }
-
-        if (withdrawInfo.balance()
-                .compareTo(command.amount()) < 0) {
-
-            throw new BusinessException(
-                    ErrorCode.ACCOUNT_INSUFFICIENT_BALANCE
-            );
-        }
-    }
-
     private MoneyTransaction createTransaction(
             WithdrawMoneyCommand command,
             LocalDate businessDate
@@ -159,26 +107,6 @@ public class WithdrawMoneyHandler
                 .currency(command.currency())
                 .description(command.description())
                 .build();
-    }
-
-    private TransactionResponse handleExistingTransaction(
-            UUID userId,
-            MoneyTransaction transaction
-    ) {
-        if (transaction.getType()
-                != TransactionType.WITHDRAW) {
-
-            throw new BusinessException(
-                    ErrorCode.TRANSACTION_REFERENCE_ALREADY_EXISTS
-            );
-        }
-
-        accountWithdrawPort.verifySourceAccountAccess(
-                userId,
-                transaction.getSourceAccountId()
-        );
-
-        return toResponse(transaction);
     }
 
     private void completeTransaction(

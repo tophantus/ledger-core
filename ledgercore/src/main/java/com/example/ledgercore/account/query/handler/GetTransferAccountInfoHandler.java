@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Service
@@ -49,11 +50,15 @@ public class GetTransferAccountInfoHandler
             );
         }
 
+        BigDecimal sourceAvailableBalance =
+                sourceAccount.getBalance()
+                        .subtract(sourceAccount.getHoldAmount());
+
         return new AccountTransferInfo(
                 sourceAccount.getId(),
                 destinationAccount.getId(),
                 sourceAccount.getCurrency(),
-                sourceAccount.getBalance()
+                sourceAvailableBalance
         );
     }
 }

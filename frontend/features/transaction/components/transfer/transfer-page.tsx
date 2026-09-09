@@ -350,7 +350,7 @@ export default function TransferPageContent() {
                 if (
                     !isAmountLessThanOrEqual(
                         values.amount,
-                        selectedAccount.balance,
+                        selectedAccount.availableBalance,
                     )
                 ) {
                     setError(

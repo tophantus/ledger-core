@@ -1,0 +1,73 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 049-create-withdrawal-executions
+      author: tu
+
+      changes:
+
+        - createTable:
+            tableName: withdrawal_executions
+            columns:
+
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                    primaryKeyName: pk_withdrawal_executions
+
+              - column:
+                  name: withdrawal_intent_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: atm_terminal_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: transaction_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: executed_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+        - addUniqueConstraint:
+            tableName: withdrawal_executions
+            columnNames: withdrawal_intent_id
+            constraintName: uk_withdrawal_executions_intent_id
+
+        - addUniqueConstraint:
+            tableName: withdrawal_executions
+            columnNames: transaction_id
+            constraintName: uk_withdrawal_executions_transaction_id
+
+        - createIndex:
+            indexName: idx_withdrawal_executions_atm_terminal_id
+            tableName: withdrawal_executions
+            columns:
+              - column:
+                  name: atm_terminal_id
+
+        - createIndex:
+            indexName: idx_withdrawal_executions_executed_at
+            tableName: withdrawal_executions
+            columns:
+              - column:
+                  name: executed_at

@@ -32,7 +32,7 @@ public interface AccountTransferPort {
             UUID sourceAccountId,
             UUID destinationAccountId,
             String currency,
-            BigDecimal sourceBalance
+            BigDecimal sourceAvailableBalance
     ) {
     }
 }

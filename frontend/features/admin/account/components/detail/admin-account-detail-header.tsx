@@ -60,6 +60,7 @@ export function AdminAccountDetailHeader({
 
             <Button
                 type="button"
+                disabled={account.status !== "ACTIVE"}
                 onClick={onDeposit}
             >
                 <WalletCards className="mr-2 h-4 w-4" />

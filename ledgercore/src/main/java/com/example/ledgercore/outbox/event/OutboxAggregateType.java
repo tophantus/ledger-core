@@ -4,6 +4,8 @@ public enum OutboxAggregateType {
 
     OTP("OTP"),
 
+    WITHDRAWAL("WITHDRAWAL"),
+
     TRANSACTION("TRANSACTION"),
 
     BUSINESS_DAY("BUSINESS_DAY");

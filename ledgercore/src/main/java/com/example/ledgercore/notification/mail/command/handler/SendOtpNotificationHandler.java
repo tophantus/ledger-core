@@ -42,7 +42,7 @@ public class SendOtpNotificationHandler
                 );
 
         UserNotificationInfo user =
-                userNotificationPort.getUser(
+                userNotificationPort.getUserByDestination(
                         event.destination(),
                         event.channel()
                 );
@@ -66,17 +66,43 @@ public class SendOtpNotificationHandler
             String fullName,
             String otp
     ) {
-        if (event.purpose() == OtpPurpose.CONFIRM_TRANSFER) {
-            return buildTransferConfirmationVariables(
-                    event,
-                    fullName,
-                    otp
-            );
-        }
+        return switch (event.purpose()) {
 
+            case CONFIRM_TRANSFER ->
+                    buildTransferConfirmationVariables(
+                            event,
+                            fullName,
+                            otp
+                    );
+
+            case EMAIL_VERIFICATION,
+                 CONFIRM_WITHDRAWAL_REQUEST ->
+                    buildOtpVariables(
+                            event,
+                            fullName,
+                            otp
+                    );
+
+            default ->
+                    throw new IllegalArgumentException(
+                            "Unsupported OTP purpose: "
+                                    + event.purpose()
+                    );
+        };
+    }
+
+    private Map<String, Object> buildOtpVariables(
+            OtpNotificationEvent event,
+            String fullName,
+            String otp
+    ) {
         return Map.of(
-                "otp", otp,
-                "fullName", fullName,
+                "otp",
+                otp,
+
+                "fullName",
+                fullName,
+
                 "expiresInMinutes",
                 event.purpose()
                         .getExpiration()
@@ -137,6 +163,9 @@ public class SendOtpNotificationHandler
 
             case CONFIRM_TRANSFER ->
                     EmailTemplateType.TRANSFER_CONFIRMATION;
+
+            case CONFIRM_WITHDRAWAL_REQUEST ->
+                    EmailTemplateType.CONFIRM_WITHDRAWAL_REQUEST;
 
             default ->
                     throw new IllegalArgumentException(

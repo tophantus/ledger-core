@@ -102,6 +102,13 @@ public class TransferIntent {
     @Column(name = "completed_at")
     private Instant completedAt;
 
+    @Version
+    @Column(
+            nullable = false
+    )
+    @Builder.Default
+    private Long version = 0L;
+
     public boolean isExpired(Instant now) {
         return now.isAfter(expiresAt);
     }

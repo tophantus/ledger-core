@@ -1,6 +1,7 @@
 package com.example.ledgercore.account.query.handler;
 
 import com.example.ledgercore.account.entity.Account;
+import com.example.ledgercore.account.mapper.AdminAccountMapper;
 import com.example.ledgercore.account.query.dto.AdminAccountDetailResponse;
 import com.example.ledgercore.account.query.port.inbound.GetAdminAccountDetailUseCase;
 import com.example.ledgercore.account.query.port.outbound.AdminUserQueryPort;
@@ -38,22 +39,6 @@ public class GetAdminAccountDetailHandler
                         account.getUserId()
                 );
 
-        return new AdminAccountDetailResponse(
-                account.getId(),
-                account.getAccountNo(),
-                account.getProductId(),
-                account.getCurrency(),
-                account.getBalance(),
-                account.getStatus(),
-                account.getLedgerAccountId(),
-                account.getCreatedAt(),
-                account.getUpdatedAt(),
-                new AdminAccountDetailResponse.UserInfo(
-                        user.id(),
-                        user.email(),
-                        user.fullName(),
-                        user.avatarUrl()
-                )
-        );
+        return AdminAccountMapper.toDetailResponse(account, user);
     }
 }

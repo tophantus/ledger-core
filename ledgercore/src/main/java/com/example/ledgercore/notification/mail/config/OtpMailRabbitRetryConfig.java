@@ -12,17 +12,17 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class MailRabbitRetryConfig {
+public class OtpMailRabbitRetryConfig {
 
     @Bean
     public MessageRecoverer mailMessageRecoverer(
             RabbitTemplate rabbitTemplate,
-            TopicExchange mailDlx
+            TopicExchange otpMailDlx
     ) {
         return new RepublishMessageRecoverer(
                 rabbitTemplate,
-                mailDlx.getName(),
-                MailRabbitConfig.MAIL_DLQ_ROUTING_KEY
+                otpMailDlx.getName(),
+                OtpMailRabbitConfig.OTP_MAIL_DLQ_ROUTING_KEY
         );
     }
 
