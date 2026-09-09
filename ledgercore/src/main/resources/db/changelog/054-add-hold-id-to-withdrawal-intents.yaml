@@ -1,0 +1,28 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 054-add-hold-id-to-withdrawal-intents
+      author: tu
+
+      changes:
+
+        - addColumn:
+            tableName: withdrawal_intents
+            columns:
+              - column:
+                  name: hold_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: withdrawal_intents
+            baseColumnNames: hold_id
+            referencedTableName: account_holds
+            referencedColumnNames: id
+            constraintName: fk_withdrawal_intents_hold
+
+        - addUniqueConstraint:
+            tableName: withdrawal_intents
+            columnNames: hold_id
+            constraintName: uk_withdrawal_intents_hold_id

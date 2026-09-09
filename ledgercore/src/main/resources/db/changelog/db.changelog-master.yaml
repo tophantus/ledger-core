@@ -105,3 +105,5 @@ databaseChangeLog:
       file: db/changelog/052-update-otp-challenges-purpose-constraint.yaml
   - include:
       file: db/changelog/053-create-account-holds.yaml
+  - include:
+      file: db/changelog/054-add-hold-id-to-withdrawal-intents.yaml

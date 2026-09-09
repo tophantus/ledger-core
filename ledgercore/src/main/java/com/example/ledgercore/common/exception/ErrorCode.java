@@ -117,12 +117,38 @@ public enum ErrorCode {
             HttpStatus.BAD_REQUEST
     ),
 
+    ACCOUNT_HOLD_AMOUNT_INSUFFICIENT(
+            "ACCOUNT_009",
+            "Account hold amount is insufficient",
+            HttpStatus.BAD_REQUEST
+    ),
+
     // Account Daily Balance
 
     ACCOUNT_DAILY_BALANCE_NOT_FOUND(
             "ACCOUNT_010",
             "Account daily balance not found",
             HttpStatus.NOT_FOUND
+    ),
+
+    // Hold
+
+    ACCOUNT_HOLD_NOT_FOUND(
+            "HOLD_001",
+            "Account hold not found",
+            HttpStatus.NOT_FOUND
+    ),
+
+    ACCOUNT_HOLD_NOT_ACTIVE(
+            "HOLD_002",
+            "Account hold is not active",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    INVALID_HOLD_AMOUNT(
+            "HOLD_003",
+            "Hold amount must be greater than zero",
+            HttpStatus.BAD_REQUEST
     ),
 
     // Product

@@ -19,6 +19,10 @@ import java.util.UUID;
                 @UniqueConstraint(
                         name = "uk_withdrawal_intents_reference",
                         columnNames = "withdrawal_reference"
+                ),
+                @UniqueConstraint(
+                        name = "uk_withdrawal_intents_hold_id",
+                        columnNames = "hold_id"
                 )
         },
         indexes = {
@@ -48,7 +52,6 @@ import java.util.UUID;
 public class WithdrawalIntent {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Column(
@@ -75,6 +78,12 @@ public class WithdrawalIntent {
             nullable = false
     )
     private UUID accountId;
+
+    @Column(
+            name = "hold_id",
+            nullable = false
+    )
+    private UUID holdId;
 
     @Column(
             nullable = false,

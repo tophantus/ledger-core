@@ -56,7 +56,7 @@ public class CreateWithdrawalRequestHandler
             );
         }
 
-        if (account.balance().compareTo(command.amount()) < 0) {
+        if (account.availableBalance().compareTo(command.amount()) < 0) {
             throw new BusinessException(
                     ErrorCode.ACCOUNT_INSUFFICIENT_BALANCE
             );
