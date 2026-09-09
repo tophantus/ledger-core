@@ -495,6 +495,18 @@ public enum ErrorCode {
             HttpStatus.CONFLICT
     ),
 
+    ATM_TERMINAL_NOT_ACTIVE(
+            "ATM_005",
+            "ATM terminal is not active",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    ATM_AUTHENTICATION_FAILED(
+            "ATM_006",
+            "ATM terminal authentication failed",
+            HttpStatus.UNAUTHORIZED
+    ),
+
     // System
 
     INTERNAL_ERROR(
