@@ -1,0 +1,62 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 055-create-withdrawal-lookup-codes
+      author: tu
+
+      changes:
+
+        - createTable:
+            tableName: withdrawal_lookup_codes
+            columns:
+
+              - column:
+                  name: withdrawal_intent_id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_withdrawal_lookup_codes
+                    nullable: false
+
+              - column:
+                  name: lookup_code
+                  type: VARCHAR(8)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: expires_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: withdrawal_lookup_codes
+            baseColumnNames: withdrawal_intent_id
+            referencedTableName: withdrawal_intents
+            referencedColumnNames: id
+            constraintName: fk_withdrawal_lookup_codes_intent
+
+        - addUniqueConstraint:
+            tableName: withdrawal_lookup_codes
+            columnNames: lookup_code
+            constraintName: uk_withdrawal_lookup_codes_code
+
+        - sql:
+            sql: |
+              ALTER TABLE withdrawal_lookup_codes
+              ADD CONSTRAINT chk_withdrawal_lookup_codes_format
+              CHECK (lookup_code ~ '^[0-9]{8}$');
+
+        - createIndex:
+            tableName: withdrawal_lookup_codes
+            indexName: idx_withdrawal_lookup_codes_expires_at
+            columns:
+              - column:
+                  name: expires_at
