@@ -65,6 +65,10 @@ public class SecurityConfig {
                                         "/api/v1/auth/logout"
                                 ).permitAll()
 
+                                .requestMatchers(
+                                        "/api/v1/withdrawals/execute"
+                                ).permitAll()
+
                                 .requestMatchers("/api/v1/admin/**")
                                 .hasRole("ADMIN")
                                 
