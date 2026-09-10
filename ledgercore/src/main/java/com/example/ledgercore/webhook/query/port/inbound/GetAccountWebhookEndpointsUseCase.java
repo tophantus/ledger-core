@@ -5,7 +5,7 @@ import com.example.ledgercore.webhook.query.dto.WebhookResponse;
 import java.util.List;
 import java.util.UUID;
 
-public interface GetWebhooksUseCase {
+public interface GetAccountWebhookEndpointsUseCase {
 
     List<WebhookResponse> execute(
             UUID userId,

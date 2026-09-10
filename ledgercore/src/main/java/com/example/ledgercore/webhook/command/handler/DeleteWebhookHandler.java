@@ -24,7 +24,7 @@ public class DeleteWebhookHandler implements DeleteWebhookUseCase {
         WebhookEndpoint endpoint = webhookEndpointCommandRepository
                 .findById(command.webhookId())
                 .orElseThrow(() -> new BusinessException(
-                        ErrorCode.WEBHOOK_NOT_FOUND
+                        ErrorCode.WEBHOOK_ENDPOINT_NOT_FOUND
                 ));
 
         accountOwnerPort.verifyOwnership(

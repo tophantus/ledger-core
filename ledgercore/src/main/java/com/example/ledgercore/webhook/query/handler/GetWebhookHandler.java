@@ -34,7 +34,7 @@ public class GetWebhookHandler implements GetWebhookUseCase {
         WebhookEndpoint endpoint =
                 webhookEndpointQueryRepository.findById(webhookId)
                         .orElseThrow(() -> new BusinessException(
-                                ErrorCode.WEBHOOK_NOT_FOUND
+                                ErrorCode.WEBHOOK_ENDPOINT_NOT_FOUND
                         ));
 
         accountOwnerPort.verifyOwnership(

@@ -5,7 +5,7 @@ import com.example.ledgercore.webhook.entity.WebhookEndpoint;
 import com.example.ledgercore.webhook.entity.WebhookSubscription;
 import com.example.ledgercore.webhook.query.dto.WebhookResponse;
 import com.example.ledgercore.webhook.query.mapper.WebhookResponseMapper;
-import com.example.ledgercore.webhook.query.port.inbound.GetWebhooksUseCase;
+import com.example.ledgercore.webhook.query.port.inbound.GetAccountWebhookEndpointsUseCase;
 import com.example.ledgercore.webhook.query.repository.WebhookEndpointQueryRepository;
 import com.example.ledgercore.webhook.query.repository.WebhookSubscriptionQueryRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class GetWebhooksHandler implements GetWebhooksUseCase {
+public class GetAccountWebhookEndpointsHandler implements GetAccountWebhookEndpointsUseCase {
 
     private final AccountOwnerPort accountOwnerPort;
     private final WebhookEndpointQueryRepository webhookEndpointQueryRepository;

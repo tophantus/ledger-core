@@ -4,6 +4,7 @@ import com.example.ledgercore.webhook.entity.WebhookDelivery;
 import com.example.ledgercore.webhook.enums.WebhookDeliveryStatus;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -12,7 +13,8 @@ import java.util.List;
 import java.util.UUID;
 
 public interface WebhookDeliveryQueryRepository
-        extends JpaRepository<WebhookDelivery, UUID> {
+        extends JpaRepository<WebhookDelivery, UUID>,
+        JpaSpecificationExecutor<WebhookDelivery> {
 
     @Query("""
             select d

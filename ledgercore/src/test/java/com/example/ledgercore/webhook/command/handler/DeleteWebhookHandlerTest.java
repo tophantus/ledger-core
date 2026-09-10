@@ -101,7 +101,7 @@ class DeleteWebhookHandlerTest {
                 );
 
         assertEquals(
-                ErrorCode.WEBHOOK_NOT_FOUND,
+                ErrorCode.WEBHOOK_ENDPOINT_NOT_FOUND,
                 exception.getErrorCode()
         );
 
