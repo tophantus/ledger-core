@@ -7,6 +7,7 @@ import com.example.ledgercore.withdrawal.adapter.inbound.rest.dto.ConfirmWithdra
 import com.example.ledgercore.withdrawal.adapter.inbound.rest.dto.CreateWithdrawalRequest;
 import com.example.ledgercore.withdrawal.adapter.inbound.rest.dto.ExecuteWithdrawalRequest;
 import com.example.ledgercore.withdrawal.command.dto.*;
+import com.example.ledgercore.withdrawal.command.port.inbound.CancelWithdrawalIntentUseCase;
 import com.example.ledgercore.withdrawal.command.port.inbound.ConfirmWithdrawalRequestUseCase;
 import com.example.ledgercore.withdrawal.command.port.inbound.CreateWithdrawalRequestUseCase;
 import com.example.ledgercore.withdrawal.command.port.inbound.ExecuteWithdrawalUseCase;
@@ -49,6 +50,9 @@ public class WithdrawalController {
 
     private final GetUserWithdrawalIntentsUseCase
             getUserWithdrawalIntentsUseCase;
+
+    private final CancelWithdrawalIntentUseCase
+            cancelWithdrawalIntentUseCase;
 
     @PostMapping("/requests")
     @Operation(
@@ -174,6 +178,30 @@ public class WithdrawalController {
                 ApiResponse.success(
                         response,
                         "Withdrawal intents retrieved successfully"
+                )
+        );
+    }
+
+    @PostMapping("/intents/{intentId}/cancel")
+    @Operation(
+            summary = "Cancel withdrawal intent",
+            description = "Cancel a ready withdrawal intent and release its hold"
+    )
+    public ResponseEntity<ApiResponse<Void>> cancelWithdrawalIntent(
+            @AuthenticationPrincipal AuthPrincipal principal,
+            @PathVariable UUID intentId
+    ) {
+        cancelWithdrawalIntentUseCase.execute(
+                new CancelWithdrawalIntentCommand(
+                        principal.getUserId(),
+                        intentId
+                )
+        );
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        null,
+                        "Withdrawal intent cancelled successfully"
                 )
         );
     }
