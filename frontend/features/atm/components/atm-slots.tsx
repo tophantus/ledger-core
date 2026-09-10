@@ -1,0 +1,71 @@
+export function AtmSlots() {
+    return (
+        <div className="mt-5 flex gap-3">
+            <div
+                className="
+                    flex-1
+                    rounded-lg
+                    border
+                    border-gray-700
+                    bg-gray-950
+                    px-3
+                    py-2
+                    text-center
+                "
+            >
+                <div
+                    className="
+                        mx-auto
+                        h-1
+                        w-16
+                        rounded-full
+                        bg-gray-600
+                    "
+                />
+
+                <p
+                    className="
+                        mt-1
+                        text-[10px]
+                        text-gray-500
+                    "
+                >
+                    CARD
+                </p>
+            </div>
+
+            <div
+                className="
+                    flex-1
+                    rounded-lg
+                    border
+                    border-gray-700
+                    bg-gray-950
+                    px-3
+                    py-2
+                    text-center
+                "
+            >
+                <div
+                    className="
+                        mx-auto
+                        h-1
+                        w-20
+                        rounded-full
+                        bg-blue-500/60
+                    "
+                />
+
+                <p
+                    className="
+                        mt-1
+                        text-[10px]
+                        text-gray-500
+                    "
+                >
+                    CASH
+                </p>
+            </div>
+        </div>
+    );
+}

@@ -1,0 +1,40 @@
+{
+  "openAtm": "Open ATM",
+  "title": "LedgerCore ATM",
+  "subtitle": "Withdrawal transaction simulator",
+
+  "enterReference": "Enter Reference",
+  "enterReferenceDescription": "Enter the reference of the withdrawal request",
+
+  "enterCode": "Enter Withdrawal Code",
+  "enterCodeDescription": "Enter the 6-digit withdrawal code",
+
+  "enterAmount": "Enter Amount",
+  "enterAmountDescription": "Enter the amount you want to withdraw",
+
+  "confirmTitle": "Confirm Transaction",
+  "confirmDescription": "Review the transaction details before proceeding",
+
+  "reference": "Reference",
+  "amount": "Amount",
+
+  "clear": "Clear",
+  "back": "Back",
+  "continue": "Continue",
+
+  "withdraw": "Withdraw",
+  "processing": "Processing...",
+
+  "successTitle": "Withdrawal Successful",
+  "successDescription": "The withdrawal transaction was completed successfully.",
+  "executionId": "Execution ID",
+
+  "errorTitle": "Transaction Failed",
+  "executeFailed": "Unable to execute the transaction.",
+
+  "referenceRequired": "Please enter the withdrawal reference.",
+  "invalidCode": "The withdrawal code must contain 6 digits.",
+  "invalidAmount": "Invalid amount.",
+
+  "secureAtm": "Transactions are secured by LedgerCore."
+}
