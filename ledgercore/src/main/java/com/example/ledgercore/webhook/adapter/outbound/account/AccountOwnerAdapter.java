@@ -1,4 +1,4 @@
-package com.example.ledgercore.webhook.adapter.outbound;
+package com.example.ledgercore.webhook.adapter.outbound.account;
 
 import com.example.ledgercore.account.query.port.inbound.CheckAccountOwnershipUseCase;
 import com.example.ledgercore.common.exception.BusinessException;

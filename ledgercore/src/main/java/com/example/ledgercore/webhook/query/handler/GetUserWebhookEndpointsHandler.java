@@ -3,10 +3,10 @@ package com.example.ledgercore.webhook.query.handler;
 import com.example.ledgercore.common.dto.PageResponse;
 import com.example.ledgercore.webhook.entity.WebhookEndpoint;
 import com.example.ledgercore.webhook.entity.WebhookSubscription;
-import com.example.ledgercore.webhook.port.outbound.AccountOwnerPort;
 import com.example.ledgercore.webhook.query.dto.WebhookResponse;
 import com.example.ledgercore.webhook.query.mapper.WebhookResponseMapper;
-import com.example.ledgercore.webhook.query.port.inbound.GetAccountWebhookEndpointsUseCase;
+import com.example.ledgercore.webhook.query.port.inbound.GetUserWebhookEndpointsUseCase;
+import com.example.ledgercore.webhook.query.port.outbound.UserAccountPort;
 import com.example.ledgercore.webhook.query.repository.WebhookEndpointQueryRepository;
 import com.example.ledgercore.webhook.query.repository.WebhookSubscriptionQueryRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,10 +22,10 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class GetAccountWebhookEndpointsHandler
-        implements GetAccountWebhookEndpointsUseCase {
+public class GetUserWebhookEndpointsHandler
+        implements GetUserWebhookEndpointsUseCase {
 
-    private final AccountOwnerPort accountOwnerPort;
+    private final UserAccountPort userAccountPort;
 
     private final WebhookEndpointQueryRepository
             webhookEndpointQueryRepository;
@@ -39,14 +39,21 @@ public class GetAccountWebhookEndpointsHandler
     @Transactional(readOnly = true)
     public PageResponse<WebhookResponse> execute(
             UUID userId,
-            UUID accountId,
             int page,
             int size
     ) {
-        accountOwnerPort.verifyOwnership(
-                userId,
-                accountId
-        );
+        List<UUID> accountIds =
+                userAccountPort.getAccountIds(userId);
+
+        if (accountIds.isEmpty()) {
+            return new PageResponse<>(
+                    List.of(),
+                    Math.max(page, 0),
+                    Math.clamp(size, 1, 100),
+                    0,
+                    0
+            );
+        }
 
         Pageable pageable =
                 PageRequest.of(
@@ -59,10 +66,11 @@ public class GetAccountWebhookEndpointsHandler
                 );
 
         Page<WebhookEndpoint> endpointPage =
-                webhookEndpointQueryRepository.findAllByAccountId(
-                        accountId,
-                        pageable
-                );
+                webhookEndpointQueryRepository
+                        .findAllByAccountIdIn(
+                                accountIds,
+                                pageable
+                        );
 
         List<WebhookEndpoint> endpoints =
                 endpointPage.getContent();

@@ -8,11 +8,9 @@ import java.util.UUID;
 
 public record WebhookDeliveryResponse(
         UUID id,
-        UUID webhookEndpointId,
         UUID eventId,
         WebhookEventType eventType,
         WebhookDeliveryStatus status,
-        int attemptCount,
         Instant nextAttemptAt,
         Instant deliveredAt,
         String lastError,

@@ -116,11 +116,9 @@ public class GetWebhookEndpointDeliveriesHandler
 
         return new WebhookDeliveryResponse(
                 delivery.getId(),
-                delivery.getWebhookEndpointId(),
                 delivery.getEventId(),
                 delivery.getEventType(),
                 status,
-                delivery.getAttemptCount(),
                 delivery.getNextAttemptAt(),
                 delivery.getDeliveredAt(),
                 delivery.getLastError(),

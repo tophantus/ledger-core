@@ -1,6 +1,6 @@
 package com.example.ledgercore.webhook.query.handler;
 
-import com.example.ledgercore.common.exception.BusinessException;
+import com.example.ledgercore.common.dto.PageResponse;
 import com.example.ledgercore.webhook.entity.WebhookEndpoint;
 import com.example.ledgercore.webhook.entity.WebhookSubscription;
 import com.example.ledgercore.webhook.port.outbound.AccountOwnerPort;
@@ -11,9 +11,11 @@ import com.example.ledgercore.webhook.query.repository.WebhookSubscriptionQueryR
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.*;
 
 import java.util.List;
 import java.util.UUID;
@@ -43,105 +45,134 @@ class GetAccountWebhookEndpointsHandlerTest {
 
     private UUID userId;
     private UUID accountId;
+    private UUID webhookId1;
+    private UUID webhookId2;
 
     @BeforeEach
     void setUp() {
         userId = UUID.randomUUID();
         accountId = UUID.randomUUID();
+        webhookId1 = UUID.randomUUID();
+        webhookId2 = UUID.randomUUID();
     }
 
     @Test
-    void shouldReturnWebhookEndpointsWithSubscriptions() {
-        WebhookEndpoint endpoint1 =
-                endpoint(UUID.randomUUID());
-
-        WebhookEndpoint endpoint2 =
-                endpoint(UUID.randomUUID());
-
-        List<WebhookEndpoint> endpoints =
-                List.of(endpoint1, endpoint2);
+    void shouldReturnAccountWebhooksSuccessfully() {
+        WebhookEndpoint endpoint1 = mock(WebhookEndpoint.class);
+        WebhookEndpoint endpoint2 = mock(WebhookEndpoint.class);
 
         WebhookSubscription subscription1 =
-                subscription(endpoint1.getId());
-
+                mock(WebhookSubscription.class);
         WebhookSubscription subscription2 =
-                subscription(endpoint2.getId());
+                mock(WebhookSubscription.class);
 
-        List<WebhookSubscription> subscriptions =
-                List.of(subscription1, subscription2);
+        WebhookResponse response1 =
+                mock(WebhookResponse.class);
+        WebhookResponse response2 =
+                mock(WebhookResponse.class);
 
-        List<WebhookResponse> expected =
-                List.of(
-                        mock(WebhookResponse.class),
-                        mock(WebhookResponse.class)
+        when(endpoint1.getId()).thenReturn(webhookId1);
+        when(endpoint2.getId()).thenReturn(webhookId2);
+
+        Page<WebhookEndpoint> endpointPage =
+                new PageImpl<>(
+                        List.of(endpoint1, endpoint2),
+                        PageRequest.of(0, 20),
+                        2
                 );
 
-        when(webhookEndpointQueryRepository
-                .findAllByAccountId(accountId))
-                .thenReturn(endpoints);
+        when(webhookEndpointQueryRepository.findAllByAccountId(
+                eq(accountId),
+                any(Pageable.class)
+        )).thenReturn(endpointPage);
 
         when(webhookSubscriptionQueryRepository
                 .findAllByWebhookEndpointIdIn(
-                        List.of(
-                                endpoint1.getId(),
-                                endpoint2.getId()
-                        )
+                        eq(List.of(webhookId1, webhookId2))
                 ))
-                .thenReturn(subscriptions);
+                .thenReturn(List.of(subscription1, subscription2));
 
         when(webhookResponseMapper.map(
-                endpoints,
-                subscriptions
-        )).thenReturn(expected);
+                eq(List.of(endpoint1, endpoint2)),
+                eq(List.of(subscription1, subscription2))
+        )).thenReturn(List.of(response1, response2));
 
-        List<WebhookResponse> result =
-                handler.execute(userId, accountId);
-
-        assertSame(expected, result);
-
-        verify(accountOwnerPort)
-                .verifyOwnership(
+        PageResponse<WebhookResponse> result =
+                handler.execute(
                         userId,
-                        accountId
+                        accountId,
+                        0,
+                        20
                 );
 
+        assertNotNull(result);
+        assertEquals(
+                List.of(response1, response2),
+                result.content()
+        );
+        assertEquals(0, result.page());
+        assertEquals(20, result.size());
+        assertEquals(2, result.totalElements());
+        assertEquals(1, result.totalPages());
+
+        verify(accountOwnerPort)
+                .verifyOwnership(userId, accountId);
+
         verify(webhookEndpointQueryRepository)
-                .findAllByAccountId(accountId);
+                .findAllByAccountId(
+                        eq(accountId),
+                        any(Pageable.class)
+                );
 
         verify(webhookSubscriptionQueryRepository)
                 .findAllByWebhookEndpointIdIn(
-                        List.of(
-                                endpoint1.getId(),
-                                endpoint2.getId()
-                        )
+                        eq(List.of(webhookId1, webhookId2))
                 );
 
         verify(webhookResponseMapper)
                 .map(
-                        endpoints,
-                        subscriptions
+                        eq(List.of(endpoint1, endpoint2)),
+                        eq(List.of(subscription1, subscription2))
                 );
     }
 
     @Test
-    void shouldReturnEmptyListWhenNoWebhookEndpointsExist() {
-        when(webhookEndpointQueryRepository
-                .findAllByAccountId(accountId))
-                .thenReturn(List.of());
-
-        List<WebhookResponse> result =
-                handler.execute(userId, accountId);
-
-        assertTrue(result.isEmpty());
-
-        verify(accountOwnerPort)
-                .verifyOwnership(
-                        userId,
-                        accountId
+    void shouldReturnEmptyPageWhenAccountHasNoWebhooks() {
+        Page<WebhookEndpoint> endpointPage =
+                new PageImpl<>(
+                        List.of(),
+                        PageRequest.of(0, 20),
+                        0
                 );
 
+        when(webhookEndpointQueryRepository.findAllByAccountId(
+                eq(accountId),
+                any(Pageable.class)
+        )).thenReturn(endpointPage);
+
+        PageResponse<WebhookResponse> result =
+                handler.execute(
+                        userId,
+                        accountId,
+                        0,
+                        20
+                );
+
+        assertNotNull(result);
+        assertTrue(result.content().isEmpty());
+        assertEquals(0, result.page());
+        assertEquals(20, result.size());
+        assertEquals(0, result.totalElements());
+        assertEquals(0, result.totalPages());
+
+        verify(accountOwnerPort)
+                .verifyOwnership(userId, accountId);
+
         verify(webhookEndpointQueryRepository)
-                .findAllByAccountId(accountId);
+                .findAllByAccountId(
+                        eq(accountId),
+                        any(Pageable.class)
+                );
 
         verifyNoInteractions(
                 webhookSubscriptionQueryRepository,
@@ -150,27 +181,23 @@ class GetAccountWebhookEndpointsHandlerTest {
     }
 
     @Test
-    void shouldNotQuerySubscriptionsWhenOwnershipVerificationFails() {
-        doThrow(BusinessException.class)
+    void shouldVerifyOwnershipBeforeQueryingWebhooks() {
+        doThrow(new RuntimeException("Access denied"))
                 .when(accountOwnerPort)
-                .verifyOwnership(
-                        userId,
-                        accountId
-                );
+                .verifyOwnership(userId, accountId);
 
         assertThrows(
-                BusinessException.class,
+                RuntimeException.class,
                 () -> handler.execute(
                         userId,
-                        accountId
+                        accountId,
+                        0,
+                        20
                 )
         );
 
         verify(accountOwnerPort)
-                .verifyOwnership(
-                        userId,
-                        accountId
-                );
+                .verifyOwnership(userId, accountId);
 
         verifyNoInteractions(
                 webhookEndpointQueryRepository,
@@ -180,60 +207,227 @@ class GetAccountWebhookEndpointsHandlerTest {
     }
 
     @Test
-    void shouldQuerySubscriptionsUsingAllEndpointIds() {
-        WebhookEndpoint endpoint1 =
-                endpoint(UUID.randomUUID());
+    void shouldUseCorrectPaginationAndSort() {
+        WebhookEndpoint endpoint =
+                mock(WebhookEndpoint.class);
 
-        WebhookEndpoint endpoint2 =
-                endpoint(UUID.randomUUID());
+        when(endpoint.getId()).thenReturn(webhookId1);
 
-        List<WebhookEndpoint> endpoints =
-                List.of(endpoint1, endpoint2);
+        Page<WebhookEndpoint> endpointPage =
+                new PageImpl<>(
+                        List.of(endpoint),
+                        PageRequest.of(2, 10),
+                        21
+                );
 
-        when(webhookEndpointQueryRepository
-                .findAllByAccountId(accountId))
-                .thenReturn(endpoints);
+        when(webhookEndpointQueryRepository.findAllByAccountId(
+                eq(accountId),
+                any(Pageable.class)
+        )).thenReturn(endpointPage);
 
         when(webhookSubscriptionQueryRepository
                 .findAllByWebhookEndpointIdIn(
-                        List.of(
-                                endpoint1.getId(),
-                                endpoint2.getId()
-                        )
+                        eq(List.of(webhookId1))
                 ))
                 .thenReturn(List.of());
 
+        WebhookResponse response =
+                mock(WebhookResponse.class);
+
         when(webhookResponseMapper.map(
-                endpoints,
-                List.of()
-        )).thenReturn(List.of());
+                eq(List.of(endpoint)),
+                eq(List.of())
+        )).thenReturn(List.of(response));
 
-        handler.execute(userId, accountId);
+        handler.execute(
+                userId,
+                accountId,
+                2,
+                10
+        );
 
-        verify(webhookSubscriptionQueryRepository)
-                .findAllByWebhookEndpointIdIn(
-                        List.of(
-                                endpoint1.getId(),
-                                endpoint2.getId()
-                        )
+        ArgumentCaptor<Pageable> pageableCaptor =
+                ArgumentCaptor.forClass(Pageable.class);
+
+        verify(webhookEndpointQueryRepository)
+                .findAllByAccountId(
+                        eq(accountId),
+                        pageableCaptor.capture()
                 );
+
+        Pageable pageable = pageableCaptor.getValue();
+
+        assertEquals(2, pageable.getPageNumber());
+        assertEquals(10, pageable.getPageSize());
+
+        assertEquals(
+                List.of(
+                        new Sort.Order(
+                                Sort.Direction.DESC,
+                                "createdAt"
+                        ),
+                        new Sort.Order(
+                                Sort.Direction.DESC,
+                                "id"
+                        )
+                ),
+                pageable.getSort().toList()
+        );
     }
 
-    private WebhookEndpoint endpoint(UUID id) {
-        return WebhookEndpoint.builder()
-                .id(id)
-                .accountId(accountId)
-                .url("https://example.com/webhook/" + id)
-                .secret("webhook-secret")
-                .build();
+    @Test
+    void shouldNormalizeNegativePageToZero() {
+        Page<WebhookEndpoint> endpointPage =
+                new PageImpl<>(
+                        List.of(),
+                        PageRequest.of(0, 20),
+                        0
+                );
+
+        when(webhookEndpointQueryRepository.findAllByAccountId(
+                eq(accountId),
+                any(Pageable.class)
+        )).thenReturn(endpointPage);
+
+        PageResponse<WebhookResponse> result =
+                handler.execute(
+                        userId,
+                        accountId,
+                        -5,
+                        20
+                );
+
+        ArgumentCaptor<Pageable> pageableCaptor =
+                ArgumentCaptor.forClass(Pageable.class);
+
+        verify(webhookEndpointQueryRepository)
+                .findAllByAccountId(
+                        eq(accountId),
+                        pageableCaptor.capture()
+                );
+
+        assertEquals(
+                0,
+                pageableCaptor.getValue().getPageNumber()
+        );
     }
 
-    private WebhookSubscription subscription(
-            UUID endpointId
-    ) {
-        return WebhookSubscription.builder()
-                .id(UUID.randomUUID())
-                .webhookEndpointId(endpointId)
-                .build();
+    @Test
+    void shouldClampSizeToOneWhenSizeIsLessThanOne() {
+        Page<WebhookEndpoint> endpointPage =
+                new PageImpl<>(
+                        List.of(),
+                        PageRequest.of(0, 1),
+                        0
+                );
+
+        when(webhookEndpointQueryRepository.findAllByAccountId(
+                eq(accountId),
+                any(Pageable.class)
+        )).thenReturn(endpointPage);
+
+        PageResponse<WebhookResponse> result =
+                handler.execute(
+                        userId,
+                        accountId,
+                        0,
+                        0
+                );
+
+        assertEquals(1, result.size());
+
+        ArgumentCaptor<Pageable> pageableCaptor =
+                ArgumentCaptor.forClass(Pageable.class);
+
+        verify(webhookEndpointQueryRepository)
+                .findAllByAccountId(
+                        eq(accountId),
+                        pageableCaptor.capture()
+                );
+
+        assertEquals(
+                1,
+                pageableCaptor.getValue().getPageSize()
+        );
+    }
+
+    @Test
+    void shouldClampSizeToOneHundredWhenSizeExceedsMaximum() {
+        Page<WebhookEndpoint> endpointPage =
+                new PageImpl<>(
+                        List.of(),
+                        PageRequest.of(0, 100),
+                        0
+                );
+
+        when(webhookEndpointQueryRepository.findAllByAccountId(
+                eq(accountId),
+                any(Pageable.class)
+        )).thenReturn(endpointPage);
+
+        PageResponse<WebhookResponse> result =
+                handler.execute(
+                        userId,
+                        accountId,
+                        0,
+                        500
+                );
+
+        assertEquals(100, result.size());
+
+        ArgumentCaptor<Pageable> pageableCaptor =
+                ArgumentCaptor.forClass(Pageable.class);
+
+        verify(webhookEndpointQueryRepository)
+                .findAllByAccountId(
+                        eq(accountId),
+                        pageableCaptor.capture()
+                );
+
+        assertEquals(
+                100,
+                pageableCaptor.getValue().getPageSize()
+        );
+    }
+
+    @Test
+    void shouldNotQuerySubscriptionsWhenEndpointPageIsEmpty() {
+        Page<WebhookEndpoint> endpointPage =
+                new PageImpl<>(
+                        List.of(),
+                        PageRequest.of(1, 20),
+                        25
+                );
+
+        when(webhookEndpointQueryRepository.findAllByAccountId(
+                eq(accountId),
+                any(Pageable.class)
+        )).thenReturn(endpointPage);
+
+        PageResponse<WebhookResponse> result =
+                handler.execute(
+                        userId,
+                        accountId,
+                        1,
+                        20
+                );
+
+        assertNotNull(result);
+        assertTrue(result.content().isEmpty());
+        assertEquals(1, result.page());
+        assertEquals(20, result.size());
+        assertEquals(25, result.totalElements());
+        assertEquals(2, result.totalPages());
+
+        verify(webhookEndpointQueryRepository)
+                .findAllByAccountId(
+                        eq(accountId),
+                        any(Pageable.class)
+                );
+
+        verifyNoInteractions(
+                webhookSubscriptionQueryRepository,
+                webhookResponseMapper
+        );
     }
 }

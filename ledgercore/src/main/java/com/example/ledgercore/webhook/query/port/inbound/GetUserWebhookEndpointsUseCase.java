@@ -5,11 +5,10 @@ import com.example.ledgercore.webhook.query.dto.WebhookResponse;
 
 import java.util.UUID;
 
-public interface GetAccountWebhookEndpointsUseCase {
+public interface GetUserWebhookEndpointsUseCase {
 
     PageResponse<WebhookResponse> execute(
             UUID userId,
-            UUID accountId,
             int page,
             int size
     );

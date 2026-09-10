@@ -21,6 +21,7 @@ import com.example.ledgercore.webhook.enums.WebhookEventType;
 import com.example.ledgercore.webhook.query.dto.GetWebhookEndpointDeliveriesQuery;
 import com.example.ledgercore.webhook.query.dto.WebhookDeliveryResponse;
 import com.example.ledgercore.webhook.query.dto.WebhookResponse;
+import com.example.ledgercore.webhook.query.port.inbound.GetUserWebhookEndpointsUseCase;
 import com.example.ledgercore.webhook.query.port.inbound.GetWebhookEndpointDeliveriesUseCase;
 import com.example.ledgercore.webhook.query.port.inbound.GetWebhookUseCase;
 import com.example.ledgercore.webhook.query.port.inbound.GetAccountWebhookEndpointsUseCase;
@@ -32,7 +33,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -50,6 +50,7 @@ public class WebhookController {
     private final RotateWebhookSecretUseCase rotateWebhookSecretUseCase;
 
     private final GetWebhookUseCase getWebhookUseCase;
+    private final GetUserWebhookEndpointsUseCase getUserWebhookEndpointsUseCase;
     private final GetAccountWebhookEndpointsUseCase getAccountWebhookEndpointsUseCase;
     private final GetWebhookEndpointDeliveriesUseCase
             getWebhookEndpointDeliveriesUseCase;
@@ -211,20 +212,35 @@ public class WebhookController {
         );
     }
 
-    @GetMapping("/api/v1/accounts/{accountId}/webhooks")
+    @GetMapping("/api/v1/webhooks")
     @Operation(
-            summary = "Get account webhooks",
-            description = "Get all webhooks registered for an account"
+            summary = "Get webhooks",
+            description = "Get paginated webhooks for the authenticated user or a specific account"
     )
-    public ResponseEntity<ApiResponse<List<WebhookResponse>>> getWebhooks(
+    public ResponseEntity<ApiResponse<PageResponse<WebhookResponse>>> getWebhooks(
             @AuthenticationPrincipal AuthPrincipal principal,
-            @PathVariable UUID accountId
+            @RequestParam(required = false) UUID accountId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
     ) {
-        List<WebhookResponse> response =
-                getAccountWebhookEndpointsUseCase.execute(
-                        principal.getUserId(),
-                        accountId
-                );
+        PageResponse<WebhookResponse> response;
+
+        if (accountId != null) {
+            response =
+                    getAccountWebhookEndpointsUseCase.execute(
+                            principal.getUserId(),
+                            accountId,
+                            page,
+                            size
+                    );
+        } else {
+            response =
+                    getUserWebhookEndpointsUseCase.execute(
+                            principal.getUserId(),
+                            page,
+                            size
+                    );
+        }
 
         return ResponseEntity.ok(
                 ApiResponse.success(
