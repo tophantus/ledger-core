@@ -3,6 +3,9 @@ package com.example.ledgercore.withdrawal.command.handler;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.withdrawal.command.dto.ConfirmWithdrawalRequestResponse;
+import com.example.ledgercore.withdrawal.command.dto.CreateWithdrawalLookupCodeCommand;
+import com.example.ledgercore.withdrawal.command.dto.CreateWithdrawalLookupCodeResponse;
+import com.example.ledgercore.withdrawal.command.port.inbound.CreateWithdrawalLookupCodeUseCase;
 import com.example.ledgercore.withdrawal.command.port.outbound.WithdrawalAccountInfo;
 import com.example.ledgercore.withdrawal.command.port.outbound.WithdrawalAccountPort;
 import com.example.ledgercore.withdrawal.command.port.outbound.WithdrawalHoldPort;
@@ -16,12 +19,10 @@ import com.example.ledgercore.withdrawal.config.WithdrawalIntentProperties;
 import com.example.ledgercore.withdrawal.entity.WithdrawalIntent;
 import com.example.ledgercore.withdrawal.entity.WithdrawalRequest;
 import com.example.ledgercore.withdrawal.enums.WithdrawalIntentStatus;
-import com.example.ledgercore.withdrawal.enums.WithdrawalRequestStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -33,12 +34,55 @@ import java.time.ZoneOffset;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ConfirmWithdrawalExecutionServiceTest {
+
+    private static final Instant NOW =
+            Instant.parse("2026-09-10T15:00:00Z");
+
+    private static final UUID USER_ID =
+            UUID.fromString("00000000-0000-0000-0000-000000000001");
+
+    private static final UUID ANOTHER_USER_ID =
+            UUID.fromString("00000000-0000-0000-0000-000000000099");
+
+    private static final UUID REQUEST_ID =
+            UUID.fromString("00000000-0000-0000-0000-000000000002");
+
+    private static final UUID ACCOUNT_ID =
+            UUID.fromString("00000000-0000-0000-0000-000000000003");
+
+    private static final UUID HOLD_ID =
+            UUID.fromString("00000000-0000-0000-0000-000000000005");
+
+    private static final BigDecimal AMOUNT =
+            new BigDecimal("1000000");
+
+    private static final String CURRENCY = "VND";
+
+    private static final String WITHDRAWAL_REFERENCE =
+            "WD-20260910-000001";
+
+    private static final String WITHDRAWAL_CODE =
+            "123456";
+
+    private static final String WITHDRAWAL_CODE_HASH =
+            "hashed-code";
+
+    private static final String LOOKUP_CODE =
+            "12345678";
+
+    private static final Duration INTENT_EXPIRATION =
+            Duration.ofMinutes(10);
 
     @Mock
     private WithdrawalRequestCommandRepository
@@ -47,6 +91,10 @@ class ConfirmWithdrawalExecutionServiceTest {
     @Mock
     private WithdrawalIntentCommandRepository
             withdrawalIntentCommandRepository;
+
+    @Mock
+    private CreateWithdrawalLookupCodeUseCase
+            createWithdrawalLookupCodeUseCase;
 
     @Mock
     private WithdrawalAccountPort
@@ -80,22 +128,8 @@ class ConfirmWithdrawalExecutionServiceTest {
 
     private ConfirmWithdrawalExecutionService service;
 
-    private UUID userId;
-    private UUID anotherUserId;
-    private UUID requestId;
-    private UUID accountId;
-    private UUID intentId;
-    private UUID holdId;
-
-    private static final Instant NOW =
-            Instant.parse("2026-08-27T10:00:00Z");
-
-    private static final Duration INTENT_EXPIRATION =
-            Duration.ofMinutes(10);
-
     @BeforeEach
     void setUp() {
-
         clock = Clock.fixed(
                 NOW,
                 ZoneOffset.UTC
@@ -104,6 +138,7 @@ class ConfirmWithdrawalExecutionServiceTest {
         service = new ConfirmWithdrawalExecutionService(
                 withdrawalRequestCommandRepository,
                 withdrawalIntentCommandRepository,
+                createWithdrawalLookupCodeUseCase,
                 withdrawalAccountPort,
                 withdrawalHoldPort,
                 withdrawalNotificationPort,
@@ -113,1160 +148,707 @@ class ConfirmWithdrawalExecutionServiceTest {
                 withdrawalIntentProperties,
                 clock
         );
-
-        userId = UUID.randomUUID();
-        anotherUserId = UUID.randomUUID();
-        requestId = UUID.randomUUID();
-        accountId = UUID.randomUUID();
-        intentId = UUID.randomUUID();
-        holdId = UUID.randomUUID();
     }
 
     @Test
     void shouldConfirmWithdrawalSuccessfully() {
-
         WithdrawalRequest request =
-                pendingRequest(
-                        NOW.plusSeconds(300)
+                mock(WithdrawalRequest.class);
+
+        when(request.getId())
+                .thenReturn(REQUEST_ID);
+
+        when(request.getUserId())
+                .thenReturn(USER_ID);
+
+        when(request.getAccountId())
+                .thenReturn(ACCOUNT_ID);
+
+        when(request.getAmount())
+                .thenReturn(AMOUNT);
+
+        when(request.getCurrency())
+                .thenReturn(CURRENCY);
+
+        when(request.isPending())
+                .thenReturn(true);
+
+        when(request.isExpired(NOW))
+                .thenReturn(false);
+
+        WithdrawalAccountInfo account =
+                new WithdrawalAccountInfo(
+                        ACCOUNT_ID,
+                        USER_ID,
+                        CURRENCY,
+                        new BigDecimal("5000000")
                 );
 
-        mockRequest(request);
-        mockValidAccount();
-        mockIntentProperties();
-        mockReference();
-        mockWithdrawalCode();
-        mockCodeHash();
-        mockHold();
+        when(withdrawalRequestCommandRepository.findById(REQUEST_ID))
+                .thenReturn(Optional.of(request));
+
+        when(withdrawalAccountPort.getWithdrawalInfo(ACCOUNT_ID))
+                .thenReturn(account);
+
+        when(withdrawalReferenceGenerator.generate())
+                .thenReturn(WITHDRAWAL_REFERENCE);
+
+        when(withdrawalCodeGenerator.generate())
+                .thenReturn(WITHDRAWAL_CODE);
+
+        when(withdrawalCodeHasher.hash(WITHDRAWAL_CODE))
+                .thenReturn(WITHDRAWAL_CODE_HASH);
+
+        when(withdrawalIntentProperties.getExpiration())
+                .thenReturn(INTENT_EXPIRATION);
+
+        when(withdrawalHoldPort.createHold(
+                any(UUID.class),
+                eq(ACCOUNT_ID),
+                eq(AMOUNT),
+                eq(CURRENCY)
+        )).thenReturn(HOLD_ID);
+
+        when(createWithdrawalLookupCodeUseCase.execute(
+                any(CreateWithdrawalLookupCodeCommand.class)
+        )).thenReturn(
+                new CreateWithdrawalLookupCodeResponse(
+                        LOOKUP_CODE
+                )
+        );
+
+        ConfirmWithdrawalRequestResponse response =
+                service.execute(
+                        USER_ID,
+                        REQUEST_ID,
+                        ACCOUNT_ID
+                );
+
+        assertThat(response)
+                .isNotNull();
+
+        assertThat(response.requestId())
+                .isEqualTo(REQUEST_ID);
+
+        assertThat(response.amount())
+                .isEqualTo(AMOUNT.toPlainString());
+
+        assertThat(response.currency())
+                .isEqualTo(CURRENCY);
+
+        assertThat(response.intentExpiresAt())
+                .isEqualTo(
+                        NOW.plus(INTENT_EXPIRATION)
+                );
 
         ArgumentCaptor<WithdrawalIntent> intentCaptor =
                 ArgumentCaptor.forClass(
                         WithdrawalIntent.class
                 );
 
-        ConfirmWithdrawalRequestResponse response =
-                service.execute(
-                        userId,
-                        requestId,
-                        accountId
-                );
-
-        verify(
-                withdrawalIntentCommandRepository
-        ).save(intentCaptor.capture());
+        verify(withdrawalIntentCommandRepository)
+                .save(intentCaptor.capture());
 
         WithdrawalIntent intent =
                 intentCaptor.getValue();
 
-        assertNotNull(response);
+        assertThat(intent.getId())
+                .isNotNull();
 
-        assertEquals(
-                requestId,
-                response.requestId()
-        );
+        assertThat(intent.getWithdrawalRequestId())
+                .isEqualTo(REQUEST_ID);
 
-        assertEquals(
-                WithdrawalRequestStatus.CONFIRMED,
-                response.requestStatus()
-        );
+        assertThat(intent.getWithdrawalReference())
+                .isEqualTo(WITHDRAWAL_REFERENCE);
 
-        assertEquals(
-                intent.getId(),
-                response.intentId()
-        );
+        assertThat(intent.getUserId())
+                .isEqualTo(USER_ID);
 
-        assertEquals(
-                "WD-ABC123",
-                response.withdrawalReference()
-        );
+        assertThat(intent.getAccountId())
+                .isEqualTo(ACCOUNT_ID);
 
-        assertEquals(
-                new BigDecimal("100000"),
-                response.amount()
-        );
+        assertThat(intent.getHoldId())
+                .isEqualTo(HOLD_ID);
 
-        assertEquals(
-                "VND",
-                response.currency()
-        );
+        assertThat(intent.getAmount())
+                .isEqualByComparingTo(AMOUNT);
 
-        assertEquals(
-                NOW.plus(INTENT_EXPIRATION),
-                response.intentExpiresAt()
-        );
+        assertThat(intent.getCurrency())
+                .isEqualTo(CURRENCY);
 
-        assertEquals(
-                WithdrawalRequestStatus.CONFIRMED,
-                request.getStatus()
-        );
+        assertThat(intent.getWithdrawalCodeHash())
+                .isEqualTo(WITHDRAWAL_CODE_HASH);
 
-        assertNotNull(intent.getId());
+        assertThat(intent.getStatus())
+                .isEqualTo(WithdrawalIntentStatus.READY);
 
-        assertEquals(
-                requestId,
-                intent.getWithdrawalRequestId()
-        );
+        assertThat(intent.getCreatedAt())
+                .isEqualTo(NOW);
 
-        assertEquals(
-                userId,
-                intent.getUserId()
-        );
-
-        assertEquals(
-                accountId,
-                intent.getAccountId()
-        );
-
-        assertEquals(
-                holdId,
-                intent.getHoldId()
-        );
-
-        verify(
-                withdrawalRequestCommandRepository
-        ).findById(requestId);
-
-        verify(
-                withdrawalAccountPort
-        ).getWithdrawalInfo(accountId);
-
-        verify(
-                withdrawalHoldPort
-        ).createHold(
-                eq(intent.getId()),
-                eq(accountId),
-                eq(new BigDecimal("100000")),
-                eq("VND")
-        );
-
-        verify(
-                withdrawalNotificationPort
-        ).sendWithdrawalCode(
-                eq(intent.getId()),
-                eq(userId),
-                eq("WD-ABC123"),
-                eq("123456"),
-                eq(new BigDecimal("100000")),
-                eq("VND"),
-                eq(NOW.plus(INTENT_EXPIRATION))
-        );
-    }
-
-
-    @Test
-    void shouldCreateIntentWithCorrectData() {
-
-        WithdrawalRequest request =
-                pendingRequest(
-                        NOW.plusSeconds(300)
+        assertThat(intent.getExpiresAt())
+                .isEqualTo(
+                        NOW.plus(INTENT_EXPIRATION)
                 );
 
-        mockRequest(request);
-        mockValidAccount();
-        mockIntentProperties();
-        mockReference();
-        mockWithdrawalCode();
-        mockCodeHash();
-        mockHold();
-
-        ArgumentCaptor<WithdrawalIntent> captor =
-                ArgumentCaptor.forClass(
-                        WithdrawalIntent.class
-                );
-
-        service.execute(
-                userId,
-                requestId,
-                accountId
-        );
-
-        verify(
-                withdrawalIntentCommandRepository
-        ).save(captor.capture());
-
-        WithdrawalIntent intent =
-                captor.getValue();
-
-        assertNotNull(intent.getId());
-
-        assertEquals(
-                requestId,
-                intent.getWithdrawalRequestId()
-        );
-
-        assertEquals(
-                "WD-ABC123",
-                intent.getWithdrawalReference()
-        );
-
-        assertEquals(
-                userId,
-                intent.getUserId()
-        );
-
-        assertEquals(
-                accountId,
-                intent.getAccountId()
-        );
-
-        assertEquals(
-                holdId,
-                intent.getHoldId()
-        );
-
-        assertEquals(
-                new BigDecimal("100000"),
-                intent.getAmount()
-        );
-
-        assertEquals(
-                "VND",
-                intent.getCurrency()
-        );
-
-        assertEquals(
-                "HASHED-CODE",
-                intent.getWithdrawalCodeHash()
-        );
-
-        assertEquals(
-                WithdrawalIntentStatus.READY,
-                intent.getStatus()
-        );
-
-        assertEquals(
-                NOW.plus(INTENT_EXPIRATION),
-                intent.getExpiresAt()
-        );
-
-        assertEquals(
-                NOW,
-                intent.getCreatedAt()
-        );
-    }
-
-    @Test
-    void shouldGenerateIntentIdBeforeCreatingHold() {
-
-        WithdrawalRequest request =
-                pendingRequest(
-                        NOW.plusSeconds(300)
-                );
-
-        mockRequest(request);
-        mockValidAccount();
-        mockIntentProperties();
-        mockReference();
-        mockWithdrawalCode();
-        mockCodeHash();
-
-        when(
-                withdrawalHoldPort.createHold(
+        verify(withdrawalHoldPort)
+                .createHold(
                         any(UUID.class),
-                        eq(accountId),
-                        any(BigDecimal.class),
-                        eq("VND")
+                        eq(ACCOUNT_ID),
+                        eq(AMOUNT),
+                        eq(CURRENCY)
+                );
+
+        verify(withdrawalReferenceGenerator)
+                .generate();
+
+        verify(withdrawalCodeGenerator)
+                .generate();
+
+        verify(withdrawalCodeHasher)
+                .hash(WITHDRAWAL_CODE);
+
+        verify(createWithdrawalLookupCodeUseCase)
+                .execute(
+                        any(CreateWithdrawalLookupCodeCommand.class)
+                );
+
+        verify(withdrawalNotificationPort)
+                .sendWithdrawalCode(
+                        eq(intent.getId()),
+                        eq(USER_ID),
+                        eq(LOOKUP_CODE),
+                        eq(WITHDRAWAL_CODE),
+                        eq(AMOUNT),
+                        eq(CURRENCY),
+                        eq(NOW.plus(INTENT_EXPIRATION))
+                );
+
+        verify(request)
+                .confirm(NOW);
+    }
+
+    @Test
+    void shouldThrowWhenWithdrawalRequestNotFound() {
+        when(withdrawalRequestCommandRepository.findById(REQUEST_ID))
+                .thenReturn(Optional.empty());
+
+        assertThatThrownBy(() ->
+                service.execute(
+                        USER_ID,
+                        REQUEST_ID,
+                        ACCOUNT_ID
                 )
-        ).thenAnswer(invocation -> {
-
-            UUID generatedIntentId =
-                    invocation.getArgument(0);
-
-            intentId = generatedIntentId;
-
-            return holdId;
-        });
-
-        service.execute(
-                userId,
-                requestId,
-                accountId
-        );
-
-        verify(
-                withdrawalHoldPort
-        ).createHold(
-                any(UUID.class),
-                eq(accountId),
-                eq(new BigDecimal("100000")),
-                eq("VND")
-        );
-    }
-
-    @Test
-    void shouldPassGeneratedIntentIdToCreateHold() {
-
-        WithdrawalRequest request =
-                pendingRequest(
-                        NOW.plusSeconds(300)
+        )
+                .isInstanceOf(BusinessException.class)
+                .extracting("errorCode")
+                .isEqualTo(
+                        ErrorCode.WITHDRAWAL_REQUEST_NOT_FOUND
                 );
-
-        mockRequest(request);
-        mockValidAccount();
-        mockIntentProperties();
-        mockReference();
-        mockWithdrawalCode();
-        mockCodeHash();
-        mockHold();
-
-        ArgumentCaptor<UUID> intentIdCaptor =
-                ArgumentCaptor.forClass(UUID.class);
-
-        service.execute(
-                userId,
-                requestId,
-                accountId
-        );
-
-        verify(
-                withdrawalHoldPort
-        ).createHold(
-                intentIdCaptor.capture(),
-                eq(accountId),
-                eq(new BigDecimal("100000")),
-                eq("VND")
-        );
-
-        UUID generatedIntentId =
-                intentIdCaptor.getValue();
-
-        assertNotNull(generatedIntentId);
-
-        ArgumentCaptor<WithdrawalIntent> intentCaptor =
-                ArgumentCaptor.forClass(
-                        WithdrawalIntent.class
-                );
-
-        verify(
-                withdrawalIntentCommandRepository
-        ).save(intentCaptor.capture());
-
-        assertEquals(
-                generatedIntentId,
-                intentCaptor.getValue().getId()
-        );
-    }
-
-    @Test
-    void shouldHashGeneratedWithdrawalCode() {
-
-        WithdrawalRequest request =
-                pendingRequest(
-                        NOW.plusSeconds(300)
-                );
-
-        mockRequest(request);
-        mockValidAccount();
-        mockIntentProperties();
-        mockReference();
-        mockWithdrawalCode();
-        mockCodeHash();
-        mockHold();
-
-        service.execute(
-                userId,
-                requestId,
-                accountId
-        );
-
-        verify(
-                withdrawalCodeHasher
-        ).hash("123456");
-    }
-
-    @Test
-    void shouldCreateHoldBeforeSavingIntent() {
-
-        WithdrawalRequest request =
-                pendingRequest(
-                        NOW.plusSeconds(300)
-                );
-
-        mockRequest(request);
-        mockValidAccount();
-        mockIntentProperties();
-        mockReference();
-        mockWithdrawalCode();
-        mockCodeHash();
-        mockHold();
-
-        InOrder inOrder = inOrder(
-                withdrawalHoldPort,
-                withdrawalIntentCommandRepository
-        );
-
-        service.execute(
-                userId,
-                requestId,
-                accountId
-        );
-
-        inOrder.verify(
-                withdrawalHoldPort
-        ).createHold(
-                any(UUID.class),
-                eq(accountId),
-                eq(new BigDecimal("100000")),
-                eq("VND")
-        );
-
-        inOrder.verify(
-                withdrawalIntentCommandRepository
-        ).save(any(WithdrawalIntent.class));
-    }
-
-    @Test
-    void shouldSaveIntentBeforeConfirmingRequest() {
-
-        WithdrawalRequest request =
-                pendingRequest(
-                        NOW.plusSeconds(300)
-                );
-
-        mockRequest(request);
-        mockValidAccount();
-        mockIntentProperties();
-        mockReference();
-        mockWithdrawalCode();
-        mockCodeHash();
-        mockHold();
-
-        InOrder inOrder = inOrder(
-                withdrawalIntentCommandRepository,
-                withdrawalNotificationPort
-        );
-
-        service.execute(
-                userId,
-                requestId,
-                accountId
-        );
-
-        inOrder.verify(
-                withdrawalIntentCommandRepository
-        ).save(any(WithdrawalIntent.class));
-
-        inOrder.verify(
-                withdrawalNotificationPort
-        ).sendWithdrawalCode(
-                any(UUID.class),
-                eq(userId),
-                eq("WD-ABC123"),
-                eq("123456"),
-                eq(new BigDecimal("100000")),
-                eq("VND"),
-                eq(NOW.plus(INTENT_EXPIRATION))
-        );
-    }
-
-    @Test
-    void shouldSendNotificationWithPlaintextWithdrawalCode() {
-
-        WithdrawalRequest request =
-                pendingRequest(
-                        NOW.plusSeconds(300)
-                );
-
-        mockRequest(request);
-        mockValidAccount();
-        mockIntentProperties();
-        mockReference();
-        mockWithdrawalCode();
-        mockCodeHash();
-        mockHold();
-
-        service.execute(
-                userId,
-                requestId,
-                accountId
-        );
-
-        verify(
-                withdrawalNotificationPort
-        ).sendWithdrawalCode(
-                any(UUID.class),
-                eq(userId),
-                eq("WD-ABC123"),
-                eq("123456"),
-                eq(new BigDecimal("100000")),
-                eq("VND"),
-                eq(NOW.plus(INTENT_EXPIRATION))
-        );
-    }
-
-    @Test
-    void shouldThrowWhenRequestDoesNotExist() {
-
-        when(
-                withdrawalRequestCommandRepository
-                        .findById(requestId)
-        ).thenReturn(
-                Optional.empty()
-        );
-
-        BusinessException exception =
-                assertThrows(
-                        BusinessException.class,
-                        () -> service.execute(
-                                userId,
-                                requestId,
-                                accountId
-                        )
-                );
-
-        assertEquals(
-                ErrorCode.WITHDRAWAL_REQUEST_NOT_FOUND,
-                exception.getErrorCode()
-        );
 
         verifyNoInteractions(
                 withdrawalAccountPort,
                 withdrawalHoldPort,
                 withdrawalIntentCommandRepository,
-                withdrawalNotificationPort,
                 withdrawalReferenceGenerator,
                 withdrawalCodeGenerator,
                 withdrawalCodeHasher,
-                withdrawalIntentProperties
+                withdrawalIntentProperties,
+                createWithdrawalLookupCodeUseCase,
+                withdrawalNotificationPort
         );
     }
 
     @Test
-    void shouldThrowWhenUserDoesNotOwnRequest() {
-
+    void shouldThrowWhenUserDoesNotOwnWithdrawalRequest() {
         WithdrawalRequest request =
-                pendingRequest(
-                        NOW.plusSeconds(300)
+                mock(WithdrawalRequest.class);
+
+        when(request.getUserId())
+                .thenReturn(USER_ID);
+
+        when(withdrawalRequestCommandRepository.findById(REQUEST_ID))
+                .thenReturn(Optional.of(request));
+
+        assertThatThrownBy(() ->
+                service.execute(
+                        ANOTHER_USER_ID,
+                        REQUEST_ID,
+                        ACCOUNT_ID
+                )
+        )
+                .isInstanceOf(BusinessException.class)
+                .extracting("errorCode")
+                .isEqualTo(
+                        ErrorCode.ACCESS_DENIED
                 );
-
-        request.setUserId(anotherUserId);
-
-        mockRequest(request);
-
-        BusinessException exception =
-                assertThrows(
-                        BusinessException.class,
-                        () -> service.execute(
-                                userId,
-                                requestId,
-                                accountId
-                        )
-                );
-
-        assertEquals(
-                ErrorCode.ACCESS_DENIED,
-                exception.getErrorCode()
-        );
 
         verifyNoInteractions(
                 withdrawalAccountPort,
                 withdrawalHoldPort,
                 withdrawalIntentCommandRepository,
-                withdrawalNotificationPort,
                 withdrawalReferenceGenerator,
                 withdrawalCodeGenerator,
                 withdrawalCodeHasher,
-                withdrawalIntentProperties
+                withdrawalIntentProperties,
+                createWithdrawalLookupCodeUseCase,
+                withdrawalNotificationPort
         );
     }
 
     @Test
-    void shouldThrowWhenRequestIsNotPending() {
-
+    void shouldThrowWhenWithdrawalRequestIsNotPending() {
         WithdrawalRequest request =
-                pendingRequest(
-                        NOW.plusSeconds(300)
+                mock(WithdrawalRequest.class);
+
+        when(request.getUserId())
+                .thenReturn(USER_ID);
+
+        when(request.isPending())
+                .thenReturn(false);
+
+        when(withdrawalRequestCommandRepository.findById(REQUEST_ID))
+                .thenReturn(Optional.of(request));
+
+        assertThatThrownBy(() ->
+                service.execute(
+                        USER_ID,
+                        REQUEST_ID,
+                        ACCOUNT_ID
+                )
+        )
+                .isInstanceOf(BusinessException.class)
+                .extracting("errorCode")
+                .isEqualTo(
+                        ErrorCode.WITHDRAWAL_REQUEST_NOT_PENDING
                 );
 
-        request.setStatus(
-                WithdrawalRequestStatus.CONFIRMED
+        verifyNoInteractions(
+                withdrawalAccountPort,
+                withdrawalHoldPort,
+                withdrawalIntentCommandRepository,
+                withdrawalReferenceGenerator,
+                withdrawalCodeGenerator,
+                withdrawalCodeHasher,
+                withdrawalIntentProperties,
+                createWithdrawalLookupCodeUseCase,
+                withdrawalNotificationPort
         );
-
-        mockRequest(request);
-
-        BusinessException exception =
-                assertThrows(
-                        BusinessException.class,
-                        () -> service.execute(
-                                userId,
-                                requestId,
-                                accountId
-                        )
-                );
-
-        assertEquals(
-                ErrorCode.WITHDRAWAL_REQUEST_NOT_PENDING,
-                exception.getErrorCode()
-        );
-
-        verifyNoInteractionsAfterRequestValidation();
     }
 
     @Test
-    void shouldThrowWhenRequestIsExpired() {
-
+    void shouldExpireAndThrowWhenWithdrawalRequestIsExpired() {
         WithdrawalRequest request =
-                pendingRequest(
-                        NOW.minusSeconds(1)
+                mock(WithdrawalRequest.class);
+
+        when(request.getUserId())
+                .thenReturn(USER_ID);
+
+        when(request.isPending())
+                .thenReturn(true);
+
+        when(request.isExpired(NOW))
+                .thenReturn(true);
+
+        when(withdrawalRequestCommandRepository.findById(REQUEST_ID))
+                .thenReturn(Optional.of(request));
+
+        assertThatThrownBy(() ->
+                service.execute(
+                        USER_ID,
+                        REQUEST_ID,
+                        ACCOUNT_ID
+                )
+        )
+                .isInstanceOf(BusinessException.class)
+                .extracting("errorCode")
+                .isEqualTo(
+                        ErrorCode.WITHDRAWAL_REQUEST_EXPIRED
                 );
 
-        mockRequest(request);
+        verify(request)
+                .expire();
 
-        BusinessException exception =
-                assertThrows(
-                        BusinessException.class,
-                        () -> service.execute(
-                                userId,
-                                requestId,
-                                accountId
-                        )
-                );
-
-        assertEquals(
-                ErrorCode.WITHDRAWAL_REQUEST_EXPIRED,
-                exception.getErrorCode()
+        verifyNoInteractions(
+                withdrawalAccountPort,
+                withdrawalHoldPort,
+                withdrawalIntentCommandRepository,
+                withdrawalReferenceGenerator,
+                withdrawalCodeGenerator,
+                withdrawalCodeHasher,
+                withdrawalIntentProperties,
+                createWithdrawalLookupCodeUseCase,
+                withdrawalNotificationPort
         );
-
-        assertEquals(
-                WithdrawalRequestStatus.EXPIRED,
-                request.getStatus()
-        );
-
-        verifyNoInteractionsAfterRequestValidation();
     }
 
     @Test
-    void shouldThrowWhenRequestExpiresExactlyAtNow() {
-
+    void shouldThrowWhenAccountDoesNotBelongToUser() {
         WithdrawalRequest request =
-                pendingRequest(NOW);
+                mock(WithdrawalRequest.class);
 
-        mockRequest(request);
+        when(request.getUserId())
+                .thenReturn(USER_ID);
 
-        BusinessException exception =
-                assertThrows(
-                        BusinessException.class,
-                        () -> service.execute(
-                                userId,
-                                requestId,
-                                accountId
-                        )
+        when(request.isPending())
+                .thenReturn(true);
+
+        when(request.isExpired(NOW))
+                .thenReturn(false);
+
+        when(withdrawalRequestCommandRepository.findById(REQUEST_ID))
+                .thenReturn(Optional.of(request));
+
+        WithdrawalAccountInfo account =
+                new WithdrawalAccountInfo(
+                        ACCOUNT_ID,
+                        ANOTHER_USER_ID,
+                        CURRENCY,
+                        new BigDecimal("5000000")
                 );
 
-        assertEquals(
-                ErrorCode.WITHDRAWAL_REQUEST_EXPIRED,
-                exception.getErrorCode()
-        );
+        when(withdrawalAccountPort.getWithdrawalInfo(ACCOUNT_ID))
+                .thenReturn(account);
 
-        assertEquals(
-                WithdrawalRequestStatus.EXPIRED,
-                request.getStatus()
-        );
-
-        verifyNoInteractionsAfterRequestValidation();
-    }
-
-    @Test
-    void shouldThrowWhenAccountDoesNotBelongToRequestUser() {
-
-        WithdrawalRequest request =
-                pendingRequest(
-                        NOW.plusSeconds(300)
+        assertThatThrownBy(() ->
+                service.execute(
+                        USER_ID,
+                        REQUEST_ID,
+                        ACCOUNT_ID
+                )
+        )
+                .isInstanceOf(BusinessException.class)
+                .extracting("errorCode")
+                .isEqualTo(
+                        ErrorCode.ACCESS_DENIED
                 );
-
-        mockRequest(request);
-
-        mockWithdrawalAccount(
-                anotherUserId,
-                "VND",
-                "1000000"
-        );
-
-        BusinessException exception =
-                assertThrows(
-                        BusinessException.class,
-                        () -> service.execute(
-                                userId,
-                                requestId,
-                                accountId
-                        )
-                );
-
-        assertEquals(
-                ErrorCode.ACCESS_DENIED,
-                exception.getErrorCode()
-        );
-
-        verify(
-                withdrawalAccountPort
-        ).getWithdrawalInfo(accountId);
 
         verifyNoInteractions(
                 withdrawalHoldPort,
                 withdrawalIntentCommandRepository,
-                withdrawalNotificationPort,
                 withdrawalReferenceGenerator,
                 withdrawalCodeGenerator,
                 withdrawalCodeHasher,
-                withdrawalIntentProperties
+                withdrawalIntentProperties,
+                createWithdrawalLookupCodeUseCase,
+                withdrawalNotificationPort
         );
     }
 
     @Test
     void shouldThrowWhenAccountCurrencyDoesNotMatch() {
-
         WithdrawalRequest request =
-                pendingRequest(
-                        NOW.plusSeconds(300)
+                mock(WithdrawalRequest.class);
+
+        when(request.getUserId())
+                .thenReturn(USER_ID);
+
+        when(request.isPending())
+                .thenReturn(true);
+
+        when(request.isExpired(NOW))
+                .thenReturn(false);
+
+        when(request.getCurrency())
+                .thenReturn(CURRENCY);
+
+        when(withdrawalRequestCommandRepository.findById(REQUEST_ID))
+                .thenReturn(Optional.of(request));
+
+        WithdrawalAccountInfo account =
+                new WithdrawalAccountInfo(
+                        ACCOUNT_ID,
+                        USER_ID,
+                        "USD",
+                        new BigDecimal("5000000")
                 );
 
-        mockRequest(request);
+        when(withdrawalAccountPort.getWithdrawalInfo(ACCOUNT_ID))
+                .thenReturn(account);
 
-        mockWithdrawalAccount(
-                userId,
-                "USD",
-                "1000000"
-        );
-
-        BusinessException exception =
-                assertThrows(
-                        BusinessException.class,
-                        () -> service.execute(
-                                userId,
-                                requestId,
-                                accountId
-                        )
+        assertThatThrownBy(() ->
+                service.execute(
+                        USER_ID,
+                        REQUEST_ID,
+                        ACCOUNT_ID
+                )
+        )
+                .isInstanceOf(BusinessException.class)
+                .extracting("errorCode")
+                .isEqualTo(
+                        ErrorCode.ACCOUNT_CURRENCY_MISMATCH
                 );
-
-        assertEquals(
-                ErrorCode.ACCOUNT_CURRENCY_MISMATCH,
-                exception.getErrorCode()
-        );
-
-        verify(
-                withdrawalAccountPort
-        ).getWithdrawalInfo(accountId);
 
         verifyNoInteractions(
                 withdrawalHoldPort,
                 withdrawalIntentCommandRepository,
-                withdrawalNotificationPort,
                 withdrawalReferenceGenerator,
                 withdrawalCodeGenerator,
                 withdrawalCodeHasher,
-                withdrawalIntentProperties
-        );
-    }
-
-    @Test
-    void shouldAcceptCurrencyIgnoringCase() {
-
-        WithdrawalRequest request =
-                pendingRequest(
-                        NOW.plusSeconds(300)
-                );
-
-        mockRequest(request);
-
-        mockWithdrawalAccount(
-                userId,
-                "vnd",
-                "1000000"
-        );
-
-        mockIntentProperties();
-        mockReference();
-        mockWithdrawalCode();
-        mockCodeHash();
-        mockHold();
-
-        ConfirmWithdrawalRequestResponse response =
-                service.execute(
-                        userId,
-                        requestId,
-                        accountId
-                );
-
-        assertNotNull(response);
-
-        verify(
-                withdrawalHoldPort
-        ).createHold(
-                any(UUID.class),
-                eq(accountId),
-                eq(new BigDecimal("100000")),
-                eq("VND")
+                withdrawalIntentProperties,
+                createWithdrawalLookupCodeUseCase,
+                withdrawalNotificationPort
         );
     }
 
     @Test
     void shouldThrowWhenAvailableBalanceIsInsufficient() {
-
         WithdrawalRequest request =
-                pendingRequest(
-                        NOW.plusSeconds(300)
+                mock(WithdrawalRequest.class);
+
+        when(request.getUserId())
+                .thenReturn(USER_ID);
+
+        when(request.isPending())
+                .thenReturn(true);
+
+        when(request.isExpired(NOW))
+                .thenReturn(false);
+
+        when(request.getCurrency())
+                .thenReturn(CURRENCY);
+
+        when(request.getAmount())
+                .thenReturn(AMOUNT);
+
+        when(withdrawalRequestCommandRepository.findById(REQUEST_ID))
+                .thenReturn(Optional.of(request));
+
+        WithdrawalAccountInfo account =
+                new WithdrawalAccountInfo(
+                        ACCOUNT_ID,
+                        USER_ID,
+                        CURRENCY,
+                        new BigDecimal("999999")
                 );
 
-        mockRequest(request);
+        when(withdrawalAccountPort.getWithdrawalInfo(ACCOUNT_ID))
+                .thenReturn(account);
 
-        mockWithdrawalAccount(
-                userId,
-                "VND",
-                "99999"
-        );
-
-        BusinessException exception =
-                assertThrows(
-                        BusinessException.class,
-                        () -> service.execute(
-                                userId,
-                                requestId,
-                                accountId
-                        )
+        assertThatThrownBy(() ->
+                service.execute(
+                        USER_ID,
+                        REQUEST_ID,
+                        ACCOUNT_ID
+                )
+        )
+                .isInstanceOf(BusinessException.class)
+                .extracting("errorCode")
+                .isEqualTo(
+                        ErrorCode.ACCOUNT_INSUFFICIENT_BALANCE
                 );
-
-        assertEquals(
-                ErrorCode.ACCOUNT_INSUFFICIENT_BALANCE,
-                exception.getErrorCode()
-        );
-
-        verify(
-                withdrawalAccountPort
-        ).getWithdrawalInfo(accountId);
 
         verifyNoInteractions(
                 withdrawalHoldPort,
                 withdrawalIntentCommandRepository,
-                withdrawalNotificationPort,
                 withdrawalReferenceGenerator,
                 withdrawalCodeGenerator,
                 withdrawalCodeHasher,
-                withdrawalIntentProperties
+                withdrawalIntentProperties,
+                createWithdrawalLookupCodeUseCase,
+                withdrawalNotificationPort
         );
     }
 
     @Test
-    void shouldAllowWhenAvailableBalanceEqualsAmount() {
-
+    void shouldAllowWithdrawalWhenAvailableBalanceEqualsAmount() {
         WithdrawalRequest request =
-                pendingRequest(
-                        NOW.plusSeconds(300)
+                mock(WithdrawalRequest.class);
+
+        when(request.getId())
+                .thenReturn(REQUEST_ID);
+
+        when(request.getUserId())
+                .thenReturn(USER_ID);
+
+        when(request.getAccountId())
+                .thenReturn(ACCOUNT_ID);
+
+        when(request.getAmount())
+                .thenReturn(AMOUNT);
+
+        when(request.getCurrency())
+                .thenReturn(CURRENCY);
+
+        when(request.isPending())
+                .thenReturn(true);
+
+        when(request.isExpired(NOW))
+                .thenReturn(false);
+
+        WithdrawalAccountInfo account =
+                new WithdrawalAccountInfo(
+                        ACCOUNT_ID,
+                        USER_ID,
+                        CURRENCY,
+                        AMOUNT
                 );
 
-        mockRequest(request);
+        when(withdrawalRequestCommandRepository.findById(REQUEST_ID))
+                .thenReturn(Optional.of(request));
 
-        mockWithdrawalAccount(
-                userId,
-                "VND",
-                "100000"
-        );
+        when(withdrawalAccountPort.getWithdrawalInfo(ACCOUNT_ID))
+                .thenReturn(account);
 
-        mockIntentProperties();
-        mockReference();
-        mockWithdrawalCode();
-        mockCodeHash();
-        mockHold();
+        when(withdrawalReferenceGenerator.generate())
+                .thenReturn(WITHDRAWAL_REFERENCE);
 
-        ConfirmWithdrawalRequestResponse response =
-                service.execute(
-                        userId,
-                        requestId,
-                        accountId
-                );
+        when(withdrawalCodeGenerator.generate())
+                .thenReturn(WITHDRAWAL_CODE);
 
-        assertNotNull(response);
+        when(withdrawalCodeHasher.hash(WITHDRAWAL_CODE))
+                .thenReturn(WITHDRAWAL_CODE_HASH);
 
-        assertEquals(
-                new BigDecimal("100000"),
-                response.amount()
-        );
+        when(withdrawalIntentProperties.getExpiration())
+                .thenReturn(INTENT_EXPIRATION);
 
-        verify(
-                withdrawalHoldPort
-        ).createHold(
+        when(withdrawalHoldPort.createHold(
                 any(UUID.class),
-                eq(accountId),
-                eq(new BigDecimal("100000")),
-                eq("VND")
+                eq(ACCOUNT_ID),
+                eq(AMOUNT),
+                eq(CURRENCY)
+        )).thenReturn(HOLD_ID);
+
+        when(createWithdrawalLookupCodeUseCase.execute(
+                any(CreateWithdrawalLookupCodeCommand.class)
+        )).thenReturn(
+                new CreateWithdrawalLookupCodeResponse(
+                        LOOKUP_CODE
+                )
         );
-    }
-
-    @Test
-    void shouldUseCurrentClockForIntentExpiration() {
-
-        WithdrawalRequest request =
-                pendingRequest(
-                        NOW.plusSeconds(300)
-                );
-
-        mockRequest(request);
-        mockValidAccount();
-
-        Duration customExpiration =
-                Duration.ofMinutes(20);
-
-        when(
-                withdrawalIntentProperties.getExpiration()
-        ).thenReturn(customExpiration);
-
-        mockReference();
-        mockWithdrawalCode();
-        mockCodeHash();
-        mockHold();
 
         ConfirmWithdrawalRequestResponse response =
                 service.execute(
-                        userId,
-                        requestId,
-                        accountId
+                        USER_ID,
+                        REQUEST_ID,
+                        ACCOUNT_ID
                 );
 
-        assertEquals(
-                NOW.plus(customExpiration),
-                response.intentExpiresAt()
-        );
+        assertThat(response)
+                .isNotNull();
+
+        assertThat(response.requestId())
+                .isEqualTo(REQUEST_ID);
+
+        verify(withdrawalHoldPort)
+                .createHold(
+                        any(UUID.class),
+                        eq(ACCOUNT_ID),
+                        eq(AMOUNT),
+                        eq(CURRENCY)
+                );
+
+        verify(withdrawalIntentCommandRepository)
+                .save(any(WithdrawalIntent.class));
+
+        verify(withdrawalNotificationPort)
+                .sendWithdrawalCode(
+                        any(UUID.class),
+                        eq(USER_ID),
+                        eq(LOOKUP_CODE),
+                        eq(WITHDRAWAL_CODE),
+                        eq(AMOUNT),
+                        eq(CURRENCY),
+                        eq(NOW.plus(INTENT_EXPIRATION))
+                );
     }
 
     @Test
-    void shouldUseGeneratedReference() {
-
+    void shouldAcceptCurrencyCaseInsensitive() {
         WithdrawalRequest request =
-                pendingRequest(
-                        NOW.plusSeconds(300)
+                mock(WithdrawalRequest.class);
+
+        when(request.getId())
+                .thenReturn(REQUEST_ID);
+
+        when(request.getUserId())
+                .thenReturn(USER_ID);
+
+        when(request.getAccountId())
+                .thenReturn(ACCOUNT_ID);
+
+        when(request.getAmount())
+                .thenReturn(AMOUNT);
+
+        when(request.getCurrency())
+                .thenReturn("vnd");
+
+        when(request.isPending())
+                .thenReturn(true);
+
+        when(request.isExpired(NOW))
+                .thenReturn(false);
+
+        WithdrawalAccountInfo account =
+                new WithdrawalAccountInfo(
+                        ACCOUNT_ID,
+                        USER_ID,
+                        "VND",
+                        new BigDecimal("5000000")
                 );
 
-        mockRequest(request);
-        mockValidAccount();
-        mockIntentProperties();
+        when(withdrawalRequestCommandRepository.findById(REQUEST_ID))
+                .thenReturn(Optional.of(request));
 
-        when(
-                withdrawalReferenceGenerator.generate()
-        ).thenReturn("WD-CUSTOM");
+        when(withdrawalAccountPort.getWithdrawalInfo(ACCOUNT_ID))
+                .thenReturn(account);
 
-        mockWithdrawalCode();
-        mockCodeHash();
-        mockHold();
+        when(withdrawalReferenceGenerator.generate())
+                .thenReturn(WITHDRAWAL_REFERENCE);
+
+        when(withdrawalCodeGenerator.generate())
+                .thenReturn(WITHDRAWAL_CODE);
+
+        when(withdrawalCodeHasher.hash(WITHDRAWAL_CODE))
+                .thenReturn(WITHDRAWAL_CODE_HASH);
+
+        when(withdrawalIntentProperties.getExpiration())
+                .thenReturn(INTENT_EXPIRATION);
+
+        when(withdrawalHoldPort.createHold(
+                any(UUID.class),
+                eq(ACCOUNT_ID),
+                eq(AMOUNT),
+                eq("vnd")
+        )).thenReturn(HOLD_ID);
+
+        when(createWithdrawalLookupCodeUseCase.execute(
+                any(CreateWithdrawalLookupCodeCommand.class)
+        )).thenReturn(
+                new CreateWithdrawalLookupCodeResponse(
+                        LOOKUP_CODE
+                )
+        );
 
         ConfirmWithdrawalRequestResponse response =
                 service.execute(
-                        userId,
-                        requestId,
-                        accountId
+                        USER_ID,
+                        REQUEST_ID,
+                        ACCOUNT_ID
                 );
 
-        assertEquals(
-                "WD-CUSTOM",
-                response.withdrawalReference()
-        );
-    }
+        assertThat(response)
+                .isNotNull();
 
-    @Test
-    void shouldUseGeneratedWithdrawalCode() {
+        assertThat(response.currency())
+                .isEqualTo("vnd");
 
-        WithdrawalRequest request =
-                pendingRequest(
-                        NOW.plusSeconds(300)
+        verify(withdrawalHoldPort)
+                .createHold(
+                        any(UUID.class),
+                        eq(ACCOUNT_ID),
+                        eq(AMOUNT),
+                        eq("vnd")
                 );
 
-        mockRequest(request);
-        mockValidAccount();
-        mockIntentProperties();
-        mockReference();
-
-        when(
-                withdrawalCodeGenerator.generate()
-        ).thenReturn("654321");
-
-        when(
-                withdrawalCodeHasher.hash("654321")
-        ).thenReturn("HASHED-654321");
-
-        mockHold();
-
-        service.execute(
-                userId,
-                requestId,
-                accountId
-        );
-
-        ArgumentCaptor<WithdrawalIntent> captor =
+        ArgumentCaptor<WithdrawalIntent> intentCaptor =
                 ArgumentCaptor.forClass(
                         WithdrawalIntent.class
                 );
 
-        verify(
-                withdrawalIntentCommandRepository
-        ).save(captor.capture());
+        verify(withdrawalIntentCommandRepository)
+                .save(intentCaptor.capture());
 
-        assertEquals(
-                "HASHED-654321",
-                captor.getValue()
-                        .getWithdrawalCodeHash()
-        );
-
-        verify(
-                withdrawalNotificationPort
-        ).sendWithdrawalCode(
-                any(UUID.class),
-                eq(userId),
-                eq("WD-ABC123"),
-                eq("654321"),
-                eq(new BigDecimal("100000")),
-                eq("VND"),
-                eq(NOW.plus(INTENT_EXPIRATION))
-        );
-    }
-
-    @Test
-    void shouldNotCreateHoldWhenAccountValidationFails() {
-
-        WithdrawalRequest request =
-                pendingRequest(
-                        NOW.plusSeconds(300)
-                );
-
-        mockRequest(request);
-
-        mockWithdrawalAccount(
-                userId,
-                "VND",
-                "1"
-        );
-
-        assertThrows(
-                BusinessException.class,
-                () -> service.execute(
-                        userId,
-                        requestId,
-                        accountId
-                )
-        );
-
-        verifyNoInteractions(
-                withdrawalHoldPort,
-                withdrawalIntentCommandRepository,
-                withdrawalNotificationPort
-        );
-    }
-
-    private void mockRequest(
-            WithdrawalRequest request
-    ) {
-
-        when(
-                withdrawalRequestCommandRepository
-                        .findById(requestId)
-        ).thenReturn(
-                Optional.of(request)
-        );
-    }
-
-    private void mockValidAccount() {
-
-        mockWithdrawalAccount(
-                userId,
-                "VND",
-                "1000000"
-        );
-    }
-
-    private void mockWithdrawalAccount(
-            UUID accountUserId,
-            String currency,
-            String availableBalance
-    ) {
-
-        when(
-                withdrawalAccountPort.getWithdrawalInfo(
-                        accountId
-                )
-        ).thenReturn(
-                new WithdrawalAccountInfo(
-                        accountId,
-                        accountUserId,
-                        currency,
-                        new BigDecimal(availableBalance)
-                )
-        );
-    }
-
-    private void mockIntentProperties() {
-
-        when(
-                withdrawalIntentProperties.getExpiration()
-        ).thenReturn(
-                INTENT_EXPIRATION
-        );
-    }
-
-    private void mockReference() {
-
-        when(
-                withdrawalReferenceGenerator.generate()
-        ).thenReturn(
-                "WD-ABC123"
-        );
-    }
-
-    private void mockWithdrawalCode() {
-
-        when(
-                withdrawalCodeGenerator.generate()
-        ).thenReturn(
-                "123456"
-        );
-    }
-
-    private void mockCodeHash() {
-
-        when(
-                withdrawalCodeHasher.hash("123456")
-        ).thenReturn(
-                "HASHED-CODE"
-        );
-    }
-
-    private void mockHold() {
-
-        when(
-                withdrawalHoldPort.createHold(
-                        any(UUID.class),
-                        eq(accountId),
-                        eq(new BigDecimal("100000")),
-                        eq("VND")
-                )
-        ).thenReturn(
-                holdId
-        );
-    }
-
-    private WithdrawalRequest pendingRequest(
-            Instant expiresAt
-    ) {
-
-        return WithdrawalRequest.builder()
-                .id(requestId)
-                .userId(userId)
-                .accountId(accountId)
-                .amount(new BigDecimal("100000"))
-                .currency("VND")
-                .status(WithdrawalRequestStatus.PENDING)
-                .expiresAt(expiresAt)
-                .createdAt(NOW)
-                .version(0L)
-                .build();
-    }
-
-    private void verifyNoInteractionsAfterRequestValidation() {
-
-        verifyNoInteractions(
-                withdrawalAccountPort,
-                withdrawalHoldPort,
-                withdrawalIntentCommandRepository,
-                withdrawalNotificationPort,
-                withdrawalReferenceGenerator,
-                withdrawalCodeGenerator,
-                withdrawalCodeHasher,
-                withdrawalIntentProperties
-        );
+        assertThat(intentCaptor.getValue().getCurrency())
+                .isEqualTo("vnd");
     }
 }

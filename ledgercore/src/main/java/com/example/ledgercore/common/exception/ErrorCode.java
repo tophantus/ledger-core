@@ -373,6 +373,12 @@ public enum ErrorCode {
             HttpStatus.CONFLICT
     ),
 
+    WITHDRAWAL_LOOKUP_CODE_NOT_FOUND(
+            "WITHDRAWAL_010",
+            "Withdrawal lookup code not found",
+            HttpStatus.NOT_FOUND
+    ),
+
     // Webhook
 
     INVALID_WEBHOOK_URL(

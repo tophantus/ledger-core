@@ -7,7 +7,7 @@ import java.util.UUID;
 public record WithdrawalNotificationEvent(
         UUID withdrawalIntentId,
         UUID userId,
-        String withdrawalReference,
+        String withdrawalLookupCode,
         BigDecimal amount,
         String currency,
         String encryptedWithdrawalCode,

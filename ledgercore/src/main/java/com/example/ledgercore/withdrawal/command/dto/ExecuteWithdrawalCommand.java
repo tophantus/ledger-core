@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 public record ExecuteWithdrawalCommand(
         String terminalCode,
         String credential,
-        String withdrawalReference,
+        String lookupCode,
         String withdrawalCode,
         BigDecimal amount
 ) {

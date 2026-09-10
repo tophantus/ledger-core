@@ -77,8 +77,8 @@ public class SendWithdrawalNotificationHandler
                 "fullName",
                 fullName,
 
-                "withdrawalReference",
-                event.withdrawalReference(),
+                "withdrawalLookupCode",
+                event.withdrawalLookupCode(),
 
                 "withdrawalCode",
                 withdrawalCode,
@@ -110,8 +110,8 @@ public class SendWithdrawalNotificationHandler
             );
         }
 
-        if (event.withdrawalReference() == null
-                || event.withdrawalReference().isBlank()) {
+        if (event.withdrawalLookupCode() == null
+                || event.withdrawalLookupCode().isBlank()) {
             throw new IllegalArgumentException(
                     "Withdrawal reference must not be blank"
             );

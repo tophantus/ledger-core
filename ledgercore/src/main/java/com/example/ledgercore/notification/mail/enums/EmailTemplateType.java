@@ -45,7 +45,7 @@ public enum EmailTemplateType {
             "Your withdrawal code",
             List.of(
                     "fullName",
-                    "withdrawalReference",
+                    "withdrawalLookupCode",
                     "withdrawalCode",
                     "amount",
                     "expiresAt"

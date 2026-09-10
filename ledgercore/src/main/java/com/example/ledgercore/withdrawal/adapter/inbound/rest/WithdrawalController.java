@@ -119,7 +119,7 @@ public class WithdrawalController {
                         new ExecuteWithdrawalCommand(
                                 terminalCode,
                                 credential,
-                                request.withdrawalReference(),
+                                request.lookupCode(),
                                 request.withdrawalCode(),
                                 request.amount()
                         )

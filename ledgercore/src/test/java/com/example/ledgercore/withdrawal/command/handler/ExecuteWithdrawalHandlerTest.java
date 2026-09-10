@@ -8,6 +8,8 @@ import com.example.ledgercore.withdrawal.command.port.outbound.AtmAuthentication
 import com.example.ledgercore.withdrawal.command.repository.WithdrawalIntentCommandRepository;
 import com.example.ledgercore.withdrawal.entity.WithdrawalIntent;
 import com.example.ledgercore.withdrawal.enums.WithdrawalIntentStatus;
+import com.example.ledgercore.withdrawal.query.dto.GetWithdrawalIntentIdByLookupCodeQuery;
+import com.example.ledgercore.withdrawal.query.port.inbound.GetWithdrawalIntentIdByLookupCodeUseCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,6 +35,10 @@ class ExecuteWithdrawalHandlerTest {
             atmAuthenticationPort;
 
     @Mock
+    private GetWithdrawalIntentIdByLookupCodeUseCase
+            getWithdrawalIntentIdByLookupCodeUseCase;
+
+    @Mock
     private WithdrawalIntentCommandRepository
             withdrawalIntentCommandRepository;
 
@@ -53,6 +59,7 @@ class ExecuteWithdrawalHandlerTest {
 
         handler = new ExecuteWithdrawalHandler(
                 atmAuthenticationPort,
+                getWithdrawalIntentIdByLookupCodeUseCase,
                 withdrawalIntentCommandRepository,
                 executeWithdrawalExecutionService
         );
@@ -64,7 +71,7 @@ class ExecuteWithdrawalHandlerTest {
         command = new ExecuteWithdrawalCommand(
                 "ATM-HN-001",
                 "atm-secret",
-                "WD-ABC123",
+                "12345678",
                 "123456",
                 new BigDecimal("100000")
         );
@@ -98,10 +105,17 @@ class ExecuteWithdrawalHandlerTest {
         ).thenReturn(atmId);
 
         when(
-                withdrawalIntentCommandRepository
-                        .findByWithdrawalReference(
-                                command.withdrawalReference()
+                getWithdrawalIntentIdByLookupCodeUseCase.execute(
+                        new GetWithdrawalIntentIdByLookupCodeQuery(
+                                command.lookupCode()
                         )
+                )
+        ).thenReturn(intentId);
+
+        when(
+                withdrawalIntentCommandRepository.findById(
+                        intentId
+                )
         ).thenReturn(
                 Optional.of(intent)
         );
@@ -131,10 +145,16 @@ class ExecuteWithdrawalHandlerTest {
         );
 
         verify(
-                withdrawalIntentCommandRepository
-        ).findByWithdrawalReference(
-                command.withdrawalReference()
+                getWithdrawalIntentIdByLookupCodeUseCase
+        ).execute(
+                new GetWithdrawalIntentIdByLookupCodeQuery(
+                        command.lookupCode()
+                )
         );
+
+        verify(
+                withdrawalIntentCommandRepository
+        ).findById(intentId);
 
         verify(
                 executeWithdrawalExecutionService
@@ -147,7 +167,7 @@ class ExecuteWithdrawalHandlerTest {
     }
 
     @Test
-    void shouldAuthenticateAtmBeforeFindingIntent() {
+    void shouldAuthenticateAtmBeforeResolvingLookupCode() {
 
         WithdrawalIntent intent =
                 readyIntent();
@@ -160,10 +180,15 @@ class ExecuteWithdrawalHandlerTest {
         ).thenReturn(atmId);
 
         when(
-                withdrawalIntentCommandRepository
-                        .findByWithdrawalReference(
-                                command.withdrawalReference()
-                        )
+                getWithdrawalIntentIdByLookupCodeUseCase.execute(
+                        any(GetWithdrawalIntentIdByLookupCodeQuery.class)
+                )
+        ).thenReturn(intentId);
+
+        when(
+                withdrawalIntentCommandRepository.findById(
+                        intentId
+                )
         ).thenReturn(
                 Optional.of(intent)
         );
@@ -179,6 +204,7 @@ class ExecuteWithdrawalHandlerTest {
 
         InOrder inOrder = inOrder(
                 atmAuthenticationPort,
+                getWithdrawalIntentIdByLookupCodeUseCase,
                 withdrawalIntentCommandRepository
         );
 
@@ -192,10 +218,16 @@ class ExecuteWithdrawalHandlerTest {
         );
 
         inOrder.verify(
-                withdrawalIntentCommandRepository
-        ).findByWithdrawalReference(
-                command.withdrawalReference()
+                getWithdrawalIntentIdByLookupCodeUseCase
+        ).execute(
+                new GetWithdrawalIntentIdByLookupCodeQuery(
+                        command.lookupCode()
+                )
         );
+
+        inOrder.verify(
+                withdrawalIntentCommandRepository
+        ).findById(intentId);
     }
 
     @Test
@@ -212,10 +244,17 @@ class ExecuteWithdrawalHandlerTest {
         ).thenReturn(atmId);
 
         when(
-                withdrawalIntentCommandRepository
-                        .findByWithdrawalReference(
-                                command.withdrawalReference()
+                getWithdrawalIntentIdByLookupCodeUseCase.execute(
+                        new GetWithdrawalIntentIdByLookupCodeQuery(
+                                command.lookupCode()
                         )
+                )
+        ).thenReturn(intentId);
+
+        when(
+                withdrawalIntentCommandRepository.findById(
+                        intentId
+                )
         ).thenReturn(
                 Optional.of(intent)
         );
@@ -292,6 +331,7 @@ class ExecuteWithdrawalHandlerTest {
 
         verifyNoInteractions(
                 atmAuthenticationPort,
+                getWithdrawalIntentIdByLookupCodeUseCase,
                 withdrawalIntentCommandRepository,
                 executeWithdrawalExecutionService
         );
@@ -304,7 +344,7 @@ class ExecuteWithdrawalHandlerTest {
                 new ExecuteWithdrawalCommand(
                         null,
                         "atm-secret",
-                        "WD-ABC123",
+                        "12345678",
                         "123456",
                         new BigDecimal("100000")
                 );
@@ -319,7 +359,7 @@ class ExecuteWithdrawalHandlerTest {
                 new ExecuteWithdrawalCommand(
                         " ",
                         "atm-secret",
-                        "WD-ABC123",
+                        "12345678",
                         "123456",
                         new BigDecimal("100000")
                 );
@@ -334,7 +374,7 @@ class ExecuteWithdrawalHandlerTest {
                 new ExecuteWithdrawalCommand(
                         "ATM-HN-001",
                         null,
-                        "WD-ABC123",
+                        "12345678",
                         "123456",
                         new BigDecimal("100000")
                 );
@@ -349,7 +389,7 @@ class ExecuteWithdrawalHandlerTest {
                 new ExecuteWithdrawalCommand(
                         "ATM-HN-001",
                         " ",
-                        "WD-ABC123",
+                        "12345678",
                         "123456",
                         new BigDecimal("100000")
                 );
@@ -358,7 +398,7 @@ class ExecuteWithdrawalHandlerTest {
     }
 
     @Test
-    void shouldThrowWhenWithdrawalReferenceIsNull() {
+    void shouldThrowWhenLookupCodeIsNull() {
 
         ExecuteWithdrawalCommand invalidCommand =
                 new ExecuteWithdrawalCommand(
@@ -373,7 +413,7 @@ class ExecuteWithdrawalHandlerTest {
     }
 
     @Test
-    void shouldThrowWhenWithdrawalReferenceIsBlank() {
+    void shouldThrowWhenLookupCodeIsBlank() {
 
         ExecuteWithdrawalCommand invalidCommand =
                 new ExecuteWithdrawalCommand(
@@ -394,7 +434,7 @@ class ExecuteWithdrawalHandlerTest {
                 new ExecuteWithdrawalCommand(
                         "ATM-HN-001",
                         "atm-secret",
-                        "WD-ABC123",
+                        "12345678",
                         null,
                         new BigDecimal("100000")
                 );
@@ -409,7 +449,7 @@ class ExecuteWithdrawalHandlerTest {
                 new ExecuteWithdrawalCommand(
                         "ATM-HN-001",
                         "atm-secret",
-                        "WD-ABC123",
+                        "12345678",
                         " ",
                         new BigDecimal("100000")
                 );
@@ -424,7 +464,7 @@ class ExecuteWithdrawalHandlerTest {
                 new ExecuteWithdrawalCommand(
                         "ATM-HN-001",
                         "atm-secret",
-                        "WD-ABC123",
+                        "12345678",
                         "123456",
                         null
                 );
@@ -439,7 +479,7 @@ class ExecuteWithdrawalHandlerTest {
                 new ExecuteWithdrawalCommand(
                         "ATM-HN-001",
                         "atm-secret",
-                        "WD-ABC123",
+                        "12345678",
                         "123456",
                         BigDecimal.ZERO
                 );
@@ -454,12 +494,66 @@ class ExecuteWithdrawalHandlerTest {
                 new ExecuteWithdrawalCommand(
                         "ATM-HN-001",
                         "atm-secret",
-                        "WD-ABC123",
+                        "12345678",
                         "123456",
                         new BigDecimal("-1")
                 );
 
         assertInvalidCommand(invalidCommand);
+    }
+
+    @Test
+    void shouldThrowWhenLookupCodeDoesNotResolveToIntent() {
+
+        when(
+                atmAuthenticationPort.authenticate(
+                        command.terminalCode(),
+                        command.credential()
+                )
+        ).thenReturn(atmId);
+
+        when(
+                getWithdrawalIntentIdByLookupCodeUseCase.execute(
+                        new GetWithdrawalIntentIdByLookupCodeQuery(
+                                command.lookupCode()
+                        )
+                )
+        ).thenThrow(
+                new BusinessException(
+                        ErrorCode.WITHDRAWAL_LOOKUP_CODE_NOT_FOUND
+                )
+        );
+
+        BusinessException exception =
+                assertThrows(
+                        BusinessException.class,
+                        () -> handler.execute(command)
+                );
+
+        assertEquals(
+                ErrorCode.WITHDRAWAL_LOOKUP_CODE_NOT_FOUND,
+                exception.getErrorCode()
+        );
+
+        verify(
+                atmAuthenticationPort
+        ).authenticate(
+                command.terminalCode(),
+                command.credential()
+        );
+
+        verify(
+                getWithdrawalIntentIdByLookupCodeUseCase
+        ).execute(
+                new GetWithdrawalIntentIdByLookupCodeQuery(
+                        command.lookupCode()
+                )
+        );
+
+        verifyNoInteractions(
+                withdrawalIntentCommandRepository,
+                executeWithdrawalExecutionService
+        );
     }
 
     @Test
@@ -473,10 +567,17 @@ class ExecuteWithdrawalHandlerTest {
         ).thenReturn(atmId);
 
         when(
-                withdrawalIntentCommandRepository
-                        .findByWithdrawalReference(
-                                command.withdrawalReference()
+                getWithdrawalIntentIdByLookupCodeUseCase.execute(
+                        new GetWithdrawalIntentIdByLookupCodeQuery(
+                                command.lookupCode()
                         )
+                )
+        ).thenReturn(intentId);
+
+        when(
+                withdrawalIntentCommandRepository.findById(
+                        intentId
+                )
         ).thenReturn(
                 Optional.empty()
         );
@@ -500,10 +601,16 @@ class ExecuteWithdrawalHandlerTest {
         );
 
         verify(
-                withdrawalIntentCommandRepository
-        ).findByWithdrawalReference(
-                command.withdrawalReference()
+                getWithdrawalIntentIdByLookupCodeUseCase
+        ).execute(
+                new GetWithdrawalIntentIdByLookupCodeQuery(
+                        command.lookupCode()
+                )
         );
+
+        verify(
+                withdrawalIntentCommandRepository
+        ).findById(intentId);
 
         verifyNoInteractions(
                 executeWithdrawalExecutionService
@@ -528,10 +635,17 @@ class ExecuteWithdrawalHandlerTest {
         ).thenReturn(atmId);
 
         when(
-                withdrawalIntentCommandRepository
-                        .findByWithdrawalReference(
-                                command.withdrawalReference()
+                getWithdrawalIntentIdByLookupCodeUseCase.execute(
+                        new GetWithdrawalIntentIdByLookupCodeQuery(
+                                command.lookupCode()
                         )
+                )
+        ).thenReturn(intentId);
+
+        when(
+                withdrawalIntentCommandRepository.findById(
+                        intentId
+                )
         ).thenReturn(
                 Optional.of(intent)
         );
@@ -555,10 +669,16 @@ class ExecuteWithdrawalHandlerTest {
         );
 
         verify(
-                withdrawalIntentCommandRepository
-        ).findByWithdrawalReference(
-                command.withdrawalReference()
+                getWithdrawalIntentIdByLookupCodeUseCase
+        ).execute(
+                new GetWithdrawalIntentIdByLookupCodeQuery(
+                        command.lookupCode()
+                )
         );
+
+        verify(
+                withdrawalIntentCommandRepository
+        ).findById(intentId);
 
         verifyNoInteractions(
                 executeWithdrawalExecutionService
@@ -566,7 +686,7 @@ class ExecuteWithdrawalHandlerTest {
     }
 
     @Test
-    void shouldNotFindIntentWhenAtmAuthenticationFails() {
+    void shouldNotResolveLookupCodeWhenAtmAuthenticationFails() {
 
         BusinessException authenticationException =
                 new BusinessException(
@@ -601,6 +721,7 @@ class ExecuteWithdrawalHandlerTest {
         );
 
         verifyNoInteractions(
+                getWithdrawalIntentIdByLookupCodeUseCase,
                 withdrawalIntentCommandRepository,
                 executeWithdrawalExecutionService
         );
@@ -624,10 +745,17 @@ class ExecuteWithdrawalHandlerTest {
         ).thenReturn(atmId);
 
         when(
-                withdrawalIntentCommandRepository
-                        .findByWithdrawalReference(
-                                command.withdrawalReference()
+                getWithdrawalIntentIdByLookupCodeUseCase.execute(
+                        new GetWithdrawalIntentIdByLookupCodeQuery(
+                                command.lookupCode()
                         )
+                )
+        ).thenReturn(intentId);
+
+        when(
+                withdrawalIntentCommandRepository.findById(
+                        intentId
+                )
         ).thenReturn(
                 Optional.of(intent)
         );
@@ -659,6 +787,7 @@ class ExecuteWithdrawalHandlerTest {
 
         verifyNoInteractions(
                 atmAuthenticationPort,
+                getWithdrawalIntentIdByLookupCodeUseCase,
                 withdrawalIntentCommandRepository,
                 executeWithdrawalExecutionService
         );

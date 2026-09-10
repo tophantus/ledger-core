@@ -94,7 +94,7 @@ class ConfirmWithdrawalRequestHandlerTest {
                         WithdrawalRequestStatus.CONFIRMED,
                         UUID.randomUUID(),
                         "WD-ABC123",
-                        new BigDecimal("100000"),
+                        new BigDecimal("100000").toPlainString(),
                         "VND",
                         NOW.plusSeconds(600)
                 );

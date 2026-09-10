@@ -5,6 +5,8 @@ import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.common.lock.DistributedLock;
 import com.example.ledgercore.common.lock.LockKeyPrefix;
 import com.example.ledgercore.withdrawal.command.dto.ConfirmWithdrawalRequestResponse;
+import com.example.ledgercore.withdrawal.command.dto.CreateWithdrawalLookupCodeCommand;
+import com.example.ledgercore.withdrawal.command.port.inbound.CreateWithdrawalLookupCodeUseCase;
 import com.example.ledgercore.withdrawal.command.port.outbound.WithdrawalAccountInfo;
 import com.example.ledgercore.withdrawal.command.port.outbound.WithdrawalAccountPort;
 import com.example.ledgercore.withdrawal.command.port.outbound.WithdrawalHoldPort;
@@ -35,6 +37,9 @@ public class ConfirmWithdrawalExecutionService {
 
     private final WithdrawalIntentCommandRepository
             withdrawalIntentCommandRepository;
+
+    private final CreateWithdrawalLookupCodeUseCase
+            createWithdrawalLookupCodeUseCase;
 
     private final WithdrawalAccountPort
             withdrawalAccountPort;
@@ -145,12 +150,20 @@ public class ConfirmWithdrawalExecutionService {
 
         withdrawalIntentCommandRepository.save(intent);
 
+        var lookupCodeResponse =
+                createWithdrawalLookupCodeUseCase.execute(
+                        new CreateWithdrawalLookupCodeCommand(
+                                intent.getId(),
+                                intent.getExpiresAt()
+                        )
+                );
+
         request.confirm(now);
 
         withdrawalNotificationPort.sendWithdrawalCode(
                 intent.getId(),
                 intent.getUserId(),
-                intent.getWithdrawalReference(),
+                lookupCodeResponse.lookupCode(),
                 withdrawalCode,
                 intent.getAmount(),
                 intent.getCurrency(),
@@ -162,7 +175,7 @@ public class ConfirmWithdrawalExecutionService {
                 request.getStatus(),
                 intent.getId(),
                 intent.getWithdrawalReference(),
-                intent.getAmount(),
+                intent.getAmount().toPlainString(),
                 intent.getCurrency(),
                 intent.getExpiresAt()
         );
