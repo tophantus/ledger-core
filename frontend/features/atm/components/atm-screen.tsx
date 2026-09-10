@@ -9,7 +9,7 @@ import type {
 } from "../types/atm";
 
 type AtmStep =
-    | "REFERENCE"
+    | "LOOKUP_CODE"
     | "CODE"
     | "AMOUNT"
     | "CONFIRM"
@@ -20,7 +20,7 @@ interface AtmScreenProps {
     step: AtmStep;
     input: string;
     error: string | null;
-    withdrawalReference: string;
+    lookupCode: string;
     amount: string;
     result: ExecuteWithdrawalResponse | null;
 }
@@ -29,7 +29,7 @@ export function AtmScreen({
                               step,
                               input,
                               error,
-                              withdrawalReference,
+                              lookupCode,
                               amount,
                               result,
                           }: AtmScreenProps) {
@@ -37,8 +37,8 @@ export function AtmScreen({
 
     const getTitle = () => {
         switch (step) {
-            case "REFERENCE":
-                return t("enterReference");
+            case "LOOKUP_CODE":
+                return t("enterLookupCode");
 
             case "CODE":
                 return t("enterCode");
@@ -59,9 +59,9 @@ export function AtmScreen({
 
     const getDescription = () => {
         switch (step) {
-            case "REFERENCE":
+            case "LOOKUP_CODE":
                 return t(
-                    "enterReferenceDescription",
+                    "enterLookupCodeDescription",
                 );
 
             case "CODE":
@@ -89,6 +89,11 @@ export function AtmScreen({
         }
     };
 
+    const isInputStep =
+        step === "LOOKUP_CODE" ||
+        step === "CODE" ||
+        step === "AMOUNT";
+
     return (
         <div
             className="
@@ -113,7 +118,7 @@ export function AtmScreen({
                 "
             >
                 <LockKeyhole className="h-4 w-4" />
-                LedgerCore ATM
+                {t("title")}
             </div>
 
             <div className="mt-8 text-center">
@@ -152,7 +157,7 @@ export function AtmScreen({
                                 text-blue-200
                             "
                         >
-                            {t("reference")}
+                            {t("transactionCode")}
                         </p>
 
                         <p
@@ -163,7 +168,7 @@ export function AtmScreen({
                                 text-sm
                             "
                         >
-                            {withdrawalReference}
+                            {lookupCode}
                         </p>
                     </div>
 
@@ -196,9 +201,7 @@ export function AtmScreen({
                 </div>
             )}
 
-            {(step === "REFERENCE" ||
-                step === "CODE" ||
-                step === "AMOUNT") && (
+            {isInputStep && (
                 <div
                     className="
                         mt-6
@@ -279,7 +282,7 @@ export function AtmScreen({
                                 text-blue-200
                             "
                         >
-                            {result.executionId}
+                            {result.withdrawalReference}
                         </p>
                     )}
                 </div>

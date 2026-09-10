@@ -3,8 +3,8 @@
   "title": "LedgerCore ATM",
   "subtitle": "Mô phỏng giao dịch rút tiền",
 
-  "enterReference": "Nhập mã tham chiếu",
-  "enterReferenceDescription": "Nhập mã tham chiếu của yêu cầu rút tiền",
+  "enterLookupCode": "Nhập số rút tiền",
+  "enterLookupCodeDescription": "Nhập số rút tiền của yêu cầu rút tiền",
 
   "enterCode": "Nhập mã rút tiền",
   "enterCodeDescription": "Nhập mã rút tiền gồm 6 chữ số",
@@ -13,9 +13,9 @@
   "enterAmountDescription": "Nhập số tiền bạn muốn rút",
 
   "confirmTitle": "Xác nhận giao dịch",
-  "confirmDescription": "Kiểm tra thông tin trước khi thực hiện",
+  "confirmDescription": "Kiểm tra thông tin giao dịch trước khi thực hiện",
 
-  "reference": "Mã tham chiếu",
+  "transactionCode": "Mã giao dịch",
   "amount": "Số tiền",
 
   "clear": "Xóa",
@@ -32,7 +32,7 @@
   "errorTitle": "Giao dịch thất bại",
   "executeFailed": "Không thể thực hiện giao dịch.",
 
-  "referenceRequired": "Vui lòng nhập mã tham chiếu.",
+  "lookupCodeRequired": "Vui lòng nhập mã giao dịch.",
   "invalidCode": "Mã rút tiền phải gồm 6 chữ số.",
   "invalidAmount": "Số tiền không hợp lệ.",
 

@@ -1,7 +1,7 @@
 import type {ApiResponse} from "@/lib/api/types";
 
 export interface ExecuteWithdrawalRequest {
-    withdrawalReference: string;
+    lookupCode: string;
     withdrawalCode: string;
     amount: string;
 }

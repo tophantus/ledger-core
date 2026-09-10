@@ -15,7 +15,7 @@ import {AtmScreen} from "./atm-screen";
 import {AtmSlots} from "./atm-slots";
 
 type AtmStep =
-    | "REFERENCE"
+    | "LOOKUP_CODE"
     | "CODE"
     | "AMOUNT"
     | "CONFIRM"
@@ -32,9 +32,9 @@ export function AtmSimulator() {
         useState(false);
 
     const [step, setStep] =
-        useState<AtmStep>("REFERENCE");
+        useState<AtmStep>("LOOKUP_CODE");
 
-    const [withdrawalReference, setWithdrawalReference] =
+    const [lookupCode, setLookupCode] =
         useState("");
 
     const [withdrawalCode, setWithdrawalCode] =
@@ -59,8 +59,8 @@ export function AtmSimulator() {
 
     const handleOpen = () => {
         setOpen(true);
-        setStep("REFERENCE");
-        setWithdrawalReference("");
+        setStep("LOOKUP_CODE");
+        setLookupCode("");
         setWithdrawalCode("");
         setAmount("");
         setInput("");
@@ -96,17 +96,15 @@ export function AtmSimulator() {
     const handleNext = () => {
         setError(null);
 
-        if (step === "REFERENCE") {
+        if (step === "LOOKUP_CODE") {
             if (!input.trim()) {
                 setError(
-                    t("referenceRequired"),
+                    t("lookupCodeRequired"),
                 );
                 return;
             }
 
-            setWithdrawalReference(
-                input.trim(),
-            );
+            setLookupCode(input.trim());
             setInput("");
             setStep("CODE");
             return;
@@ -147,18 +145,14 @@ export function AtmSimulator() {
         setError(null);
 
         if (step === "CODE") {
-            setStep("REFERENCE");
-            setInput(
-                withdrawalReference,
-            );
+            setStep("LOOKUP_CODE");
+            setInput(lookupCode);
             return;
         }
 
         if (step === "AMOUNT") {
             setStep("CODE");
-            setInput(
-                withdrawalCode,
-            );
+            setInput(withdrawalCode);
             return;
         }
 
@@ -179,7 +173,7 @@ export function AtmSimulator() {
         try {
             const response =
                 await executeWithdrawal({
-                    withdrawalReference,
+                    lookupCode,
                     withdrawalCode,
                     amount,
                 });
@@ -206,7 +200,7 @@ export function AtmSimulator() {
     };
 
     const isInputStep =
-        step === "REFERENCE" ||
+        step === "LOOKUP_CODE" ||
         step === "CODE" ||
         step === "AMOUNT";
 
@@ -323,9 +317,7 @@ export function AtmSimulator() {
                                     step={step}
                                     input={input}
                                     error={error}
-                                    withdrawalReference={
-                                        withdrawalReference
-                                    }
+                                    lookupCode={lookupCode}
                                     amount={amount}
                                     result={result}
                                 />
@@ -352,9 +344,7 @@ export function AtmSimulator() {
 
                                 {step === "CONFIRM" && (
                                     <AtmConfirm
-                                        withdrawalReference={
-                                            withdrawalReference
-                                        }
+                                        lookupCode={lookupCode}
                                         amount={amount}
                                         isLoading={
                                             isLoading

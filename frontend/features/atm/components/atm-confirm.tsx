@@ -2,16 +2,12 @@ import {ArrowLeft} from "lucide-react";
 import {useTranslations} from "next-intl";
 
 interface AtmConfirmProps {
-    withdrawalReference: string;
-    amount: string;
     isLoading: boolean;
     onBack: () => void;
     onExecute: () => void;
 }
 
 export function AtmConfirm({
-                               withdrawalReference,
-                               amount,
                                isLoading,
                                onBack,
                                onExecute,
