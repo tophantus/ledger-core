@@ -23,12 +23,16 @@ import {WithdrawalListPagination} from "./withdrawal-list-pagination";
 const PAGE_SIZE = 20;
 
 export default function WithdrawalListPage() {
-    const t = useTranslations("withdrawal");
-    const tErrors = useTranslations("errors");
+    const t =
+        useTranslations("withdrawal");
+
+    const tErrors =
+        useTranslations("errors");
 
     const {
         getWithdrawalIntents,
-    } = useWithdrawalIntents();
+    } =
+        useWithdrawalIntents();
 
     const [withdrawals, setWithdrawals] =
         useState<WithdrawalIntent[]>([]);
@@ -44,6 +48,9 @@ export default function WithdrawalListPage() {
             WithdrawalIntentStatus | undefined
         >();
 
+    const [reloadKey, setReloadKey] =
+        useState(0);
+
     const [isLoading, setIsLoading] =
         useState(true);
 
@@ -53,25 +60,27 @@ export default function WithdrawalListPage() {
     useEffect(() => {
         let mounted = true;
 
-        const loadWithdrawals = async () => {
+        const loadWithdrawals =
+            async () => {
                 setIsLoading(true);
                 setError(null);
 
                 try {
-                    const filters: WithdrawalIntentFilters = {
+                    const filters:
+                        WithdrawalIntentFilters = {
                         status,
                         page,
                         size: PAGE_SIZE,
                     };
 
-                    if (!mounted) {
-                        return;
-                    }
-
                     const response =
                         await getWithdrawalIntents(
                             filters,
                         );
+
+                    if (!mounted) {
+                        return;
+                    }
 
                     if (!response.success) {
                         if (
@@ -121,8 +130,13 @@ export default function WithdrawalListPage() {
         return () => {
             mounted = false;
         };
-
-    }, [getWithdrawalIntents, page, status, tErrors]);
+    }, [
+        getWithdrawalIntents,
+        page,
+        status,
+        tErrors,
+        reloadKey,
+    ]);
 
     const handleStatusChange = (
         value:
@@ -137,6 +151,12 @@ export default function WithdrawalListPage() {
         nextPage: number,
     ) => {
         setPage(nextPage);
+    };
+
+    const handleCancelled = () => {
+        setReloadKey(
+            (current) => current + 1,
+        );
     };
 
     return (
@@ -159,7 +179,9 @@ export default function WithdrawalListPage() {
                     text-sm
                     text-muted
                 ">
-                    {t("list.description")}
+                    {t(
+                        "list.description",
+                    )}
                 </p>
             </div>
 
@@ -194,6 +216,9 @@ export default function WithdrawalListPage() {
                     <WithdrawalListTable
                         withdrawals={
                             withdrawals
+                        }
+                        onCancelled={
+                            handleCancelled
                         }
                     />
 

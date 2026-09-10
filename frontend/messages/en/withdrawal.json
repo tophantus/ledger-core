@@ -39,7 +39,10 @@
     "emptyDescription": "Your withdrawal requests will appear here.",
     "page": "Page {current} of {total}",
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "actions": "Actions",
+    "cancel": "Cancel",
+    "cancelling": "Cancelling..."
   },
   "statuses": {
     "READY": "Ready",

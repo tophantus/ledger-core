@@ -39,7 +39,10 @@
     "emptyDescription": "Các yêu cầu rút tiền của bạn sẽ xuất hiện ở đây.",
     "page": "Trang {current} / {total}",
     "previous": "Trước",
-    "next": "Sau"
+    "next": "Sau",
+    "actions": "Thao tác",
+    "cancel": "Hủy",
+    "cancelling": "Đang hủy..."
   },
   "statuses": {
     "READY": "Sẵn sàng",

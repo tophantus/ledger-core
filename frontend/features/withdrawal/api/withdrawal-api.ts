@@ -69,4 +69,20 @@ export const withdrawalApi = {
 
         return response.data;
     },
+
+    cancelIntent: async (
+        intentId: string,
+    ): Promise<ApiResponse<void>> => {
+        const response =
+            await apiClient.post<
+                ApiResponse<void>
+            >(
+                API_ENDPOINTS.WITHDRAWAL.CANCEL_INTENT(
+                    intentId,
+                ),
+            );
+
+        return response.data;
+    },
+
 };

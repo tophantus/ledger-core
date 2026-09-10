@@ -10,10 +10,12 @@ import {WithdrawalListRow} from "./withdrawal-list-row";
 
 interface WithdrawalListTableProps {
     withdrawals: WithdrawalIntent[];
+    onCancelled: () => void;
 }
 
 export function WithdrawalListTable({
                                         withdrawals,
+                                        onCancelled,
                                     }: WithdrawalListTableProps) {
     const t =
         useTranslations("withdrawal");
@@ -29,96 +31,110 @@ export function WithdrawalListTable({
             <div className="overflow-x-auto">
                 <table className="
                     w-full
-                    min-w-[900px]
+                    min-w-[1000px]
                     text-sm
                 ">
                     <thead>
                     <tr className="
-                            border-b
-                            border-border
-                            bg-background-subtle
-                        ">
+                        border-b
+                        border-border
+                        bg-background-subtle
+                    ">
                         <th className="
-                                whitespace-nowrap
-                                px-4
-                                py-3
-                                text-left
-                                text-xs
-                                font-medium
-                                text-muted
-                            ">
+                            whitespace-nowrap
+                            px-4
+                            py-3
+                            text-left
+                            text-xs
+                            font-medium
+                            text-muted
+                        ">
                             {t(
                                 "list.reference",
                             )}
                         </th>
 
                         <th className="
-                                whitespace-nowrap
-                                px-4
-                                py-3
-                                text-left
-                                text-xs
-                                font-medium
-                                text-muted
-                            ">
+                            whitespace-nowrap
+                            px-4
+                            py-3
+                            text-left
+                            text-xs
+                            font-medium
+                            text-muted
+                        ">
                             {t(
                                 "list.account",
                             )}
                         </th>
 
                         <th className="
-                                whitespace-nowrap
-                                px-4
-                                py-3
-                                text-right
-                                text-xs
-                                font-medium
-                                text-muted
-                            ">
+                            whitespace-nowrap
+                            px-4
+                            py-3
+                            text-right
+                            text-xs
+                            font-medium
+                            text-muted
+                        ">
                             {t(
                                 "list.amount",
                             )}
                         </th>
 
                         <th className="
-                                whitespace-nowrap
-                                px-4
-                                py-3
-                                text-left
-                                text-xs
-                                font-medium
-                                text-muted
-                            ">
+                            whitespace-nowrap
+                            px-4
+                            py-3
+                            text-left
+                            text-xs
+                            font-medium
+                            text-muted
+                        ">
                             {t(
                                 "list.status",
                             )}
                         </th>
 
                         <th className="
-                                whitespace-nowrap
-                                px-4
-                                py-3
-                                text-left
-                                text-xs
-                                font-medium
-                                text-muted
-                            ">
+                            whitespace-nowrap
+                            px-4
+                            py-3
+                            text-left
+                            text-xs
+                            font-medium
+                            text-muted
+                        ">
                             {t(
                                 "list.createdAt",
                             )}
                         </th>
 
                         <th className="
-                                whitespace-nowrap
-                                px-4
-                                py-3
-                                text-left
-                                text-xs
-                                font-medium
-                                text-muted
-                            ">
+                            whitespace-nowrap
+                            px-4
+                            py-3
+                            text-left
+                            text-xs
+                            font-medium
+                            text-muted
+                        ">
                             {t(
                                 "list.completedAt",
+                            )}
+                        </th>
+
+                        <th className="
+                            whitespace-nowrap
+                            px-4
+                            py-3
+                            text-right
+                            text-xs
+                            font-medium
+                            text-muted
+                        ">
+                            {t(
+                                "list.actions",
                             )}
                         </th>
                     </tr>
@@ -133,6 +149,9 @@ export function WithdrawalListTable({
                                 }
                                 withdrawal={
                                     withdrawal
+                                }
+                                onCancelled={
+                                    onCancelled
                                 }
                             />
                         ),

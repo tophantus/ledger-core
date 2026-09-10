@@ -50,6 +50,8 @@ export const API_ENDPOINTS = {
         CONFIRM: (requestId: string) =>
             `/api/v1/withdrawals/requests/${requestId}/confirm`,
         INTENTS: "/api/v1/withdrawals/intents",
+        CANCEL_INTENT: (intentId: string) =>
+            `/api/v1/withdrawals/intents/${intentId}/cancel`,
     },
     PRODUCT: {
         BASE: "/api/v1/products",
