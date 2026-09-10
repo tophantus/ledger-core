@@ -9,6 +9,7 @@ import {hasAdminAccess} from "@/features/user/utils/user-role";
 import {useRouter} from "@/i18n/routing";
 import {ROUTES} from "@/lib/constants/routes";
 import { useProduct } from "@/features/product/hooks/use-product";
+import {AtmSimulator} from "@/features/atm/components/atm-simulator";
 
 export default function CustomerLayout({
                                            children,
@@ -85,6 +86,17 @@ export default function CustomerLayout({
                         {children}
                     </div>
                 </main>
+            </div>
+
+            <div
+                className="
+                    fixed
+                    bottom-6
+                    right-6
+                    z-40
+                "
+            >
+                <AtmSimulator />
             </div>
 
             <BottomBar />

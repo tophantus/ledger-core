@@ -8,6 +8,8 @@ import com.example.ledgercore.withdrawal.command.port.inbound.ExecuteWithdrawalU
 import com.example.ledgercore.withdrawal.command.port.outbound.AtmAuthenticationPort;
 import com.example.ledgercore.withdrawal.command.repository.WithdrawalIntentCommandRepository;
 import com.example.ledgercore.withdrawal.entity.WithdrawalIntent;
+import com.example.ledgercore.withdrawal.query.dto.GetWithdrawalIntentIdByLookupCodeQuery;
+import com.example.ledgercore.withdrawal.query.port.inbound.GetWithdrawalIntentIdByLookupCodeUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +22,9 @@ public class ExecuteWithdrawalHandler
 
     private final AtmAuthenticationPort
             atmAuthenticationPort;
+
+    private final GetWithdrawalIntentIdByLookupCodeUseCase
+            getWithdrawalIntentIdByLookupCodeUseCase;
 
     private final WithdrawalIntentCommandRepository
             withdrawalIntentCommandRepository;
@@ -39,11 +44,16 @@ public class ExecuteWithdrawalHandler
                         command.credential()
                 );
 
+        UUID intentId =
+                getWithdrawalIntentIdByLookupCodeUseCase.execute(
+                        new GetWithdrawalIntentIdByLookupCodeQuery(
+                                command.lookupCode()
+                        )
+                );
+
         WithdrawalIntent intent =
                 withdrawalIntentCommandRepository
-                        .findByWithdrawalReference(
-                                command.withdrawalReference()
-                        )
+                        .findById(intentId)
                         .orElseThrow(() ->
                                 new BusinessException(
                                         ErrorCode.WITHDRAWAL_INTENT_NOT_FOUND
@@ -68,8 +78,8 @@ public class ExecuteWithdrawalHandler
                 || command.terminalCode().isBlank()
                 || command.credential() == null
                 || command.credential().isBlank()
-                || command.withdrawalReference() == null
-                || command.withdrawalReference().isBlank()
+                || command.lookupCode() == null
+                || command.lookupCode().isBlank()
                 || command.withdrawalCode() == null
                 || command.withdrawalCode().isBlank()
                 || command.amount() == null

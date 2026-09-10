@@ -148,6 +148,12 @@ withdrawal:
       enabled: true
       fixed-delay: 10s
 
+  lookup-code:
+    cleanup:
+      scheduler:
+        enabled: true
+        fixed-delay: 10000
+
 app:
   webhook:
     allow-http: true

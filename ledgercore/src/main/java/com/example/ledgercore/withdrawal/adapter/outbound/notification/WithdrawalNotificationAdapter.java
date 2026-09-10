@@ -25,7 +25,7 @@ public class WithdrawalNotificationAdapter
     public void sendWithdrawalCode(
             UUID withdrawalIntentId,
             UUID userId,
-            String withdrawalReference,
+            String withdrawalLookupCode,
             String withdrawalCode,
             BigDecimal amount,
             String currency,
@@ -38,7 +38,7 @@ public class WithdrawalNotificationAdapter
                 new WithdrawalNotificationEvent(
                         withdrawalIntentId,
                         userId,
-                        withdrawalReference,
+                        withdrawalLookupCode,
                         amount,
                         currency,
                         encryptedWithdrawalCode,

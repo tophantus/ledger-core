@@ -9,7 +9,7 @@ public interface WithdrawalNotificationPort {
     void sendWithdrawalCode(
             UUID withdrawalIntentId,
             UUID userId,
-            String withdrawalReference,
+            String withdrawalLookupCode,
             String withdrawalCode,
             BigDecimal amount,
             String currency,

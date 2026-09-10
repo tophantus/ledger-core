@@ -37,7 +37,7 @@ export function TransactionActions() {
 
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
                 <Link
-                    href={ROUTES.TRANSACTION.TRANSFER}
+                    href={ROUTES.TRANSFER}
                     className="
                         flex
                         items-center
@@ -80,7 +80,7 @@ export function TransactionActions() {
                 </Link>
 
                 <Link
-                    href={ROUTES.TRANSACTION.WITHDRAW}
+                    href={ROUTES.WITHDRAWAL}
                     className="
                         flex
                         items-center

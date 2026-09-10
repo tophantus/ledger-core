@@ -1,0 +1,40 @@
+{
+  "openAtm": "Mở ATM",
+  "title": "LedgerCore ATM",
+  "subtitle": "Mô phỏng giao dịch rút tiền",
+
+  "enterLookupCode": "Nhập số rút tiền",
+  "enterLookupCodeDescription": "Nhập số rút tiền của yêu cầu rút tiền",
+
+  "enterCode": "Nhập mã rút tiền",
+  "enterCodeDescription": "Nhập mã rút tiền gồm 6 chữ số",
+
+  "enterAmount": "Nhập số tiền",
+  "enterAmountDescription": "Nhập số tiền bạn muốn rút",
+
+  "confirmTitle": "Xác nhận giao dịch",
+  "confirmDescription": "Kiểm tra thông tin giao dịch trước khi thực hiện",
+
+  "transactionCode": "Mã giao dịch",
+  "amount": "Số tiền",
+
+  "clear": "Xóa",
+  "back": "Quay lại",
+  "continue": "Tiếp tục",
+
+  "withdraw": "Rút tiền",
+  "processing": "Đang xử lý...",
+
+  "successTitle": "Rút tiền thành công",
+  "successDescription": "Giao dịch rút tiền đã được thực hiện thành công.",
+  "executionId": "Mã thực thi",
+
+  "errorTitle": "Giao dịch thất bại",
+  "executeFailed": "Không thể thực hiện giao dịch.",
+
+  "lookupCodeRequired": "Vui lòng nhập mã giao dịch.",
+  "invalidCode": "Mã rút tiền phải gồm 6 chữ số.",
+  "invalidAmount": "Số tiền không hợp lệ.",
+
+  "secureAtm": "Giao dịch được bảo mật bởi LedgerCore."
+}

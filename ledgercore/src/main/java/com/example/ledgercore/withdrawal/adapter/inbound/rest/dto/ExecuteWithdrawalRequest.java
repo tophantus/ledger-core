@@ -10,8 +10,8 @@ import java.math.BigDecimal;
 public record ExecuteWithdrawalRequest(
 
         @NotBlank
-        @Size(max = 50)
-        String withdrawalReference,
+        @Size(min = 8, max = 8)
+        String lookupCode,
 
         @NotBlank
         String withdrawalCode,

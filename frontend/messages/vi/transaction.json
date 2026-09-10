@@ -64,6 +64,34 @@
     "viewTransactions": "Xem giao dịch",
     "newTransfer": "Chuyển tiền mới"
   },
+  "withdrawal": {
+    "title": "Rút tiền",
+    "description": "Tạo yêu cầu rút tiền từ tài khoản của bạn.",
+    "steps": {
+      "withdrawal": "Rút tiền",
+      "otp": "Xác thực OTP",
+      "result": "Hoàn tất"
+    },
+    "sourceAccount": "Tài khoản nguồn",
+    "amount": "Số tiền",
+    "availableBalance": "Số dư khả dụng",
+    "noAccounts": "Không có tài khoản đủ số dư để thực hiện giao dịch.",
+    "continue": "Tiếp tục",
+    "confirmTitle": "Xác nhận rút tiền",
+    "confirmDescription": "Nhập mã OTP đã được gửi để xác nhận yêu cầu rút tiền.",
+    "otp": "Mã OTP",
+    "otpPlaceholder": "Nhập mã OTP 6 số",
+    "expiresAt": "Hết hạn lúc",
+    "confirm": "Xác nhận",
+    "successTitle": "Yêu cầu rút tiền đã được xác nhận",
+    "successDescription": "Yêu cầu rút tiền của bạn đã được xác nhận thành công.",
+    "reference": "Mã tham chiếu",
+    "atmTitle": "Thông tin rút tiền",
+    "atmDescription": "Mã tham chiếu và mã rút tiền đã được gửi đến email của bạn. Vui lòng sử dụng hai mã này tại ATM để thực hiện giao dịch rút tiền.",
+    "newWithdrawal": "Tạo yêu cầu rút tiền mới"
+  },
+  "copy": "Sao chép",
+  "copied": "Đã sao chép",
   "list": {
     "empty": "Không tìm thấy giao dịch nào.",
     "loadError": "Không thể tải danh sách giao dịch."

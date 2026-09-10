@@ -11,7 +11,7 @@ public record ConfirmWithdrawalRequestResponse(
         WithdrawalRequestStatus requestStatus,
         UUID intentId,
         String withdrawalReference,
-        BigDecimal amount,
+        String amount,
         String currency,
         Instant intentExpiresAt
 ) {
