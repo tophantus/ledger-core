@@ -43,13 +43,19 @@ export const API_ENDPOINTS = {
             "/api/v1/transactions/transfer-intents",
 
         CONFIRM_TRANSFER:
-            "/api/v1/transactions/transfer-intents/confirm",
-
-        WITHDRAW:
-            "/api/v1/transactions/withdraw",
+            "/api/v1/transactions/transfer-intents/confirm"
+    },
+    WITHDRAWAL: {
+        REQUESTS: "/api/v1/withdrawals/requests",
+        CONFIRM: (requestId: string) =>
+            `/api/v1/withdrawals/requests/${requestId}/confirm`,
+        INTENTS: "/api/v1/withdrawals/intents",
     },
     PRODUCT: {
         BASE: "/api/v1/products",
+    },
+    ATM: {
+        EXECUTE_WITHDRAWAL: "/api/v1/withdrawals/execute",
     },
     ADMIN: {
         ACCOUNT: {

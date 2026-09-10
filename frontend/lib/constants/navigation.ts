@@ -1,4 +1,5 @@
 import {
+    ArrowDownToLine,
     ClipboardList, GitCompare,
     LayoutDashboard,
     ReceiptText, Users, Wallet,
@@ -16,6 +17,11 @@ export const NAVIGATION_ITEMS = [
         href: ROUTES.TRANSACTION.LIST,
         labelKey: "navigation.transactions",
         icon: ReceiptText,
+    },
+    {
+        href: ROUTES.WITHDRAWALS,
+        labelKey: "navigation.withdrawals",
+        icon: ArrowDownToLine,
     },
 ] as const;
 

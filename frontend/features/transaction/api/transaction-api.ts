@@ -8,7 +8,6 @@ import type {
     CreateTransferIntentResult,
     Transaction,
     TransactionFilters,
-    WithdrawMoneyRequest,
 } from "../types/transaction";
 
 export const transactionApi = {
@@ -38,20 +37,6 @@ export const transactionApi = {
             >(
                 API_ENDPOINTS.TRANSACTION
                     .CONFIRM_TRANSFER,
-                request,
-            );
-
-        return response.data;
-    },
-
-    withdraw: async (
-        request: WithdrawMoneyRequest,
-    ): Promise<ApiResponse<Transaction>> => {
-        const response =
-            await apiClient.post<
-                ApiResponse<Transaction>
-            >(
-                API_ENDPOINTS.TRANSACTION.WITHDRAW,
                 request,
             );
 

@@ -11,11 +11,11 @@ export const ROUTES = {
         DETAIL: (accountId: string) =>
             `/accounts/${accountId}`,
     },
-
+    TRANSFER: "/transfer",
+    WITHDRAWAL: "/withdrawal",
+    WITHDRAWALS: "/withdrawals",
     TRANSACTION: {
         LIST: "/transactions",
-        TRANSFER: "/transfer",
-        WITHDRAW: "/withdraw",
         DETAIL: (transactionId: string) =>
             `/transactions/${transactionId}`,
     },

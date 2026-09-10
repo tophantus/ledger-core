@@ -25,6 +25,7 @@
   "navigation": {
     "dashboard": "Trang chủ",
     "transactions": "Giao dịch",
+    "withdrawals": "Mã rút tiền",
     "admin": {
       "dashboard": "Tổng quan",
       "users": "Người dùng",

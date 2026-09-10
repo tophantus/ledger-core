@@ -64,6 +64,34 @@
     "viewTransactions": "View transactions",
     "newTransfer": "New transfer"
   },
+  "withdrawal": {
+    "title": "Withdrawal",
+    "description": "Create a withdrawal request from your account.",
+    "steps": {
+      "withdrawal": "Withdrawal",
+      "otp": "OTP Verification",
+      "result": "Complete"
+    },
+    "sourceAccount": "Source Account",
+    "amount": "Amount",
+    "availableBalance": "Available Balance",
+    "noAccounts": "No account has sufficient balance to make a withdrawal.",
+    "continue": "Continue",
+    "confirmTitle": "Confirm Withdrawal",
+    "confirmDescription": "Enter the OTP sent to you to confirm the withdrawal request.",
+    "otp": "OTP",
+    "otpPlaceholder": "Enter 6-digit OTP",
+    "expiresAt": "Expires At",
+    "confirm": "Confirm",
+    "successTitle": "Withdrawal Request Confirmed",
+    "successDescription": "Your withdrawal request has been successfully confirmed.",
+    "reference": "Withdrawal Reference",
+    "atmTitle": "Withdrawal Information",
+    "atmDescription": "The withdrawal reference and withdrawal code have been sent to your email. Please use these codes at an ATM to complete your withdrawal.",
+    "newWithdrawal": "New Withdrawal"
+  },
+  "copy": "Copy",
+  "copied": "Copied",
   "list": {
     "empty": "No transactions found.",
     "loadError": "Unable to load transactions."

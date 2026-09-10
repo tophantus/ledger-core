@@ -25,6 +25,7 @@
   "navigation": {
     "dashboard": "Dashboard",
     "transactions": "Transactions",
+    "withdrawals": "Withdrawal Codes",
     "admin": {
       "dashboard": "Dashboard",
       "users": "Users",

@@ -70,14 +70,6 @@ export interface ConfirmTransferRequest {
     otp: string;
 }
 
-export interface WithdrawMoneyRequest {
-    sourceAccountId: string;
-    amount: string;
-    currency: string;
-    reference: string;
-    description?: string;
-}
-
 export type TransactionApiResponse =
     ApiResponse<Transaction>;
 

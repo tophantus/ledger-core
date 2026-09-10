@@ -1,0 +1,50 @@
+{
+  "title": "Withdrawal",
+  "description": "Create a withdrawal request from your account.",
+  "steps": {
+    "withdrawal": "Withdrawal",
+    "otp": "OTP Verification",
+    "result": "Complete"
+  },
+  "back": "Back",
+  "sourceAccount": "Source Account",
+  "amount": "Amount",
+  "availableBalance": "Available Balance",
+  "noAccounts": "No account has sufficient balance to make a withdrawal.",
+  "amountExceedsBalance": "Withdrawal amount cannot exceed the available balance.",
+  "continue": "Continue",
+  "confirmTitle": "Confirm Withdrawal",
+  "confirmDescription": "Enter the OTP sent to you to confirm the withdrawal request.",
+  "otp": "OTP",
+  "otpPlaceholder": "Enter 6-digit OTP",
+  "expiresAt": "Expires At",
+  "confirm": "Confirm",
+  "successTitle": "Withdrawal Request Confirmed",
+  "successDescription": "Your withdrawal request has been successfully confirmed.",
+  "reference": "Withdrawal Reference",
+  "atmTitle": "Withdrawal Information",
+  "atmDescription": "The withdrawal reference and withdrawal code have been sent to your email. Please use both codes at an ATM to complete your withdrawal before the request expires.",
+  "newWithdrawal": "New Withdrawal",
+  "list": {
+    "title": "Withdrawal History",
+    "description": "View your withdrawal requests.",
+    "reference": "Reference",
+    "account": "Account",
+    "amount": "Amount",
+    "status": "Status",
+    "createdAt": "Created At",
+    "completedAt": "Completed At",
+    "allStatuses": "All Statuses",
+    "emptyTitle": "No Withdrawal Requests",
+    "emptyDescription": "Your withdrawal requests will appear here.",
+    "page": "Page {current} of {total}",
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "statuses": {
+    "READY": "Ready",
+    "COMPLETED": "Completed",
+    "EXPIRED": "Expired",
+    "CANCELLED": "Cancelled"
+  }
+}

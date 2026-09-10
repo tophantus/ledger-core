@@ -476,7 +476,7 @@ export default function TransferPageContent() {
         setStep("TRANSFER");
 
         router.replace(
-            ROUTES.TRANSACTION.TRANSFER,
+            ROUTES.TRANSFER,
         );
     };
 
