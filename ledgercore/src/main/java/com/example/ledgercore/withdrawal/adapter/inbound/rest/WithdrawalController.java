@@ -1,6 +1,7 @@
 package com.example.ledgercore.withdrawal.adapter.inbound.rest;
 
 import com.example.ledgercore.auth.security.AuthPrincipal;
+import com.example.ledgercore.common.dto.PageResponse;
 import com.example.ledgercore.common.response.ApiResponse;
 import com.example.ledgercore.withdrawal.adapter.inbound.rest.dto.ConfirmWithdrawalRequest;
 import com.example.ledgercore.withdrawal.adapter.inbound.rest.dto.CreateWithdrawalRequest;
@@ -9,6 +10,12 @@ import com.example.ledgercore.withdrawal.command.dto.*;
 import com.example.ledgercore.withdrawal.command.port.inbound.ConfirmWithdrawalRequestUseCase;
 import com.example.ledgercore.withdrawal.command.port.inbound.CreateWithdrawalRequestUseCase;
 import com.example.ledgercore.withdrawal.command.port.inbound.ExecuteWithdrawalUseCase;
+import com.example.ledgercore.withdrawal.enums.WithdrawalIntentStatus;
+import com.example.ledgercore.withdrawal.query.dto.GetAccountWithdrawalIntentsQuery;
+import com.example.ledgercore.withdrawal.query.dto.GetUserWithdrawalIntentsQuery;
+import com.example.ledgercore.withdrawal.query.dto.WithdrawalIntentResponse;
+import com.example.ledgercore.withdrawal.query.port.inbound.GetAccountWithdrawalIntentsUseCase;
+import com.example.ledgercore.withdrawal.query.port.inbound.GetUserWithdrawalIntentsUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -36,6 +43,12 @@ public class WithdrawalController {
 
     private final ExecuteWithdrawalUseCase
             executeWithdrawalUseCase;
+
+    private final GetAccountWithdrawalIntentsUseCase
+            getAccountWithdrawalIntentsUseCase;
+
+    private final GetUserWithdrawalIntentsUseCase
+            getUserWithdrawalIntentsUseCase;
 
     @PostMapping("/requests")
     @Operation(
@@ -116,6 +129,51 @@ public class WithdrawalController {
                 ApiResponse.success(
                         response,
                         "Withdrawal executed successfully"
+                )
+        );
+    }
+
+    @GetMapping("/intents")
+    @Operation(
+            summary = "Get withdrawal intents",
+            description = "Get withdrawal intents for the authenticated user, optionally filtered by account"
+    )
+    public ResponseEntity<ApiResponse<PageResponse<WithdrawalIntentResponse>>> getWithdrawalIntents(
+            @AuthenticationPrincipal AuthPrincipal principal,
+            @RequestParam(required = false) UUID accountId,
+            @RequestParam(required = false) WithdrawalIntentStatus status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        PageResponse<WithdrawalIntentResponse> response;
+
+        if (accountId != null) {
+            response =
+                    getAccountWithdrawalIntentsUseCase.execute(
+                            new GetAccountWithdrawalIntentsQuery(
+                                    principal.getUserId(),
+                                    accountId,
+                                    status,
+                                    page,
+                                    size
+                            )
+                    );
+        } else {
+            response =
+                    getUserWithdrawalIntentsUseCase.execute(
+                            new GetUserWithdrawalIntentsQuery(
+                                    principal.getUserId(),
+                                    status,
+                                    page,
+                                    size
+                            )
+                    );
+        }
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        response,
+                        "Withdrawal intents retrieved successfully"
                 )
         );
     }
