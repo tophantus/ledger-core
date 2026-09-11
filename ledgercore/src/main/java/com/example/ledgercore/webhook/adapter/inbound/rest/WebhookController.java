@@ -55,21 +55,20 @@ public class WebhookController {
     private final GetWebhookEndpointDeliveriesUseCase
             getWebhookEndpointDeliveriesUseCase;
 
-    @PostMapping("/api/v1/accounts/{accountId}/webhooks")
+    @PostMapping("/api/v1/webhooks")
     @Operation(
             summary = "Register webhook",
             description = "Register a new webhook endpoint for an account"
     )
     public ResponseEntity<ApiResponse<RegisterWebhookResponse>> register(
             @AuthenticationPrincipal AuthPrincipal principal,
-            @PathVariable UUID accountId,
             @Valid @RequestBody RegisterWebhookRequest request
     ) {
         RegisterWebhookResult result =
                 registerWebhookUseCase.execute(
                         new RegisterWebhookCommand(
                                 principal.getUserId(),
-                                accountId,
+                                request.accountId(),
                                 request.url(),
                                 request.eventTypes()
                         )
