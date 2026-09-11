@@ -12,6 +12,8 @@ import {
     getWebhookStatusColor,
 } from "@/lib/utils/webhook";
 import {WebhookActions} from "@/features/webhook/components/webhook-actions";
+import {useRouter} from "next/navigation";
+import {ROUTES} from "@/lib/constants/routes";
 
 interface WebhookListRowProps {
     webhook: Webhook;
@@ -32,13 +34,23 @@ export function WebhookListRow({
     const locale =
         useLocale();
 
+    const router =
+        useRouter();
+
+    const handleClick = () => {
+        router.push(
+            ROUTES.WEBHOOKS.DETAILS(webhook.id),
+        );
+    };
+
     return (
         <tr className="
-            border-b
-            border-border
-            last:border-b-0
-            hover:bg-background-subtle
-        ">
+                border-b
+                border-border
+                last:border-b-0
+                hover:bg-background-subtle"
+            onClick={handleClick}
+        >
             <td className="
                 max-w-[280px]
                 px-4
@@ -152,11 +164,15 @@ export function WebhookListRow({
             </td>
 
             <td className="
-                whitespace-nowrap
-                px-4
-                py-4
-                text-right
-            ">
+                    whitespace-nowrap
+                    px-4
+                    py-4
+                    text-right
+                "
+                onClick={(event) => {
+                    event.stopPropagation();
+                }}
+            >
                 <WebhookActions
                     webhook={webhook}
                     onRemoved={onRemoved}

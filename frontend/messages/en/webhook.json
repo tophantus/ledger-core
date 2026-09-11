@@ -54,7 +54,22 @@
     "title": "Actions",
     "update": "Update Endpoint",
     "updateSubscriptions": "Update Events",
+    "rotateSecret": "Rotate Secret",
     "remove": "Remove"
+  },
+  "rotateSecret": {
+    "close": "Close",
+    "secret": "Webhook Secret",
+    "copy": "Copy",
+    "copied": "Copied",
+    "done": "Done",
+    "success": {
+      "title": "Webhook Secret Rotated",
+      "description": "The webhook secret has been rotated successfully.",
+      "rotated": "Your new webhook secret is ready.",
+      "secretWarning": "Copy and save this secret before closing this window.",
+      "saveWarning": "This secret will only be shown once. Store it somewhere secure. The previous secret is no longer valid."
+    }
   },
   "update": {
     "title": "Update Webhook",
@@ -77,6 +92,41 @@
     "cancel": "Cancel",
     "submit": "Update",
     "error": "Failed to update webhook events."
+  },
+  "details": {
+    "title": "Webhook Details",
+    "description": "View webhook configuration and delivery history.",
+    "back": "Back",
+    "url": "Webhook URL",
+    "account": "Account",
+    "status": "Status",
+    "events": "Events",
+    "createdAt": "Created At",
+    "updatedAt": "Updated At"
+  },
+  "deliveries": {
+    "title": "Deliveries",
+    "description": "View delivery attempts for this webhook.",
+    "eventId": "Event ID",
+    "eventType": "Event Type",
+    "status": "Status",
+    "nextAttemptAt": "Next Attempt",
+    "deliveredAt": "Delivered At",
+    "createdAt": "Created At",
+    "emptyTitle": "No deliveries",
+    "emptyDescription": "This webhook has not received any delivery attempts yet.",
+    "filters": {
+      "status": "Status",
+      "allStatuses": "All Statuses",
+      "eventType": "Event Type",
+      "allEventTypes": "All Event Types"
+    }
+  },
+  "deliveryStatuses": {
+    "PENDING": "Pending",
+    "RETRYING": "Retrying",
+    "DELIVERED": "Delivered",
+    "FAILED": "Failed"
   },
   "statuses": {
     "ACTIVE": "Active",

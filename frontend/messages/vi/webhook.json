@@ -54,7 +54,22 @@
     "title": "Thao tác",
     "update": "Cập nhật endpoint",
     "updateSubscriptions": "Cập nhật sự kiện",
+    "rotateSecret": "Đổi secret",
     "remove": "Xóa"
+  },
+  "rotateSecret": {
+    "close": "Đóng",
+    "secret": "Webhook Secret",
+    "copy": "Sao chép",
+    "copied": "Đã sao chép",
+    "done": "Hoàn tất",
+    "success": {
+      "title": "Đã đổi Webhook Secret",
+      "description": "Webhook Secret đã được đổi thành công.",
+      "rotated": "Webhook Secret mới đã sẵn sàng.",
+      "secretWarning": "Hãy sao chép và lưu secret này trước khi đóng cửa sổ.",
+      "saveWarning": "Secret này chỉ được hiển thị một lần. Hãy lưu ở nơi an toàn. Secret cũ không còn hiệu lực."
+    }
   },
   "update": {
     "title": "Cập nhật webhook",
@@ -77,6 +92,41 @@
     "cancel": "Hủy",
     "submit": "Cập nhật",
     "error": "Không thể cập nhật sự kiện webhook."
+  },
+  "details": {
+    "title": "Chi tiết webhook",
+    "description": "Xem cấu hình webhook và lịch sử gửi sự kiện.",
+    "back": "Quay lại",
+    "url": "Webhook URL",
+    "account": "Tài khoản",
+    "status": "Trạng thái",
+    "events": "Sự kiện",
+    "createdAt": "Ngày tạo",
+    "updatedAt": "Ngày cập nhật"
+  },
+  "deliveries": {
+    "title": "Lịch sử gửi",
+    "description": "Xem các lần gửi sự kiện của webhook này.",
+    "eventId": "Event ID",
+    "eventType": "Loại sự kiện",
+    "status": "Trạng thái",
+    "nextAttemptAt": "Lần thử tiếp theo",
+    "deliveredAt": "Đã gửi lúc",
+    "createdAt": "Ngày tạo",
+    "emptyTitle": "Chưa có lần gửi",
+    "emptyDescription": "Webhook này chưa có lần gửi sự kiện nào.",
+    "filters": {
+      "status": "Trạng thái",
+      "allStatuses": "Tất cả trạng thái",
+      "eventType": "Loại sự kiện",
+      "allEventTypes": "Tất cả loại sự kiện"
+    }
+  },
+  "deliveryStatuses": {
+    "PENDING": "Đang chờ",
+    "RETRYING": "Đang thử lại",
+    "DELIVERED": "Đã gửi",
+    "FAILED": "Thất bại"
   },
   "statuses": {
     "ACTIVE": "Đang hoạt động",

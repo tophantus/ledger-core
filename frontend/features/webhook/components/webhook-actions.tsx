@@ -3,6 +3,7 @@
 import {
     MoreHorizontal,
     Pencil,
+    RotateCw,
     Settings2,
     Trash2,
 } from "lucide-react";
@@ -17,11 +18,17 @@ import React, {
 
 import {Button} from "@/components/ui/button";
 import {useDeleteWebhook} from "@/features/webhook/hooks/use-delete-webhook";
+import {
+    useRotateWebhookSecret,
+} from "@/features/webhook/hooks/use-rotate-webhook-secret";
 import {UpdateWebhookModal} from "@/features/webhook/components/update-webhook-modal";
 import {
     UpdateWebhookSubscriptionsModal,
 } from "@/features/webhook/components/update-webhook-subscriptions-modal";
-import type {Webhook} from "@/features/webhook/types/webhook";
+import type {
+    Webhook,
+} from "@/features/webhook/types/webhook";
+import {RotateWebhookSecretResult} from "@/features/webhook/components/rotate-webhook-secret-result";
 
 interface WebhookActionsProps {
     webhook: Webhook;
@@ -46,6 +53,10 @@ export function WebhookActions({
         removeWebhook,
     } = useDeleteWebhook();
 
+    const {
+        rotateWebhookSecret,
+    } = useRotateWebhookSecret();
+
     const [
         isOpen,
         setIsOpen,
@@ -57,6 +68,11 @@ export function WebhookActions({
     ] = useState(false);
 
     const [
+        isRotating,
+        setIsRotating,
+    ] = useState(false);
+
+    const [
         isUpdateModalOpen,
         setIsUpdateModalOpen,
     ] = useState(false);
@@ -65,6 +81,11 @@ export function WebhookActions({
         isSubscriptionsModalOpen,
         setIsSubscriptionsModalOpen,
     ] = useState(false);
+
+    const [
+        rotatedSecret,
+        setRotatedSecret,
+    ] = useState<string | null>(null);
 
     const [
         menuPosition,
@@ -156,6 +177,39 @@ export function WebhookActions({
         }
     };
 
+    const handleRotateSecret = async () => {
+        if (
+            isRotating ||
+            webhook.status !== "ACTIVE"
+        ) {
+            return;
+        }
+
+        setIsRotating(true);
+
+        try {
+            const response =
+                await rotateWebhookSecret(
+                    webhook.id,
+                );
+
+            if (response.success) {
+                setIsOpen(false);
+                setMenuPosition(null);
+                setRotatedSecret(
+                    response.data.secret,
+                );
+            }
+        } finally {
+            setIsRotating(false);
+        }
+    };
+
+    const handleCloseSecret = () => {
+        setRotatedSecret(null);
+        onUpdated();
+    };
+
     const handleUpdateSuccess = () => {
         setIsUpdateModalOpen(false);
         setIsOpen(false);
@@ -190,6 +244,11 @@ export function WebhookActions({
                     true,
                 );
             },
+        },
+        {
+            key: "rotateSecret",
+            icon: RotateCw,
+            onClick: handleRotateSecret,
         },
         {
             key: "remove",
@@ -234,7 +293,7 @@ export function WebhookActions({
                             className="
                                 fixed
                                 z-50
-                                min-w-[200px]
+                                min-w-[220px]
                                 overflow-hidden
                                 rounded-lg
                                 border
@@ -263,45 +322,48 @@ export function WebhookActions({
                                             }
                                         >
                                             {index ===
-                                                2 && (
+                                                3 && (
                                                     <div className="
-                                                    my-1
-                                                    border-t
-                                                    border-border
-                                                " />
+                                                        my-1
+                                                        border-t
+                                                        border-border
+                                                    " />
                                                 )}
 
                                             <button
                                                 type="button"
                                                 disabled={
-                                                    action.key ===
-                                                    "remove" &&
-                                                    isRemoving
+                                                    (action.key ===
+                                                        "remove" &&
+                                                        isRemoving) ||
+                                                    (action.key ===
+                                                        "rotateSecret" &&
+                                                        isRotating)
                                                 }
                                                 className={`
-                                                    flex
-                                                    w-full
-                                                    items-center
-                                                    gap-2
-                                                    rounded-md
-                                                    px-3
-                                                    py-2
-                                                    text-left
-                                                    text-sm
-                                                    ${
-                                                    action.destructive
-                                                        ? `
-                                                                text-danger
-                                                                hover:bg-danger/10
-                                                            `
-                                                        : `
-                                                                text-foreground
-                                                                hover:bg-background-subtle
-                                                            `
-                                                }
-                                                    disabled:cursor-not-allowed
-                                                    disabled:opacity-50
-                                                `}
+flex
+w-full
+items-center
+gap-2
+rounded-md
+px-3
+py-2
+text-left
+text-sm
+${
+    action.destructive
+        ? `
+                                                            text-danger
+                                                            hover:bg-danger/10
+                                                        `
+        : `
+                                                            text-foreground
+                                                            hover:bg-background-subtle
+                                                        `
+}
+disabled:cursor-not-allowed
+disabled:opacity-50
+    `}
                                                 onClick={
                                                     action.onClick
                                                 }
@@ -354,6 +416,13 @@ export function WebhookActions({
                     handleSubscriptionsSuccess
                 }
             />
+
+            {rotatedSecret && (
+                <RotateWebhookSecretResult
+                    secret={rotatedSecret}
+                    onClose={handleCloseSecret}
+                />
+            )}
         </>
     );
 }
