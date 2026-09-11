@@ -19,6 +19,7 @@ export type WebhookEventType =
     | "TRANSACTION_FAILED";
 
 export interface RegisterWebhookRequest {
+    accountId: string;
     url: string;
     eventTypes: WebhookEventType[];
 }

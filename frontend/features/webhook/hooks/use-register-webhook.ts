@@ -7,13 +7,9 @@ import type {
 
 export function useRegisterWebhook() {
     const registerWebhook = async (
-        accountId: string,
         request: RegisterWebhookRequest,
     ) => {
-        return webhookApi.register(
-            accountId,
-            request,
-        );
+        return webhookApi.register(request);
     };
 
     return {

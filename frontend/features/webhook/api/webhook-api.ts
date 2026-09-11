@@ -20,18 +20,13 @@ import type {
 
 export const webhookApi = {
     register: async (
-        accountId: string,
         request: RegisterWebhookRequest,
-    ): Promise<
-        ApiResponse<RegisterWebhookResponse>
-    > => {
+    ): Promise<ApiResponse<RegisterWebhookResponse>> => {
         const response =
             await apiClient.post<
                 ApiResponse<RegisterWebhookResponse>
             >(
-                API_ENDPOINTS.WEBHOOK.ACCOUNT(
-                    accountId,
-                ),
+                API_ENDPOINTS.WEBHOOK.BASE,
                 request,
             );
 

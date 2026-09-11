@@ -48,9 +48,6 @@ export const API_ENDPOINTS = {
     WEBHOOK: {
         BASE: "/api/v1/webhooks",
 
-        ACCOUNT: (accountId: string) =>
-            `/api/v1/accounts/${accountId}/webhooks`,
-
         BY_ID: (webhookId: string) =>
             `/api/v1/webhooks/${webhookId}`,
 
