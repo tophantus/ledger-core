@@ -3,6 +3,7 @@ package com.example.ledgercore.webhook.query.handler;
 import com.example.ledgercore.common.dto.PageResponse;
 import com.example.ledgercore.webhook.entity.WebhookEndpoint;
 import com.example.ledgercore.webhook.entity.WebhookSubscription;
+import com.example.ledgercore.webhook.enums.WebhookStatus;
 import com.example.ledgercore.webhook.query.dto.WebhookResponse;
 import com.example.ledgercore.webhook.query.mapper.WebhookResponseMapper;
 import com.example.ledgercore.webhook.query.port.inbound.GetUserWebhookEndpointsUseCase;
@@ -67,8 +68,9 @@ public class GetUserWebhookEndpointsHandler
 
         Page<WebhookEndpoint> endpointPage =
                 webhookEndpointQueryRepository
-                        .findAllByAccountIdIn(
+                        .findAllByAccountIdInAndStatus(
                                 accountIds,
+                                WebhookStatus.ACTIVE,
                                 pageable
                         );
 

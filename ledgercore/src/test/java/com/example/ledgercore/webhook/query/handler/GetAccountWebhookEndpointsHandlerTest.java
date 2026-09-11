@@ -3,6 +3,7 @@ package com.example.ledgercore.webhook.query.handler;
 import com.example.ledgercore.common.dto.PageResponse;
 import com.example.ledgercore.webhook.entity.WebhookEndpoint;
 import com.example.ledgercore.webhook.entity.WebhookSubscription;
+import com.example.ledgercore.webhook.enums.WebhookStatus;
 import com.example.ledgercore.webhook.port.outbound.WebhookAccountOwnerPort;
 import com.example.ledgercore.webhook.query.dto.WebhookResponse;
 import com.example.ledgercore.webhook.query.mapper.WebhookResponseMapper;
@@ -81,8 +82,9 @@ class GetAccountWebhookEndpointsHandlerTest {
                         2
                 );
 
-        when(webhookEndpointQueryRepository.findAllByAccountId(
+        when(webhookEndpointQueryRepository.findAllByAccountIdAndStatus(
                 eq(accountId),
+                eq(WebhookStatus.ACTIVE),
                 any(Pageable.class)
         )).thenReturn(endpointPage);
 
@@ -119,8 +121,9 @@ class GetAccountWebhookEndpointsHandlerTest {
                 .verifyOwnership(userId, accountId);
 
         verify(webhookEndpointQueryRepository)
-                .findAllByAccountId(
+                .findAllByAccountIdAndStatus(
                         eq(accountId),
+                        eq(WebhookStatus.ACTIVE),
                         any(Pageable.class)
                 );
 
@@ -145,8 +148,9 @@ class GetAccountWebhookEndpointsHandlerTest {
                         0
                 );
 
-        when(webhookEndpointQueryRepository.findAllByAccountId(
+        when(webhookEndpointQueryRepository.findAllByAccountIdAndStatus(
                 eq(accountId),
+                eq(WebhookStatus.ACTIVE),
                 any(Pageable.class)
         )).thenReturn(endpointPage);
 
@@ -169,8 +173,9 @@ class GetAccountWebhookEndpointsHandlerTest {
                 .verifyOwnership(userId, accountId);
 
         verify(webhookEndpointQueryRepository)
-                .findAllByAccountId(
+                .findAllByAccountIdAndStatus(
                         eq(accountId),
+                        eq(WebhookStatus.ACTIVE),
                         any(Pageable.class)
                 );
 
@@ -220,8 +225,9 @@ class GetAccountWebhookEndpointsHandlerTest {
                         21
                 );
 
-        when(webhookEndpointQueryRepository.findAllByAccountId(
+        when(webhookEndpointQueryRepository.findAllByAccountIdAndStatus(
                 eq(accountId),
+                eq(WebhookStatus.ACTIVE),
                 any(Pageable.class)
         )).thenReturn(endpointPage);
 
@@ -250,8 +256,9 @@ class GetAccountWebhookEndpointsHandlerTest {
                 ArgumentCaptor.forClass(Pageable.class);
 
         verify(webhookEndpointQueryRepository)
-                .findAllByAccountId(
+                .findAllByAccountIdAndStatus(
                         eq(accountId),
+                        eq(WebhookStatus.ACTIVE),
                         pageableCaptor.capture()
                 );
 
@@ -284,8 +291,9 @@ class GetAccountWebhookEndpointsHandlerTest {
                         0
                 );
 
-        when(webhookEndpointQueryRepository.findAllByAccountId(
+        when(webhookEndpointQueryRepository.findAllByAccountIdAndStatus(
                 eq(accountId),
+                eq(WebhookStatus.ACTIVE),
                 any(Pageable.class)
         )).thenReturn(endpointPage);
 
@@ -301,8 +309,9 @@ class GetAccountWebhookEndpointsHandlerTest {
                 ArgumentCaptor.forClass(Pageable.class);
 
         verify(webhookEndpointQueryRepository)
-                .findAllByAccountId(
+                .findAllByAccountIdAndStatus(
                         eq(accountId),
+                        eq(WebhookStatus.ACTIVE),
                         pageableCaptor.capture()
                 );
 
@@ -321,8 +330,9 @@ class GetAccountWebhookEndpointsHandlerTest {
                         0
                 );
 
-        when(webhookEndpointQueryRepository.findAllByAccountId(
+        when(webhookEndpointQueryRepository.findAllByAccountIdAndStatus(
                 eq(accountId),
+                eq(WebhookStatus.ACTIVE),
                 any(Pageable.class)
         )).thenReturn(endpointPage);
 
@@ -340,8 +350,9 @@ class GetAccountWebhookEndpointsHandlerTest {
                 ArgumentCaptor.forClass(Pageable.class);
 
         verify(webhookEndpointQueryRepository)
-                .findAllByAccountId(
+                .findAllByAccountIdAndStatus(
                         eq(accountId),
+                        eq(WebhookStatus.ACTIVE),
                         pageableCaptor.capture()
                 );
 
@@ -360,8 +371,9 @@ class GetAccountWebhookEndpointsHandlerTest {
                         0
                 );
 
-        when(webhookEndpointQueryRepository.findAllByAccountId(
+        when(webhookEndpointQueryRepository.findAllByAccountIdAndStatus(
                 eq(accountId),
+                eq(WebhookStatus.ACTIVE),
                 any(Pageable.class)
         )).thenReturn(endpointPage);
 
@@ -379,8 +391,9 @@ class GetAccountWebhookEndpointsHandlerTest {
                 ArgumentCaptor.forClass(Pageable.class);
 
         verify(webhookEndpointQueryRepository)
-                .findAllByAccountId(
+                .findAllByAccountIdAndStatus(
                         eq(accountId),
+                        eq(WebhookStatus.ACTIVE),
                         pageableCaptor.capture()
                 );
 
@@ -399,8 +412,9 @@ class GetAccountWebhookEndpointsHandlerTest {
                         25
                 );
 
-        when(webhookEndpointQueryRepository.findAllByAccountId(
+        when(webhookEndpointQueryRepository.findAllByAccountIdAndStatus(
                 eq(accountId),
+                eq(WebhookStatus.ACTIVE),
                 any(Pageable.class)
         )).thenReturn(endpointPage);
 
@@ -420,8 +434,9 @@ class GetAccountWebhookEndpointsHandlerTest {
         assertEquals(2, result.totalPages());
 
         verify(webhookEndpointQueryRepository)
-                .findAllByAccountId(
+                .findAllByAccountIdAndStatus(
                         eq(accountId),
+                        eq(WebhookStatus.ACTIVE),
                         any(Pageable.class)
                 );
 
