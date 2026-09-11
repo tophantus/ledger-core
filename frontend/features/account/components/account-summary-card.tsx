@@ -1,18 +1,21 @@
 "use client";
 
-import {useTranslations} from "next-intl";
+import {useLocale, useTranslations} from "next-intl";
 
-import type {Account} from "../types/account";
+import type {AccountSummary} from "../types/account";
+import {formatMoney} from "@/lib/utils/currency";
+import {getAccountStatusColor} from "@/lib/utils/account";
 
 interface AccountSummaryProps {
-    account: Account;
+    account: AccountSummary;
 }
 
-export function AccountSummary({
+export function AccountSummaryCard({
                                    account,
                                }: AccountSummaryProps) {
     const t = useTranslations("account");
 
+    const locale = useLocale();
     return (
         <div className="rounded-lg border border-border bg-surface">
             <div className="flex flex-col gap-4 p-6 sm:flex-row sm:items-start sm:justify-between">
@@ -26,7 +29,19 @@ export function AccountSummary({
                     </p>
                 </div>
 
-                <span className="w-fit rounded-full bg-surface-subtle px-2.5 py-1 text-xs font-medium text-text-secondary">
+                <span
+                    className={`
+                        rounded-full
+                        px-2.5
+                        py-1
+                        text-xs
+                        font-medium
+                        ${getAccountStatusColor(
+                        account.status,
+                        "text-background",
+                    )}
+                        `}
+                >
                     {t(`statuses.${account.status}`)}
                 </span>
             </div>
@@ -37,7 +52,11 @@ export function AccountSummary({
                 </p>
 
                 <p className="mt-1 text-2xl font-semibold text-text-primary">
-                    {account.balance} {account.currency}
+                    {formatMoney(
+                        account.balance,
+                        account.currency,
+                        locale
+                    )}
                 </p>
             </div>
         </div>

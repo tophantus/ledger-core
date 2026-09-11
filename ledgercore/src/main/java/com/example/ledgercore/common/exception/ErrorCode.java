@@ -393,22 +393,28 @@ public enum ErrorCode {
             HttpStatus.BAD_REQUEST
     ),
 
-    WEBHOOK_ALREADY_EXISTS(
+    WEBHOOK_ENDPOINT_ALREADY_EXISTS(
             "WEBHOOK_003",
             "Webhook endpoint already exists",
             HttpStatus.CONFLICT
     ),
 
-    WEBHOOK_NOT_FOUND(
+    WEBHOOK_ENDPOINT_NOT_FOUND(
             "WEBHOOK_004",
             "Webhook endpoint not found",
             HttpStatus.NOT_FOUND
     ),
 
-    WEBHOOK_DISABLED(
+    WEBHOOK_ENDPOINT_DISABLED(
             "WEBHOOK_005",
             "Webhook endpoint is disabled",
             HttpStatus.CONFLICT
+    ),
+
+    WEBHOOK_DELIVERY_NOT_FOUND(
+            "WEBHOOK_007",
+            "Webhook delivery not found",
+            HttpStatus.NOT_FOUND
     ),
 
     // Authentication and Authorization

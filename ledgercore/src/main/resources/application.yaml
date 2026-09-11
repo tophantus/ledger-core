@@ -112,6 +112,17 @@ webhook:
     max-delay-seconds: 300
     processing-timeout-seconds: 60
 
+    scheduler:
+      enabled: true
+      fixed-delay: 5s
+      batch-size: 500
+
+    recovery:
+      scheduler:
+        enabled: true
+        fixed-delay: 5s
+        batch-size: 500
+
 business-day:
   timezone: Asia/Ho_Chi_Minh
   closing-cron: "0 30 23 * * *"

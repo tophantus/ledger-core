@@ -5,7 +5,9 @@
 
     "businessDay": {
       "title": "Ngày nghiệp vụ",
-      "description": "Quản lý ngày nghiệp vụ hiện tại."
+      "description": "Ngày nghiệp vụ hiện tại và thao tác đóng ngày.",
+      "currentDay": "Ngày nghiệp vụ hiện tại",
+      "close": "Đóng ngày nghiệp vụ"
     }
   },
   "account": {

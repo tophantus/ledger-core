@@ -11,7 +11,8 @@ export async function getMessages(locale: Locale) {
         admin,
         product,
         withdrawal,
-        atm
+        atm,
+        webhook
     ] = await Promise.all([
         import(`../messages/${locale}/common.json`),
         import(`../messages/${locale}/dashboard.json`),
@@ -23,6 +24,7 @@ export async function getMessages(locale: Locale) {
         import(`../messages/${locale}/product.json`),
         import(`../messages/${locale}/withdrawal.json`),
         import(`../messages/${locale}/atm.json`),
+        import(`../messages/${locale}/webhook.json`),
     ]);
 
     return {
@@ -35,6 +37,7 @@ export async function getMessages(locale: Locale) {
         admin: admin.default,
         product: product.default,
         withdrawal: withdrawal.default,
-        atm: atm.default
+        atm: atm.default,
+        webhook: webhook.default
     };
 }

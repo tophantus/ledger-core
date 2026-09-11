@@ -28,21 +28,31 @@
   "list": {
     "title": "Withdrawal History",
     "description": "View your withdrawal requests.",
+    "accountTitle": "Account Withdrawal History",
+    "accountDescription": "View withdrawal requests for this account.",
     "reference": "Reference",
     "account": "Account",
     "amount": "Amount",
     "status": "Status",
     "createdAt": "Created At",
     "completedAt": "Completed At",
-    "allStatuses": "All Statuses",
+    "actions": "Actions",
+    "cancel": "Cancel",
+    "cancelling": "Cancelling...",
     "emptyTitle": "No Withdrawal Requests",
     "emptyDescription": "Your withdrawal requests will appear here.",
     "page": "Page {current} of {total}",
     "previous": "Previous",
     "next": "Next",
-    "actions": "Actions",
-    "cancel": "Cancel",
-    "cancelling": "Cancelling..."
+    "filter": {
+      "title": "Filters",
+      "account": "Account",
+      "allAccounts": "All Accounts",
+      "loadingAccounts": "Loading accounts...",
+      "status": "Status",
+      "allStatuses": "All Statuses",
+      "clear": "Clear"
+    }
   },
   "statuses": {
     "READY": "Ready",

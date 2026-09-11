@@ -151,72 +151,56 @@ public class TransactionController {
         );
     }
 
-    @GetMapping("/accounts/{accountId}/transactions")
-    @Operation(
-            summary = "Get account transactions",
-            description = "Get paginated transactions belonging to an account"
-    )
-    public ResponseEntity<
-            ApiResponse<PageResponse<TransactionResponse>>
-            > getAccountTransactions(
-            @AuthenticationPrincipal AuthPrincipal principal,
-            @PathVariable UUID accountId,
-            @ModelAttribute TransactionFilterRequest request
-    ) {
-        PageResponse<TransactionResponse> response =
-                getAccountTransactionsUseCase.execute(
-                        new GetAccountTransactionsQuery(
-                                principal.getUserId(),
-                                accountId,
-                                request.getStatus(),
-                                request.getType(),
-                                request.getCurrency(),
-                                request.getFrom(),
-                                request.getTo(),
-                                request.getPage(),
-                                request.getSize()
-                        )
-                );
-
-        return ResponseEntity.ok(
-                ApiResponse.success(
-                        response,
-                        "Account transactions retrieved successfully"
-                )
-        );
-    }
-
     @GetMapping
     @Operation(
-            summary = "Get user transactions",
-            description = "Get paginated transactions belonging to the current user"
+            summary = "Get transactions",
+            description = "Get paginated transactions for the current user, optionally filtered by account"
     )
     public ResponseEntity<
             ApiResponse<PageResponse<TransactionResponse>>
-            > getUserTransactions(
+            > getTransactions(
             @AuthenticationPrincipal AuthPrincipal principal,
             @ModelAttribute TransactionFilterRequest request
     ) {
+        PageResponse<TransactionResponse> response;
 
-        PageResponse<TransactionResponse> response =
-                getUserTransactionsUseCase.execute(
-                        new GetUserTransactionsQuery(
-                                principal.getUserId(),
-                                request.getStatus(),
-                                request.getType(),
-                                request.getCurrency(),
-                                request.getFrom(),
-                                request.getTo(),
-                                request.getPage(),
-                                request.getSize()
-                        )
-                );
+        if (request.getAccountId()!= null) {
+            response =
+                    getAccountTransactionsUseCase.execute(
+                            new GetAccountTransactionsQuery(
+                                    principal.getUserId(),
+                                    request.getAccountId(),
+                                    request.getStatus(),
+                                    request.getType(),
+                                    request.getCurrency(),
+                                    request.getFrom(),
+                                    request.getTo(),
+                                    request.getPage(),
+                                    request.getSize()
+                            )
+                    );
+        } else {
+            response =
+                    getUserTransactionsUseCase.execute(
+                            new GetUserTransactionsQuery(
+                                    principal.getUserId(),
+                                    request.getStatus(),
+                                    request.getType(),
+                                    request.getCurrency(),
+                                    request.getFrom(),
+                                    request.getTo(),
+                                    request.getPage(),
+                                    request.getSize()
+                            )
+                    );
+        }
 
         return ResponseEntity.ok(
                 ApiResponse.success(
                         response,
-                        "User transactions retrieved successfully"
+                        "Transactions retrieved successfully"
                 )
         );
     }
+
 }

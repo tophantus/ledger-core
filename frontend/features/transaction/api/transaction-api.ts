@@ -58,31 +58,7 @@ export const transactionApi = {
         return response.data;
     },
 
-    getAccountTransactions: async (
-        accountId: string,
-        filters: TransactionFilters = {},
-    ): Promise<
-        ApiResponse<PageResponse<Transaction>>
-    > => {
-        const response =
-            await apiClient.get<
-                ApiResponse<
-                    PageResponse<Transaction>
-                >
-            >(
-                API_ENDPOINTS.TRANSACTION
-                    .ACCOUNT_TRANSACTIONS(
-                        accountId,
-                    ),
-                {
-                    params: filters,
-                },
-            );
-
-        return response.data;
-    },
-
-    getUserTransactions: async (
+    getTransactions: async (
         filters: TransactionFilters = {},
     ): Promise<
         ApiResponse<PageResponse<Transaction>>
@@ -91,7 +67,7 @@ export const transactionApi = {
             await apiClient.get<
                 ApiResponse<PageResponse<Transaction>>
             >(
-                API_ENDPOINTS.TRANSACTION.USER_TRANSACTIONS,
+                API_ENDPOINTS.TRANSACTION.BASE,
                 {
                     params: filters,
                 },

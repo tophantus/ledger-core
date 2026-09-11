@@ -2,7 +2,7 @@ import {
     ArrowDownToLine,
     ClipboardList, GitCompare,
     LayoutDashboard,
-    ReceiptText, Users, Wallet,
+    ReceiptText, Users, Wallet, Webhook,
 } from "lucide-react";
 
 import {ROUTES} from "./routes";
@@ -22,6 +22,11 @@ export const NAVIGATION_ITEMS = [
         href: ROUTES.WITHDRAWALS,
         labelKey: "navigation.withdrawals",
         icon: ArrowDownToLine,
+    },
+    {
+        href: ROUTES.WEBHOOKS.LIST,
+        labelKey: "navigation.webhooks",
+        icon: Webhook,
     },
 ] as const;
 

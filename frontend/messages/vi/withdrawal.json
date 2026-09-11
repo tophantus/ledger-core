@@ -28,21 +28,31 @@
   "list": {
     "title": "Lịch sử rút tiền",
     "description": "Xem các yêu cầu rút tiền của bạn.",
+    "accountTitle": "Lịch sử rút tiền của tài khoản",
+    "accountDescription": "Xem các yêu cầu rút tiền của tài khoản này.",
     "reference": "Mã tham chiếu",
     "account": "Tài khoản",
     "amount": "Số tiền",
     "status": "Trạng thái",
     "createdAt": "Thời gian tạo",
     "completedAt": "Thời gian hoàn tất",
-    "allStatuses": "Tất cả trạng thái",
+    "actions": "Thao tác",
+    "cancel": "Hủy",
+    "cancelling": "Đang hủy...",
     "emptyTitle": "Chưa có yêu cầu rút tiền",
-    "emptyDescription": "Các yêu cầu rút tiền của bạn sẽ xuất hiện ở đây.",
+    "emptyDescription": "Các yêu cầu rút tiền của bạn sẽ được hiển thị tại đây.",
     "page": "Trang {current} / {total}",
     "previous": "Trước",
     "next": "Sau",
-    "actions": "Thao tác",
-    "cancel": "Hủy",
-    "cancelling": "Đang hủy..."
+    "filter": {
+      "title": "Bộ lọc",
+      "account": "Tài khoản",
+      "allAccounts": "Tất cả tài khoản",
+      "loadingAccounts": "Đang tải tài khoản...",
+      "status": "Trạng thái",
+      "allStatuses": "Tất cả trạng thái",
+      "clear": "Xóa bộ lọc"
+    }
   },
   "statuses": {
     "READY": "Sẵn sàng",

@@ -4,7 +4,7 @@ import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.webhook.command.dto.DeleteWebhookCommand;
 import com.example.ledgercore.webhook.command.port.inbound.DeleteWebhookUseCase;
-import com.example.ledgercore.webhook.port.outbound.AccountOwnerPort;
+import com.example.ledgercore.webhook.port.outbound.WebhookAccountOwnerPort;
 import com.example.ledgercore.webhook.command.repository.WebhookEndpointCommandRepository;
 import com.example.ledgercore.webhook.entity.WebhookEndpoint;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class DeleteWebhookHandler implements DeleteWebhookUseCase {
 
-    private final AccountOwnerPort accountOwnerPort;
+    private final WebhookAccountOwnerPort webhookAccountOwnerPort;
     private final WebhookEndpointCommandRepository webhookEndpointCommandRepository;
 
     @Override
@@ -24,10 +24,10 @@ public class DeleteWebhookHandler implements DeleteWebhookUseCase {
         WebhookEndpoint endpoint = webhookEndpointCommandRepository
                 .findById(command.webhookId())
                 .orElseThrow(() -> new BusinessException(
-                        ErrorCode.WEBHOOK_NOT_FOUND
+                        ErrorCode.WEBHOOK_ENDPOINT_NOT_FOUND
                 ));
 
-        accountOwnerPort.verifyOwnership(
+        webhookAccountOwnerPort.verifyOwnership(
                 command.userId(),
                 endpoint.getAccountId()
         );

@@ -1,0 +1,140 @@
+{
+  "register": {
+    "title": "Đăng ký webhook",
+    "description": "Đăng ký endpoint để nhận thông báo sự kiện từ tài khoản.",
+    "close": "Đóng",
+    "account": "Tài khoản",
+    "selectAccount": "Chọn tài khoản",
+    "url": "Webhook URL",
+    "urlPlaceholder": "https://example.com/webhooks",
+    "events": "Sự kiện",
+    "cancel": "Hủy",
+    "submit": "Đăng ký",
+    "success": {
+      "title": "Webhook đã được đăng ký",
+      "description": "Webhook endpoint đã được đăng ký thành công.",
+      "registered": "Đăng ký webhook thành công.",
+      "secret": "Webhook Secret",
+      "copy": "Sao chép",
+      "copied": "Đã sao chép",
+      "secretWarning": "Secret này chỉ được hiển thị một lần.",
+      "saveWarning": "Hãy lưu secret ở nơi an toàn. Bạn sẽ không thể xem lại secret này sau khi đóng cửa sổ.",
+      "done": "Đã lưu"
+    }
+  },
+  "list": {
+    "title": "Webhooks",
+    "description": "Quản lý các webhook của bạn.",
+    "accountTitle": "Webhooks của tài khoản",
+    "accountDescription": "Quản lý các webhook của tài khoản này.",
+    "register": "Đăng ký webhook",
+    "url": "URL",
+    "account": "Tài khoản",
+    "events": "Sự kiện",
+    "status": "Trạng thái",
+    "createdAt": "Ngày tạo",
+    "updatedAt": "Ngày cập nhật",
+    "actions": "Thao tác",
+    "remove": "Xóa",
+    "previous": "Trước",
+    "next": "Sau",
+    "page": "Trang {current} / {total}",
+    "emptyTitle": "Chưa có webhook",
+    "emptyDescription": "Tài khoản của bạn chưa đăng ký webhook nào.",
+    "cancelling": "Đang hủy...",
+    "filter": {
+      "title": "Bộ lọc",
+      "account": "Tài khoản",
+      "allAccounts": "Tất cả tài khoản",
+      "loadingAccounts": "Đang tải tài khoản...",
+      "clear": "Xóa bộ lọc"
+    }
+  },
+  "actions": {
+    "title": "Thao tác",
+    "update": "Cập nhật endpoint",
+    "updateSubscriptions": "Cập nhật sự kiện",
+    "rotateSecret": "Đổi secret",
+    "remove": "Xóa"
+  },
+  "rotateSecret": {
+    "close": "Đóng",
+    "secret": "Webhook Secret",
+    "copy": "Sao chép",
+    "copied": "Đã sao chép",
+    "done": "Hoàn tất",
+    "success": {
+      "title": "Đã đổi Webhook Secret",
+      "description": "Webhook Secret đã được đổi thành công.",
+      "rotated": "Webhook Secret mới đã sẵn sàng.",
+      "secretWarning": "Hãy sao chép và lưu secret này trước khi đóng cửa sổ.",
+      "saveWarning": "Secret này chỉ được hiển thị một lần. Hãy lưu ở nơi an toàn. Secret cũ không còn hiệu lực."
+    }
+  },
+  "update": {
+    "title": "Cập nhật webhook",
+    "description": "Cập nhật endpoint nhận sự kiện từ tài khoản của bạn.",
+    "close": "Đóng",
+    "url": "Webhook URL",
+    "urlPlaceholder": "https://example.com/webhooks",
+    "urlRequired": "URL không được để trống.",
+    "invalidUrl": "Vui lòng nhập URL hợp lệ.",
+    "cancel": "Hủy",
+    "submit": "Cập nhật",
+    "error": "Không thể cập nhật webhook."
+  },
+  "updateSubscriptions": {
+    "title": "Cập nhật sự kiện webhook",
+    "description": "Chọn các sự kiện mà webhook này sẽ nhận.",
+    "close": "Đóng",
+    "events": "Sự kiện",
+    "noEvents": "Vui lòng chọn ít nhất một sự kiện.",
+    "cancel": "Hủy",
+    "submit": "Cập nhật",
+    "error": "Không thể cập nhật sự kiện webhook."
+  },
+  "details": {
+    "title": "Chi tiết webhook",
+    "description": "Xem cấu hình webhook và lịch sử gửi sự kiện.",
+    "back": "Quay lại",
+    "url": "Webhook URL",
+    "account": "Tài khoản",
+    "status": "Trạng thái",
+    "events": "Sự kiện",
+    "createdAt": "Ngày tạo",
+    "updatedAt": "Ngày cập nhật"
+  },
+  "deliveries": {
+    "title": "Lịch sử gửi",
+    "description": "Xem các lần gửi sự kiện của webhook này.",
+    "eventId": "Event ID",
+    "eventType": "Loại sự kiện",
+    "status": "Trạng thái",
+    "nextAttemptAt": "Lần thử tiếp theo",
+    "deliveredAt": "Đã gửi lúc",
+    "createdAt": "Ngày tạo",
+    "emptyTitle": "Chưa có lần gửi",
+    "emptyDescription": "Webhook này chưa có lần gửi sự kiện nào.",
+    "filters": {
+      "status": "Trạng thái",
+      "allStatuses": "Tất cả trạng thái",
+      "eventType": "Loại sự kiện",
+      "allEventTypes": "Tất cả loại sự kiện"
+    }
+  },
+  "deliveryStatuses": {
+    "PENDING": "Đang chờ",
+    "RETRYING": "Đang thử lại",
+    "DELIVERED": "Đã gửi",
+    "FAILED": "Thất bại"
+  },
+  "statuses": {
+    "ACTIVE": "Đang hoạt động",
+    "INACTIVE": "Không hoạt động"
+  },
+  "eventTypes": {
+    "ACCOUNT_BALANCE_CHANGED": "Thay đổi số dư",
+    "TRANSACTION_COMPLETED": "Giao dịch hoàn tất",
+    "TRANSACTION_FAILED": "Giao dịch thất bại"
+  }
+}

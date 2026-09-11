@@ -1,0 +1,140 @@
+{
+  "register": {
+    "title": "Register Webhook",
+    "description": "Register an endpoint to receive events from your account.",
+    "close": "Close",
+    "account": "Account",
+    "selectAccount": "Select an account",
+    "url": "Webhook URL",
+    "urlPlaceholder": "https://example.com/webhooks",
+    "events": "Events",
+    "cancel": "Cancel",
+    "submit": "Register",
+    "success": {
+      "title": "Webhook Registered",
+      "description": "The webhook endpoint has been registered successfully.",
+      "registered": "Webhook registered successfully.",
+      "secret": "Webhook Secret",
+      "copy": "Copy",
+      "copied": "Copied",
+      "secretWarning": "This secret is shown only once.",
+      "saveWarning": "Store this secret somewhere secure. You will not be able to view it again after closing this window.",
+      "done": "Done"
+    }
+  },
+  "list": {
+    "title": "Webhooks",
+    "description": "Manage your webhooks.",
+    "accountTitle": "Account Webhooks",
+    "accountDescription": "Manage webhooks for this account.",
+    "register": "Register Webhook",
+    "url": "URL",
+    "account": "Account",
+    "events": "Events",
+    "status": "Status",
+    "createdAt": "Created At",
+    "updatedAt": "Updated At",
+    "actions": "Actions",
+    "remove": "Remove",
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page {current} / {total}",
+    "emptyTitle": "No webhooks",
+    "emptyDescription": "You have not registered any webhooks.",
+    "cancelling": "Removing...",
+    "filter": {
+      "title": "Filters",
+      "account": "Account",
+      "allAccounts": "All Accounts",
+      "loadingAccounts": "Loading accounts...",
+      "clear": "Clear"
+    }
+  },
+  "actions": {
+    "title": "Actions",
+    "update": "Update Endpoint",
+    "updateSubscriptions": "Update Events",
+    "rotateSecret": "Rotate Secret",
+    "remove": "Remove"
+  },
+  "rotateSecret": {
+    "close": "Close",
+    "secret": "Webhook Secret",
+    "copy": "Copy",
+    "copied": "Copied",
+    "done": "Done",
+    "success": {
+      "title": "Webhook Secret Rotated",
+      "description": "The webhook secret has been rotated successfully.",
+      "rotated": "Your new webhook secret is ready.",
+      "secretWarning": "Copy and save this secret before closing this window.",
+      "saveWarning": "This secret will only be shown once. Store it somewhere secure. The previous secret is no longer valid."
+    }
+  },
+  "update": {
+    "title": "Update Webhook",
+    "description": "Update the endpoint that receives events from your account.",
+    "close": "Close",
+    "url": "Webhook URL",
+    "urlPlaceholder": "https://example.com/webhooks",
+    "urlRequired": "URL is required.",
+    "invalidUrl": "Please enter a valid URL.",
+    "cancel": "Cancel",
+    "submit": "Update",
+    "error": "Failed to update webhook."
+  },
+  "updateSubscriptions": {
+    "title": "Update Webhook Events",
+    "description": "Choose which events this webhook should receive.",
+    "close": "Close",
+    "events": "Events",
+    "noEvents": "Select at least one event.",
+    "cancel": "Cancel",
+    "submit": "Update",
+    "error": "Failed to update webhook events."
+  },
+  "details": {
+    "title": "Webhook Details",
+    "description": "View webhook configuration and delivery history.",
+    "back": "Back",
+    "url": "Webhook URL",
+    "account": "Account",
+    "status": "Status",
+    "events": "Events",
+    "createdAt": "Created At",
+    "updatedAt": "Updated At"
+  },
+  "deliveries": {
+    "title": "Deliveries",
+    "description": "View delivery attempts for this webhook.",
+    "eventId": "Event ID",
+    "eventType": "Event Type",
+    "status": "Status",
+    "nextAttemptAt": "Next Attempt",
+    "deliveredAt": "Delivered At",
+    "createdAt": "Created At",
+    "emptyTitle": "No deliveries",
+    "emptyDescription": "This webhook has not received any delivery attempts yet.",
+    "filters": {
+      "status": "Status",
+      "allStatuses": "All Statuses",
+      "eventType": "Event Type",
+      "allEventTypes": "All Event Types"
+    }
+  },
+  "deliveryStatuses": {
+    "PENDING": "Pending",
+    "RETRYING": "Retrying",
+    "DELIVERED": "Delivered",
+    "FAILED": "Failed"
+  },
+  "statuses": {
+    "ACTIVE": "Active",
+    "INACTIVE": "Inactive"
+  },
+  "eventTypes": {
+    "ACCOUNT_BALANCE_CHANGED": "Account Balance Changed",
+    "TRANSACTION_COMPLETED": "Transaction Completed",
+    "TRANSACTION_FAILED": "Transaction Failed"
+  }
+}

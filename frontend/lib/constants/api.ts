@@ -31,14 +31,6 @@ export const API_ENDPOINTS = {
         BY_ID: (transactionId: string) =>
             `/api/v1/transactions/${transactionId}`,
 
-        ACCOUNT_TRANSACTIONS: (
-            accountId: string,
-        ) =>
-            `/api/v1/transactions/accounts/${accountId}/transactions`,
-
-        USER_TRANSACTIONS:
-            "/api/v1/transactions",
-
         TRANSFER_INTENTS:
             "/api/v1/transactions/transfer-intents",
 
@@ -52,6 +44,21 @@ export const API_ENDPOINTS = {
         INTENTS: "/api/v1/withdrawals/intents",
         CANCEL_INTENT: (intentId: string) =>
             `/api/v1/withdrawals/intents/${intentId}/cancel`,
+    },
+    WEBHOOK: {
+        BASE: "/api/v1/webhooks",
+
+        BY_ID: (webhookId: string) =>
+            `/api/v1/webhooks/${webhookId}`,
+
+        SUBSCRIPTIONS: (webhookId: string) =>
+            `/api/v1/webhooks/${webhookId}/subscriptions`,
+
+        ROTATE_SECRET: (webhookId: string) =>
+            `/api/v1/webhooks/${webhookId}/secret/rotate`,
+
+        DELIVERIES: (webhookId: string) =>
+            `/api/v1/webhooks/${webhookId}/deliveries`,
     },
     PRODUCT: {
         BASE: "/api/v1/products",
@@ -73,7 +80,10 @@ export const API_ENDPOINTS = {
             EXCEPTIONS: "/api/v1/admin/reconciliation/exceptions",
         },
         BUSINESS_DAY: {
-            CLOSE: "/api/v1/admin/business-days/close",
+            CURRENT:
+                "/api/v1/admin/business-days/current",
+            CLOSE:
+                "/api/v1/admin/business-days/close",
         },
     },
 } as const;

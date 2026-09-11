@@ -112,6 +112,9 @@
   },
   "filters": {
     "title": "Filters",
+    "account": "Account",
+    "allAccounts": "All Accounts",
+    "loadingAccounts": "Loading accounts...",
     "type": "Type",
     "status": "Status",
     "currency": "Currency",

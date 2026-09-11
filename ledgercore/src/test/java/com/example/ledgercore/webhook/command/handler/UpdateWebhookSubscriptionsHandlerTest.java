@@ -8,7 +8,7 @@ import com.example.ledgercore.webhook.command.repository.WebhookSubscriptionComm
 import com.example.ledgercore.webhook.entity.WebhookEndpoint;
 import com.example.ledgercore.webhook.entity.WebhookSubscription;
 import com.example.ledgercore.webhook.enums.WebhookEventType;
-import com.example.ledgercore.webhook.port.outbound.AccountOwnerPort;
+import com.example.ledgercore.webhook.port.outbound.WebhookAccountOwnerPort;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,7 +30,7 @@ import static org.mockito.Mockito.*;
 class UpdateWebhookSubscriptionsHandlerTest {
 
     @Mock
-    private AccountOwnerPort accountOwnerPort;
+    private WebhookAccountOwnerPort webhookAccountOwnerPort;
 
     @Mock
     private WebhookEndpointCommandRepository webhookEndpointCommandRepository;
@@ -87,7 +87,7 @@ class UpdateWebhookSubscriptionsHandlerTest {
                 () -> handler.execute(command)
         );
 
-        verify(accountOwnerPort)
+        verify(webhookAccountOwnerPort)
                 .verifyOwnership(userId, accountId);
 
         verify(webhookSubscriptionCommandRepository)
@@ -181,7 +181,7 @@ class UpdateWebhookSubscriptionsHandlerTest {
                 );
 
         assertEquals(
-                ErrorCode.WEBHOOK_NOT_FOUND,
+                ErrorCode.WEBHOOK_ENDPOINT_NOT_FOUND,
                 exception.getErrorCode()
         );
 
@@ -189,7 +189,7 @@ class UpdateWebhookSubscriptionsHandlerTest {
                 .findById(webhookId);
 
         verifyNoInteractions(
-                accountOwnerPort,
+                webhookAccountOwnerPort,
                 webhookSubscriptionCommandRepository
         );
     }
@@ -226,7 +226,7 @@ class UpdateWebhookSubscriptionsHandlerTest {
                 exception.getErrorCode()
         );
 
-        verify(accountOwnerPort)
+        verify(webhookAccountOwnerPort)
                 .verifyOwnership(userId, accountId);
 
         verifyNoInteractions(
@@ -266,7 +266,7 @@ class UpdateWebhookSubscriptionsHandlerTest {
                 exception.getErrorCode()
         );
 
-        verify(accountOwnerPort)
+        verify(webhookAccountOwnerPort)
                 .verifyOwnership(userId, accountId);
 
         verifyNoInteractions(

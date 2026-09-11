@@ -6,7 +6,7 @@ import com.example.ledgercore.webhook.command.dto.RotateWebhookSecretCommand;
 import com.example.ledgercore.webhook.command.dto.RotateWebhookSecretResult;
 import com.example.ledgercore.webhook.command.repository.WebhookEndpointCommandRepository;
 import com.example.ledgercore.webhook.entity.WebhookEndpoint;
-import com.example.ledgercore.webhook.port.outbound.AccountOwnerPort;
+import com.example.ledgercore.webhook.port.outbound.WebhookAccountOwnerPort;
 import com.example.ledgercore.webhook.service.WebhookSecretGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,7 +25,7 @@ import static org.mockito.Mockito.*;
 class RotateWebhookSecretHandlerTest {
 
     @Mock
-    private AccountOwnerPort accountOwnerPort;
+    private WebhookAccountOwnerPort webhookAccountOwnerPort;
 
     @Mock
     private WebhookEndpointCommandRepository webhookEndpointCommandRepository;
@@ -77,7 +77,7 @@ class RotateWebhookSecretHandlerTest {
         assertEquals(webhookId, result.webhookId());
         assertEquals("new-secret", result.secret());
 
-        verify(accountOwnerPort)
+        verify(webhookAccountOwnerPort)
                 .verifyOwnership(userId, accountId);
 
         verify(webhookSecretGenerator)
@@ -103,7 +103,7 @@ class RotateWebhookSecretHandlerTest {
                 );
 
         assertEquals(
-                ErrorCode.WEBHOOK_NOT_FOUND,
+                ErrorCode.WEBHOOK_ENDPOINT_NOT_FOUND,
                 exception.getErrorCode()
         );
 
@@ -111,7 +111,7 @@ class RotateWebhookSecretHandlerTest {
                 .findById(webhookId);
 
         verifyNoInteractions(
-                accountOwnerPort,
+                webhookAccountOwnerPort,
                 webhookSecretGenerator
         );
     }
@@ -143,14 +143,14 @@ class RotateWebhookSecretHandlerTest {
 
         var inOrder = inOrder(
                 webhookEndpointCommandRepository,
-                accountOwnerPort,
+                webhookAccountOwnerPort,
                 webhookSecretGenerator
         );
 
         inOrder.verify(webhookEndpointCommandRepository)
                 .findById(webhookId);
 
-        inOrder.verify(accountOwnerPort)
+        inOrder.verify(webhookAccountOwnerPort)
                 .verifyOwnership(userId, accountId);
 
         inOrder.verify(webhookSecretGenerator)

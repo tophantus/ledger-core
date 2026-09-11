@@ -6,12 +6,12 @@ import {
 } from "react";
 import {useTranslations} from "next-intl";
 
-import {CloseBusinessDayButton} from "@/features/admin/business-day/components/close-business-day-button";
 import {ReconciliationSummary} from "@/features/admin/reconciliation/components/reconciliation-summary";
 import {useAdminReconciliation} from "@/features/admin/reconciliation/hooks/use-admin-reconciliation";
 import type {
     ReconciliationSummary as ReconciliationSummaryData,
 } from "@/features/admin/reconciliation/types/admin-reconciliation";
+import {BusinessDaySummary} from "@/features/admin/business-day/components/business-day-summary";
 
 export default function AdminDashboardPage() {
     const t = useTranslations(
@@ -80,25 +80,7 @@ export default function AdminDashboardPage() {
                 </p>
             </div>
 
-            <section className="rounded-lg border border-border bg-surface p-6">
-                <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-                    <div>
-                        <h2 className="text-lg font-semibold text-primary">
-                            {t(
-                                "businessDay.title",
-                            )}
-                        </h2>
-
-                        <p className="mt-1 text-sm text-muted">
-                            {t(
-                                "businessDay.description",
-                            )}
-                        </p>
-                    </div>
-
-                    <CloseBusinessDayButton />
-                </div>
-            </section>
+            <BusinessDaySummary />
 
             <ReconciliationSummary
                 summary={summary}

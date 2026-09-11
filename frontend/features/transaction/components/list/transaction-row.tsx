@@ -2,11 +2,11 @@
 
 import {
     ArrowDownLeft,
-    ArrowUpRight,
+    ArrowUpRight, RefreshCcw,
 } from "lucide-react";
 import {useLocale, useTranslations} from "next-intl";
 
-import type {Transaction} from "../types/transaction";
+import type {Transaction} from "../../types/transaction";
 import {Link} from "@/i18n/routing";
 import {ROUTES} from "@/lib/constants/routes";
 
@@ -62,7 +62,7 @@ export function TransactionRow({
                     <ArrowDownLeft className="h-5 w-5 text-success" />
                 ) : isOutgoing ? (
                     <ArrowUpRight className="h-5 w-5 text-danger" />
-                ) : null}
+                ) : <RefreshCcw className={"h-5 w-5 text-foreground"} />}
             </div>
 
             <div className="min-w-0 flex-1">

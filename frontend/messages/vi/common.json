@@ -26,6 +26,7 @@
     "dashboard": "Trang chủ",
     "transactions": "Giao dịch",
     "withdrawals": "Mã rút tiền",
+    "webhooks": "Webhooks",
     "admin": {
       "dashboard": "Tổng quan",
       "users": "Người dùng",

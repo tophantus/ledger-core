@@ -1,6 +1,7 @@
 package com.example.ledgercore.webhook.adapter.inbound.rest;
 
 import com.example.ledgercore.auth.security.AuthPrincipal;
+import com.example.ledgercore.common.dto.PageResponse;
 import com.example.ledgercore.common.response.ApiResponse;
 import com.example.ledgercore.webhook.command.dto.DeleteWebhookCommand;
 import com.example.ledgercore.webhook.command.dto.RegisterWebhookCommand;
@@ -15,9 +16,15 @@ import com.example.ledgercore.webhook.command.port.inbound.RegisterWebhookUseCas
 import com.example.ledgercore.webhook.command.port.inbound.RotateWebhookSecretUseCase;
 import com.example.ledgercore.webhook.command.port.inbound.UpdateWebhookSubscriptionsUseCase;
 import com.example.ledgercore.webhook.command.port.inbound.UpdateWebhookUseCase;
+import com.example.ledgercore.webhook.enums.WebhookDeliveryStatus;
+import com.example.ledgercore.webhook.enums.WebhookEventType;
+import com.example.ledgercore.webhook.query.dto.GetWebhookEndpointDeliveriesQuery;
+import com.example.ledgercore.webhook.query.dto.WebhookDeliveryResponse;
 import com.example.ledgercore.webhook.query.dto.WebhookResponse;
+import com.example.ledgercore.webhook.query.port.inbound.GetUserWebhookEndpointsUseCase;
+import com.example.ledgercore.webhook.query.port.inbound.GetWebhookEndpointDeliveriesUseCase;
 import com.example.ledgercore.webhook.query.port.inbound.GetWebhookUseCase;
-import com.example.ledgercore.webhook.query.port.inbound.GetWebhooksUseCase;
+import com.example.ledgercore.webhook.query.port.inbound.GetAccountWebhookEndpointsUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -26,7 +33,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -38,28 +44,31 @@ import java.util.UUID;
 public class WebhookController {
 
     private final RegisterWebhookUseCase registerWebhookUseCase;
-    private final GetWebhookUseCase getWebhookUseCase;
-    private final GetWebhooksUseCase getWebhooksUseCase;
     private final UpdateWebhookUseCase updateWebhookUseCase;
     private final UpdateWebhookSubscriptionsUseCase updateWebhookSubscriptionsUseCase;
     private final DeleteWebhookUseCase deleteWebhookUseCase;
     private final RotateWebhookSecretUseCase rotateWebhookSecretUseCase;
 
-    @PostMapping("/api/v1/accounts/{accountId}/webhooks")
+    private final GetWebhookUseCase getWebhookUseCase;
+    private final GetUserWebhookEndpointsUseCase getUserWebhookEndpointsUseCase;
+    private final GetAccountWebhookEndpointsUseCase getAccountWebhookEndpointsUseCase;
+    private final GetWebhookEndpointDeliveriesUseCase
+            getWebhookEndpointDeliveriesUseCase;
+
+    @PostMapping("/api/v1/webhooks")
     @Operation(
             summary = "Register webhook",
             description = "Register a new webhook endpoint for an account"
     )
     public ResponseEntity<ApiResponse<RegisterWebhookResponse>> register(
             @AuthenticationPrincipal AuthPrincipal principal,
-            @PathVariable UUID accountId,
             @Valid @RequestBody RegisterWebhookRequest request
     ) {
         RegisterWebhookResult result =
                 registerWebhookUseCase.execute(
                         new RegisterWebhookCommand(
                                 principal.getUserId(),
-                                accountId,
+                                request.accountId(),
                                 request.url(),
                                 request.eventTypes()
                         )
@@ -80,52 +89,6 @@ public class WebhookController {
                 ApiResponse.success(
                         response,
                         "Webhook registered successfully"
-                )
-        );
-    }
-
-    @GetMapping("/api/v1/accounts/{accountId}/webhooks")
-    @Operation(
-            summary = "Get account webhooks",
-            description = "Get all webhooks registered for an account"
-    )
-    public ResponseEntity<ApiResponse<List<WebhookResponse>>> getWebhooks(
-            @AuthenticationPrincipal AuthPrincipal principal,
-            @PathVariable UUID accountId
-    ) {
-        List<WebhookResponse> response =
-                getWebhooksUseCase.execute(
-                        principal.getUserId(),
-                        accountId
-                );
-
-        return ResponseEntity.ok(
-                ApiResponse.success(
-                        response,
-                        "Webhooks retrieved successfully"
-                )
-        );
-    }
-
-    @GetMapping("/api/v1/webhooks/{webhookId}")
-    @Operation(
-            summary = "Get webhook",
-            description = "Get a webhook by webhook ID"
-    )
-    public ResponseEntity<ApiResponse<WebhookResponse>> getWebhook(
-            @AuthenticationPrincipal AuthPrincipal principal,
-            @PathVariable UUID webhookId
-    ) {
-        WebhookResponse response =
-                getWebhookUseCase.execute(
-                        principal.getUserId(),
-                        webhookId
-                );
-
-        return ResponseEntity.ok(
-                ApiResponse.success(
-                        response,
-                        "Webhook retrieved successfully"
                 )
         );
     }
@@ -244,6 +207,100 @@ public class WebhookController {
                 ApiResponse.success(
                         null,
                         "Webhook deleted successfully"
+                )
+        );
+    }
+
+    @GetMapping("/api/v1/webhooks")
+    @Operation(
+            summary = "Get webhooks",
+            description = "Get paginated webhooks for the authenticated user or a specific account"
+    )
+    public ResponseEntity<ApiResponse<PageResponse<WebhookResponse>>> getWebhooks(
+            @AuthenticationPrincipal AuthPrincipal principal,
+            @RequestParam(required = false) UUID accountId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        PageResponse<WebhookResponse> response;
+
+        if (accountId != null) {
+            response =
+                    getAccountWebhookEndpointsUseCase.execute(
+                            principal.getUserId(),
+                            accountId,
+                            page,
+                            size
+                    );
+        } else {
+            response =
+                    getUserWebhookEndpointsUseCase.execute(
+                            principal.getUserId(),
+                            page,
+                            size
+                    );
+        }
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        response,
+                        "Webhooks retrieved successfully"
+                )
+        );
+    }
+
+    @GetMapping("/api/v1/webhooks/{webhookId}")
+    @Operation(
+            summary = "Get webhook",
+            description = "Get a webhook by webhook ID"
+    )
+    public ResponseEntity<ApiResponse<WebhookResponse>> getWebhook(
+            @AuthenticationPrincipal AuthPrincipal principal,
+            @PathVariable UUID webhookId
+    ) {
+        WebhookResponse response =
+                getWebhookUseCase.execute(
+                        principal.getUserId(),
+                        webhookId
+                );
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        response,
+                        "Webhook retrieved successfully"
+                )
+        );
+    }
+
+    @GetMapping("/api/v1/webhooks/{webhookId}/deliveries")
+    @Operation(
+            summary = "Get webhook deliveries",
+            description = "Get paginated deliveries of a webhook endpoint"
+    )
+    public ResponseEntity<ApiResponse<PageResponse<WebhookDeliveryResponse>>> getDeliveries(
+            @AuthenticationPrincipal AuthPrincipal principal,
+            @PathVariable UUID webhookId,
+            @RequestParam(required = false) WebhookDeliveryStatus status,
+            @RequestParam(required = false) WebhookEventType eventType,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        PageResponse<WebhookDeliveryResponse> response =
+                getWebhookEndpointDeliveriesUseCase.execute(
+                        new GetWebhookEndpointDeliveriesQuery(
+                                principal.getUserId(),
+                                webhookId,
+                                status,
+                                eventType,
+                                page,
+                                size
+                        )
+                );
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        response,
+                        "Webhook deliveries retrieved successfully"
                 )
         );
     }

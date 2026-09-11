@@ -5,7 +5,7 @@ import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.webhook.command.dto.DeleteWebhookCommand;
 import com.example.ledgercore.webhook.command.repository.WebhookEndpointCommandRepository;
 import com.example.ledgercore.webhook.entity.WebhookEndpoint;
-import com.example.ledgercore.webhook.port.outbound.AccountOwnerPort;
+import com.example.ledgercore.webhook.port.outbound.WebhookAccountOwnerPort;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,7 +24,7 @@ import static org.mockito.Mockito.*;
 class DeleteWebhookHandlerTest {
 
     @Mock
-    private AccountOwnerPort accountOwnerPort;
+    private WebhookAccountOwnerPort webhookAccountOwnerPort;
 
     @Mock
     private WebhookEndpointCommandRepository webhookEndpointCommandRepository;
@@ -66,7 +66,7 @@ class DeleteWebhookHandlerTest {
         verify(webhookEndpointCommandRepository)
                 .findById(webhookId);
 
-        verify(accountOwnerPort)
+        verify(webhookAccountOwnerPort)
                 .verifyOwnership(
                         userId,
                         accountId
@@ -77,7 +77,7 @@ class DeleteWebhookHandlerTest {
 
         verifyNoMoreInteractions(
                 webhookEndpointCommandRepository,
-                accountOwnerPort,
+                webhookAccountOwnerPort,
                 endpoint
         );
     }
@@ -101,7 +101,7 @@ class DeleteWebhookHandlerTest {
                 );
 
         assertEquals(
-                ErrorCode.WEBHOOK_NOT_FOUND,
+                ErrorCode.WEBHOOK_ENDPOINT_NOT_FOUND,
                 exception.getErrorCode()
         );
 
@@ -109,7 +109,7 @@ class DeleteWebhookHandlerTest {
                 .findById(webhookId);
 
         verifyNoInteractions(
-                accountOwnerPort
+                webhookAccountOwnerPort
         );
 
         verifyNoInteractions(
@@ -135,11 +135,11 @@ class DeleteWebhookHandlerTest {
         handler.execute(command);
 
         var inOrder = inOrder(
-                accountOwnerPort,
+                webhookAccountOwnerPort,
                 endpoint
         );
 
-        inOrder.verify(accountOwnerPort)
+        inOrder.verify(webhookAccountOwnerPort)
                 .verifyOwnership(
                         userId,
                         accountId
