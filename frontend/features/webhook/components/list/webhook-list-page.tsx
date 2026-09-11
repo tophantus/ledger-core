@@ -376,6 +376,40 @@ export default function WebhookListPage() {
             });
     };
 
+    const handleUpdated = () => {
+        setIsLoading(true);
+        setError(null);
+
+        void getWebhooks(filters)
+            .then((response) => {
+                if (!response.success) {
+                    setError(
+                        getErrorMessage(
+                            response.code,
+                        ),
+                    );
+
+                    return;
+                }
+
+                setWebhooks(
+                    response.data.content,
+                );
+
+                setTotalPages(
+                    response.data.totalPages,
+                );
+            })
+            .catch(() => {
+                setError(
+                    tErrors("fallback"),
+                );
+            })
+            .finally(() => {
+                setIsLoading(false);
+            });
+    };
+
     return (
         <>
             <section className="
@@ -492,6 +526,7 @@ export default function WebhookListPage() {
                             onRemoved={
                                 handleRemoved
                             }
+                            onUpdated={handleUpdated}
                         />
 
                         {totalPages > 1 && (

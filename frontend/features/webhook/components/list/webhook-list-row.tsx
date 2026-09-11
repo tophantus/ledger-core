@@ -1,16 +1,9 @@
 "use client";
 
 import {
-    Trash2,
-} from "lucide-react";
-import {
     useLocale,
     useTranslations,
 } from "next-intl";
-import {useState} from "react";
-
-import {Button} from "@/components/ui/button";
-import {useDeleteWebhook} from "../../hooks/use-delete-webhook";
 import type {
     Webhook,
 } from "../../types/webhook";
@@ -18,53 +11,26 @@ import type {
 import {
     getWebhookStatusColor,
 } from "@/lib/utils/webhook";
+import {WebhookActions} from "@/features/webhook/components/webhook-actions";
 
 interface WebhookListRowProps {
     webhook: Webhook;
     accountNo?: string;
     onRemoved: () => void;
+    onUpdated: () => void;
 }
 
 export function WebhookListRow({
                                    webhook,
                                    accountNo,
                                    onRemoved,
+                                   onUpdated,
                                }: WebhookListRowProps) {
     const t =
         useTranslations("webhook");
 
     const locale =
         useLocale();
-
-    const {
-        removeWebhook,
-    } = useDeleteWebhook();
-
-    const [
-        isRemoving,
-        setIsRemoving,
-    ] = useState(false);
-
-    const handleRemove = async () => {
-        if (isRemoving) {
-            return;
-        }
-
-        setIsRemoving(true);
-
-        try {
-            const response =
-                await removeWebhook(
-                    webhook.id,
-                );
-
-            if (response.success) {
-                onRemoved();
-            }
-        } finally {
-            setIsRemoving(false);
-        }
-    };
 
     return (
         <tr className="
@@ -191,22 +157,11 @@ export function WebhookListRow({
                 py-4
                 text-right
             ">
-                {webhook.status === "ACTIVE" && (
-                    <Button
-                        type="button"
-                        variant="danger"
-                        loading={isRemoving}
-                        onClick={
-                            handleRemove
-                        }
-                    >
-                        <Trash2 className="h-3.5 w-3.5" />
-
-                        {t(
-                            "list.remove",
-                        )}
-                    </Button>
-                )}
+                <WebhookActions
+                    webhook={webhook}
+                    onRemoved={onRemoved}
+                    onUpdated={onUpdated}
+                />
             </td>
         </tr>
     );

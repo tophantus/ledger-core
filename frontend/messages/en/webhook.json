@@ -50,6 +50,34 @@
       "clear": "Clear"
     }
   },
+  "actions": {
+    "title": "Actions",
+    "update": "Update Endpoint",
+    "updateSubscriptions": "Update Events",
+    "remove": "Remove"
+  },
+  "update": {
+    "title": "Update Webhook",
+    "description": "Update the endpoint that receives events from your account.",
+    "close": "Close",
+    "url": "Webhook URL",
+    "urlPlaceholder": "https://example.com/webhooks",
+    "urlRequired": "URL is required.",
+    "invalidUrl": "Please enter a valid URL.",
+    "cancel": "Cancel",
+    "submit": "Update",
+    "error": "Failed to update webhook."
+  },
+  "updateSubscriptions": {
+    "title": "Update Webhook Events",
+    "description": "Choose which events this webhook should receive.",
+    "close": "Close",
+    "events": "Events",
+    "noEvents": "Select at least one event.",
+    "cancel": "Cancel",
+    "submit": "Update",
+    "error": "Failed to update webhook events."
+  },
   "statuses": {
     "ACTIVE": "Active",
     "INACTIVE": "Inactive"

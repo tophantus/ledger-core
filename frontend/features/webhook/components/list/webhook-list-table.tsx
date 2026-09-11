@@ -16,12 +16,14 @@ interface WebhookListTableProps {
     webhooks: Webhook[];
     accounts: AccountSummary[];
     onRemoved: () => void;
+    onUpdated: () => void;
 }
 
 export function WebhookListTable({
                                      webhooks,
                                      accounts,
                                      onRemoved,
+                                     onUpdated
                                  }: WebhookListTableProps) {
     const t =
         useTranslations("webhook");
@@ -172,6 +174,9 @@ export function WebhookListTable({
                                 }
                                 onRemoved={
                                     onRemoved
+                                }
+                                onUpdated={
+                                    onUpdated
                                 }
                             />
                         ),

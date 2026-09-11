@@ -50,6 +50,34 @@
       "clear": "Xóa bộ lọc"
     }
   },
+  "actions": {
+    "title": "Thao tác",
+    "update": "Cập nhật endpoint",
+    "updateSubscriptions": "Cập nhật sự kiện",
+    "remove": "Xóa"
+  },
+  "update": {
+    "title": "Cập nhật webhook",
+    "description": "Cập nhật endpoint nhận sự kiện từ tài khoản của bạn.",
+    "close": "Đóng",
+    "url": "Webhook URL",
+    "urlPlaceholder": "https://example.com/webhooks",
+    "urlRequired": "URL không được để trống.",
+    "invalidUrl": "Vui lòng nhập URL hợp lệ.",
+    "cancel": "Hủy",
+    "submit": "Cập nhật",
+    "error": "Không thể cập nhật webhook."
+  },
+  "updateSubscriptions": {
+    "title": "Cập nhật sự kiện webhook",
+    "description": "Chọn các sự kiện mà webhook này sẽ nhận.",
+    "close": "Đóng",
+    "events": "Sự kiện",
+    "noEvents": "Vui lòng chọn ít nhất một sự kiện.",
+    "cancel": "Hủy",
+    "submit": "Cập nhật",
+    "error": "Không thể cập nhật sự kiện webhook."
+  },
   "statuses": {
     "ACTIVE": "Đang hoạt động",
     "INACTIVE": "Không hoạt động"
