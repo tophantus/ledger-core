@@ -1,5 +1,6 @@
 package com.example.ledgercore.ledger.entity;
 
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.ledger.enums.EntryType;
 import jakarta.persistence.*;
 import lombok.*;
@@ -60,11 +61,9 @@ public class JournalEntryLine {
     )
     private BigDecimal amount;
 
-    @Column(
-            nullable = false,
-            length = 3
-    )
-    private String currency;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 3)
+    private Currency currency;
 
     @Column(
             nullable = false,

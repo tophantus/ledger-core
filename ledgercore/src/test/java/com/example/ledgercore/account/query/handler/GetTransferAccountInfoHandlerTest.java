@@ -4,6 +4,7 @@ import com.example.ledgercore.account.entity.Account;
 import com.example.ledgercore.account.enums.AccountStatus;
 import com.example.ledgercore.account.query.dto.AccountTransferInfo;
 import com.example.ledgercore.account.query.repository.AccountQueryRepository;
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,7 +48,7 @@ class GetTransferAccountInfoHandlerTest {
         Account sourceAccount = Account.builder()
                 .id(sourceAccountId)
                 .userId(userId)
-                .currency("VND")
+                .currency(Currency.VND)
                 .balance(new BigDecimal("1000000"))
                 .status(AccountStatus.ACTIVE)
                 .build();
@@ -55,7 +56,7 @@ class GetTransferAccountInfoHandlerTest {
         Account destinationAccount = Account.builder()
                 .id(destinationAccountId)
                 .userId(UUID.randomUUID())
-                .currency("VND")
+                .currency(Currency.VND)
                 .balance(new BigDecimal("500000"))
                 .status(AccountStatus.ACTIVE)
                 .build();
@@ -89,7 +90,7 @@ class GetTransferAccountInfoHandlerTest {
         );
 
         assertEquals(
-                "VND",
+                Currency.VND,
                 response.currency()
         );
 
@@ -149,7 +150,7 @@ class GetTransferAccountInfoHandlerTest {
         Account sourceAccount = Account.builder()
                 .id(sourceAccountId)
                 .userId(userId)
-                .currency("VND")
+                .currency(Currency.VND)
                 .balance(new BigDecimal("1000000"))
                 .status(AccountStatus.ACTIVE)
                 .build();
@@ -195,14 +196,14 @@ class GetTransferAccountInfoHandlerTest {
         Account sourceAccount = Account.builder()
                 .id(sourceAccountId)
                 .userId(userId)
-                .currency("VND")
+                .currency(Currency.VND)
                 .balance(new BigDecimal("1000000"))
                 .status(AccountStatus.BLOCKED)
                 .build();
 
         Account destinationAccount = Account.builder()
                 .id(destinationAccountId)
-                .currency("VND")
+                .currency(Currency.VND)
                 .status(AccountStatus.ACTIVE)
                 .build();
 
@@ -238,14 +239,14 @@ class GetTransferAccountInfoHandlerTest {
         Account sourceAccount = Account.builder()
                 .id(sourceAccountId)
                 .userId(userId)
-                .currency("VND")
+                .currency(Currency.VND)
                 .balance(new BigDecimal("1000000"))
                 .status(AccountStatus.ACTIVE)
                 .build();
 
         Account destinationAccount = Account.builder()
                 .id(destinationAccountId)
-                .currency("VND")
+                .currency(Currency.VND)
                 .status(AccountStatus.BLOCKED)
                 .build();
 

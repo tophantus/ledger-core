@@ -1,5 +1,6 @@
 package com.example.ledgercore.transaction.command.handler;
 
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.transaction.command.dto.PostInterestTransactionCommand;
@@ -66,10 +67,10 @@ class PostInterestTransactionHandlerTest {
         PostInterestTransactionCommand command =
                 command(
                         "100",
-                        "VND"
+                        Currency.VND
                 );
 
-        mockDepositInfo("VND");
+        mockDepositInfo(Currency.VND);
         mockSaveTransaction();
 
         TransactionResponse response =
@@ -112,7 +113,7 @@ class PostInterestTransactionHandlerTest {
         );
 
         assertEquals(
-                "VND",
+                Currency.VND,
                 response.currency()
         );
 
@@ -167,7 +168,7 @@ class PostInterestTransactionHandlerTest {
         );
 
         assertEquals(
-                "VND",
+                Currency.VND,
                 transaction.getCurrency()
         );
 
@@ -188,7 +189,7 @@ class PostInterestTransactionHandlerTest {
                         transactionId,
                         accountId,
                         new BigDecimal("100"),
-                        "VND",
+                        Currency.VND,
                         BUSINESS_DATE
                 );
     }
@@ -199,10 +200,10 @@ class PostInterestTransactionHandlerTest {
         PostInterestTransactionCommand command =
                 command(
                         "100",
-                        "VND"
+                        Currency.VND
                 );
 
-        mockDepositInfo("VND");
+        mockDepositInfo(Currency.VND);
 
         doAnswer(invocation -> {
 
@@ -240,7 +241,7 @@ class PostInterestTransactionHandlerTest {
             );
 
             assertEquals(
-                    "VND",
+                    Currency.VND,
                     transaction.getCurrency()
             );
 
@@ -268,7 +269,7 @@ class PostInterestTransactionHandlerTest {
                         transactionId,
                         accountId,
                         new BigDecimal("100"),
-                        "VND",
+                        Currency.VND,
                         BUSINESS_DATE
                 );
     }
@@ -279,10 +280,10 @@ class PostInterestTransactionHandlerTest {
         PostInterestTransactionCommand command =
                 command(
                         "250.5000",
-                        "VND"
+                        Currency.VND
                 );
 
-        mockDepositInfo("VND");
+        mockDepositInfo(Currency.VND);
         mockSaveTransaction();
 
         handler.execute(command);
@@ -329,7 +330,7 @@ class PostInterestTransactionHandlerTest {
                 new PostInterestTransactionCommand(
                         null,
                         new BigDecimal("100"),
-                        "VND",
+                        Currency.VND,
                         BUSINESS_DATE
                 );
 
@@ -381,42 +382,13 @@ class PostInterestTransactionHandlerTest {
     }
 
     @Test
-    void shouldThrowWhenCurrencyIsBlank() {
-
-        PostInterestTransactionCommand command =
-                new PostInterestTransactionCommand(
-                        accountId,
-                        new BigDecimal("100"),
-                        " ",
-                        BUSINESS_DATE
-                );
-
-        BusinessException exception =
-                assertThrows(
-                        BusinessException.class,
-                        () -> handler.execute(command)
-                );
-
-        assertEquals(
-                ErrorCode.INVALID_REQUEST,
-                exception.getErrorCode()
-        );
-
-        verifyNoInteractions(
-                transactionCommandRepository,
-                accountDepositPort,
-                interestLedgerPort
-        );
-    }
-
-    @Test
     void shouldThrowWhenBusinessDateIsNull() {
 
         PostInterestTransactionCommand command =
                 new PostInterestTransactionCommand(
                         accountId,
                         new BigDecimal("100"),
-                        "VND",
+                        Currency.VND,
                         null
                 );
 
@@ -445,7 +417,7 @@ class PostInterestTransactionHandlerTest {
                 new PostInterestTransactionCommand(
                         accountId,
                         null,
-                        "VND",
+                        Currency.VND,
                         BUSINESS_DATE
                 );
 
@@ -473,7 +445,7 @@ class PostInterestTransactionHandlerTest {
         PostInterestTransactionCommand command =
                 command(
                         "0",
-                        "VND"
+                        Currency.VND
                 );
 
         BusinessException exception =
@@ -500,7 +472,7 @@ class PostInterestTransactionHandlerTest {
         PostInterestTransactionCommand command =
                 command(
                         "-100",
-                        "VND"
+                        Currency.VND
                 );
 
         BusinessException exception =
@@ -527,10 +499,10 @@ class PostInterestTransactionHandlerTest {
         PostInterestTransactionCommand command =
                 command(
                         "100",
-                        "USD"
+                        Currency.USD
                 );
 
-        mockDepositInfo("VND");
+        mockDepositInfo(Currency.VND);
 
         BusinessException exception =
                 assertThrows(
@@ -563,10 +535,10 @@ class PostInterestTransactionHandlerTest {
         PostInterestTransactionCommand command =
                 command(
                         "100",
-                        "USD"
+                        Currency.USD
                 );
 
-        mockDepositInfo("VND");
+        mockDepositInfo(Currency.VND);
 
         assertThrows(
                 BusinessException.class,
@@ -593,10 +565,10 @@ class PostInterestTransactionHandlerTest {
         PostInterestTransactionCommand command =
                 command(
                         "100",
-                        "VND"
+                        Currency.VND
                 );
 
-        mockDepositInfo("VND");
+        mockDepositInfo(Currency.VND);
         mockSaveTransaction();
 
         var inOrder = inOrder(
@@ -622,13 +594,13 @@ class PostInterestTransactionHandlerTest {
                         transactionId,
                         accountId,
                         new BigDecimal("100"),
-                        "VND",
+                        Currency.VND,
                         BUSINESS_DATE
                 );
     }
 
     private void mockDepositInfo(
-            String currency
+            Currency currency
     ) {
         when(accountDepositPort.getDepositInfo(
                 accountId
@@ -657,7 +629,7 @@ class PostInterestTransactionHandlerTest {
 
     private PostInterestTransactionCommand command(
             String amount,
-            String currency
+            Currency currency
     ) {
         return new PostInterestTransactionCommand(
                 accountId,

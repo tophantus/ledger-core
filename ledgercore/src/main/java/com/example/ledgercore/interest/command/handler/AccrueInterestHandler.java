@@ -130,8 +130,7 @@ public class AccrueInterestHandler
             );
         }
 
-        if (command.currency() == null
-                || command.currency().isBlank()) {
+        if (command.currency() == null) {
 
             throw new IllegalArgumentException(
                     "currency must not be blank"

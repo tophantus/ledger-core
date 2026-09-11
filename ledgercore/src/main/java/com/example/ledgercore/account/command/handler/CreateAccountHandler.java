@@ -99,8 +99,7 @@ public class CreateAccountHandler
             );
         }
 
-        if (command.currency() == null
-                || command.currency().isBlank()) {
+        if (command.currency() == null) {
             throw new BusinessException(
                     ErrorCode.INVALID_REQUEST
             );

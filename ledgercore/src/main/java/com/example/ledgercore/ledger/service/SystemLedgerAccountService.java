@@ -1,5 +1,6 @@
 package com.example.ledgercore.ledger.service;
 
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.ledger.config.SystemLedgerAccountProperties;
@@ -20,7 +21,7 @@ public class SystemLedgerAccountService {
     private final SystemLedgerAccountProperties systemLedgerAccountProperties;
 
     @Transactional(readOnly = true)
-    public LedgerAccount getCashAccount(String currency) {
+    public LedgerAccount getCashAccount(Currency currency) {
         return getAccount(
                 systemLedgerAccountProperties.getCashCodes(),
                 currency
@@ -29,7 +30,7 @@ public class SystemLedgerAccountService {
 
     @Transactional(readOnly = true)
     public LedgerAccount getInterestExpenseAccount(
-            String currency
+            Currency currency
     ) {
         return getAccount(
                 systemLedgerAccountProperties
@@ -40,7 +41,7 @@ public class SystemLedgerAccountService {
 
     @Transactional(readOnly = true)
     public LedgerAccount getInterestPayableAccount(
-            String currency
+            Currency currency
     ) {
         return getAccount(
                 systemLedgerAccountProperties
@@ -50,8 +51,8 @@ public class SystemLedgerAccountService {
     }
 
     private LedgerAccount getAccount(
-            Map<String, String> accountCodes,
-            String currency
+            Map<Currency, String> accountCodes,
+            Currency currency
     ) {
         String code = accountCodes.get(currency);
 

@@ -5,6 +5,7 @@ import com.example.ledgercore.account.command.repository.AccountCommandRepositor
 import com.example.ledgercore.account.command.service.AccountDailyBalanceService;
 import com.example.ledgercore.account.entity.Account;
 import com.example.ledgercore.account.enums.AccountStatus;
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.common.exception.BusinessException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -51,14 +52,14 @@ class TransferAccountHandlerTest {
                 sourceId,
                 AccountStatus.ACTIVE,
                 "1000",
-                "VND"
+                Currency.VND
         );
 
         Account destination = account(
                 destinationId,
                 AccountStatus.ACTIVE,
                 "500",
-                "VND"
+                Currency.VND
         );
 
         TransferAccountCommand command =
@@ -217,7 +218,7 @@ class TransferAccountHandlerTest {
                 sourceId,
                 AccountStatus.ACTIVE,
                 "1000",
-                "VND"
+                Currency.VND
         );
 
         TransferAccountCommand command =
@@ -257,7 +258,7 @@ class TransferAccountHandlerTest {
                 accountId,
                 AccountStatus.ACTIVE,
                 "1000",
-                "VND"
+                Currency.VND
         );
 
         TransferAccountCommand command =
@@ -295,14 +296,14 @@ class TransferAccountHandlerTest {
                 sourceId,
                 AccountStatus.BLOCKED,
                 "1000",
-                "VND"
+                Currency.VND
         );
 
         Account destination = account(
                 destinationId,
                 AccountStatus.ACTIVE,
                 "500",
-                "VND"
+                Currency.VND
         );
 
         mockAccounts(
@@ -345,14 +346,14 @@ class TransferAccountHandlerTest {
                 sourceId,
                 AccountStatus.ACTIVE,
                 "1000",
-                "VND"
+                Currency.VND
         );
 
         Account destination = account(
                 destinationId,
                 AccountStatus.BLOCKED,
                 "500",
-                "VND"
+                Currency.VND
         );
 
         mockAccounts(
@@ -395,14 +396,14 @@ class TransferAccountHandlerTest {
                 sourceId,
                 AccountStatus.ACTIVE,
                 "1000",
-                "VND"
+                Currency.VND
         );
 
         Account destination = account(
                 destinationId,
                 AccountStatus.ACTIVE,
                 "500",
-                "USD"
+                Currency.USD
         );
 
         mockAccounts(
@@ -445,14 +446,14 @@ class TransferAccountHandlerTest {
                 sourceId,
                 AccountStatus.ACTIVE,
                 "100",
-                "VND"
+                Currency.VND
         );
 
         Account destination = account(
                 destinationId,
                 AccountStatus.ACTIVE,
                 "500",
-                "VND"
+                Currency.VND
         );
 
         mockAccounts(
@@ -502,7 +503,7 @@ class TransferAccountHandlerTest {
             UUID id,
             AccountStatus status,
             String balance,
-            String currency
+            Currency currency
     ) {
         return Account.builder()
                 .id(id)

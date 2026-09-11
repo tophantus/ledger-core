@@ -4,6 +4,7 @@ import com.example.ledgercore.account.entity.Account;
 import com.example.ledgercore.account.enums.AccountStatus;
 import com.example.ledgercore.account.query.dto.AccountWithdrawInfo;
 import com.example.ledgercore.account.query.repository.AccountQueryRepository;
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import org.junit.jupiter.api.BeforeEach;
@@ -54,7 +55,7 @@ class GetWithdrawAccountInfoHandlerTest {
         Account account = Account.builder()
                 .id(accountId)
                 .userId(userId)
-                .currency("VND")
+                .currency(Currency.VND)
                 .balance(balance)
                 .holdAmount(holdAmount)
                 .status(AccountStatus.ACTIVE)
@@ -77,7 +78,7 @@ class GetWithdrawAccountInfoHandlerTest {
         );
 
         assertEquals(
-                "VND",
+                Currency.VND,
                 response.currency()
         );
 
@@ -119,7 +120,7 @@ class GetWithdrawAccountInfoHandlerTest {
         Account account = Account.builder()
                 .id(accountId)
                 .userId(userId)
-                .currency("VND")
+                .currency(Currency.VND)
                 .balance(new BigDecimal("1000000"))
                 .holdAmount(new BigDecimal("200000"))
                 .status(AccountStatus.BLOCKED)

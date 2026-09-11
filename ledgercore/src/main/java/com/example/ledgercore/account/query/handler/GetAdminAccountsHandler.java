@@ -92,17 +92,12 @@ public class GetAdminAccountsHandler
             );
         }
 
-        if (filter.currency() != null
-                && !filter.currency().isBlank()) {
-
-            String currency =
-                    filter.currency().trim().toUpperCase();
-
+        if (filter.currency() != null) {
             specification = specification.and(
                     (root, query, cb) ->
                             cb.equal(
                                     root.get("currency"),
-                                    currency
+                                    filter.currency()
                             )
             );
         }

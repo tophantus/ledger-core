@@ -38,8 +38,6 @@ public class CreateAccountHoldHandler
                         .amount(command.amount())
                         .currency(
                                 command.currency()
-                                        .trim()
-                                        .toUpperCase()
                         )
                         .holdType(command.holdType())
                         .referenceType(command.referenceType())
@@ -83,12 +81,6 @@ public class CreateAccountHoldHandler
         if (command.amount().compareTo(BigDecimal.ZERO) <= 0) {
             throw new BusinessException(
                     ErrorCode.INVALID_HOLD_AMOUNT
-            );
-        }
-
-        if (command.currency().isBlank()) {
-            throw new BusinessException(
-                    ErrorCode.INVALID_REQUEST
             );
         }
     }

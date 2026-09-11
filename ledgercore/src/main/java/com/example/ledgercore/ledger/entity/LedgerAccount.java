@@ -1,5 +1,6 @@
 package com.example.ledgercore.ledger.entity;
 
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.ledger.enums.LedgerAccountStatus;
 import com.example.ledgercore.ledger.enums.LedgerAccountType;
 import jakarta.persistence.*;
@@ -39,8 +40,9 @@ public class LedgerAccount {
     @Column(nullable = false, length = 20)
     private LedgerAccountType type;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 3)
-    private String currency;
+    private Currency currency;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)

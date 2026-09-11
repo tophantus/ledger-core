@@ -5,6 +5,7 @@ import com.example.ledgercore.account.command.repository.AccountCommandRepositor
 import com.example.ledgercore.account.command.service.AccountDailyBalanceService;
 import com.example.ledgercore.account.entity.Account;
 import com.example.ledgercore.account.enums.AccountStatus;
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.common.exception.BusinessException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -159,7 +160,7 @@ class DepositAccountBalanceHandlerTest {
                 .id(id)
                 .userId(UUID.randomUUID())
                 .accountNo("ACC-001")
-                .currency("VND")
+                .currency(Currency.VND)
                 .balance(new BigDecimal(balance))
                 .status(status)
                 .build();

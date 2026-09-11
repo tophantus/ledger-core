@@ -1,5 +1,6 @@
 package com.example.ledgercore.transaction.entity;
 
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.transaction.enums.TransactionStatus;
 import com.example.ledgercore.transaction.enums.TransactionType;
 import jakarta.persistence.*;
@@ -59,8 +60,9 @@ public class MoneyTransaction {
     )
     private BigDecimal amount;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 3)
-    private String currency;
+    private Currency currency;
 
     @Column(length = 500)
     private String description;

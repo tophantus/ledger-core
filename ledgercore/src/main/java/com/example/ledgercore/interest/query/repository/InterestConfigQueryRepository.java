@@ -1,5 +1,6 @@
 package com.example.ledgercore.interest.query.repository;
 
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.interest.entity.InterestConfig;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -26,7 +27,7 @@ public interface InterestConfigQueryRepository
         """)
     Optional<InterestConfig> findApplicableConfig(
             @Param("productId") UUID productId,
-            @Param("currency") String currency,
+            @Param("currency") Currency currency,
             @Param("businessDate") LocalDate businessDate
     );
 }

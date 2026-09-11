@@ -109,7 +109,6 @@ public class RecordInterestPostingHandler
                 || command.transactionId() == null
                 || command.accountId() == null
                 || command.currency() == null
-                || command.currency().isBlank()
                 || command.businessDate() == null) {
 
             throw new BusinessException(

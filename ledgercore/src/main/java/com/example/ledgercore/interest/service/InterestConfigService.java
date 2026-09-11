@@ -1,5 +1,6 @@
 package com.example.ledgercore.interest.service;
 
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.interest.entity.InterestConfig;
@@ -18,7 +19,7 @@ public class InterestConfigService {
 
     public InterestConfig getApplicableConfig(
             UUID productId,
-            String currency,
+            Currency currency,
             LocalDate businessDate
     ) {
         return repository.findApplicableConfig(

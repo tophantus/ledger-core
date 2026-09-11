@@ -1,5 +1,6 @@
 package com.example.ledgercore.transaction.adapter.inbound.rest.dto;
 
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.transaction.enums.TransactionStatus;
 import com.example.ledgercore.transaction.enums.TransactionType;
 import lombok.Getter;
@@ -19,7 +20,7 @@ public class TransactionFilterRequest {
 
     private TransactionType type;
 
-    private String currency;
+    private Currency currency;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Instant from;

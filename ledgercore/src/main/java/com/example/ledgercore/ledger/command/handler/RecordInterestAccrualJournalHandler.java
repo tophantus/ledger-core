@@ -83,8 +83,7 @@ public class RecordInterestAccrualJournalHandler
         if (command == null
                 || command.accrualId() == null
                 || command.businessDate() == null
-                || command.currency() == null
-                || command.currency().isBlank()) {
+                || command.currency() == null) {
 
             throw new BusinessException(
                     ErrorCode.INVALID_REQUEST

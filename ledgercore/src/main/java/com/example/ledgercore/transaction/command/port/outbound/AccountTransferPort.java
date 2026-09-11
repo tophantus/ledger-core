@@ -1,5 +1,7 @@
 package com.example.ledgercore.transaction.command.port.outbound;
 
+import com.example.ledgercore.common.currency.Currency;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
@@ -31,7 +33,7 @@ public interface AccountTransferPort {
     record TransferAccountInfo(
             UUID sourceAccountId,
             UUID destinationAccountId,
-            String currency,
+            Currency currency,
             BigDecimal sourceAvailableBalance
     ) {
     }

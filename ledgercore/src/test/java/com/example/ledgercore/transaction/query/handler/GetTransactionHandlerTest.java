@@ -1,5 +1,6 @@
 package com.example.ledgercore.transaction.query.handler;
 
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.transaction.entity.MoneyTransaction;
@@ -63,7 +64,7 @@ class GetTransactionHandlerTest {
                 .sourceAccountId(sourceAccountId)
                 .destinationAccountId(destinationAccountId)
                 .amount(new BigDecimal("100000"))
-                .currency("VND")
+                .currency(Currency.VND)
                 .description("Transfer")
                 .createdAt(Instant.now())
                 .build();
@@ -76,7 +77,7 @@ class GetTransactionHandlerTest {
                 sourceAccountId,
                 destinationAccountId,
                 new BigDecimal("100000"),
-                "VND",
+                Currency.VND,
                 "Transfer",
                 null,
                 transaction.getCreatedAt(),

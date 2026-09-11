@@ -1,5 +1,6 @@
 package com.example.ledgercore.interest.adapter.outbound.ledger;
 
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.interest.command.port.outbound.InterestJournalPort;
 import com.example.ledgercore.ledger.command.dto.RecordInterestAccrualJournalCommand;
 import com.example.ledgercore.ledger.command.port.inbound.RecordInterestAccrualJournalUseCase;
@@ -21,7 +22,7 @@ public class InterestJournalAdapter
     public UUID recordAccrualJournal(
             UUID accrualId,
             LocalDate businessDate,
-            String currency,
+            Currency currency,
             BigDecimal amount
     ) {
         return useCase.execute(

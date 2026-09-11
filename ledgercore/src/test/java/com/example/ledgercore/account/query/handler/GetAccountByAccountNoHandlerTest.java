@@ -5,6 +5,7 @@ import com.example.ledgercore.account.enums.AccountStatus;
 import com.example.ledgercore.account.query.dto.AccountResponse;
 import com.example.ledgercore.account.query.dto.GetAccountByAccountNoQuery;
 import com.example.ledgercore.account.query.repository.AccountQueryRepository;
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,7 +56,7 @@ class GetAccountByAccountNoHandlerTest {
                 userId,
                 productId,
                 accountNo,
-                "VND",
+                Currency.VND,
                 new BigDecimal("1000000"),
                 AccountStatus.ACTIVE
         );
@@ -156,7 +157,7 @@ class GetAccountByAccountNoHandlerTest {
                 ownerId,
                 productId,
                 accountNo,
-                "VND",
+                Currency.VND,
                 new BigDecimal("1000000"),
                 AccountStatus.ACTIVE
         );
@@ -193,7 +194,7 @@ class GetAccountByAccountNoHandlerTest {
             UUID userId,
             UUID productId,
             String accountNo,
-            String currency,
+            Currency currency,
             BigDecimal balance,
             AccountStatus status
     ) {

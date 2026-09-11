@@ -1,5 +1,6 @@
 package com.example.ledgercore.transaction.adapter.outbound.ledger;
 
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.ledger.command.dto.RecordDepositCommand;
 import com.example.ledgercore.ledger.command.port.inbound.RecordDepositUseCase;
 import com.example.ledgercore.transaction.command.port.outbound.LedgerDepositPort;
@@ -21,7 +22,7 @@ public class LedgerDepositAdapter implements LedgerDepositPort {
             UUID transactionId,
             UUID destinationAccountId,
             BigDecimal amount,
-            String currency,
+            Currency currency,
             LocalDate businessDate
     ) {
         recordDepositUseCase.execute(

@@ -1,5 +1,6 @@
 package com.example.ledgercore.hold.command.handler;
 
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.hold.command.dto.CreateAccountHoldCommand;
@@ -58,7 +59,7 @@ class CreateAccountHoldHandlerTest {
         CreateAccountHoldCommand command =
                 command(
                         "100000",
-                        "vnd"
+                        Currency.VND
                 );
 
         mockSaveHold();
@@ -84,7 +85,7 @@ class CreateAccountHoldHandlerTest {
         );
 
         assertEquals(
-                "VND",
+                Currency.VND,
                 response.currency()
         );
 
@@ -116,7 +117,7 @@ class CreateAccountHoldHandlerTest {
         );
 
         assertEquals(
-                "VND",
+                Currency.VND,
                 hold.getCurrency()
         );
 
@@ -144,39 +145,7 @@ class CreateAccountHoldHandlerTest {
                 .increaseHold(
                         accountId,
                         new BigDecimal("100000"),
-                        "VND"
-                );
-    }
-
-    @Test
-    void shouldNormalizeCurrencyToUpperCase() {
-
-        CreateAccountHoldCommand command =
-                command(
-                        "50000",
-                        " vNd "
-                );
-
-        mockSaveHold();
-
-        handler.execute(command);
-
-        ArgumentCaptor<AccountHold> captor =
-                ArgumentCaptor.forClass(AccountHold.class);
-
-        verify(accountHoldCommandRepository)
-                .save(captor.capture());
-
-        assertEquals(
-                "VND",
-                captor.getValue().getCurrency()
-        );
-
-        verify(accountHoldPort)
-                .increaseHold(
-                        accountId,
-                        new BigDecimal("50000"),
-                        "VND"
+                        Currency.VND
                 );
     }
 
@@ -186,7 +155,7 @@ class CreateAccountHoldHandlerTest {
         CreateAccountHoldCommand command =
                 command(
                         "100000",
-                        "VND"
+                        Currency.VND
                 );
 
         mockSaveHold();
@@ -212,7 +181,7 @@ class CreateAccountHoldHandlerTest {
                 new CreateAccountHoldCommand(
                         accountId,
                         new BigDecimal("100000"),
-                        "VND",
+                        Currency.VND,
                         AccountHoldType.COLLATERAL,
                         AccountHoldReferenceType.CARD_AUTHORIZATION,
                         referenceId
@@ -252,7 +221,7 @@ class CreateAccountHoldHandlerTest {
         CreateAccountHoldCommand command =
                 command(
                         "100000",
-                        "VND"
+                        Currency.VND
                 );
 
         mockSaveHold();
@@ -271,7 +240,7 @@ class CreateAccountHoldHandlerTest {
                 .increaseHold(
                         accountId,
                         new BigDecimal("100000"),
-                        "VND"
+                        Currency.VND
                 );
     }
 
@@ -302,7 +271,7 @@ class CreateAccountHoldHandlerTest {
                 new CreateAccountHoldCommand(
                         null,
                         new BigDecimal("100000"),
-                        "VND",
+                        Currency.VND,
                         AccountHoldType.AVAILABLE_BALANCE_RESERVATION,
                         AccountHoldReferenceType.WITHDRAWAL_INTENT,
                         referenceId
@@ -318,7 +287,7 @@ class CreateAccountHoldHandlerTest {
                 new CreateAccountHoldCommand(
                         accountId,
                         null,
-                        "VND",
+                        Currency.VND,
                         AccountHoldType.AVAILABLE_BALANCE_RESERVATION,
                         AccountHoldReferenceType.WITHDRAWAL_INTENT,
                         referenceId
@@ -344,29 +313,13 @@ class CreateAccountHoldHandlerTest {
     }
 
     @Test
-    void shouldThrowWhenCurrencyIsBlank() {
-
-        CreateAccountHoldCommand command =
-                new CreateAccountHoldCommand(
-                        accountId,
-                        new BigDecimal("100000"),
-                        "   ",
-                        AccountHoldType.AVAILABLE_BALANCE_RESERVATION,
-                        AccountHoldReferenceType.WITHDRAWAL_INTENT,
-                        referenceId
-                );
-
-        assertInvalidRequest(command);
-    }
-
-    @Test
     void shouldThrowWhenHoldTypeIsNull() {
 
         CreateAccountHoldCommand command =
                 new CreateAccountHoldCommand(
                         accountId,
                         new BigDecimal("100000"),
-                        "VND",
+                        Currency.VND,
                         null,
                         AccountHoldReferenceType.WITHDRAWAL_INTENT,
                         referenceId
@@ -382,7 +335,7 @@ class CreateAccountHoldHandlerTest {
                 new CreateAccountHoldCommand(
                         accountId,
                         new BigDecimal("100000"),
-                        "VND",
+                        Currency.VND,
                         AccountHoldType.AVAILABLE_BALANCE_RESERVATION,
                         null,
                         referenceId
@@ -398,7 +351,7 @@ class CreateAccountHoldHandlerTest {
                 new CreateAccountHoldCommand(
                         accountId,
                         new BigDecimal("100000"),
-                        "VND",
+                        Currency.VND,
                         AccountHoldType.AVAILABLE_BALANCE_RESERVATION,
                         AccountHoldReferenceType.WITHDRAWAL_INTENT,
                         null
@@ -413,7 +366,7 @@ class CreateAccountHoldHandlerTest {
         CreateAccountHoldCommand command =
                 command(
                         "0",
-                        "VND"
+                        Currency.VND
                 );
 
         BusinessException exception =
@@ -439,7 +392,7 @@ class CreateAccountHoldHandlerTest {
         CreateAccountHoldCommand command =
                 command(
                         "-100",
-                        "VND"
+                        Currency.VND
                 );
 
         BusinessException exception =
@@ -476,7 +429,7 @@ class CreateAccountHoldHandlerTest {
 
     private CreateAccountHoldCommand command(
             String amount,
-            String currency
+            Currency currency
     ) {
         return new CreateAccountHoldCommand(
                 accountId,

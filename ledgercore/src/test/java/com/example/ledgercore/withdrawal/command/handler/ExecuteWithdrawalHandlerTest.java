@@ -1,5 +1,6 @@
 package com.example.ledgercore.withdrawal.command.handler;
 
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.withdrawal.command.dto.ExecuteWithdrawalCommand;
@@ -91,7 +92,7 @@ class ExecuteWithdrawalHandlerTest {
                         atmId,
                         "WD-ABC123",
                         new BigDecimal("100000"),
-                        "VND",
+                        Currency.VND,
                         Instant.parse(
                                 "2026-08-27T10:00:00Z"
                         )
@@ -803,7 +804,7 @@ class ExecuteWithdrawalHandlerTest {
                 .accountId(accountId)
                 .holdId(UUID.randomUUID())
                 .amount(new BigDecimal("100000"))
-                .currency("VND")
+                .currency(Currency.VND)
                 .withdrawalCodeHash("HASHED-CODE")
                 .status(WithdrawalIntentStatus.READY)
                 .expiresAt(

@@ -1,5 +1,6 @@
 package com.example.ledgercore.transaction.command.dto;
 
+import com.example.ledgercore.common.currency.Currency;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -20,9 +21,8 @@ public record DepositMoneyCommand(
         )
         BigDecimal amount,
 
-        @NotBlank
-        @Size(min = 3, max = 3)
-        String currency,
+        @NotNull
+        Currency currency,
 
         @NotBlank
         @Size(max = 50)

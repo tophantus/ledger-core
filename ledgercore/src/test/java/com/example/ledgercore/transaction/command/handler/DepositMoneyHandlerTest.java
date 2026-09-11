@@ -1,5 +1,6 @@
 package com.example.ledgercore.transaction.command.handler;
 
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.transaction.command.dto.DepositMoneyCommand;
@@ -78,7 +79,7 @@ class DepositMoneyHandlerTest {
                 command(
                         destinationAccountId,
                         "100.00",
-                        "VND",
+                        Currency.VND,
                         "DEP-001",
                         "Cash deposit"
                 );
@@ -86,7 +87,7 @@ class DepositMoneyHandlerTest {
         AccountDepositPort.DepositAccountInfo depositInfo =
                 new AccountDepositPort.DepositAccountInfo(
                         destinationAccountId,
-                        "VND"
+                        Currency.VND
                 );
 
         when(transactionCommandRepository.findByReference(
@@ -135,7 +136,7 @@ class DepositMoneyHandlerTest {
                 response.amount()
         );
         assertEquals(
-                "VND",
+                Currency.VND,
                 response.currency()
         );
         assertEquals(
@@ -177,7 +178,7 @@ class DepositMoneyHandlerTest {
                         transactionId,
                         destinationAccountId,
                         new BigDecimal("100.00"),
-                        "VND",
+                        Currency.VND,
                         BUSINESS_DATE
                 );
 
@@ -197,7 +198,7 @@ class DepositMoneyHandlerTest {
                 command(
                         destinationAccountId,
                         "100.00",
-                        "VND",
+                        Currency.VND,
                         "DEP-002",
                         null
                 );
@@ -211,7 +212,7 @@ class DepositMoneyHandlerTest {
         )).thenReturn(
                 new AccountDepositPort.DepositAccountInfo(
                         destinationAccountId,
-                        "VND"
+                        Currency.VND
                 )
         );
 
@@ -284,7 +285,7 @@ class DepositMoneyHandlerTest {
                         .amount(
                                 new BigDecimal("100")
                         )
-                        .currency("VND")
+                        .currency(Currency.VND)
                         .build();
 
         when(transactionCommandRepository.findByReference(
@@ -295,7 +296,7 @@ class DepositMoneyHandlerTest {
                 command(
                         destinationAccountId,
                         "100.00",
-                        "VND",
+                        Currency.VND,
                         "DEP-003",
                         "duplicate"
                 );
@@ -364,7 +365,7 @@ class DepositMoneyHandlerTest {
                 command(
                         destinationAccountId,
                         "100",
-                        "VND",
+                        Currency.VND,
                         "REF-001",
                         null
                 );
@@ -411,7 +412,7 @@ class DepositMoneyHandlerTest {
                 command(
                         destinationAccountId,
                         "0",
-                        "VND",
+                        Currency.VND,
                         "DEP-004",
                         null
                 );
@@ -446,7 +447,7 @@ class DepositMoneyHandlerTest {
                 command(
                         destinationAccountId,
                         "-10",
-                        "VND",
+                        Currency.VND,
                         "DEP-005",
                         null
                 );
@@ -481,7 +482,7 @@ class DepositMoneyHandlerTest {
                 command(
                         destinationAccountId,
                         "100",
-                        "USD",
+                        Currency.USD,
                         "DEP-006",
                         null
                 );
@@ -495,7 +496,7 @@ class DepositMoneyHandlerTest {
         )).thenReturn(
                 new AccountDepositPort.DepositAccountInfo(
                         destinationAccountId,
-                        "VND"
+                        Currency.VND
                 )
         );
 
@@ -533,7 +534,7 @@ class DepositMoneyHandlerTest {
                 command(
                         destinationAccountId,
                         "250",
-                        "VND",
+                        Currency.VND,
                         "DEP-007",
                         "deposit"
                 );
@@ -547,7 +548,7 @@ class DepositMoneyHandlerTest {
         )).thenReturn(
                 new AccountDepositPort.DepositAccountInfo(
                         destinationAccountId,
-                        "VND"
+                        Currency.VND
                 )
         );
 
@@ -579,7 +580,7 @@ class DepositMoneyHandlerTest {
                         transactionId,
                         destinationAccountId,
                         new BigDecimal("250"),
-                        "VND",
+                        Currency.VND,
                         BUSINESS_DATE
                 );
     }
@@ -591,7 +592,7 @@ class DepositMoneyHandlerTest {
                 command(
                         destinationAccountId,
                         "250",
-                        "VND",
+                        Currency.VND,
                         "DEP-008",
                         "deposit"
                 );
@@ -605,7 +606,7 @@ class DepositMoneyHandlerTest {
         )).thenReturn(
                 new AccountDepositPort.DepositAccountInfo(
                         destinationAccountId,
-                        "VND"
+                        Currency.VND
                 )
         );
 
@@ -653,7 +654,7 @@ class DepositMoneyHandlerTest {
         );
 
         assertEquals(
-                "VND",
+                Currency.VND,
                 event.currency()
         );
 
@@ -680,7 +681,7 @@ class DepositMoneyHandlerTest {
     private DepositMoneyCommand command(
             UUID accountId,
             String amount,
-            String currency,
+            Currency currency,
             String reference,
             String description
     ) {

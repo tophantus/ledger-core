@@ -122,7 +122,7 @@ public class DepositMoneyHandler implements DepositMoneyUseCase {
             DepositMoneyCommand command,
             AccountDepositPort.DepositAccountInfo depositInfo
     ) {
-        if (!depositInfo.currency().equals(command.currency())) {
+        if (depositInfo.currency() != command.currency()) {
             throw new BusinessException(
                     ErrorCode.TRANSACTION_CURRENCY_MISMATCH
             );

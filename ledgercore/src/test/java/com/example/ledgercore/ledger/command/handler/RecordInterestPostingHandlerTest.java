@@ -1,5 +1,6 @@
 package com.example.ledgercore.ledger.command.handler;
 
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.ledger.command.dto.RecordInterestPostingCommand;
 import com.example.ledgercore.ledger.command.port.outbound.AccountLedgerMappingPort;
@@ -62,7 +63,7 @@ class RecordInterestPostingHandlerTest {
         UUID customerLedgerAccountId = UUID.randomUUID();
 
         BigDecimal amount = new BigDecimal("10000.0000");
-        String currency = "VND";
+        Currency currency = Currency.VND;
         LocalDate businessDate = LocalDate.of(2026, 9, 7);
 
         RecordInterestPostingCommand command =
@@ -186,7 +187,7 @@ class RecordInterestPostingHandlerTest {
                         null,
                         UUID.randomUUID(),
                         new BigDecimal("10000"),
-                        "VND",
+                        Currency.VND,
                         LocalDate.of(2026, 9, 7)
                 );
 
@@ -210,31 +211,7 @@ class RecordInterestPostingHandlerTest {
                         UUID.randomUUID(),
                         null,
                         new BigDecimal("10000"),
-                        "VND",
-                        LocalDate.of(2026, 9, 7)
-                );
-
-        assertThatThrownBy(
-                () -> handler.execute(command)
-        )
-                .isInstanceOf(BusinessException.class);
-
-        verifyNoInteractions(
-                systemLedgerAccountService,
-                accountLedgerMappingPort,
-                journalEntryCommandRepository,
-                journalEntryLineCommandRepository
-        );
-    }
-
-    @Test
-    void shouldRejectBlankCurrency() {
-        RecordInterestPostingCommand command =
-                new RecordInterestPostingCommand(
-                        UUID.randomUUID(),
-                        UUID.randomUUID(),
-                        new BigDecimal("10000"),
-                        " ",
+                        Currency.VND,
                         LocalDate.of(2026, 9, 7)
                 );
 
@@ -258,7 +235,7 @@ class RecordInterestPostingHandlerTest {
                         UUID.randomUUID(),
                         UUID.randomUUID(),
                         new BigDecimal("10000"),
-                        "VND",
+                        Currency.VND,
                         null
                 );
 
@@ -282,7 +259,7 @@ class RecordInterestPostingHandlerTest {
                         UUID.randomUUID(),
                         UUID.randomUUID(),
                         BigDecimal.ZERO,
-                        "VND",
+                        Currency.VND,
                         LocalDate.of(2026, 9, 7)
                 );
 
@@ -306,7 +283,7 @@ class RecordInterestPostingHandlerTest {
                         UUID.randomUUID(),
                         UUID.randomUUID(),
                         new BigDecimal("-1"),
-                        "VND",
+                        Currency.VND,
                         LocalDate.of(2026, 9, 7)
                 );
 

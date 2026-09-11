@@ -1,5 +1,6 @@
 package com.example.ledgercore.transaction.query.dto;
 
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.transaction.enums.TransactionStatus;
 import com.example.ledgercore.transaction.enums.TransactionType;
 
@@ -15,7 +16,7 @@ public record TransactionResponse(
         UUID sourceAccountId,
         UUID destinationAccountId,
         BigDecimal amount,
-        String currency,
+        Currency currency,
         String description,
         Boolean incoming,
         Instant createdAt,

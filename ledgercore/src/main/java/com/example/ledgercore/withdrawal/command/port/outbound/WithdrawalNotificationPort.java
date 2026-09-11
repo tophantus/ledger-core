@@ -1,5 +1,7 @@
 package com.example.ledgercore.withdrawal.command.port.outbound;
 
+import com.example.ledgercore.common.currency.Currency;
+
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
@@ -12,7 +14,7 @@ public interface WithdrawalNotificationPort {
             String withdrawalLookupCode,
             String withdrawalCode,
             BigDecimal amount,
-            String currency,
+            Currency currency,
             Instant expiresAt
     );
 }

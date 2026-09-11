@@ -1,5 +1,6 @@
 package com.example.ledgercore.withdrawal.command.dto;
 
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.withdrawal.enums.WithdrawalRequestStatus;
 
 import java.math.BigDecimal;
@@ -12,7 +13,7 @@ public record ConfirmWithdrawalRequestResponse(
         UUID intentId,
         String withdrawalReference,
         String amount,
-        String currency,
+        Currency currency,
         Instant intentExpiresAt
 ) {
 }

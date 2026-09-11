@@ -1,5 +1,6 @@
 package com.example.ledgercore.transaction.entity;
 
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.transaction.enums.TransferIntentStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -62,11 +63,9 @@ public class TransferIntent {
     )
     private BigDecimal amount;
 
-    @Column(
-            nullable = false,
-            length = 3
-    )
-    private String currency;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 3)
+    private Currency currency;
 
     @Column(
             nullable = false,

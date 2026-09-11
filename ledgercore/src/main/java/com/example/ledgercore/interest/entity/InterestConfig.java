@@ -1,5 +1,6 @@
 package com.example.ledgercore.interest.entity;
 
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.interest.enums.DayCountConvention;
 import jakarta.persistence.*;
 import lombok.*;
@@ -46,11 +47,9 @@ public class InterestConfig {
     )
     private UUID productId;
 
-    @Column(
-            nullable = false,
-            length = 3
-    )
-    private String currency;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 3)
+    private Currency currency;
 
     @Column(
             name = "interest_rate",

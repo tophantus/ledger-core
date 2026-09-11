@@ -1,5 +1,6 @@
 package com.example.ledgercore.transaction.command.handler;
 
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.transaction.command.port.outbound.AccountTransferPort;
@@ -109,7 +110,7 @@ class ConfirmTransferExecutionServiceTest {
         AccountTransferPort.TransferAccountInfo transferInfo =
                 createTransferInfo(
                         new BigDecimal("1000.00"),
-                        "VND"
+                        Currency.VND
                 );
 
         mockIntent(intent);
@@ -163,7 +164,7 @@ class ConfirmTransferExecutionServiceTest {
         );
 
         assertEquals(
-                "VND",
+                Currency.VND,
                 response.currency()
         );
 
@@ -204,7 +205,7 @@ class ConfirmTransferExecutionServiceTest {
                         eq(sourceAccountId),
                         eq(destinationAccountId),
                         eq(new BigDecimal("100.00")),
-                        eq("VND"),
+                        eq(Currency.VND),
                         eq(BUSINESS_DATE)
                 );
 
@@ -472,7 +473,7 @@ class ConfirmTransferExecutionServiceTest {
         AccountTransferPort.TransferAccountInfo transferInfo =
                 createTransferInfo(
                         new BigDecimal("1000.00"),
-                        "USD"
+                        Currency.USD
                 );
 
         mockIntent(intent);
@@ -527,7 +528,7 @@ class ConfirmTransferExecutionServiceTest {
         AccountTransferPort.TransferAccountInfo transferInfo =
                 createTransferInfo(
                         new BigDecimal("50.00"),
-                        "VND"
+                        Currency.VND
                 );
 
         mockIntent(intent);
@@ -582,7 +583,7 @@ class ConfirmTransferExecutionServiceTest {
         AccountTransferPort.TransferAccountInfo transferInfo =
                 createTransferInfo(
                         new BigDecimal("1000.00"),
-                        "VND"
+                        Currency.VND
                 );
 
         mockIntent(intent);
@@ -650,7 +651,7 @@ class ConfirmTransferExecutionServiceTest {
         );
 
         assertEquals(
-                "VND",
+                Currency.VND,
                 transaction.getCurrency()
         );
 
@@ -676,7 +677,7 @@ class ConfirmTransferExecutionServiceTest {
         AccountTransferPort.TransferAccountInfo transferInfo =
                 createTransferInfo(
                         new BigDecimal("1000.00"),
-                        "VND"
+                        Currency.VND
                 );
 
         mockIntent(intent);
@@ -715,7 +716,7 @@ class ConfirmTransferExecutionServiceTest {
         AccountTransferPort.TransferAccountInfo transferInfo =
                 createTransferInfo(
                         new BigDecimal("1000.00"),
-                        "VND"
+                        Currency.VND
                 );
 
         mockIntent(intent);
@@ -750,7 +751,7 @@ class ConfirmTransferExecutionServiceTest {
                         sourceAccountId,
                         destinationAccountId,
                         new BigDecimal("100.00"),
-                        "VND",
+                        Currency.VND,
                         BUSINESS_DATE
                 );
     }
@@ -766,7 +767,7 @@ class ConfirmTransferExecutionServiceTest {
         AccountTransferPort.TransferAccountInfo transferInfo =
                 createTransferInfo(
                         new BigDecimal("1000.00"),
-                        "VND"
+                        Currency.VND
                 );
 
         mockIntent(intent);
@@ -823,7 +824,7 @@ class ConfirmTransferExecutionServiceTest {
         );
 
         assertEquals(
-                "VND",
+                Currency.VND,
                 event.currency()
         );
 
@@ -844,7 +845,7 @@ class ConfirmTransferExecutionServiceTest {
         AccountTransferPort.TransferAccountInfo transferInfo =
                 createTransferInfo(
                         new BigDecimal("1000.00"),
-                        "VND"
+                        Currency.VND
                 );
 
         mockIntent(intent);
@@ -890,7 +891,7 @@ class ConfirmTransferExecutionServiceTest {
         AccountTransferPort.TransferAccountInfo transferInfo =
                 createTransferInfo(
                         new BigDecimal("99.99"),
-                        "VND"
+                        Currency.VND
                 );
 
         mockIntent(intent);
@@ -945,7 +946,7 @@ class ConfirmTransferExecutionServiceTest {
         AccountTransferPort.TransferAccountInfo transferInfo =
                 createTransferInfo(
                         new BigDecimal("1000.00"),
-                        "VND"
+                        Currency.VND
                 );
 
         mockIntent(intent);
@@ -1002,7 +1003,7 @@ class ConfirmTransferExecutionServiceTest {
         AccountTransferPort.TransferAccountInfo transferInfo =
                 createTransferInfo(
                         new BigDecimal("1000.00"),
-                        "VND"
+                        Currency.VND
                 );
 
         mockIntent(intent);
@@ -1020,7 +1021,7 @@ class ConfirmTransferExecutionServiceTest {
                         sourceAccountId,
                         destinationAccountId,
                         new BigDecimal("100.00"),
-                        "VND",
+                        Currency.VND,
                         BUSINESS_DATE
                 );
 
@@ -1064,7 +1065,7 @@ class ConfirmTransferExecutionServiceTest {
         AccountTransferPort.TransferAccountInfo transferInfo =
                 createTransferInfo(
                         new BigDecimal("1000.00"),
-                        "VND"
+                        Currency.VND
                 );
 
         mockIntent(intent);
@@ -1100,7 +1101,7 @@ class ConfirmTransferExecutionServiceTest {
                         sourceAccountId,
                         destinationAccountId,
                         new BigDecimal("100.00"),
-                        "VND",
+                        Currency.VND,
                         BUSINESS_DATE
                 );
 
@@ -1131,7 +1132,7 @@ class ConfirmTransferExecutionServiceTest {
         AccountTransferPort.TransferAccountInfo transferInfo =
                 createTransferInfo(
                         new BigDecimal("1000.00"),
-                        "VND"
+                        Currency.VND
                 );
 
         mockIntent(intent);
@@ -1254,7 +1255,7 @@ class ConfirmTransferExecutionServiceTest {
                 .sourceAccountId(sourceAccountId)
                 .destinationAccountId(destinationAccountId)
                 .amount(new BigDecimal("100.00"))
-                .currency("VND")
+                .currency(Currency.VND)
                 .reference("REF-001")
                 .description("Test transfer")
                 .status(TransferIntentStatus.PENDING)
@@ -1265,7 +1266,7 @@ class ConfirmTransferExecutionServiceTest {
     private AccountTransferPort.TransferAccountInfo
     createTransferInfo(
             BigDecimal sourceBalance,
-            String currency
+            Currency currency
     ) {
         return new AccountTransferPort.TransferAccountInfo(
                 sourceAccountId,

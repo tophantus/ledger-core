@@ -1,5 +1,6 @@
 package com.example.ledgercore.ledger.command.handler;
 
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.ledger.command.dto.CreateLedgerAccountCommand;
 import com.example.ledgercore.ledger.command.repository.LedgerAccountCommandRepository;
 import com.example.ledgercore.ledger.entity.LedgerAccount;
@@ -28,7 +29,7 @@ class CreateLedgerAccountHandlerTest {
     private CreateLedgerAccountHandler handler;
 
     private String accountNo;
-    private String currency;
+    private Currency currency;
 
     @BeforeEach
     void setUp() {
@@ -38,7 +39,7 @@ class CreateLedgerAccountHandlerTest {
         );
 
         accountNo = "1000000001";
-        currency = "VND";
+        currency = Currency.VND;
     }
 
     @Test

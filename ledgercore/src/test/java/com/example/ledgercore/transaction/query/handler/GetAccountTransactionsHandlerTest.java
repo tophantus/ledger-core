@@ -1,5 +1,6 @@
 package com.example.ledgercore.transaction.query.handler;
 
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.common.dto.PageResponse;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
@@ -69,7 +70,7 @@ class GetAccountTransactionsHandlerTest {
                 .sourceAccountId(accountId)
                 .destinationAccountId(UUID.randomUUID())
                 .amount(new BigDecimal("100000"))
-                .currency("VND")
+                .currency(Currency.VND)
                 .description("Transfer")
                 .createdAt(Instant.now())
                 .build();
@@ -82,7 +83,7 @@ class GetAccountTransactionsHandlerTest {
                 .sourceAccountId(null)
                 .destinationAccountId(accountId)
                 .amount(new BigDecimal("500000"))
-                .currency("VND")
+                .currency(Currency.VND)
                 .description("Deposit")
                 .createdAt(Instant.now())
                 .build();
@@ -321,7 +322,7 @@ class GetAccountTransactionsHandlerTest {
                         accountId,
                         null,
                         null,
-                        "VND",
+                        Currency.VND,
                         null,
                         null,
                         0,
@@ -575,39 +576,6 @@ class GetAccountTransactionsHandlerTest {
                         null,
                         from,
                         to,
-                        0,
-                        20
-                );
-
-        BusinessException exception =
-                assertThrows(
-                        BusinessException.class,
-                        () -> handler.execute(query)
-                );
-
-        assertEquals(
-                ErrorCode.INVALID_REQUEST,
-                exception.getErrorCode()
-        );
-
-        verifyNoInteractions(
-                transactionAccessPort,
-                transactionQueryRepository,
-                transactionQueryMapper
-        );
-    }
-
-    @Test
-    void shouldThrowInvalidRequest_whenCurrencyIsBlank() {
-        GetAccountTransactionsQuery query =
-                new GetAccountTransactionsQuery(
-                        userId,
-                        accountId,
-                        null,
-                        null,
-                        "   ",
-                        null,
-                        null,
                         0,
                         20
                 );

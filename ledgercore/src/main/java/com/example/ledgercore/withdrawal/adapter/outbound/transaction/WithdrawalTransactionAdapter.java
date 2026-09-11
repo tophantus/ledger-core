@@ -1,5 +1,6 @@
 package com.example.ledgercore.withdrawal.adapter.outbound.transaction;
 
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.transaction.command.dto.WithdrawMoneyCommand;
 import com.example.ledgercore.transaction.command.port.inbound.WithdrawMoneyUseCase;
 import com.example.ledgercore.transaction.query.dto.TransactionResponse;
@@ -22,7 +23,7 @@ public class WithdrawalTransactionAdapter
     public UUID withdraw(
             UUID accountId,
             BigDecimal amount,
-            String currency,
+            Currency currency,
             String reference,
             String description
     ) {

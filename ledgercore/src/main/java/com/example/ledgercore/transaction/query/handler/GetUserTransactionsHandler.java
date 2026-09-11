@@ -1,5 +1,6 @@
 package com.example.ledgercore.transaction.query.handler;
 
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.common.dto.PageResponse;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
@@ -149,8 +150,7 @@ public class GetUserTransactionsHandler
             );
         }
 
-        if (query.currency() != null
-                && !query.currency().isBlank()) {
+        if (query.currency() != null) {
 
             specification = specification.and(
                     currencySpecification(query.currency())
@@ -205,12 +205,12 @@ public class GetUserTransactionsHandler
     }
 
     private Specification<MoneyTransaction> currencySpecification(
-            String currency
+            Currency currency
     ) {
         return (root, query, criteriaBuilder) ->
                 criteriaBuilder.equal(
                         root.get("currency"),
-                        currency.trim().toUpperCase()
+                        currency
                 );
     }
 
@@ -262,14 +262,6 @@ public class GetUserTransactionsHandler
         if (query.from() != null
                 && query.to() != null
                 && query.from().isAfter(query.to())) {
-
-            throw new BusinessException(
-                    ErrorCode.INVALID_REQUEST
-            );
-        }
-
-        if (query.currency() != null
-                && query.currency().isBlank()) {
 
             throw new BusinessException(
                     ErrorCode.INVALID_REQUEST

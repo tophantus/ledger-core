@@ -81,7 +81,6 @@ public class RecordTransferHandler
                 || command.sourceAccountId() == null
                 || command.destinationAccountId() == null
                 || command.currency() == null
-                || command.currency().isBlank()
                 || command.businessDate() == null) {
 
             throw new BusinessException(

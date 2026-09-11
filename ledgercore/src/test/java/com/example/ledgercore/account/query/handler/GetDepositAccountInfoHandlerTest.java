@@ -4,6 +4,7 @@ import com.example.ledgercore.account.entity.Account;
 import com.example.ledgercore.account.enums.AccountStatus;
 import com.example.ledgercore.account.query.dto.AccountDepositInfo;
 import com.example.ledgercore.account.query.repository.AccountQueryRepository;
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,7 +42,7 @@ class GetDepositAccountInfoHandlerTest {
     void shouldReturnDepositInfoWhenAccountIsActive() {
         Account account = Account.builder()
                 .id(accountId)
-                .currency("VND")
+                .currency(Currency.VND)
                 .status(AccountStatus.ACTIVE)
                 .build();
 
@@ -57,7 +58,7 @@ class GetDepositAccountInfoHandlerTest {
         );
 
         assertEquals(
-                "VND",
+                Currency.VND,
                 response.currency()
         );
 
@@ -93,7 +94,7 @@ class GetDepositAccountInfoHandlerTest {
     void shouldThrowWhenAccountIsNotActive() {
         Account account = Account.builder()
                 .id(accountId)
-                .currency("VND")
+                .currency(Currency.VND)
                 .status(AccountStatus.BLOCKED)
                 .build();
 

@@ -1,5 +1,6 @@
 package com.example.ledgercore.transaction.query.dto;
 
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.transaction.enums.TransactionStatus;
 import com.example.ledgercore.transaction.enums.TransactionType;
 
@@ -10,7 +11,7 @@ public record GetUserTransactionsQuery(
         UUID userId,
         TransactionStatus status,
         TransactionType type,
-        String currency,
+        Currency currency,
         Instant from,
         Instant to,
         int page,
