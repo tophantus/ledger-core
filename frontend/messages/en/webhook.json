@@ -1,9 +1,33 @@
 {
+  "register": {
+    "title": "Register Webhook",
+    "description": "Register an endpoint to receive events from your account.",
+    "close": "Close",
+    "account": "Account",
+    "selectAccount": "Select an account",
+    "url": "Webhook URL",
+    "urlPlaceholder": "https://example.com/webhooks",
+    "events": "Events",
+    "cancel": "Cancel",
+    "submit": "Register",
+    "success": {
+      "title": "Webhook Registered",
+      "description": "The webhook endpoint has been registered successfully.",
+      "registered": "Webhook registered successfully.",
+      "secret": "Webhook Secret",
+      "copy": "Copy",
+      "copied": "Copied",
+      "secretWarning": "This secret is shown only once.",
+      "saveWarning": "Store this secret somewhere secure. You will not be able to view it again after closing this window.",
+      "done": "Done"
+    }
+  },
   "list": {
     "title": "Webhooks",
     "description": "Manage your webhooks.",
     "accountTitle": "Account Webhooks",
     "accountDescription": "Manage webhooks for this account.",
+    "register": "Register Webhook",
     "url": "URL",
     "account": "Account",
     "events": "Events",

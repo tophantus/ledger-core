@@ -8,7 +8,7 @@ import type {
 
 import type {
     Webhook,
-} from "../types/webhook";
+} from "../../types/webhook";
 
 import {WebhookListRow} from "./webhook-list-row";
 

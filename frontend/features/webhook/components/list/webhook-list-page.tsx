@@ -12,6 +12,7 @@ import {
 } from "next/navigation";
 import {useTranslations} from "next-intl";
 
+import {Button} from "@/components/ui/button";
 import type {
     AccountSummary,
 } from "@/features/account/types/account";
@@ -19,18 +20,19 @@ import {useMyAccounts} from "@/features/account/hooks/use-my-accounts";
 import {AccountSummaryCard} from "@/features/account/components/account-summary-card";
 import {AccountSummaryCardSkeleton} from "@/features/account/components/account-summary-card-skeleton";
 
-import {useWebhooks} from "../hooks/use-webhooks";
+import {useWebhooks} from "../../hooks/use-webhooks";
 
 import type {
     Webhook,
     WebhookFilters,
-} from "../types/webhook";
+} from "../../types/webhook";
 
 import {WebhookListFilters} from "./webhook-list-filters";
 import {WebhookListTable} from "./webhook-list-table";
 import {WebhookListSkeleton} from "./webhook-list-skeleton";
 import {WebhookListEmpty} from "./webhook-list-empty";
 import {WebhookListPagination} from "./webhook-list-pagination";
+import {RegisterWebhookModal} from "../register-webhook-modal";
 
 const PAGE_SIZE = 20;
 
@@ -103,6 +105,11 @@ export default function WebhookListPage() {
         setIsLoading,
     ] = useState(true);
 
+    const [
+        isRegisterModalOpen,
+        setIsRegisterModalOpen,
+    ] = useState(false);
+
     const [error, setError] =
         useState<string | null>(null);
 
@@ -137,10 +144,6 @@ export default function WebhookListPage() {
             ],
         );
 
-    /*
-     * Load accounts for the
-     * account filter.
-     */
     useEffect(() => {
         let mounted = true;
 
@@ -180,10 +183,6 @@ export default function WebhookListPage() {
         };
     }, [getMyAccounts]);
 
-    /*
-     * Load webhooks whenever
-     * URL filters change.
-     */
     useEffect(() => {
         let mounted = true;
 
@@ -240,7 +239,15 @@ export default function WebhookListPage() {
         return () => {
             mounted = false;
         };
-    }, [accountId, page, size, getWebhooks, getErrorMessage, tErrors, filters]);
+    }, [
+        accountId,
+        page,
+        size,
+        getWebhooks,
+        getErrorMessage,
+        tErrors,
+        filters,
+    ]);
 
     const handleFilterChange = (
         nextFilters: WebhookFilters,
@@ -333,116 +340,189 @@ export default function WebhookListPage() {
             });
     };
 
+    const handleRegistered = () => {
+        setIsRegisterModalOpen(false);
+
+        setIsLoading(true);
+        setError(null);
+
+        void getWebhooks(filters)
+            .then((response) => {
+                if (!response.success) {
+                    setError(
+                        getErrorMessage(
+                            response.code,
+                        ),
+                    );
+
+                    return;
+                }
+
+                setWebhooks(
+                    response.data.content,
+                );
+
+                setTotalPages(
+                    response.data.totalPages,
+                );
+            })
+            .catch(() => {
+                setError(
+                    tErrors("fallback"),
+                );
+            })
+            .finally(() => {
+                setIsLoading(false);
+            });
+    };
+
     return (
-        <section className="
-            mx-auto
-            w-full
-            space-y-6
-        ">
-            <div>
-                <h1 className="
-                    text-2xl
-                    font-semibold
-                    text-primary
+        <>
+            <section className="
+                mx-auto
+                w-full
+                space-y-6
+            ">
+                <div className="
+                    flex
+                    items-start
+                    justify-between
+                    gap-4
                 ">
-                    {accountId
-                        ? t(
-                            "list.accountTitle",
-                        )
-                        : t(
-                            "list.title",
+                    <div>
+                        <h1 className="
+                            text-2xl
+                            font-semibold
+                            text-primary
+                        ">
+                            {accountId
+                                ? t(
+                                    "list.accountTitle",
+                                )
+                                : t(
+                                    "list.title",
+                                )}
+                        </h1>
+
+                        <p className="
+                            mt-1
+                            text-sm
+                            text-muted
+                        ">
+                            {accountId
+                                ? t(
+                                    "list.accountDescription",
+                                )
+                                : t(
+                                    "list.description",
+                                )}
+                        </p>
+                    </div>
+
+                    <Button
+                        type="button"
+                        onClick={() =>
+                            setIsRegisterModalOpen(
+                                true,
+                            )
+                        }
+                    >
+                        {t(
+                            "register.submit",
                         )}
-                </h1>
+                    </Button>
+                </div>
 
-                <p className="
-                    mt-1
-                    text-sm
-                    text-muted
-                ">
-                    {accountId
-                        ? t(
-                            "list.accountDescription",
-                        )
-                        : t(
-                            "list.description",
+                {accountId && (
+                    <>
+                        {isAccountsLoading && (
+                            <AccountSummaryCardSkeleton />
                         )}
-                </p>
-            </div>
 
-            {accountId && (
-                <>
-                    {isAccountsLoading && (
-                        <AccountSummaryCardSkeleton />
-                    )}
+                        {!isAccountsLoading &&
+                            account && (
+                                <AccountSummaryCard
+                                    account={
+                                        account
+                                    }
+                                />
+                            )}
+                    </>
+                )}
 
-                    {!isAccountsLoading &&
-                        account && (
-                            <AccountSummaryCard
-                                account={
-                                    account
+                <WebhookListFilters
+                    accounts={accounts}
+                    isAccountsLoading={
+                        isAccountsLoading
+                    }
+                    filters={filters}
+                    onChange={
+                        handleFilterChange
+                    }
+                />
+
+                {isLoading ? (
+                    <WebhookListSkeleton />
+                ) : error ? (
+                    <div className="
+                        rounded-lg
+                        border
+                        border-danger
+                        bg-surface
+                        p-4
+                    ">
+                        <p className="
+                            text-sm
+                            text-danger
+                        ">
+                            {error}
+                        </p>
+                    </div>
+                ) : webhooks.length === 0 ? (
+                    <WebhookListEmpty />
+                ) : (
+                    <>
+                        <WebhookListTable
+                            webhooks={
+                                webhooks
+                            }
+                            accounts={
+                                accounts
+                            }
+                            onRemoved={
+                                handleRemoved
+                            }
+                        />
+
+                        {totalPages > 1 && (
+                            <WebhookListPagination
+                                page={page}
+                                totalPages={
+                                    totalPages
+                                }
+                                onPageChange={
+                                    handlePageChange
                                 }
                             />
                         )}
-                </>
-            )}
+                    </>
+                )}
+            </section>
 
-            <WebhookListFilters
-                accounts={accounts}
-                isAccountsLoading={
-                    isAccountsLoading
+            <RegisterWebhookModal
+                open={
+                    isRegisterModalOpen
                 }
-                filters={filters}
-                onChange={
-                    handleFilterChange
+                accounts={accounts}
+                onClose={() =>
+                    setIsRegisterModalOpen(
+                        false,
+                    )
+                }
+                onSuccess={
+                    handleRegistered
                 }
             />
-
-            {isLoading ? (
-                <WebhookListSkeleton />
-            ) : error ? (
-                <div className="
-                    rounded-lg
-                    border
-                    border-danger
-                    bg-surface
-                    p-4
-                ">
-                    <p className="
-                        text-sm
-                        text-danger
-                    ">
-                        {error}
-                    </p>
-                </div>
-            ) : webhooks.length === 0 ? (
-                <WebhookListEmpty />
-            ) : (
-                <>
-                    <WebhookListTable
-                        webhooks={
-                            webhooks
-                        }
-                        accounts={
-                            accounts
-                        }
-                        onRemoved={
-                            handleRemoved
-                        }
-                    />
-
-                    {totalPages > 1 && (
-                        <WebhookListPagination
-                            page={page}
-                            totalPages={
-                                totalPages
-                            }
-                            onPageChange={
-                                handlePageChange
-                            }
-                        />
-                    )}
-                </>
-            )}
-        </section>
+        </>
     );
 }

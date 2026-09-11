@@ -1,4 +1,4 @@
-import WebhookListPage from "@/features/webhook/components/webhook-list-page";
+import WebhookListPage from "@/features/webhook/components/list/webhook-list-page";
 
 export default function WebhooksPage() {
     return (

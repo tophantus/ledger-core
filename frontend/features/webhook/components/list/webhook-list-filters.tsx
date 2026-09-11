@@ -14,7 +14,7 @@ import type {AccountSummary} from "@/features/account/types/account";
 
 import type {
     WebhookFilters,
-} from "../types/webhook";
+} from "../../types/webhook";
 
 interface WebhookListFiltersProps {
     accounts: AccountSummary[];

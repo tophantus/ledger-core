@@ -1,9 +1,33 @@
 {
+  "register": {
+    "title": "Đăng ký webhook",
+    "description": "Đăng ký endpoint để nhận thông báo sự kiện từ tài khoản.",
+    "close": "Đóng",
+    "account": "Tài khoản",
+    "selectAccount": "Chọn tài khoản",
+    "url": "Webhook URL",
+    "urlPlaceholder": "https://example.com/webhooks",
+    "events": "Sự kiện",
+    "cancel": "Hủy",
+    "submit": "Đăng ký",
+    "success": {
+      "title": "Webhook đã được đăng ký",
+      "description": "Webhook endpoint đã được đăng ký thành công.",
+      "registered": "Đăng ký webhook thành công.",
+      "secret": "Webhook Secret",
+      "copy": "Sao chép",
+      "copied": "Đã sao chép",
+      "secretWarning": "Secret này chỉ được hiển thị một lần.",
+      "saveWarning": "Hãy lưu secret ở nơi an toàn. Bạn sẽ không thể xem lại secret này sau khi đóng cửa sổ.",
+      "done": "Đã lưu"
+    }
+  },
   "list": {
     "title": "Webhooks",
     "description": "Quản lý các webhook của bạn.",
     "accountTitle": "Webhooks của tài khoản",
     "accountDescription": "Quản lý các webhook của tài khoản này.",
+    "register": "Đăng ký webhook",
     "url": "URL",
     "account": "Tài khoản",
     "events": "Sự kiện",

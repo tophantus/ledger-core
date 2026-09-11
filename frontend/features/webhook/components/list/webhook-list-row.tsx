@@ -10,10 +10,10 @@ import {
 import {useState} from "react";
 
 import {Button} from "@/components/ui/button";
-import {useDeleteWebhook} from "../hooks/use-delete-webhook";
+import {useDeleteWebhook} from "../../hooks/use-delete-webhook";
 import type {
     Webhook,
-} from "../types/webhook";
+} from "../../types/webhook";
 
 import {
     getWebhookStatusColor,
@@ -115,12 +115,12 @@ export function WebhookListRow({
                                 className="
                                     inline-flex
                                     rounded-full
-                                    bg-background-subtle
+                                    bg-secondary
                                     px-2
                                     py-1
                                     text-xs
                                     font-medium
-                                    text-muted
+                                    text-secondary-foreground
                                 "
                             >
                                 {t(
