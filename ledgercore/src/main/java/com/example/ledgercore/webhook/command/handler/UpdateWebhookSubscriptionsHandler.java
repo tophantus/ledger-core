@@ -46,6 +46,8 @@ public class UpdateWebhookSubscriptionsHandler
         webhookSubscriptionCommandRepository
                 .deleteAllByWebhookEndpointId(endpoint.getId());
 
+        webhookSubscriptionCommandRepository.flush();
+
         List<WebhookSubscription> subscriptions =
                 command.eventTypes().stream()
                         .map(eventType ->
