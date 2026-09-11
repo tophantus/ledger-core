@@ -1,8 +1,9 @@
 "use client";
 
-import {useTranslations} from "next-intl";
+import {useLocale, useTranslations} from "next-intl";
 
 import type {Account} from "../types/account";
+import {formatMoney} from "@/lib/utils/currency";
 
 interface AccountSummaryProps {
     account: Account;
@@ -13,6 +14,7 @@ export function AccountSummary({
                                }: AccountSummaryProps) {
     const t = useTranslations("account");
 
+    const locale = useLocale();
     return (
         <div className="rounded-lg border border-border bg-surface">
             <div className="flex flex-col gap-4 p-6 sm:flex-row sm:items-start sm:justify-between">
@@ -37,7 +39,11 @@ export function AccountSummary({
                 </p>
 
                 <p className="mt-1 text-2xl font-semibold text-text-primary">
-                    {account.balance} {account.currency}
+                    {formatMoney(
+                        account.balance,
+                        account.currency,
+                        locale
+                    )}
                 </p>
             </div>
         </div>

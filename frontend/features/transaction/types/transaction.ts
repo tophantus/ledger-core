@@ -29,6 +29,7 @@ export interface Transaction {
 }
 
 export interface TransactionFilters {
+    accountId?: string;
     status?: TransactionStatus;
     type?: TransactionType;
     currency?: string;
