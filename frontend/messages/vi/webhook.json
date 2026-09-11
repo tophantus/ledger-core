@@ -1,0 +1,38 @@
+{
+  "list": {
+    "title": "Webhooks",
+    "description": "Quản lý các webhook của bạn.",
+    "accountTitle": "Webhooks của tài khoản",
+    "accountDescription": "Quản lý các webhook của tài khoản này.",
+    "url": "URL",
+    "account": "Tài khoản",
+    "events": "Sự kiện",
+    "status": "Trạng thái",
+    "createdAt": "Ngày tạo",
+    "updatedAt": "Ngày cập nhật",
+    "actions": "Thao tác",
+    "remove": "Xóa",
+    "previous": "Trước",
+    "next": "Sau",
+    "page": "Trang {current} / {total}",
+    "emptyTitle": "Chưa có webhook",
+    "emptyDescription": "Tài khoản của bạn chưa đăng ký webhook nào.",
+    "cancelling": "Đang hủy...",
+    "filter": {
+      "title": "Bộ lọc",
+      "account": "Tài khoản",
+      "allAccounts": "Tất cả tài khoản",
+      "loadingAccounts": "Đang tải tài khoản...",
+      "clear": "Xóa bộ lọc"
+    }
+  },
+  "statuses": {
+    "ACTIVE": "Đang hoạt động",
+    "INACTIVE": "Không hoạt động"
+  },
+  "eventTypes": {
+    "ACCOUNT_BALANCE_CHANGED": "Thay đổi số dư",
+    "TRANSACTION_COMPLETED": "Giao dịch hoàn tất",
+    "TRANSACTION_FAILED": "Giao dịch thất bại"
+  }
+}

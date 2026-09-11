@@ -45,6 +45,24 @@ export const API_ENDPOINTS = {
         CANCEL_INTENT: (intentId: string) =>
             `/api/v1/withdrawals/intents/${intentId}/cancel`,
     },
+    WEBHOOK: {
+        BASE: "/api/v1/webhooks",
+
+        ACCOUNT: (accountId: string) =>
+            `/api/v1/accounts/${accountId}/webhooks`,
+
+        BY_ID: (webhookId: string) =>
+            `/api/v1/webhooks/${webhookId}`,
+
+        SUBSCRIPTIONS: (webhookId: string) =>
+            `/api/v1/webhooks/${webhookId}/subscriptions`,
+
+        ROTATE_SECRET: (webhookId: string) =>
+            `/api/v1/webhooks/${webhookId}/secret/rotate`,
+
+        DELIVERIES: (webhookId: string) =>
+            `/api/v1/webhooks/${webhookId}/deliveries`,
+    },
     PRODUCT: {
         BASE: "/api/v1/products",
     },

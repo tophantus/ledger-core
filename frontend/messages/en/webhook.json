@@ -1,0 +1,38 @@
+{
+  "list": {
+    "title": "Webhooks",
+    "description": "Manage your webhooks.",
+    "accountTitle": "Account Webhooks",
+    "accountDescription": "Manage webhooks for this account.",
+    "url": "URL",
+    "account": "Account",
+    "events": "Events",
+    "status": "Status",
+    "createdAt": "Created At",
+    "updatedAt": "Updated At",
+    "actions": "Actions",
+    "remove": "Remove",
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page {current} / {total}",
+    "emptyTitle": "No webhooks",
+    "emptyDescription": "You have not registered any webhooks.",
+    "cancelling": "Removing...",
+    "filter": {
+      "title": "Filters",
+      "account": "Account",
+      "allAccounts": "All Accounts",
+      "loadingAccounts": "Loading accounts...",
+      "clear": "Clear"
+    }
+  },
+  "statuses": {
+    "ACTIVE": "Active",
+    "INACTIVE": "Inactive"
+  },
+  "eventTypes": {
+    "ACCOUNT_BALANCE_CHANGED": "Account Balance Changed",
+    "TRANSACTION_COMPLETED": "Transaction Completed",
+    "TRANSACTION_FAILED": "Transaction Failed"
+  }
+}
