@@ -50,6 +50,7 @@ class PostInterestHandlerTest {
 
     @Test
     void shouldPostInterestSuccessfully() {
+        UUID runId = UUID.randomUUID();
         UUID accountId = UUID.randomUUID();
         UUID transactionId = UUID.randomUUID();
         UUID postingId = UUID.randomUUID();
@@ -78,6 +79,7 @@ class PostInterestHandlerTest {
 
         PostInterestCommand command =
                 new PostInterestCommand(
+                        runId,
                         accountId,
                         periodStart,
                         periodEnd
@@ -104,6 +106,7 @@ class PostInterestHandlerTest {
         InterestPosting savedPosting =
                 InterestPosting.builder()
                         .id(postingId)
+                        .runId(runId)
                         .accountId(accountId)
                         .periodStart(periodStart)
                         .periodEnd(periodEnd)
@@ -132,22 +135,27 @@ class PostInterestHandlerTest {
         ArgumentCaptor<InterestPosting> postingCaptor =
                 ArgumentCaptor.forClass(InterestPosting.class);
 
-        verify(interestPostingCommandRepository, times(2))
-                .save(postingCaptor.capture());
+        verify(
+                interestPostingCommandRepository,
+                times(2)
+        ).save(postingCaptor.capture());
 
-        InterestPosting posting =
-                postingCaptor.getValue();
+        InterestPosting createdPosting =
+                postingCaptor.getAllValues().getFirst();
 
-        assertThat(posting.getAccountId())
+        assertThat(createdPosting.getRunId())
+                .isEqualTo(runId);
+
+        assertThat(createdPosting.getAccountId())
                 .isEqualTo(accountId);
 
-        assertThat(posting.getPeriodStart())
+        assertThat(createdPosting.getPeriodStart())
                 .isEqualTo(periodStart);
 
-        assertThat(posting.getPeriodEnd())
+        assertThat(createdPosting.getPeriodEnd())
                 .isEqualTo(periodEnd);
 
-        assertThat(posting.getInterestAmount())
+        assertThat(createdPosting.getInterestAmount())
                 .isEqualByComparingTo("3000.0000");
 
         verify(interestTransactionPort)
@@ -157,6 +165,9 @@ class PostInterestHandlerTest {
                         "VND",
                         periodEnd
                 );
+
+        assertThat(savedPosting.getRunId())
+                .isEqualTo(runId);
 
         assertThat(savedPosting.getTransactionId())
                 .isEqualTo(transactionId);
@@ -179,6 +190,7 @@ class PostInterestHandlerTest {
 
     @Test
     void shouldReturnWhenInterestAlreadyPosted() {
+        UUID runId = UUID.randomUUID();
         UUID accountId = UUID.randomUUID();
 
         LocalDate periodStart =
@@ -189,6 +201,7 @@ class PostInterestHandlerTest {
 
         PostInterestCommand command =
                 new PostInterestCommand(
+                        runId,
                         accountId,
                         periodStart,
                         periodEnd
@@ -226,6 +239,7 @@ class PostInterestHandlerTest {
 
     @Test
     void shouldReturnWhenNoUnpostedAccrualsExist() {
+        UUID runId = UUID.randomUUID();
         UUID accountId = UUID.randomUUID();
 
         LocalDate periodStart =
@@ -236,6 +250,7 @@ class PostInterestHandlerTest {
 
         PostInterestCommand command =
                 new PostInterestCommand(
+                        runId,
                         accountId,
                         periodStart,
                         periodEnd
@@ -285,6 +300,7 @@ class PostInterestHandlerTest {
 
     @Test
     void shouldCreatePostingWithoutTransactionWhenInterestIsZero() {
+        UUID runId = UUID.randomUUID();
         UUID accountId = UUID.randomUUID();
         UUID postingId = UUID.randomUUID();
 
@@ -304,6 +320,7 @@ class PostInterestHandlerTest {
 
         PostInterestCommand command =
                 new PostInterestCommand(
+                        runId,
                         accountId,
                         periodStart,
                         periodEnd
@@ -330,6 +347,7 @@ class PostInterestHandlerTest {
         InterestPosting savedPosting =
                 InterestPosting.builder()
                         .id(postingId)
+                        .runId(runId)
                         .accountId(accountId)
                         .periodStart(periodStart)
                         .periodEnd(periodEnd)
@@ -344,10 +362,25 @@ class PostInterestHandlerTest {
 
         handler.execute(command);
 
+        ArgumentCaptor<InterestPosting> postingCaptor =
+                ArgumentCaptor.forClass(InterestPosting.class);
+
         verify(
                 interestPostingCommandRepository,
                 times(1)
-        ).save(any(InterestPosting.class));
+        ).save(postingCaptor.capture());
+
+        InterestPosting posting =
+                postingCaptor.getValue();
+
+        assertThat(posting.getRunId())
+                .isEqualTo(runId);
+
+        assertThat(posting.getAccountId())
+                .isEqualTo(accountId);
+
+        assertThat(posting.getInterestAmount())
+                .isZero();
 
         verifyNoInteractions(
                 interestTransactionPort
@@ -359,12 +392,16 @@ class PostInterestHandlerTest {
         assertThat(accrual.getPostingId())
                 .isEqualTo(postingId);
 
+        assertThat(savedPosting.getRunId())
+                .isEqualTo(runId);
+
         assertThat(savedPosting.getTransactionId())
                 .isNull();
     }
 
     @Test
     void shouldRejectDifferentCurrencies() {
+        UUID runId = UUID.randomUUID();
         UUID accountId = UUID.randomUUID();
 
         LocalDate periodStart =
@@ -391,6 +428,7 @@ class PostInterestHandlerTest {
 
         PostInterestCommand command =
                 new PostInterestCommand(
+                        runId,
                         accountId,
                         periodStart,
                         periodEnd
@@ -453,9 +491,33 @@ class PostInterestHandlerTest {
     }
 
     @Test
+    void shouldRejectMissingRunId() {
+        PostInterestCommand command =
+                new PostInterestCommand(
+                        null,
+                        UUID.randomUUID(),
+                        LocalDate.of(2026, 8, 1),
+                        LocalDate.of(2026, 8, 31)
+                );
+
+        assertThatThrownBy(
+                () -> handler.execute(command)
+        )
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("runId must not be null");
+
+        verifyNoInteractions(
+                interestAccrualCommandRepository,
+                interestPostingCommandRepository,
+                interestTransactionPort
+        );
+    }
+
+    @Test
     void shouldRejectMissingAccountId() {
         PostInterestCommand command =
                 new PostInterestCommand(
+                        UUID.randomUUID(),
                         null,
                         LocalDate.of(2026, 8, 1),
                         LocalDate.of(2026, 8, 31)
@@ -479,6 +541,7 @@ class PostInterestHandlerTest {
         PostInterestCommand command =
                 new PostInterestCommand(
                         UUID.randomUUID(),
+                        UUID.randomUUID(),
                         null,
                         LocalDate.of(2026, 8, 31)
                 );
@@ -501,6 +564,7 @@ class PostInterestHandlerTest {
         PostInterestCommand command =
                 new PostInterestCommand(
                         UUID.randomUUID(),
+                        UUID.randomUUID(),
                         LocalDate.of(2026, 8, 1),
                         null
                 );
@@ -522,6 +586,7 @@ class PostInterestHandlerTest {
     void shouldRejectInvalidPeriod() {
         PostInterestCommand command =
                 new PostInterestCommand(
+                        UUID.randomUUID(),
                         UUID.randomUUID(),
                         LocalDate.of(2026, 8, 31),
                         LocalDate.of(2026, 8, 1)

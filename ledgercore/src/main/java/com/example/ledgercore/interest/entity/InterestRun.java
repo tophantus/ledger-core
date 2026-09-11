@@ -1,6 +1,7 @@
 package com.example.ledgercore.interest.entity;
 
 import com.example.ledgercore.interest.enums.InterestRunStatus;
+import com.example.ledgercore.interest.enums.InterestRunType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -13,14 +14,21 @@ import java.util.UUID;
         name = "interest_runs",
         uniqueConstraints = {
                 @UniqueConstraint(
-                        name = "uk_interest_runs_business_date",
-                        columnNames = "business_date"
+                        name = "uk_interest_runs_business_date_type",
+                        columnNames = {
+                                "business_date",
+                                "run_type"
+                        }
                 )
         },
         indexes = {
                 @Index(
                         name = "idx_interest_runs_status",
                         columnList = "status"
+                ),
+                @Index(
+                        name = "idx_interest_runs_type",
+                        columnList = "run_type"
                 )
         }
 )
@@ -43,6 +51,14 @@ public class InterestRun {
 
     @Enumerated(EnumType.STRING)
     @Column(
+            name = "run_type",
+            nullable = false,
+            length = 20
+    )
+    private InterestRunType runType;
+
+    @Enumerated(EnumType.STRING)
+    @Column(
             name = "status",
             nullable = false,
             length = 20
@@ -52,14 +68,10 @@ public class InterestRun {
     @Column(name = "last_processed_id")
     private UUID lastProcessedId;
 
-    @Column(
-            name = "processed_count"
-    )
+    @Column(name = "processed_count")
     private Long processedCount;
 
-    @Column(
-            name = "started_at"
-    )
+    @Column(name = "started_at")
     private Instant startedAt;
 
     @Column(name = "heartbeat_at")

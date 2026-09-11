@@ -77,6 +77,7 @@ public class PostInterestHandler
 
         InterestPosting posting =
                 InterestPosting.builder()
+                        .runId(command.runId())
                         .accountId(command.accountId())
                         .periodStart(command.periodStart())
                         .periodEnd(command.periodEnd())
@@ -156,6 +157,12 @@ public class PostInterestHandler
         if (command == null) {
             throw new IllegalArgumentException(
                     "command must not be null"
+            );
+        }
+
+        if (command.runId() == null) {
+            throw new IllegalArgumentException(
+                    "runId must not be null"
             );
         }
 

@@ -5,11 +5,12 @@ import com.example.ledgercore.interest.command.dto.InterestRunBatchResult;
 import java.time.LocalDate;
 import java.util.UUID;
 
-public interface ProcessInterestAccrualBatchUseCase {
+public interface ProcessInterestPostingBatchUseCase {
 
     BatchResult execute(
             UUID runId,
-            LocalDate businessDate,
+            LocalDate periodStart,
+            LocalDate periodEnd,
             UUID lastProcessedId,
             long processedCount,
             int batchSize

@@ -229,6 +229,12 @@ public enum ErrorCode {
             HttpStatus.CONFLICT
     ),
 
+    INTEREST_PROCESSOR_NOT_FOUND(
+            "INTEREST_005",
+            "Interest processor not found",
+            HttpStatus.INTERNAL_SERVER_ERROR
+    ),
+
     // Ledger
 
     LEDGER_ACCOUNT_NOT_FOUND(
