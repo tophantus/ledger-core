@@ -1,4 +1,4 @@
-export function AccountSummarySkeleton() {
+export function AccountSummaryCardSkeleton() {
     return (
         <div className="rounded-lg border border-border bg-surface">
             <div className="flex items-start justify-between gap-4 p-6">

@@ -2,14 +2,15 @@
 
 import {useLocale, useTranslations} from "next-intl";
 
-import type {Account} from "../types/account";
+import type {AccountSummary} from "../types/account";
 import {formatMoney} from "@/lib/utils/currency";
+import {getAccountStatusColor} from "@/lib/utils/account";
 
 interface AccountSummaryProps {
-    account: Account;
+    account: AccountSummary;
 }
 
-export function AccountSummary({
+export function AccountSummaryCard({
                                    account,
                                }: AccountSummaryProps) {
     const t = useTranslations("account");
@@ -28,7 +29,19 @@ export function AccountSummary({
                     </p>
                 </div>
 
-                <span className="w-fit rounded-full bg-surface-subtle px-2.5 py-1 text-xs font-medium text-text-secondary">
+                <span
+                    className={`
+                        rounded-full
+                        px-2.5
+                        py-1
+                        text-xs
+                        font-medium
+                        ${getAccountStatusColor(
+                        account.status,
+                        "text-background",
+                    )}
+                        `}
+                >
                     {t(`statuses.${account.status}`)}
                 </span>
             </div>

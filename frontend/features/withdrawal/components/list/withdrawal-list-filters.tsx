@@ -1,24 +1,32 @@
 "use client";
 
+import {
+    useState,
+    type ChangeEvent,
+} from "react";
+import {
+    ChevronDown,
+    ChevronUp,
+} from "lucide-react";
 import {useTranslations} from "next-intl";
 
+import type {AccountSummary} from "@/features/account/types/account";
+
 import type {
+    WithdrawalIntentFilters,
     WithdrawalIntentStatus,
 } from "../../types/withdrawal";
 
 interface WithdrawalListFiltersProps {
-    status:
-        | WithdrawalIntentStatus
-        | undefined;
-
-    onStatusChange: (
-        status:
-            | WithdrawalIntentStatus
-            | undefined,
+    accounts: AccountSummary[];
+    isAccountsLoading: boolean;
+    filters: WithdrawalIntentFilters;
+    onChange: (
+        filters: WithdrawalIntentFilters,
     ) => void;
 }
 
-const STATUSES: WithdrawalIntentStatus[] = [
+const WITHDRAWAL_STATUSES: WithdrawalIntentStatus[] = [
     "READY",
     "COMPLETED",
     "EXPIRED",
@@ -26,87 +34,285 @@ const STATUSES: WithdrawalIntentStatus[] = [
 ];
 
 export function WithdrawalListFilters({
-                                          status,
-                                          onStatusChange,
+                                          accounts,
+                                          isAccountsLoading,
+                                          filters,
+                                          onChange,
                                       }: WithdrawalListFiltersProps) {
     const t =
         useTranslations("withdrawal");
 
+    const [expanded, setExpanded] =
+        useState(false);
+
+    const handleAccountChange = (
+        event: ChangeEvent<HTMLSelectElement>,
+    ) => {
+        const value = event.target.value;
+
+        onChange({
+            ...filters,
+            accountId:
+                value || undefined,
+            page: 0,
+        });
+    };
+
+    const handleStatusChange = (
+        event: ChangeEvent<HTMLSelectElement>,
+    ) => {
+        const value = event.target.value;
+
+        onChange({
+            ...filters,
+            status:
+                value
+                    ? (
+                        value as WithdrawalIntentStatus
+                    )
+                    : undefined,
+            page: 0,
+        });
+    };
+
+    const handleClear = () => {
+        onChange({
+            page: 0,
+            size: filters.size ?? 20,
+        });
+    };
+
     return (
         <div className="
+            overflow-hidden
             rounded-lg
             border
             border-border
             bg-surface
-            p-4
         ">
-            <div className="
-                flex
-                flex-wrap
-                items-end
-                gap-4
-            ">
-                <div className="w-full sm:w-56">
-                    <label
-                        htmlFor="withdrawal-status"
-                        className="
-                            mb-2
-                            block
-                            text-sm
-                            font-medium
-                            text-foreground
-                        "
-                    >
-                        {t("list.status")}
-                    </label>
+            <button
+                type="button"
+                onClick={() =>
+                    setExpanded(
+                        (current) => !current,
+                    )
+                }
+                className="
+                    flex
+                    w-full
+                    items-center
+                    justify-between
+                    px-4
+                    py-3
+                    text-left
+                    transition
+                    hover:bg-background-subtle
+                "
+            >
+                <span className="
+                    text-sm
+                    font-medium
+                    text-foreground
+                ">
+                    {t("list.filter.title")}
+                </span>
 
-                    <select
-                        id="withdrawal-status"
-                        value={status ?? ""}
-                        onChange={(event) => {
-                            const value =
-                                event.target.value;
+                {expanded ? (
+                    <ChevronUp className="
+                        h-4
+                        w-4
+                        text-muted
+                    " />
+                ) : (
+                    <ChevronDown className="
+                        h-4
+                        w-4
+                        text-muted
+                    " />
+                )}
+            </button>
 
-                            onStatusChange(
-                                value
-                                    ? (value as WithdrawalIntentStatus)
-                                    : undefined,
-                            );
-                        }}
-                        className="
-                            w-full
-                            rounded-md
-                            border
-                            border-border
-                            bg-background
-                            px-3
-                            py-2.5
-                            text-sm
-                            text-foreground
-                            outline-none
-                        "
-                    >
-                        <option value="">
-                            {t(
-                                "list.allStatuses",
-                            )}
-                        </option>
+            {expanded && (
+                <div className="
+                    border-t
+                    border-border
+                    p-4
+                ">
+                    <div className="
+                        grid
+                        gap-4
+                        sm:grid-cols-2
+                        lg:grid-cols-3
+                    ">
+                        {/* Account */}
+                        <div>
+                            <label
+                                htmlFor="withdrawal-account"
+                                className="
+                                    mb-2
+                                    block
+                                    text-sm
+                                    font-medium
+                                    text-foreground
+                                "
+                            >
+                                {t(
+                                    "list.filter.account",
+                                )}
+                            </label>
 
-                        {STATUSES.map(
-                            (item) => (
-                                <option
-                                    key={item}
-                                    value={item}
-                                >
+                            <select
+                                id="withdrawal-account"
+                                value={
+                                    filters.accountId
+                                    ?? ""
+                                }
+                                disabled={
+                                    isAccountsLoading
+                                }
+                                onChange={
+                                    handleAccountChange
+                                }
+                                className="
+                                    w-full
+                                    rounded-md
+                                    border
+                                    border-border
+                                    bg-background
+                                    px-3
+                                    py-2
+                                    text-sm
+                                    text-foreground
+                                    outline-none
+                                    disabled:cursor-not-allowed
+                                    disabled:opacity-60
+                                "
+                            >
+                                <option value="">
+                                    {isAccountsLoading
+                                        ? t(
+                                            "list.filter.loadingAccounts",
+                                        )
+                                        : t(
+                                            "list.filter.allAccounts",
+                                        )}
+                                </option>
+
+                                {accounts.map(
+                                    (account) => (
+                                        <option
+                                            key={
+                                                account.id
+                                            }
+                                            value={
+                                                account.id
+                                            }
+                                        >
+                                            {
+                                                account.accountNo
+                                            }
+                                            {" · "}
+                                            {
+                                                account.currency
+                                            }
+                                        </option>
+                                    ),
+                                )}
+                            </select>
+                        </div>
+
+                        {/* Status */}
+                        <div>
+                            <label
+                                htmlFor="withdrawal-status"
+                                className="
+                                    mb-2
+                                    block
+                                    text-sm
+                                    font-medium
+                                    text-foreground
+                                "
+                            >
+                                {t(
+                                    "list.filter.status",
+                                )}
+                            </label>
+
+                            <select
+                                id="withdrawal-status"
+                                value={
+                                    filters.status
+                                    ?? ""
+                                }
+                                onChange={
+                                    handleStatusChange
+                                }
+                                className="
+                                    w-full
+                                    rounded-md
+                                    border
+                                    border-border
+                                    bg-background
+                                    px-3
+                                    py-2
+                                    text-sm
+                                    text-foreground
+                                    outline-none
+                                "
+                            >
+                                <option value="">
                                     {t(
-                                        `statuses.${item}`,
+                                        "list.filter.allStatuses",
                                     )}
                                 </option>
-                            ),
-                        )}
-                    </select>
+
+                                {WITHDRAWAL_STATUSES.map(
+                                    (status) => (
+                                        <option
+                                            key={status}
+                                            value={status}
+                                        >
+                                            {t(
+                                                `statuses.${status}`,
+                                            )}
+                                        </option>
+                                    ),
+                                )}
+                            </select>
+                        </div>
+
+                        {/* Clear */}
+                        <div className="
+                            flex
+                            items-end
+                        ">
+                            <button
+                                type="button"
+                                onClick={
+                                    handleClear
+                                }
+                                className="
+                                    w-full
+                                    rounded-md
+                                    border
+                                    border-border
+                                    px-3
+                                    py-2
+                                    text-sm
+                                    font-medium
+                                    text-foreground
+                                    transition
+                                    hover:bg-background-subtle
+                                "
+                            >
+                                {t(
+                                    "list.filter.clear",
+                                )}
+                            </button>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 }

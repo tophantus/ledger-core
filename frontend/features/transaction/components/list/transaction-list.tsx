@@ -2,10 +2,10 @@
 
 import {useTranslations} from "next-intl";
 
-import type {Transaction} from "../types/transaction";
+import type {Transaction} from "../../types/transaction";
 
 import {TransactionRow} from "./transaction-row";
-import {TransactionSkeleton} from "./transaction-skeleton";
+import {TransactionSkeleton} from "../transaction-skeleton";
 
 interface TransactionListProps {
     transactions: Transaction[];
@@ -37,7 +37,7 @@ export function TransactionList({
     if (hasError) {
         return (
             <div className="rounded-lg border border-border bg-surface p-8 text-center">
-                <p className="text-sm text-text-muted">
+                <p className="text-sm text-muted">
                     {t("list.loadError")}
                 </p>
             </div>
@@ -47,7 +47,7 @@ export function TransactionList({
     if (transactions.length === 0) {
         return (
             <div className="rounded-lg border border-dashed border-border bg-surface p-8 text-center">
-                <p className="text-sm text-text-muted">
+                <p className="text-sm text-muted">
                     {t("list.empty")}
                 </p>
             </div>

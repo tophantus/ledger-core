@@ -14,7 +14,7 @@ import type {
     TransactionFilters,
     TransactionStatus,
     TransactionType,
-} from "../types/transaction";
+} from "../../types/transaction";
 
 interface TransactionFilterProps {
     accounts: AccountSummary[];
@@ -241,7 +241,7 @@ export function TransactionFilter({
                 <span className="
                     text-sm
                     font-medium
-                    text-text-primary
+                    text-foreground
                 ">
                     {t("filters.title")}
                 </span>
@@ -282,7 +282,7 @@ export function TransactionFilter({
                                     block
                                     text-sm
                                     font-medium
-                                    text-text-primary
+                                    text-foreground
                                 "
                             >
                                 {t(
@@ -311,7 +311,7 @@ export function TransactionFilter({
                                     px-3
                                     py-2
                                     text-sm
-                                    text-text-primary
+                                    text-foreground
                                     outline-none
                                     disabled:cursor-not-allowed
                                     disabled:opacity-60
@@ -359,7 +359,7 @@ export function TransactionFilter({
                                     block
                                     text-sm
                                     font-medium
-                                    text-text-primary
+                                    text-foreground
                                 "
                             >
                                 {t(
@@ -385,7 +385,7 @@ export function TransactionFilter({
                                     px-3
                                     py-2
                                     text-sm
-                                    text-text-primary
+                                    text-foreground
                                     outline-none
                                 "
                             >
@@ -410,69 +410,69 @@ export function TransactionFilter({
                             </select>
                         </div>
 
-                        {/* Status */}
-                        <div>
-                            <label
-                                htmlFor="transaction-status"
-                                className="
-                                    mb-2
-                                    block
-                                    text-sm
-                                    font-medium
-                                    text-text-primary
-                                "
-                            >
-                                {t(
-                                    "filters.status",
-                                )}
-                            </label>
+                        {/*/!* Status *!/*/}
+                        {/*<div>*/}
+                        {/*    <label*/}
+                        {/*        htmlFor="transaction-status"*/}
+                        {/*        className="*/}
+                        {/*            mb-2*/}
+                        {/*            block*/}
+                        {/*            text-sm*/}
+                        {/*            font-medium*/}
+                        {/*            text-foreground*/}
+                        {/*        "*/}
+                        {/*    >*/}
+                        {/*        {t(*/}
+                        {/*            "filters.status",*/}
+                        {/*        )}*/}
+                        {/*    </label>*/}
 
-                            <select
-                                id="transaction-status"
-                                value={
-                                    filters.status
-                                    ?? ""
-                                }
-                                onChange={
-                                    handleStatusChange
-                                }
-                                className="
-                                    w-full
-                                    rounded-md
-                                    border
-                                    border-border
-                                    bg-background
-                                    px-3
-                                    py-2
-                                    text-sm
-                                    text-text-primary
-                                    outline-none
-                                "
-                            >
-                                <option value="">
-                                    {t(
-                                        "filters.allStatuses",
-                                    )}
-                                </option>
+                        {/*    <select*/}
+                        {/*        id="transaction-status"*/}
+                        {/*        value={*/}
+                        {/*            filters.status*/}
+                        {/*            ?? ""*/}
+                        {/*        }*/}
+                        {/*        onChange={*/}
+                        {/*            handleStatusChange*/}
+                        {/*        }*/}
+                        {/*        className="*/}
+                        {/*            w-full*/}
+                        {/*            rounded-md*/}
+                        {/*            border*/}
+                        {/*            border-border*/}
+                        {/*            bg-background*/}
+                        {/*            px-3*/}
+                        {/*            py-2*/}
+                        {/*            text-sm*/}
+                        {/*            text-foreground*/}
+                        {/*            outline-none*/}
+                        {/*        "*/}
+                        {/*    >*/}
+                        {/*        <option value="">*/}
+                        {/*            {t(*/}
+                        {/*                "filters.allStatuses",*/}
+                        {/*            )}*/}
+                        {/*        </option>*/}
 
-                                {TRANSACTION_STATUSES.map(
-                                    (status) => (
-                                        <option
-                                            key={
-                                                status
-                                            }
-                                            value={
-                                                status
-                                            }
-                                        >
-                                            {t(
-                                                `statuses.${status}`,
-                                            )}
-                                        </option>
-                                    ),
-                                )}
-                            </select>
-                        </div>
+                        {/*        {TRANSACTION_STATUSES.map(*/}
+                        {/*            (status) => (*/}
+                        {/*                <option*/}
+                        {/*                    key={*/}
+                        {/*                        status*/}
+                        {/*                    }*/}
+                        {/*                    value={*/}
+                        {/*                        status*/}
+                        {/*                    }*/}
+                        {/*                >*/}
+                        {/*                    {t(*/}
+                        {/*                        `statuses.${status}`,*/}
+                        {/*                    )}*/}
+                        {/*                </option>*/}
+                        {/*            ),*/}
+                        {/*        )}*/}
+                        {/*    </select>*/}
+                        {/*</div>*/}
 
                         {/* Currency */}
                         <div>
@@ -483,7 +483,7 @@ export function TransactionFilter({
                                     block
                                     text-sm
                                     font-medium
-                                    text-text-primary
+                                    text-foreground
                                 "
                             >
                                 {t(
@@ -509,7 +509,7 @@ export function TransactionFilter({
                                     px-3
                                     py-2
                                     text-sm
-                                    text-text-primary
+                                    text-foreground
                                     outline-none
                                 "
                             >
@@ -545,7 +545,7 @@ export function TransactionFilter({
                                     block
                                     text-sm
                                     font-medium
-                                    text-text-primary
+                                    text-foreground
                                 "
                             >
                                 {t(
@@ -574,7 +574,7 @@ export function TransactionFilter({
                                     px-3
                                     py-2
                                     text-sm
-                                    text-text-primary
+                                    text-foreground
                                     outline-none
                                 "
                             />
@@ -589,7 +589,7 @@ export function TransactionFilter({
                                     block
                                     text-sm
                                     font-medium
-                                    text-text-primary
+                                    text-foreground
                                 "
                             >
                                 {t(
@@ -617,7 +617,7 @@ export function TransactionFilter({
                                     px-3
                                     py-2
                                     text-sm
-                                    text-text-primary
+                                    text-foreground
                                     outline-none
                                 "
                             />
@@ -642,9 +642,9 @@ export function TransactionFilter({
                                     py-2
                                     text-sm
                                     font-medium
-                                    text-text-primary
+                                    text-foreground
                                     transition
-                                    hover:bg-secondary
+                                    hover:bg-background-subtle
                                 "
                             >
                                 {t(

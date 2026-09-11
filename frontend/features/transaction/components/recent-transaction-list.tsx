@@ -13,7 +13,7 @@ import {ROUTES} from "@/lib/constants/routes";
 import {useTransactions} from "../hooks/use-transactions";
 import type {Transaction} from "../types/transaction";
 
-import {TransactionRow} from "./transaction-row";
+import {TransactionRow} from "./list/transaction-row";
 import {TransactionSkeleton} from "./transaction-skeleton";
 
 interface RecentTransactionListProps {
