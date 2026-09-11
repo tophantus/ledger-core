@@ -1,5 +1,6 @@
 package com.example.ledgercore.withdrawal.entity;
 
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.withdrawal.enums.WithdrawalIntentStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -92,11 +93,9 @@ public class WithdrawalIntent {
     )
     private BigDecimal amount;
 
-    @Column(
-            nullable = false,
-            length = 3
-    )
-    private String currency;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 3)
+    private Currency currency;
 
     @Column(
             name = "withdrawal_code_hash",

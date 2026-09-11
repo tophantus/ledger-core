@@ -140,8 +140,7 @@ public class CreateTransferIntentHandler
             CreateTransferIntentCommand command,
             AccountTransferPort.TransferAccountInfo transferInfo
     ) {
-        if (!transferInfo.currency()
-                .equalsIgnoreCase(command.currency())) {
+        if (transferInfo.currency() != command.currency()) {
 
             throw new BusinessException(
                     ErrorCode.TRANSACTION_CURRENCY_MISMATCH

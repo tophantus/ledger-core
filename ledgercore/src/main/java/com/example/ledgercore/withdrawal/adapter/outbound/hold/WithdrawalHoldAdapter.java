@@ -1,5 +1,6 @@
 package com.example.ledgercore.withdrawal.adapter.outbound.hold;
 
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.hold.command.dto.CreateAccountHoldCommand;
 import com.example.ledgercore.hold.command.dto.CreateAccountHoldResponse;
 import com.example.ledgercore.hold.command.dto.ReleaseAccountHoldCommand;
@@ -30,7 +31,7 @@ public class WithdrawalHoldAdapter
             UUID withdrawalIntentId,
             UUID accountId,
             BigDecimal amount,
-            String currency
+            Currency currency
     ) {
         CreateAccountHoldResponse response =
                 createAccountHoldUseCase.execute(

@@ -83,7 +83,6 @@ public class RecordDepositHandler
                 || command.transactionId() == null
                 || command.destinationAccountId() == null
                 || command.currency() == null
-                || command.currency().isBlank()
                 || command.businessDate() == null) {
 
             throw new BusinessException(

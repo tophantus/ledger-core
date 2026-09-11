@@ -1,5 +1,6 @@
 package com.example.ledgercore.withdrawal.adapter.outbound.notification;
 
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.common.encryption.EncryptionService;
 import com.example.ledgercore.outbox.command.port.inbound.SaveOutboxEventUseCase;
 import com.example.ledgercore.outbox.event.OutboxAggregateType;
@@ -28,7 +29,7 @@ public class WithdrawalNotificationAdapter
             String withdrawalLookupCode,
             String withdrawalCode,
             BigDecimal amount,
-            String currency,
+            Currency currency,
             Instant expiresAt
     ) {
         String encryptedWithdrawalCode =

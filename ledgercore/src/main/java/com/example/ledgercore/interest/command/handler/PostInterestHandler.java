@@ -1,5 +1,6 @@
 package com.example.ledgercore.interest.command.handler;
 
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.interest.command.dto.PostInterestCommand;
 import com.example.ledgercore.interest.command.port.inbound.PostInterestUseCase;
 import com.example.ledgercore.interest.command.port.outbound.InterestTransactionPort;
@@ -72,7 +73,7 @@ public class PostInterestHandler
                                 BigDecimal::add
                         );
 
-        String currency =
+        Currency currency =
                 accruals.getFirst().getCurrency();
 
         InterestPosting posting =
@@ -133,7 +134,7 @@ public class PostInterestHandler
     private void validateCurrencies(
             List<InterestAccrual> accruals
     ) {
-        String currency =
+        Currency currency =
                 accruals.getFirst().getCurrency();
 
         boolean sameCurrency =

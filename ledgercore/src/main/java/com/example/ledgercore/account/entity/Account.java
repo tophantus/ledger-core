@@ -1,6 +1,7 @@
 package com.example.ledgercore.account.entity;
 
 import com.example.ledgercore.account.enums.AccountStatus;
+import com.example.ledgercore.common.currency.Currency;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -41,8 +42,9 @@ public class Account {
     @Column(name = "account_no", nullable = false, length = 30)
     private String accountNo;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 3)
-    private String currency;
+    private Currency currency;
 
     @Column(
             nullable = false,

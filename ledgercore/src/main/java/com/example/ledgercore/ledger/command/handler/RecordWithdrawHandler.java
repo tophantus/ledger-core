@@ -83,7 +83,6 @@ public class RecordWithdrawHandler
                 || command.transactionId() == null
                 || command.sourceAccountId() == null
                 || command.currency() == null
-                || command.currency().isBlank()
                 || command.businessDate() == null) {
 
             throw new BusinessException(

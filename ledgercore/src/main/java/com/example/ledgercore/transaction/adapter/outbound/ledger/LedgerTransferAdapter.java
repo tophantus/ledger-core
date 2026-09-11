@@ -1,5 +1,6 @@
 package com.example.ledgercore.transaction.adapter.outbound.ledger;
 
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.ledger.command.dto.RecordTransferCommand;
 import com.example.ledgercore.ledger.command.port.inbound.RecordTransferUseCase;
 import com.example.ledgercore.transaction.command.port.outbound.LedgerTransferPort;
@@ -23,7 +24,7 @@ public class LedgerTransferAdapter
             UUID sourceAccountId,
             UUID destinationAccountId,
             BigDecimal amount,
-            String currency,
+            Currency currency,
             LocalDate businessDate
     ) {
         recordTransferUseCase.execute(

@@ -4,6 +4,7 @@ import com.example.ledgercore.account.command.dto.DecreaseAccountHoldCommand;
 import com.example.ledgercore.account.command.dto.IncreaseAccountHoldCommand;
 import com.example.ledgercore.account.command.port.inbound.DecreaseAccountHoldUseCase;
 import com.example.ledgercore.account.command.port.inbound.IncreaseAccountHoldUseCase;
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.hold.command.port.outbound.AccountHoldPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -26,7 +27,7 @@ public class AccountHoldAdapter
     public void increaseHold(
             UUID accountId,
             BigDecimal amount,
-            String currency
+            Currency currency
     ) {
         increaseAccountHoldUseCase.execute(
                 new IncreaseAccountHoldCommand(
@@ -41,7 +42,7 @@ public class AccountHoldAdapter
     public void decreaseHold(
             UUID accountId,
             BigDecimal amount,
-            String currency
+            Currency currency
     ) {
         decreaseAccountHoldUseCase.execute(
                 new DecreaseAccountHoldCommand(

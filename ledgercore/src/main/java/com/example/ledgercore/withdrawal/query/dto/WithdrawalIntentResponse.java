@@ -1,5 +1,6 @@
 package com.example.ledgercore.withdrawal.query.dto;
 
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.withdrawal.enums.WithdrawalIntentStatus;
 
 import java.time.Instant;
@@ -10,7 +11,7 @@ public record WithdrawalIntentResponse(
         UUID accountId,
         String withdrawalReference,
         String amount,
-        String currency,
+        Currency currency,
         WithdrawalIntentStatus status,
         Instant expiresAt,
         Instant createdAt,

@@ -1,5 +1,6 @@
 package com.example.ledgercore.notification.mail.service;
 
+import com.example.ledgercore.common.currency.Currency;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -13,7 +14,7 @@ public class MoneyFormatter {
 
     public String format(
             BigDecimal amount,
-            String currency
+            Currency currency
     ) {
         if (amount == null) {
             throw new IllegalArgumentException(
@@ -21,7 +22,7 @@ public class MoneyFormatter {
             );
         }
 
-        if (currency == null || currency.isBlank()) {
+        if (currency == null) {
             throw new IllegalArgumentException(
                     "currency must not be blank"
             );
@@ -32,6 +33,6 @@ public class MoneyFormatter {
                         .getNumberInstance(LOCALE)
                         .format(amount.stripTrailingZeros());
 
-        return formattedAmount + " " + currency;
+        return formattedAmount + " " + currency.name();
     }
 }

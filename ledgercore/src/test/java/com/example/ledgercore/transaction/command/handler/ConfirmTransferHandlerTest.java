@@ -1,5 +1,6 @@
 package com.example.ledgercore.transaction.command.handler;
 
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.transaction.command.dto.ConfirmTransferCommand;
@@ -340,7 +341,7 @@ class ConfirmTransferHandlerTest {
                 .sourceAccountId(sourceAccountId)
                 .destinationAccountId(destinationAccountId)
                 .amount(new BigDecimal("100.00"))
-                .currency("VND")
+                .currency(Currency.VND)
                 .reference("REF-001")
                 .description("Test transfer")
                 .status(TransferIntentStatus.PENDING)

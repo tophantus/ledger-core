@@ -1,5 +1,6 @@
 package com.example.ledgercore.ledger.command.handler;
 
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.ledger.command.dto.RecordTransferCommand;
@@ -47,7 +48,7 @@ class RecordTransferHandlerTest {
     private UUID destinationLedgerAccountId;
     private UUID journalEntryId;
 
-    private static final String CURRENCY = "VND";
+    private static final Currency CURRENCY = Currency.VND;
 
     private static final BigDecimal AMOUNT =
             new BigDecimal("1000000.0000");
@@ -336,38 +337,6 @@ class RecordTransferHandlerTest {
                         destinationAccountId,
                         AMOUNT,
                         null,
-                        BUSINESS_DATE
-                );
-
-        // When
-        BusinessException exception = assertThrows(
-                BusinessException.class,
-                () -> handler.execute(command)
-        );
-
-        // Then
-        assertEquals(
-                ErrorCode.INVALID_REQUEST,
-                exception.getErrorCode()
-        );
-
-        verifyNoInteractions(
-                journalEntryCommandRepository,
-                journalEntryLineCommandRepository,
-                accountLedgerMappingPort
-        );
-    }
-
-    @Test
-    void shouldRejectBlankCurrency() {
-        // Given
-        RecordTransferCommand command =
-                new RecordTransferCommand(
-                        transactionId,
-                        sourceAccountId,
-                        destinationAccountId,
-                        AMOUNT,
-                        "   ",
                         BUSINESS_DATE
                 );
 

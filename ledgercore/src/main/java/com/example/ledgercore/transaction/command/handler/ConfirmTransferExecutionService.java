@@ -203,8 +203,7 @@ public class ConfirmTransferExecutionService {
             TransferIntent intent,
             AccountTransferPort.TransferAccountInfo transferInfo
     ) {
-        if (!transferInfo.currency()
-                .equalsIgnoreCase(intent.getCurrency())) {
+        if (transferInfo.currency() != intent.getCurrency()) {
 
             throw new BusinessException(
                     ErrorCode.TRANSACTION_CURRENCY_MISMATCH

@@ -1,5 +1,6 @@
 package com.example.ledgercore.transaction.command.dto;
 
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.transaction.enums.TransferIntentStatus;
 
 import java.math.BigDecimal;
@@ -16,7 +17,7 @@ public record CreateTransferIntentResult(
 
         BigDecimal amount,
 
-        String currency,
+        Currency currency,
 
         String reference,
 

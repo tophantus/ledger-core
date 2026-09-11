@@ -1,5 +1,6 @@
 package com.example.ledgercore.ledger.query.repository;
 
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.ledger.entity.LedgerAccount;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -11,6 +12,6 @@ public interface LedgerAccountQueryRepository
 
     Optional<LedgerAccount> findByCodeAndCurrency(
             String code,
-            String currency
+            Currency currency
     );
 }

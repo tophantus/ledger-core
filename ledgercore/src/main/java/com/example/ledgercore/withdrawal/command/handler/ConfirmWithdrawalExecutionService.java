@@ -221,8 +221,7 @@ public class ConfirmWithdrawalExecutionService {
             );
         }
 
-        if (!account.currency()
-                .equalsIgnoreCase(request.getCurrency())) {
+        if (account.currency() != request.getCurrency()) {
 
             throw new BusinessException(
                     ErrorCode.ACCOUNT_CURRENCY_MISMATCH

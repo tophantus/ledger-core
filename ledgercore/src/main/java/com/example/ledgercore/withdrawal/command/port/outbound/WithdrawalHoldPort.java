@@ -1,5 +1,7 @@
 package com.example.ledgercore.withdrawal.command.port.outbound;
 
+import com.example.ledgercore.common.currency.Currency;
+
 import java.math.BigDecimal;
 import java.util.UUID;
 
@@ -9,7 +11,7 @@ public interface WithdrawalHoldPort {
             UUID withdrawalIntentId,
             UUID accountId,
             BigDecimal amount,
-            String currency
+            Currency currency
     );
 
     void releaseHold(UUID holdId);

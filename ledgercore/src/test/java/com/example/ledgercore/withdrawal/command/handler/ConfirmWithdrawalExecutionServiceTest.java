@@ -1,5 +1,6 @@
 package com.example.ledgercore.withdrawal.command.handler;
 
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.withdrawal.command.dto.ConfirmWithdrawalRequestResponse;
@@ -67,7 +68,7 @@ class ConfirmWithdrawalExecutionServiceTest {
     private static final BigDecimal AMOUNT =
             new BigDecimal("1000000");
 
-    private static final String CURRENCY = "VND";
+    private static final Currency CURRENCY = Currency.VND;
 
     private static final String WITHDRAWAL_REFERENCE =
             "WD-20260910-000001";
@@ -558,7 +559,7 @@ class ConfirmWithdrawalExecutionServiceTest {
                 new WithdrawalAccountInfo(
                         ACCOUNT_ID,
                         USER_ID,
-                        "USD",
+                        Currency.USD,
                         new BigDecimal("5000000")
                 );
 
@@ -770,7 +771,7 @@ class ConfirmWithdrawalExecutionServiceTest {
                 .thenReturn(AMOUNT);
 
         when(request.getCurrency())
-                .thenReturn("vnd");
+                .thenReturn(Currency.VND);
 
         when(request.isPending())
                 .thenReturn(true);
@@ -782,7 +783,7 @@ class ConfirmWithdrawalExecutionServiceTest {
                 new WithdrawalAccountInfo(
                         ACCOUNT_ID,
                         USER_ID,
-                        "VND",
+                        Currency.VND,
                         new BigDecimal("5000000")
                 );
 
@@ -808,7 +809,7 @@ class ConfirmWithdrawalExecutionServiceTest {
                 any(UUID.class),
                 eq(ACCOUNT_ID),
                 eq(AMOUNT),
-                eq("vnd")
+                eq(Currency.VND)
         )).thenReturn(HOLD_ID);
 
         when(createWithdrawalLookupCodeUseCase.execute(
@@ -830,14 +831,14 @@ class ConfirmWithdrawalExecutionServiceTest {
                 .isNotNull();
 
         assertThat(response.currency())
-                .isEqualTo("vnd");
+                .isEqualTo(Currency.VND);
 
         verify(withdrawalHoldPort)
                 .createHold(
                         any(UUID.class),
                         eq(ACCOUNT_ID),
                         eq(AMOUNT),
-                        eq("vnd")
+                        eq(Currency.VND)
                 );
 
         ArgumentCaptor<WithdrawalIntent> intentCaptor =
@@ -849,6 +850,6 @@ class ConfirmWithdrawalExecutionServiceTest {
                 .save(intentCaptor.capture());
 
         assertThat(intentCaptor.getValue().getCurrency())
-                .isEqualTo("vnd");
+                .isEqualTo(Currency.VND);
     }
 }

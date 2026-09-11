@@ -1,5 +1,6 @@
 package com.example.ledgercore.hold.entity;
 
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.hold.enums.AccountHoldReferenceType;
 import com.example.ledgercore.hold.enums.AccountHoldStatus;
 import com.example.ledgercore.hold.enums.AccountHoldType;
@@ -49,11 +50,9 @@ public class AccountHold {
     )
     private BigDecimal amount;
 
-    @Column(
-            nullable = false,
-            length = 3
-    )
-    private String currency;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 3)
+    private Currency currency;
 
     @Enumerated(EnumType.STRING)
     @Column(

@@ -1,5 +1,6 @@
 package com.example.ledgercore.transaction.command.handler;
 
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.otp.enums.OtpPurpose;
@@ -81,7 +82,7 @@ class CreateTransferIntentHandlerTest {
                 new AccountTransferPort.TransferAccountInfo(
                         sourceAccountId,
                         destinationAccountId,
-                        "VND",
+                        Currency.VND,
                         new BigDecimal("1000000")
                 );
 
@@ -92,7 +93,7 @@ class CreateTransferIntentHandlerTest {
                         .sourceAccountId(sourceAccountId)
                         .destinationAccountId(destinationAccountId)
                         .amount(new BigDecimal("100000"))
-                        .currency("VND")
+                        .currency(Currency.VND)
                         .reference("REF-001")
                         .description("Test transfer")
                         .status(TransferIntentStatus.PENDING)
@@ -159,7 +160,7 @@ class CreateTransferIntentHandlerTest {
         );
 
         assertEquals(
-                "VND",
+                Currency.VND,
                 result.currency()
         );
 
@@ -198,7 +199,7 @@ class CreateTransferIntentHandlerTest {
                 new AccountTransferPort.TransferAccountInfo(
                         sourceAccountId,
                         destinationAccountId,
-                        "VND",
+                        Currency.VND,
                         new BigDecimal("1000000")
                 );
 
@@ -272,7 +273,7 @@ class CreateTransferIntentHandlerTest {
                         .sourceAccountId(sourceAccountId)
                         .destinationAccountId(destinationAccountId)
                         .amount(new BigDecimal("100000"))
-                        .currency("VND")
+                        .currency(Currency.VND)
                         .reference("REF-001")
                         .description("Test transfer")
                         .status(TransferIntentStatus.PENDING)
@@ -316,7 +317,7 @@ class CreateTransferIntentHandlerTest {
         );
 
         assertEquals(
-                "VND",
+                Currency.VND,
                 result.currency()
         );
 
@@ -373,7 +374,7 @@ class CreateTransferIntentHandlerTest {
                         .sourceAccountId(sourceAccountId)
                         .destinationAccountId(destinationAccountId)
                         .amount(new BigDecimal("100000"))
-                        .currency("VND")
+                        .currency(Currency.VND)
                         .reference("REF-001")
                         .status(TransferIntentStatus.PENDING)
                         .expiresAt(NOW.plusSeconds(300))
@@ -419,7 +420,7 @@ class CreateTransferIntentHandlerTest {
                         sourceAccountId,
                         "0987654321",
                         BigDecimal.ZERO,
-                        "VND",
+                        Currency.VND,
                         "REF-001",
                         "Test transfer"
                 );
@@ -461,7 +462,7 @@ class CreateTransferIntentHandlerTest {
                         sourceAccountId,
                         "0987654321",
                         new BigDecimal("-100"),
-                        "VND",
+                        Currency.VND,
                         "REF-001",
                         "Test transfer"
                 );
@@ -555,7 +556,7 @@ class CreateTransferIntentHandlerTest {
                 new AccountTransferPort.TransferAccountInfo(
                         sourceAccountId,
                         destinationAccountId,
-                        "USD",
+                        Currency.USD,
                         new BigDecimal("1000000")
                 );
 
@@ -611,7 +612,7 @@ class CreateTransferIntentHandlerTest {
                 new AccountTransferPort.TransferAccountInfo(
                         sourceAccountId,
                         destinationAccountId,
-                        "VND",
+                        Currency.VND,
                         new BigDecimal("50000")
                 );
 
@@ -667,7 +668,7 @@ class CreateTransferIntentHandlerTest {
                 new AccountTransferPort.TransferAccountInfo(
                         sourceAccountId,
                         destinationAccountId,
-                        "VND",
+                        Currency.VND,
                         new BigDecimal("1000000")
                 );
 
@@ -720,7 +721,7 @@ class CreateTransferIntentHandlerTest {
                 sourceAccountId,
                 "0987654321",
                 new BigDecimal("100000"),
-                "VND",
+                Currency.VND,
                 "REF-001",
                 "Test transfer"
         );

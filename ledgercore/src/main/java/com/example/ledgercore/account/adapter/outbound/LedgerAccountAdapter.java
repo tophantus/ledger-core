@@ -1,6 +1,7 @@
 package com.example.ledgercore.account.adapter.outbound;
 
 import com.example.ledgercore.account.command.port.outbound.LedgerAccountPort;
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.ledger.command.dto.CreateLedgerAccountCommand;
 import com.example.ledgercore.ledger.command.port.inbound.CreateLedgerAccountUseCase;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,7 @@ public class LedgerAccountAdapter implements LedgerAccountPort {
     @Override
     public UUID createCustomerAccount(
             String accountNo,
-            String currency
+            Currency currency
     ) {
         return createLedgerAccountUseCase.execute(
                 new CreateLedgerAccountCommand(

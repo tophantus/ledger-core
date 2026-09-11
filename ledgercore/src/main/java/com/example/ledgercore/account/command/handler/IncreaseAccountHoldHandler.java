@@ -43,8 +43,7 @@ public class IncreaseAccountHoldHandler
             );
         }
 
-        if (!account.getCurrency()
-                .equalsIgnoreCase(command.currency())) {
+        if (account.getCurrency() != (command.currency())) {
 
             throw new BusinessException(
                     ErrorCode.ACCOUNT_CURRENCY_MISMATCH
@@ -76,8 +75,7 @@ public class IncreaseAccountHoldHandler
         if (command == null
                 || command.accountId() == null
                 || command.amount() == null
-                || command.currency() == null
-                || command.currency().isBlank()) {
+                || command.currency() == null) {
 
             throw new BusinessException(
                     ErrorCode.INVALID_REQUEST

@@ -1,5 +1,6 @@
 package com.example.ledgercore.ledger.command.handler;
 
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.ledger.command.dto.RecordInterestAccrualJournalCommand;
@@ -59,7 +60,7 @@ class RecordInterestAccrualJournalHandlerTest {
         BigDecimal amount =
                 new BigDecimal("8219.1781");
 
-        String currency = "VND";
+        Currency currency = Currency.VND;
 
         RecordInterestAccrualJournalCommand command =
                 new RecordInterestAccrualJournalCommand(
@@ -73,14 +74,14 @@ class RecordInterestAccrualJournalHandlerTest {
                 LedgerAccount.builder()
                         .id(UUID.randomUUID())
                         .code("INTEREST_EXPENSE_VND")
-                        .currency("VND")
+                        .currency(Currency.VND)
                         .build();
 
         LedgerAccount interestPayableAccount =
                 LedgerAccount.builder()
                         .id(UUID.randomUUID())
                         .code("INTEREST_PAYABLE_VND")
-                        .currency("VND")
+                        .currency(Currency.VND)
                         .build();
 
         when(systemLedgerAccountService.getInterestExpenseAccount(currency))
@@ -198,7 +199,7 @@ class RecordInterestAccrualJournalHandlerTest {
                 new RecordInterestAccrualJournalCommand(
                         null,
                         LocalDate.of(2026, 9, 7),
-                        "VND",
+                        Currency.VND,
                         new BigDecimal("1000")
                 );
 
@@ -223,32 +224,7 @@ class RecordInterestAccrualJournalHandlerTest {
                 new RecordInterestAccrualJournalCommand(
                         UUID.randomUUID(),
                         null,
-                        "VND",
-                        new BigDecimal("1000")
-                );
-
-        assertThatThrownBy(() ->
-                handler.execute(command)
-        )
-                .isInstanceOf(BusinessException.class)
-                .hasMessageContaining(
-                        ErrorCode.INVALID_REQUEST.getMessage()
-                );
-
-        verifyNoInteractions(
-                systemLedgerAccountService,
-                journalEntryCommandRepository,
-                journalEntryLineCommandRepository
-        );
-    }
-
-    @Test
-    void shouldRejectBlankCurrency() {
-        RecordInterestAccrualJournalCommand command =
-                new RecordInterestAccrualJournalCommand(
-                        UUID.randomUUID(),
-                        LocalDate.of(2026, 9, 7),
-                        " ",
+                        Currency.VND,
                         new BigDecimal("1000")
                 );
 
@@ -273,7 +249,7 @@ class RecordInterestAccrualJournalHandlerTest {
                 new RecordInterestAccrualJournalCommand(
                         UUID.randomUUID(),
                         LocalDate.of(2026, 9, 7),
-                        "VND",
+                        Currency.VND,
                         null
                 );
 
@@ -298,7 +274,7 @@ class RecordInterestAccrualJournalHandlerTest {
                 new RecordInterestAccrualJournalCommand(
                         UUID.randomUUID(),
                         LocalDate.of(2026, 9, 7),
-                        "VND",
+                        Currency.VND,
                         BigDecimal.ZERO
                 );
 
@@ -323,7 +299,7 @@ class RecordInterestAccrualJournalHandlerTest {
                 new RecordInterestAccrualJournalCommand(
                         UUID.randomUUID(),
                         LocalDate.of(2026, 9, 7),
-                        "VND",
+                        Currency.VND,
                         new BigDecimal("-1000")
                 );
 

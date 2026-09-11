@@ -1,5 +1,6 @@
 package com.example.ledgercore.interest.adapter.outbound.transaction;
 
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.interest.command.port.outbound.InterestTransactionPort;
 import com.example.ledgercore.transaction.command.dto.PostInterestTransactionCommand;
 import com.example.ledgercore.transaction.command.port.inbound.PostInterestTransactionUseCase;
@@ -22,7 +23,7 @@ public class InterestTransactionAdapter
     public UUID postInterest(
             UUID accountId,
             BigDecimal amount,
-            String currency,
+            Currency currency,
             LocalDate businessDate
     ) {
         TransactionResponse response =

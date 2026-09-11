@@ -1,6 +1,7 @@
 package com.example.ledgercore.account.adapter.inbound.rest.dto;
 
 import com.example.ledgercore.account.enums.AccountStatus;
+import com.example.ledgercore.common.currency.Currency;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,7 +15,7 @@ public class AdminAccountFilterRequest {
 
     private AccountStatus status;
 
-    private String currency;
+    private Currency currency;
 
     private UUID userId;
 

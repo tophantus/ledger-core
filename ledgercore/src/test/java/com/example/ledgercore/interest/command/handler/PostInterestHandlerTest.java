@@ -1,5 +1,6 @@
 package com.example.ledgercore.interest.command.handler;
 
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.interest.command.dto.PostInterestCommand;
 import com.example.ledgercore.interest.command.port.outbound.InterestTransactionPort;
 import com.example.ledgercore.interest.command.repository.InterestAccrualCommandRepository;
@@ -66,7 +67,7 @@ class PostInterestHandlerTest {
                         accountId,
                         LocalDate.of(2026, 8, 30),
                         "1000.0000",
-                        "VND"
+                        Currency.VND
                 );
 
         InterestAccrual accrual2 =
@@ -74,7 +75,7 @@ class PostInterestHandlerTest {
                         accountId,
                         LocalDate.of(2026, 8, 31),
                         "2000.0000",
-                        "VND"
+                        Currency.VND
                 );
 
         PostInterestCommand command =
@@ -125,7 +126,7 @@ class PostInterestHandlerTest {
                 interestTransactionPort.postInterest(
                         accountId,
                         new BigDecimal("3000.0000"),
-                        "VND",
+                        Currency.VND,
                         periodEnd
                 )
         ).thenReturn(transactionId);
@@ -162,7 +163,7 @@ class PostInterestHandlerTest {
                 .postInterest(
                         accountId,
                         new BigDecimal("3000.0000"),
-                        "VND",
+                        Currency.VND,
                         periodEnd
                 );
 
@@ -315,7 +316,7 @@ class PostInterestHandlerTest {
                         accountId,
                         LocalDate.of(2026, 8, 31),
                         "0.0000",
-                        "VND"
+                        Currency.VND
                 );
 
         PostInterestCommand command =
@@ -415,7 +416,7 @@ class PostInterestHandlerTest {
                         accountId,
                         LocalDate.of(2026, 8, 30),
                         "1000.0000",
-                        "VND"
+                        Currency.VND
                 );
 
         InterestAccrual usdAccrual =
@@ -423,7 +424,7 @@ class PostInterestHandlerTest {
                         accountId,
                         LocalDate.of(2026, 8, 31),
                         "10.0000",
-                        "USD"
+                        Currency.USD
                 );
 
         PostInterestCommand command =
@@ -611,7 +612,7 @@ class PostInterestHandlerTest {
             UUID accountId,
             LocalDate businessDate,
             String interestAmount,
-            String currency
+            Currency currency
     ) {
         return InterestAccrual.builder()
                 .id(UUID.randomUUID())

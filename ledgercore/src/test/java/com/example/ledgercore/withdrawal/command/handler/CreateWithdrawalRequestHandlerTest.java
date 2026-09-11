@@ -1,5 +1,6 @@
 package com.example.ledgercore.withdrawal.command.handler;
 
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.withdrawal.command.dto.CreateWithdrawalRequestCommand;
@@ -92,12 +93,12 @@ class CreateWithdrawalRequestHandlerTest {
         CreateWithdrawalRequestCommand command =
                 command(
                         "100000",
-                        "VND"
+                        Currency.VND
                 );
 
         mockWithdrawalAccount(
                 userId,
-                "VND",
+                Currency.VND,
                 "1000000"
         );
 
@@ -124,7 +125,7 @@ class CreateWithdrawalRequestHandlerTest {
         );
 
         assertEquals(
-                "VND",
+                Currency.VND,
                 response.currency()
         );
 
@@ -163,12 +164,12 @@ class CreateWithdrawalRequestHandlerTest {
         CreateWithdrawalRequestCommand command =
                 command(
                         "100000",
-                        "VND"
+                        Currency.VND
                 );
 
         mockWithdrawalAccount(
                 userId,
-                "VND",
+                Currency.VND,
                 "1000000"
         );
 
@@ -203,7 +204,7 @@ class CreateWithdrawalRequestHandlerTest {
         );
 
         assertEquals(
-                "VND",
+                Currency.VND,
                 request.getCurrency()
         );
 
@@ -232,12 +233,12 @@ class CreateWithdrawalRequestHandlerTest {
         CreateWithdrawalRequestCommand command =
                 command(
                         "100000",
-                        "VND"
+                        Currency.VND
                 );
 
         mockWithdrawalAccount(
                 userId,
-                "VND",
+                Currency.VND,
                 "1000000"
         );
 
@@ -274,12 +275,12 @@ class CreateWithdrawalRequestHandlerTest {
         CreateWithdrawalRequestCommand command =
                 command(
                         "100000",
-                        "VND"
+                        Currency.VND
                 );
 
         mockWithdrawalAccount(
                 userId,
-                "VND",
+                Currency.VND,
                 "1000000"
         );
 
@@ -312,7 +313,7 @@ class CreateWithdrawalRequestHandlerTest {
                         userId,
                         accountId,
                         null,
-                        "VND"
+                        Currency.VND
                 );
 
         BusinessException exception =
@@ -340,7 +341,7 @@ class CreateWithdrawalRequestHandlerTest {
         CreateWithdrawalRequestCommand command =
                 command(
                         "0",
-                        "VND"
+                        Currency.VND
                 );
 
         BusinessException exception =
@@ -368,7 +369,7 @@ class CreateWithdrawalRequestHandlerTest {
         CreateWithdrawalRequestCommand command =
                 command(
                         "-100",
-                        "VND"
+                        Currency.VND
                 );
 
         BusinessException exception =
@@ -396,7 +397,7 @@ class CreateWithdrawalRequestHandlerTest {
         CreateWithdrawalRequestCommand command =
                 command(
                         "100000",
-                        "VND"
+                        Currency.VND
                 );
 
         UUID anotherUserId =
@@ -404,7 +405,7 @@ class CreateWithdrawalRequestHandlerTest {
 
         mockWithdrawalAccount(
                 anotherUserId,
-                "VND",
+                Currency.VND,
                 "1000000"
         );
 
@@ -435,12 +436,12 @@ class CreateWithdrawalRequestHandlerTest {
         CreateWithdrawalRequestCommand command =
                 command(
                         "100000",
-                        "USD"
+                        Currency.USD
                 );
 
         mockWithdrawalAccount(
                 userId,
-                "VND",
+                Currency.VND,
                 "1000000"
         );
 
@@ -471,12 +472,12 @@ class CreateWithdrawalRequestHandlerTest {
         CreateWithdrawalRequestCommand command =
                 command(
                         "1000000",
-                        "VND"
+                        Currency.VND
                 );
 
         mockWithdrawalAccount(
                 userId,
-                "VND",
+                Currency.VND,
                 "999999"
         );
 
@@ -510,12 +511,12 @@ class CreateWithdrawalRequestHandlerTest {
         CreateWithdrawalRequestCommand command =
                 command(
                         "1000000",
-                        "VND"
+                        Currency.VND
                 );
 
         mockWithdrawalAccount(
                 userId,
-                "VND",
+                Currency.VND,
                 "1000000"
         );
 
@@ -552,12 +553,12 @@ class CreateWithdrawalRequestHandlerTest {
         CreateWithdrawalRequestCommand command =
                 command(
                         "500000",
-                        "VND"
+                        Currency.VND
                 );
 
         mockWithdrawalAccount(
                 userId,
-                "VND",
+                Currency.VND,
                 "100000"
         );
 
@@ -590,12 +591,12 @@ class CreateWithdrawalRequestHandlerTest {
         CreateWithdrawalRequestCommand command =
                 command(
                         "100000",
-                        "VND"
+                        Currency.VND
                 );
 
         mockWithdrawalAccount(
                 userId,
-                "VND",
+                Currency.VND,
                 "50000"
         );
 
@@ -639,12 +640,12 @@ class CreateWithdrawalRequestHandlerTest {
         CreateWithdrawalRequestCommand command =
                 command(
                         "100000",
-                        "VND"
+                        Currency.VND
                 );
 
         mockWithdrawalAccount(
                 userId,
-                "VND",
+                Currency.VND,
                 "1000000"
         );
 
@@ -664,7 +665,7 @@ class CreateWithdrawalRequestHandlerTest {
 
     private void mockWithdrawalAccount(
             UUID accountUserId,
-            String currency,
+            Currency currency,
             String availableBalance
     ) {
 
@@ -697,7 +698,7 @@ class CreateWithdrawalRequestHandlerTest {
 
     private CreateWithdrawalRequestCommand command(
             String amount,
-            String currency
+            Currency currency
     ) {
 
         return new CreateWithdrawalRequestCommand(

@@ -1,5 +1,6 @@
 package com.example.ledgercore.withdrawal.command.handler;
 
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.withdrawal.command.dto.ExecuteWithdrawalCommand;
@@ -151,7 +152,7 @@ class ExecuteWithdrawalExecutionServiceTest {
         );
 
         assertEquals(
-                "VND",
+                Currency.VND,
                 response.currency()
         );
 
@@ -170,7 +171,7 @@ class ExecuteWithdrawalExecutionServiceTest {
         ).withdraw(
                 accountId,
                 new BigDecimal("100000"),
-                "VND",
+                Currency.VND,
                 "WD-ABC123",
                 "ATM withdrawal"
         );
@@ -874,7 +875,7 @@ class ExecuteWithdrawalExecutionServiceTest {
         ).withdraw(
                 accountId,
                 new BigDecimal("100000"),
-                "VND",
+                Currency.VND,
                 "WD-ABC123",
                 "ATM withdrawal"
         );
@@ -940,7 +941,7 @@ class ExecuteWithdrawalExecutionServiceTest {
                 withdrawalTransactionPort.withdraw(
                         accountId,
                         new BigDecimal("100000"),
-                        "VND",
+                        Currency.VND,
                         "WD-ABC123",
                         "ATM withdrawal"
                 )
@@ -969,7 +970,7 @@ class ExecuteWithdrawalExecutionServiceTest {
         ).withdraw(
                 accountId,
                 new BigDecimal("100000"),
-                "VND",
+                Currency.VND,
                 "WD-ABC123",
                 "ATM withdrawal"
         );
@@ -1049,7 +1050,7 @@ class ExecuteWithdrawalExecutionServiceTest {
                 .accountId(accountId)
                 .holdId(holdId)
                 .amount(new BigDecimal("100000"))
-                .currency("VND")
+                .currency(Currency.VND)
                 .withdrawalCodeHash("HASHED-CODE")
                 .status(WithdrawalIntentStatus.READY)
                 .expiresAt(expiresAt)
@@ -1094,7 +1095,7 @@ class ExecuteWithdrawalExecutionServiceTest {
                 withdrawalTransactionPort.withdraw(
                         accountId,
                         new BigDecimal("100000"),
-                        "VND",
+                        Currency.VND,
                         "WD-ABC123",
                         "ATM withdrawal"
                 )

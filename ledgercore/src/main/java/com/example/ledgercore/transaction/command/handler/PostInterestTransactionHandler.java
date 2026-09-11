@@ -93,7 +93,6 @@ public class PostInterestTransactionHandler
         if (command == null
                 || command.accountId() == null
                 || command.currency() == null
-                || command.currency().isBlank()
                 || command.businessDate() == null) {
 
             throw new BusinessException(

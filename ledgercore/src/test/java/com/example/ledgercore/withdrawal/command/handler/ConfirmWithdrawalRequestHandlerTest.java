@@ -1,5 +1,6 @@
 package com.example.ledgercore.withdrawal.command.handler;
 
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.withdrawal.command.dto.ConfirmWithdrawalRequestCommand;
@@ -95,7 +96,7 @@ class ConfirmWithdrawalRequestHandlerTest {
                         UUID.randomUUID(),
                         "WD-ABC123",
                         new BigDecimal("100000").toPlainString(),
-                        "VND",
+                        Currency.VND,
                         NOW.plusSeconds(600)
                 );
 
@@ -603,7 +604,7 @@ class ConfirmWithdrawalRequestHandlerTest {
                 .userId(userId)
                 .accountId(accountId)
                 .amount(new BigDecimal("100000"))
-                .currency("VND")
+                .currency(Currency.VND)
                 .status(WithdrawalRequestStatus.PENDING)
                 .expiresAt(expiresAt)
                 .createdAt(NOW)

@@ -1,5 +1,6 @@
 package com.example.ledgercore.interest.command.handler;
 
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.interest.command.dto.AccrueInterestCommand;
 import com.example.ledgercore.interest.command.port.outbound.AccountDailyBalanceInfo;
 import com.example.ledgercore.interest.command.port.outbound.AccountDailyBalancePort;
@@ -77,7 +78,7 @@ class AccrueInterestHandlerTest {
                 runId,
                 accountId,
                 productId,
-                "VND",
+                Currency.VND,
                 businessDate
         );
     }
@@ -101,7 +102,7 @@ class AccrueInterestHandlerTest {
                 InterestConfig.builder()
                         .id(configId)
                         .productId(productId)
-                        .currency("VND")
+                        .currency(Currency.VND)
                         .interestRate(
                                 new BigDecimal("0.030000")
                         )
@@ -118,7 +119,7 @@ class AccrueInterestHandlerTest {
                         .id(UUID.randomUUID())
                         .runId(runId)
                         .accountId(accountId)
-                        .currency("VND")
+                        .currency(Currency.VND)
                         .businessDate(businessDate)
                         .interestConfigId(configId)
                         .principalAmount(principal)
@@ -146,7 +147,7 @@ class AccrueInterestHandlerTest {
         when(
                 interestConfigService.getApplicableConfig(
                         productId,
-                        "VND",
+                        Currency.VND,
                         businessDate
                 )
         ).thenReturn(config);
@@ -169,7 +170,7 @@ class AccrueInterestHandlerTest {
                 interestJournalPort.recordAccrualJournal(
                         savedAccrual.getId(),
                         businessDate,
-                        "VND",
+                        Currency.VND,
                         interestAmount
                 )
         ).thenReturn(journalEntryId);
@@ -206,7 +207,7 @@ class AccrueInterestHandlerTest {
                 .recordAccrualJournal(
                         savedAccrual.getId(),
                         businessDate,
-                        "VND",
+                        Currency.VND,
                         interestAmount
                 );
 
@@ -233,7 +234,7 @@ class AccrueInterestHandlerTest {
                 InterestConfig.builder()
                         .id(configId)
                         .productId(productId)
-                        .currency("VND")
+                        .currency(Currency.VND)
                         .interestRate(
                                 new BigDecimal("0.030000")
                         )
@@ -252,7 +253,7 @@ class AccrueInterestHandlerTest {
                         .id(accrualId)
                         .runId(runId)
                         .accountId(accountId)
-                        .currency("VND")
+                        .currency(Currency.VND)
                         .businessDate(businessDate)
                         .interestConfigId(configId)
                         .principalAmount(principal)
@@ -280,7 +281,7 @@ class AccrueInterestHandlerTest {
         when(
                 interestConfigService.getApplicableConfig(
                         productId,
-                        "VND",
+                        Currency.VND,
                         businessDate
                 )
         ).thenReturn(config);
@@ -377,7 +378,7 @@ class AccrueInterestHandlerTest {
                         null,
                         accountId,
                         productId,
-                        "VND",
+                        Currency.VND,
                         businessDate
                 );
 
@@ -403,7 +404,7 @@ class AccrueInterestHandlerTest {
                         runId,
                         null,
                         productId,
-                        "VND",
+                        Currency.VND,
                         businessDate
                 );
 
@@ -429,7 +430,7 @@ class AccrueInterestHandlerTest {
                         runId,
                         accountId,
                         null,
-                        "VND",
+                        Currency.VND,
                         businessDate
                 );
 
@@ -455,7 +456,7 @@ class AccrueInterestHandlerTest {
                         runId,
                         accountId,
                         null,
-                        "VND",
+                        Currency.VND,
                         businessDate
                 );
 
@@ -464,32 +465,6 @@ class AccrueInterestHandlerTest {
         )
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("productId must not be null");
-    }
-
-    @Test
-    void shouldRejectBlankCurrency() {
-        AccrueInterestCommand invalidCommand =
-                new AccrueInterestCommand(
-                        runId,
-                        accountId,
-                        productId,
-                        " ",
-                        businessDate
-                );
-
-        assertThatThrownBy(
-                () -> handler.execute(invalidCommand)
-        )
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("currency must not be blank");
-
-        verifyNoInteractions(
-                interestAccrualCommandRepository,
-                accountDailyBalancePort,
-                interestConfigService,
-                interestCalculationService,
-                interestJournalPort
-        );
     }
 
     @Test
@@ -517,7 +492,7 @@ class AccrueInterestHandlerTest {
                         runId,
                         accountId,
                         productId,
-                        "VND",
+                        Currency.VND,
                         null
                 );
 

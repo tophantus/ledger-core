@@ -1,5 +1,6 @@
 package com.example.ledgercore.transaction.command.handler;
 
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.transaction.command.dto.WithdrawMoneyCommand;
@@ -79,7 +80,7 @@ class WithdrawMoneyHandlerTest {
         WithdrawMoneyCommand command =
                 command(
                         "100",
-                        "VND",
+                        Currency.VND,
                         "WD-001",
                         "Cash withdrawal"
                 );
@@ -125,7 +126,7 @@ class WithdrawMoneyHandlerTest {
         );
 
         assertEquals(
-                "VND",
+                Currency.VND,
                 response.currency()
         );
 
@@ -180,7 +181,7 @@ class WithdrawMoneyHandlerTest {
         );
 
         assertEquals(
-                "VND",
+                Currency.VND,
                 transaction.getCurrency()
         );
 
@@ -201,7 +202,7 @@ class WithdrawMoneyHandlerTest {
                         transactionId,
                         accountId,
                         new BigDecimal("100"),
-                        "VND",
+                        Currency.VND,
                         BUSINESS_DATE
                 );
 
@@ -220,7 +221,7 @@ class WithdrawMoneyHandlerTest {
         WithdrawMoneyCommand command =
                 command(
                         "100",
-                        "VND",
+                        Currency.VND,
                         "WD-002",
                         null
                 );
@@ -259,7 +260,7 @@ class WithdrawMoneyHandlerTest {
             );
 
             assertEquals(
-                    "VND",
+                    Currency.VND,
                     transaction.getCurrency()
             );
 
@@ -292,7 +293,7 @@ class WithdrawMoneyHandlerTest {
                         transactionId,
                         accountId,
                         new BigDecimal("100"),
-                        "VND",
+                        Currency.VND,
                         BUSINESS_DATE
                 );
     }
@@ -303,7 +304,7 @@ class WithdrawMoneyHandlerTest {
         WithdrawMoneyCommand command =
                 command(
                         "100",
-                        "VND",
+                        Currency.VND,
                         "WD-003",
                         "withdraw"
                 );
@@ -339,7 +340,7 @@ class WithdrawMoneyHandlerTest {
                         transactionId,
                         accountId,
                         new BigDecimal("100"),
-                        "VND",
+                        Currency.VND,
                         BUSINESS_DATE
                 );
     }
@@ -350,7 +351,7 @@ class WithdrawMoneyHandlerTest {
         WithdrawMoneyCommand command =
                 command(
                         "100",
-                        "VND",
+                        Currency.VND,
                         "WD-004",
                         "withdraw"
                 );
@@ -396,7 +397,7 @@ class WithdrawMoneyHandlerTest {
         );
 
         assertEquals(
-                "VND",
+                Currency.VND,
                 event.currency()
         );
 
@@ -411,7 +412,7 @@ class WithdrawMoneyHandlerTest {
         WithdrawMoneyCommand command =
                 command(
                         "0",
-                        "VND",
+                        Currency.VND,
                         "WD-005",
                         null
                 );
@@ -442,7 +443,7 @@ class WithdrawMoneyHandlerTest {
         WithdrawMoneyCommand command =
                 command(
                         "-100",
-                        "VND",
+                        Currency.VND,
                         "WD-006",
                         null
                 );
@@ -473,7 +474,7 @@ class WithdrawMoneyHandlerTest {
         WithdrawMoneyCommand command =
                 command(
                         "100",
-                        "VND",
+                        Currency.VND,
                         "WD-007",
                         "withdraw"
                 );
@@ -511,7 +512,7 @@ class WithdrawMoneyHandlerTest {
                         transactionId,
                         accountId,
                         new BigDecimal("100"),
-                        "VND",
+                        Currency.VND,
                         BUSINESS_DATE
                 );
 
@@ -527,7 +528,7 @@ class WithdrawMoneyHandlerTest {
         WithdrawMoneyCommand command =
                 command(
                         "-1",
-                        "VND",
+                        Currency.VND,
                         "WD-008",
                         null
                 );
@@ -563,7 +564,7 @@ class WithdrawMoneyHandlerTest {
 
     private WithdrawMoneyCommand command(
             String amount,
-            String currency,
+            Currency currency,
             String reference,
             String description
     ) {

@@ -1,5 +1,6 @@
 package com.example.ledgercore.withdrawal.query.handler;
 
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.common.dto.PageResponse;
 import com.example.ledgercore.withdrawal.entity.WithdrawalIntent;
 import com.example.ledgercore.withdrawal.enums.WithdrawalIntentStatus;
@@ -446,7 +447,7 @@ class GetUserWithdrawalIntentsHandlerTest {
                 .accountId(accountId)
                 .holdId(UUID.randomUUID())
                 .amount(new BigDecimal("1000000"))
-                .currency("VND")
+                .currency(Currency.VND)
                 .withdrawalCodeHash("hashed-code")
                 .status(WithdrawalIntentStatus.READY)
                 .expiresAt(now.plusSeconds(600))

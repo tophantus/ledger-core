@@ -10,6 +10,7 @@ import com.example.ledgercore.account.enums.AccountStatus;
 import com.example.ledgercore.account.port.outbound.ProductAccountInfo;
 import com.example.ledgercore.account.port.outbound.ProductAccountPort;
 import com.example.ledgercore.account.query.dto.AccountResponse;
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import org.junit.jupiter.api.BeforeEach;
@@ -52,7 +53,7 @@ class CreateAccountHandlerTest {
 
     private String productCode;
     private String accountNo;
-    private String currency;
+    private Currency currency;
 
     @BeforeEach
     void setUp() {
@@ -70,7 +71,7 @@ class CreateAccountHandlerTest {
 
         productCode = "CURRENT";
         accountNo = "1234567890";
-        currency = "VND";
+        currency = Currency.VND;
     }
 
     @Test

@@ -1,5 +1,6 @@
 package com.example.ledgercore.interest.entity;
 
+import com.example.ledgercore.common.currency.Currency;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -52,12 +53,9 @@ public class InterestAccrual {
     )
     private UUID accountId;
 
-    @Column(
-            name = "currency",
-            nullable = false,
-            length = 3
-    )
-    private String currency;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 3)
+    private Currency currency;
 
     @Column(
             name = "business_date",

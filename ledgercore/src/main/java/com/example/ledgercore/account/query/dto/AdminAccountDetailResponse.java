@@ -1,6 +1,7 @@
 package com.example.ledgercore.account.query.dto;
 
 import com.example.ledgercore.account.enums.AccountStatus;
+import com.example.ledgercore.common.currency.Currency;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -9,7 +10,7 @@ public record AdminAccountDetailResponse(
         UUID id,
         String accountNo,
         UUID productId,
-        String currency,
+        Currency currency,
         String balance,
         String holdAmount,
         String availableBalance,

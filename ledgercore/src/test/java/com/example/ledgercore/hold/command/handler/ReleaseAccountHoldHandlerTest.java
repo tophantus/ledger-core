@@ -1,5 +1,6 @@
 package com.example.ledgercore.hold.command.handler;
 
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.hold.command.dto.ReleaseAccountHoldCommand;
@@ -81,7 +82,7 @@ class ReleaseAccountHoldHandlerTest {
                 .decreaseHold(
                         accountId,
                         new BigDecimal("100000"),
-                        "VND"
+                        Currency.VND
                 );
     }
 
@@ -110,7 +111,7 @@ class ReleaseAccountHoldHandlerTest {
                 .decreaseHold(
                         accountId,
                         new BigDecimal("100000"),
-                        "VND"
+                        Currency.VND
                 );
 
         handler.execute(
@@ -130,7 +131,7 @@ class ReleaseAccountHoldHandlerTest {
                 .decreaseHold(
                         accountId,
                         new BigDecimal("100000"),
-                        "VND"
+                        Currency.VND
                 );
     }
 
@@ -152,8 +153,8 @@ class ReleaseAccountHoldHandlerTest {
         ArgumentCaptor<BigDecimal> amountCaptor =
                 ArgumentCaptor.forClass(BigDecimal.class);
 
-        ArgumentCaptor<String> currencyCaptor =
-                ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<Currency> currencyCaptor =
+                ArgumentCaptor.forClass(Currency.class);
 
         verify(accountHoldPort)
                 .decreaseHold(
@@ -173,7 +174,7 @@ class ReleaseAccountHoldHandlerTest {
         );
 
         assertEquals(
-                "VND",
+                Currency.VND,
                 currencyCaptor.getValue()
         );
     }
@@ -396,7 +397,7 @@ class ReleaseAccountHoldHandlerTest {
                 .decreaseHold(
                         accountId,
                         new BigDecimal("100000"),
-                        "VND"
+                        Currency.VND
                 );
 
         assertThrows(
@@ -422,7 +423,7 @@ class ReleaseAccountHoldHandlerTest {
                 .id(holdId)
                 .accountId(accountId)
                 .amount(new BigDecimal("100000"))
-                .currency("VND")
+                .currency(Currency.VND)
                 .holdType(
                         AccountHoldType
                                 .AVAILABLE_BALANCE_RESERVATION

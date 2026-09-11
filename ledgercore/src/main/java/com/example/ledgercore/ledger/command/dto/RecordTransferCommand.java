@@ -1,5 +1,7 @@
 package com.example.ledgercore.ledger.command.dto;
 
+import com.example.ledgercore.common.currency.Currency;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
@@ -9,7 +11,7 @@ public record RecordTransferCommand(
         UUID sourceAccountId,
         UUID destinationAccountId,
         BigDecimal amount,
-        String currency,
+        Currency currency,
         LocalDate businessDate
 ) {
 }
