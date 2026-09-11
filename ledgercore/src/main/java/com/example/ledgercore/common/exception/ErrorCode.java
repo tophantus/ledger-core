@@ -12,6 +12,12 @@ public enum ErrorCode {
             HttpStatus.BAD_REQUEST
     ),
 
+    INVALID_CURRENCY_AMOUNT(
+            "COMMON_002",
+            "Invalid currency amount",
+            HttpStatus.BAD_REQUEST
+    ),
+
     // User
 
     USER_NOT_FOUND(
