@@ -1,15 +1,18 @@
 package com.example.ledgercore.webhook.adapter.inbound.scheduler;
 
 import com.example.ledgercore.webhook.command.port.inbound.ProcessWebhookDeliveryUseCase;
+import com.example.ledgercore.webhook.config.WebhookDeliverySchedulerProperties;
 import com.example.ledgercore.webhook.entity.WebhookDelivery;
 import com.example.ledgercore.webhook.enums.WebhookDeliveryStatus;
 import com.example.ledgercore.webhook.query.repository.WebhookDeliveryQueryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
@@ -17,9 +20,12 @@ import java.util.UUID;
 @Component
 @RequiredArgsConstructor
 @Slf4j
+@ConditionalOnProperty(
+        prefix = "webhook.delivery.scheduler",
+        name = "enabled",
+        havingValue = "true"
+)
 public class WebhookDeliveryScheduler {
-
-    private static final int BATCH_SIZE = 100;
 
     private final WebhookDeliveryQueryRepository
             webhookDeliveryQueryRepository;
@@ -27,7 +33,15 @@ public class WebhookDeliveryScheduler {
     private final ProcessWebhookDeliveryUseCase
             processWebhookDeliveryUseCase;
 
-    @Scheduled(fixedDelay = 5000)
+    private final WebhookDeliverySchedulerProperties
+            webhookDeliverySchedulerProperties;
+
+    private final Clock clock;
+
+    @Scheduled(
+            fixedDelayString =
+                    "${webhook.delivery.scheduler.fixed-delay:5s}"
+    )
     public void processDeliveries() {
 
         List<UUID> deliveryIds =
@@ -35,10 +49,11 @@ public class WebhookDeliveryScheduler {
                         .findDueDeliveries(
                                 WebhookDeliveryStatus.PENDING,
                                 WebhookDeliveryStatus.RETRYING,
-                                Instant.now(),
+                                Instant.now(clock),
                                 PageRequest.of(
                                         0,
-                                        BATCH_SIZE
+                                        webhookDeliverySchedulerProperties
+                                                .getBatchSize()
                                 )
                         )
                         .stream()
