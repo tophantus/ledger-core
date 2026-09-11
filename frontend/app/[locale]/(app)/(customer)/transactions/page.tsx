@@ -2,21 +2,26 @@
 
 import {
     useCallback,
-    useEffect,
+    useEffect, useMemo,
     useState,
 } from "react";
 import {ArrowLeft} from "lucide-react";
-import {useSearchParams} from "next/navigation";
+import {
+    useRouter,
+    useSearchParams,
+} from "next/navigation";
 import {useTranslations} from "next-intl";
 
 import type {PageResponse} from "@/lib/api/types";
 import {Link} from "@/i18n/routing";
 import {ROUTES} from "@/lib/constants/routes";
 
-import {AccountSummary} from "@/features/account/components/account-summary";
+import {AccountSummary as AccountSummaryComponent} from "@/features/account/components/account-summary";
 import {AccountSummarySkeleton} from "@/features/account/components/account-summary-skeleton";
 import {useAccount} from "@/features/account/hooks/use-account";
-import type {Account} from "@/features/account/types/account";
+import type {Account, AccountSummary} from "@/features/account/types/account";
+
+import {useMyAccounts} from "@/features/account/hooks/use-my-accounts";
 
 import {TransactionFilter} from "@/features/transaction/components/transaction-filter";
 import {TransactionList} from "@/features/transaction/components/transaction-list";
@@ -33,27 +38,65 @@ export default function TransactionsPage() {
     const t = useTranslations("transaction");
     const tErrors = useTranslations("errors");
 
+    const router = useRouter();
     const searchParams = useSearchParams();
 
-    const accountId =
-        searchParams.get("accountId");
-
     const {getAccount} = useAccount();
+    const {getMyAccounts} = useMyAccounts();
     const {getTransactions} = useTransactions();
+
+    const accountId =
+        searchParams.get("accountId")
+        ?? undefined;
+
+    const filters: TransactionFilters = useMemo(
+        () => ({
+            accountId,
+            type:
+                (searchParams.get(
+                    "type",
+                ) as TransactionFilters["type"])
+                ?? undefined,
+            status:
+                (searchParams.get(
+                    "status",
+                ) as TransactionFilters["status"])
+                ?? undefined,
+            currency:
+                searchParams.get("currency")
+                ?? undefined,
+            from:
+                searchParams.get("from")
+                ?? undefined,
+            to:
+                searchParams.get("to")
+                ?? undefined,
+            page:
+                Number(
+                    searchParams.get("page") ?? "0",
+                ) || 0,
+            size:
+                Number(
+                    searchParams.get("size")
+                    ?? PAGE_SIZE,
+                ) || PAGE_SIZE,
+        }),
+        [searchParams, accountId],
+    );
+
+    const [accounts, setAccounts] =
+        useState<AccountSummary[]>([]);
 
     const [account, setAccount] =
         useState<Account | null>(null);
-
-    const [filters, setFilters] =
-        useState<TransactionFilters>({
-            page: 0,
-            size: PAGE_SIZE,
-        });
 
     const [result, setResult] =
         useState<PageResponse<Transaction> | null>(
             null,
         );
+
+    const [isAccountsLoading, setIsAccountsLoading] =
+        useState(true);
 
     const [isAccountLoading, setIsAccountLoading] =
         useState(false);
@@ -81,6 +124,47 @@ export default function TransactionsPage() {
         [tErrors],
     );
 
+    /*
+     * Load accounts for the account filter.
+     */
+    useEffect(() => {
+        let mounted = true;
+
+        const loadAccounts = async () => {
+            try {
+                const response =
+                    await getMyAccounts();
+
+                if (!mounted) {
+                    return;
+                }
+
+                if (!response.success) {
+                    return;
+                }
+
+                setAccounts(response.data);
+            } catch {
+                // Account filter does not block
+                // the transaction page.
+            } finally {
+                if (mounted) {
+                    setIsAccountsLoading(false);
+                }
+            }
+        };
+
+        void loadAccounts();
+
+        return () => {
+            mounted = false;
+        };
+    }, [getMyAccounts]);
+
+    /*
+     * Load account information when
+     * an account is selected.
+     */
     useEffect(() => {
         if (!accountId) {
             return;
@@ -136,17 +220,19 @@ export default function TransactionsPage() {
         tErrors,
     ]);
 
+    /*
+     * Load transactions whenever
+     * URL filters change.
+     */
     useEffect(() => {
         let mounted = true;
 
         const loadTransactions = async () => {
             try {
                 const response =
-                    await getTransactions({
-                        ...filters,
-                        accountId:
-                            accountId ?? undefined,
-                    });
+                    await getTransactions(
+                        filters,
+                    );
 
                 if (!mounted) {
                     return;
@@ -172,7 +258,9 @@ export default function TransactionsPage() {
                 }
             } finally {
                 if (mounted) {
-                    setIsTransactionLoading(false);
+                    setIsTransactionLoading(
+                        false,
+                    );
                 }
             }
         };
@@ -182,37 +270,83 @@ export default function TransactionsPage() {
         return () => {
             mounted = false;
         };
-    }, [
-        accountId,
-        filters,
-        getTransactions,
-        getErrorMessage,
-        tErrors,
-    ]);
+    }, [accountId, filters.type, filters.status, filters.currency, filters.from, filters.to, filters.page, filters.size, getTransactions, getErrorMessage, tErrors, filters]);
 
     const handleFilterChange = (
         nextFilters: TransactionFilters,
     ) => {
+        const params =
+            new URLSearchParams();
+
+        if (nextFilters.accountId) {
+            params.set(
+                "accountId",
+                nextFilters.accountId,
+            );
+        }
+
+        if (nextFilters.type) {
+            params.set(
+                "type",
+                nextFilters.type,
+            );
+        }
+
+        if (nextFilters.status) {
+            params.set(
+                "status",
+                nextFilters.status,
+            );
+        }
+
+        if (nextFilters.currency) {
+            params.set(
+                "currency",
+                nextFilters.currency,
+            );
+        }
+
+        if (nextFilters.from) {
+            params.set(
+                "from",
+                nextFilters.from,
+            );
+        }
+
+        if (nextFilters.to) {
+            params.set(
+                "to",
+                nextFilters.to,
+            );
+        }
+
+        params.set(
+            "page",
+            String(nextFilters.page ?? 0),
+        );
+
+        params.set(
+            "size",
+            String(
+                nextFilters.size ?? PAGE_SIZE,
+            ),
+        );
+
         setIsTransactionLoading(true);
         setTransactionError(null);
 
-        setFilters({
-            ...nextFilters,
-            page: 0,
-            size: filters.size ?? PAGE_SIZE,
-        });
+        router.replace(
+            `${ROUTES.TRANSACTION.LIST}?${params.toString()}`,
+        );
     };
 
     const handlePageChange = (
         page: number,
     ) => {
-        setIsTransactionLoading(true);
-        setTransactionError(null);
-
-        setFilters((current) => ({
-            ...current,
+        handleFilterChange({
+            ...filters,
             page,
-        }));
+        });
     };
 
     const backHref = accountId
@@ -269,7 +403,7 @@ export default function TransactionsPage() {
                     {!isAccountLoading &&
                         !accountError &&
                         account && (
-                            <AccountSummary
+                            <AccountSummaryComponent
                                 account={account}
                             />
                         )}
@@ -295,6 +429,10 @@ export default function TransactionsPage() {
             )}
 
             <TransactionFilter
+                accounts={accounts}
+                isAccountsLoading={
+                    isAccountsLoading
+                }
                 filters={filters}
                 onChange={handleFilterChange}
             />

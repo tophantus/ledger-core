@@ -112,6 +112,9 @@
   },
   "filters": {
     "title": "Bộ lọc",
+    "account": "Tài khoản",
+    "allAccounts": "Tất cả tài khoản",
+    "loadingAccounts": "Đang tải tài khoản...",
     "type": "Loại giao dịch",
     "status": "Trạng thái",
     "currency": "Loại tiền",

@@ -1,19 +1,28 @@
 "use client";
 
+import {
+    useState,
+    type ChangeEvent,
+} from "react";
+import {ChevronDown, ChevronUp} from "lucide-react";
 import {useTranslations} from "next-intl";
+
+import type {AccountSummary} from "@/features/account/types/account";
+import {SUPPORTED_CURRENCIES} from "@/lib/constants/currency";
 
 import type {
     TransactionFilters,
     TransactionStatus,
     TransactionType,
 } from "../types/transaction";
-import React, {useState} from "react";
-import {SUPPORTED_CURRENCIES} from "@/lib/constants/currency";
-import {ChevronDown, ChevronUp} from "lucide-react";
 
 interface TransactionFilterProps {
+    accounts: AccountSummary[];
+    isAccountsLoading: boolean;
     filters: TransactionFilters;
-    onChange: (filters: TransactionFilters) => void;
+    onChange: (
+        filters: TransactionFilters,
+    ) => void;
 }
 
 const TRANSACTION_TYPES: TransactionType[] = [
@@ -32,6 +41,8 @@ const TRANSACTION_STATUSES: TransactionStatus[] = [
 ];
 
 export function TransactionFilter({
+                                      accounts,
+                                      isAccountsLoading,
                                       filters,
                                       onChange,
                                   }: TransactionFilterProps) {
@@ -39,7 +50,8 @@ export function TransactionFilter({
 
     const today = getTodayLocal();
 
-    const [expanded, setExpanded] = useState(false);
+    const [expanded, setExpanded] =
+        useState(false);
 
     const fromDate = filters.from
         ? toDateLocal(filters.from)
@@ -49,8 +61,21 @@ export function TransactionFilter({
         ? toDateLocal(filters.to)
         : undefined;
 
+    const handleAccountChange = (
+        event: ChangeEvent<HTMLSelectElement>,
+    ) => {
+        const value = event.target.value;
+
+        onChange({
+            ...filters,
+            accountId:
+                value || undefined,
+            page: 0,
+        });
+    };
+
     const handleTypeChange = (
-        event: React.ChangeEvent<HTMLSelectElement>,
+        event: ChangeEvent<HTMLSelectElement>,
     ) => {
         const value = event.target.value;
 
@@ -64,7 +89,7 @@ export function TransactionFilter({
     };
 
     const handleStatusChange = (
-        event: React.ChangeEvent<HTMLSelectElement>,
+        event: ChangeEvent<HTMLSelectElement>,
     ) => {
         const value = event.target.value;
 
@@ -78,19 +103,20 @@ export function TransactionFilter({
     };
 
     const handleCurrencyChange = (
-        event: React.ChangeEvent<HTMLSelectElement>,
+        event: ChangeEvent<HTMLSelectElement>,
     ) => {
         const value = event.target.value;
 
         onChange({
             ...filters,
-            currency: value || undefined,
+            currency:
+                value || undefined,
             page: 0,
         });
     };
 
     const handleFromChange = (
-        event: React.ChangeEvent<HTMLInputElement>,
+        event: ChangeEvent<HTMLInputElement>,
     ) => {
         const value = event.target.value;
 
@@ -116,19 +142,26 @@ export function TransactionFilter({
             return;
         }
 
-        if (toDate && selectedDate > new Date(`${toDate}T00:00:00`)) {
+        if (
+            toDate &&
+            selectedDate >
+            new Date(
+                `${toDate}T00:00:00`,
+            )
+        ) {
             return;
         }
 
         onChange({
             ...filters,
-            from: selectedDate.toISOString(),
+            from:
+                selectedDate.toISOString(),
             page: 0,
         });
     };
 
     const handleToChange = (
-        event: React.ChangeEvent<HTMLInputElement>,
+        event: ChangeEvent<HTMLInputElement>,
     ) => {
         const value = event.target.value;
 
@@ -157,7 +190,9 @@ export function TransactionFilter({
         if (
             fromDate &&
             selectedDate <
-            new Date(`${fromDate}T00:00:00`)
+            new Date(
+                `${fromDate}T00:00:00`,
+            )
         ) {
             return;
         }
@@ -177,66 +212,187 @@ export function TransactionFilter({
     };
 
     return (
-        <div className="rounded-lg border border-border overflow-hidden bg-surface">
+        <div className="
+            overflow-hidden
+            rounded-lg
+            border
+            border-border
+            bg-surface
+        ">
             <button
                 type="button"
                 onClick={() =>
-                    setExpanded((current) => !current)
+                    setExpanded(
+                        (current) => !current,
+                    )
                 }
                 className="
-                flex
-                w-full
-                items-center
-                justify-between
-                px-4
-                py-3
-                text-left
-                transition
-                hover:bg-background-subtle
-            "
+                    flex
+                    w-full
+                    items-center
+                    justify-between
+                    px-4
+                    py-3
+                    text-left
+                    transition
+                    hover:bg-background-subtle
+                "
             >
-            <span className="text-sm font-medium text-text-primary">
-                {t("filters.title")}
-            </span>
+                <span className="
+                    text-sm
+                    font-medium
+                    text-text-primary
+                ">
+                    {t("filters.title")}
+                </span>
 
                 {expanded ? (
-                    <ChevronUp className="h-4 w-4 text-muted" />
+                    <ChevronUp className="
+                        h-4
+                        w-4
+                        text-muted
+                    " />
                 ) : (
-                    <ChevronDown className="h-4 w-4 text-muted" />
+                    <ChevronDown className="
+                        h-4
+                        w-4
+                        text-muted
+                    " />
                 )}
             </button>
 
             {expanded && (
-                <div className="border-t border-border p-4">
-                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="
+                    border-t
+                    border-border
+                    p-4
+                ">
+                    <div className="
+                        grid
+                        gap-4
+                        sm:grid-cols-2
+                        lg:grid-cols-3
+                    ">
+                        {/* Account */}
+                        <div>
+                            <label
+                                htmlFor="transaction-account"
+                                className="
+                                    mb-2
+                                    block
+                                    text-sm
+                                    font-medium
+                                    text-text-primary
+                                "
+                            >
+                                {t(
+                                    "filters.account",
+                                )}
+                            </label>
+
+                            <select
+                                id="transaction-account"
+                                value={
+                                    filters.accountId
+                                    ?? ""
+                                }
+                                onChange={
+                                    handleAccountChange
+                                }
+                                disabled={
+                                    isAccountsLoading
+                                }
+                                className="
+                                    w-full
+                                    rounded-md
+                                    border
+                                    border-border
+                                    bg-background
+                                    px-3
+                                    py-2
+                                    text-sm
+                                    text-text-primary
+                                    outline-none
+                                    disabled:cursor-not-allowed
+                                    disabled:opacity-60
+                                "
+                            >
+                                <option value="">
+                                    {isAccountsLoading
+                                        ? t(
+                                            "filters.loadingAccounts",
+                                        )
+                                        : t(
+                                            "filters.allAccounts",
+                                        )}
+                                </option>
+
+                                {accounts.map(
+                                    (account) => (
+                                        <option
+                                            key={
+                                                account.id
+                                            }
+                                            value={
+                                                account.id
+                                            }
+                                        >
+                                            {
+                                                account.accountNo
+                                            }{" "}
+                                            ·{" "}
+                                            {
+                                                account.currency
+                                            }
+                                        </option>
+                                    ),
+                                )}
+                            </select>
+                        </div>
+
                         {/* Type */}
                         <div>
                             <label
                                 htmlFor="transaction-type"
-                                className="mb-2 block text-sm font-medium text-text-primary"
+                                className="
+                                    mb-2
+                                    block
+                                    text-sm
+                                    font-medium
+                                    text-text-primary
+                                "
                             >
-                                {t("filters.type")}
+                                {t(
+                                    "filters.type",
+                                )}
                             </label>
 
                             <select
                                 id="transaction-type"
-                                value={filters.type ?? ""}
-                                onChange={handleTypeChange}
+                                value={
+                                    filters.type
+                                    ?? ""
+                                }
+                                onChange={
+                                    handleTypeChange
+                                }
                                 className="
-                                w-full
-                                rounded-md
-                                border
-                                border-border
-                                bg-background
-                                px-3
-                                py-2
-                                text-sm
-                                text-text-primary
-                                outline-none
-                            "
+                                    w-full
+                                    rounded-md
+                                    border
+                                    border-border
+                                    bg-background
+                                    px-3
+                                    py-2
+                                    text-sm
+                                    text-text-primary
+                                    outline-none
+                                "
                             >
                                 <option value="">
-                                    {t("filters.allTypes")}
+                                    {t(
+                                        "filters.allTypes",
+                                    )}
                                 </option>
 
                                 {TRANSACTION_TYPES.map(
@@ -255,75 +411,107 @@ export function TransactionFilter({
                         </div>
 
                         {/* Status */}
-                        {/*<div>*/}
-                        {/*    <label*/}
-                        {/*        htmlFor="transaction-status"*/}
-                        {/*        className="mb-2 block text-sm font-medium text-text-primary"*/}
-                        {/*    >*/}
-                        {/*        {t("filters.status")}*/}
-                        {/*    </label>*/}
+                        <div>
+                            <label
+                                htmlFor="transaction-status"
+                                className="
+                                    mb-2
+                                    block
+                                    text-sm
+                                    font-medium
+                                    text-text-primary
+                                "
+                            >
+                                {t(
+                                    "filters.status",
+                                )}
+                            </label>
 
-                        {/*    <select*/}
-                        {/*        id="transaction-status"*/}
-                        {/*        value={filters.status ?? ""}*/}
-                        {/*        onChange={handleStatusChange}*/}
-                        {/*        className="*/}
-                        {/*        w-full*/}
-                        {/*        rounded-md*/}
-                        {/*        border*/}
-                        {/*        border-border*/}
-                        {/*        bg-background*/}
-                        {/*        px-3*/}
-                        {/*        py-2*/}
-                        {/*        text-sm*/}
-                        {/*        text-text-primary*/}
-                        {/*        outline-none*/}
-                        {/*    "*/}
-                        {/*    >*/}
-                        {/*        <option value="">*/}
-                        {/*            {t("filters.allStatuses")}*/}
-                        {/*        </option>*/}
+                            <select
+                                id="transaction-status"
+                                value={
+                                    filters.status
+                                    ?? ""
+                                }
+                                onChange={
+                                    handleStatusChange
+                                }
+                                className="
+                                    w-full
+                                    rounded-md
+                                    border
+                                    border-border
+                                    bg-background
+                                    px-3
+                                    py-2
+                                    text-sm
+                                    text-text-primary
+                                    outline-none
+                                "
+                            >
+                                <option value="">
+                                    {t(
+                                        "filters.allStatuses",
+                                    )}
+                                </option>
 
-                        {/*        {TRANSACTION_STATUSES.map(*/}
-                        {/*            (status) => (*/}
-                        {/*                <option*/}
-                        {/*                    key={status}*/}
-                        {/*                    value={status}*/}
-                        {/*                >*/}
-                        {/*                    {t(*/}
-                        {/*                        `statuses.${status}`,*/}
-                        {/*                    )}*/}
-                        {/*                </option>*/}
-                        {/*            ),*/}
-                        {/*        )}*/}
-                        {/*    </select>*/}
-                        {/*</div>*/}
+                                {TRANSACTION_STATUSES.map(
+                                    (status) => (
+                                        <option
+                                            key={
+                                                status
+                                            }
+                                            value={
+                                                status
+                                            }
+                                        >
+                                            {t(
+                                                `statuses.${status}`,
+                                            )}
+                                        </option>
+                                    ),
+                                )}
+                            </select>
+                        </div>
 
                         {/* Currency */}
                         <div>
                             <label
                                 htmlFor="transaction-currency"
-                                className="mb-2 block text-sm font-medium text-text-primary"
+                                className="
+                                    mb-2
+                                    block
+                                    text-sm
+                                    font-medium
+                                    text-text-primary
+                                "
                             >
-                                {t("filters.currency")}
+                                {t(
+                                    "filters.currency",
+                                )}
                             </label>
 
                             <select
                                 id="transaction-currency"
-                                value={filters.currency ?? ""}
-                                onChange={handleCurrencyChange}
+                                value={
+                                    filters.currency
+                                    ?? ""
+                                }
+                                onChange={
+                                    handleCurrencyChange
+                                }
                                 className="
-                                w-full
-                                rounded-md
-                                border
-                                border-border
-                                bg-background
-                                px-3
-                                py-2
-                                text-sm
-                                text-text-primary
-                                outline-none
-                            "
+                                    w-full
+                                    rounded-md
+                                    border
+                                    border-border
+                                    bg-background
+                                    px-3
+                                    py-2
+                                    text-sm
+                                    text-text-primary
+                                    outline-none
+                                "
                             >
                                 <option value="">
                                     {t(
@@ -334,8 +522,12 @@ export function TransactionFilter({
                                 {SUPPORTED_CURRENCIES.map(
                                     (currency) => (
                                         <option
-                                            key={currency}
-                                            value={currency}
+                                            key={
+                                                currency
+                                            }
+                                            value={
+                                                currency
+                                            }
                                         >
                                             {currency}
                                         </option>
@@ -348,29 +540,43 @@ export function TransactionFilter({
                         <div>
                             <label
                                 htmlFor="transaction-from"
-                                className="mb-2 block text-sm font-medium text-text-primary"
+                                className="
+                                    mb-2
+                                    block
+                                    text-sm
+                                    font-medium
+                                    text-text-primary
+                                "
                             >
-                                {t("filters.from")}
+                                {t(
+                                    "filters.from",
+                                )}
                             </label>
 
                             <input
                                 id="transaction-from"
                                 type="date"
-                                value={fromDate ?? ""}
-                                max={toDate ?? today}
-                                onChange={handleFromChange}
+                                value={
+                                    fromDate ?? ""
+                                }
+                                max={
+                                    toDate ?? today
+                                }
+                                onChange={
+                                    handleFromChange
+                                }
                                 className="
-                                w-full
-                                rounded-md
-                                border
-                                border-border
-                                bg-background
-                                px-3
-                                py-2
-                                text-sm
-                                text-text-primary
-                                outline-none
-                            "
+                                    w-full
+                                    rounded-md
+                                    border
+                                    border-border
+                                    bg-background
+                                    px-3
+                                    py-2
+                                    text-sm
+                                    text-text-primary
+                                    outline-none
+                                "
                             />
                         </div>
 
@@ -378,53 +584,72 @@ export function TransactionFilter({
                         <div>
                             <label
                                 htmlFor="transaction-to"
-                                className="mb-2 block text-sm font-medium text-text-primary"
+                                className="
+                                    mb-2
+                                    block
+                                    text-sm
+                                    font-medium
+                                    text-text-primary
+                                "
                             >
-                                {t("filters.to")}
+                                {t(
+                                    "filters.to",
+                                )}
                             </label>
 
                             <input
                                 id="transaction-to"
                                 type="date"
-                                value={toDate ?? ""}
+                                value={
+                                    toDate ?? ""
+                                }
                                 min={fromDate}
                                 max={today}
-                                onChange={handleToChange}
+                                onChange={
+                                    handleToChange
+                                }
                                 className="
-                                w-full
-                                rounded-md
-                                border
-                                border-border
-                                bg-background
-                                px-3
-                                py-2
-                                text-sm
-                                text-text-primary
-                                outline-none
-                            "
+                                    w-full
+                                    rounded-md
+                                    border
+                                    border-border
+                                    bg-background
+                                    px-3
+                                    py-2
+                                    text-sm
+                                    text-text-primary
+                                    outline-none
+                                "
                             />
                         </div>
 
                         {/* Clear */}
-                        <div className="flex items-end">
+                        <div className="
+                            flex
+                            items-end
+                        ">
                             <button
                                 type="button"
-                                onClick={handleClear}
+                                onClick={
+                                    handleClear
+                                }
                                 className="
-                                w-full
-                                rounded-md
-                                border
-                                border-border
-                                px-3
-                                py-2
-                                text-sm
-                                font-medium
-                                text-text-primary
-                                transition
-                                hover:bg-secondary
-                            "
+                                    w-full
+                                    rounded-md
+                                    border
+                                    border-border
+                                    px-3
+                                    py-2
+                                    text-sm
+                                    font-medium
+                                    text-text-primary
+                                    transition
+                                    hover:bg-secondary
+                                "
                             >
-                                {t("filters.clear")}
+                                {t(
+                                    "filters.clear",
+                                )}
                             </button>
                         </div>
                     </div>
@@ -437,10 +662,13 @@ export function TransactionFilter({
 function getTodayLocal(): string {
     const date = new Date();
 
-    const year = date.getFullYear();
+    const year =
+        date.getFullYear();
+
     const month = String(
         date.getMonth() + 1,
     ).padStart(2, "0");
+
     const day = String(
         date.getDate(),
     ).padStart(2, "0");
@@ -448,13 +676,18 @@ function getTodayLocal(): string {
     return `${year}-${month}-${day}`;
 }
 
-function toDateLocal(value: string): string {
+function toDateLocal(
+    value: string,
+): string {
     const date = new Date(value);
 
-    const year = date.getFullYear();
+    const year =
+        date.getFullYear();
+
     const month = String(
         date.getMonth() + 1,
     ).padStart(2, "0");
+
     const day = String(
         date.getDate(),
     ).padStart(2, "0");
