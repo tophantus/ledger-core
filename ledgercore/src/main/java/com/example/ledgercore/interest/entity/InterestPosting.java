@@ -33,6 +33,10 @@ import java.util.UUID;
                 @Index(
                         name = "idx_interest_postings_transaction",
                         columnList = "transaction_id"
+                ),
+                @Index(
+                        name = "idx_interest_postings_run_id",
+                        columnList = "run_id"
                 )
         }
 )
@@ -52,6 +56,12 @@ public class InterestPosting {
             nullable = false
     )
     private UUID accountId;
+
+    @Column(
+            name = "run_id",
+            nullable = false
+    )
+    private UUID runId;
 
     @Column(
             name = "period_start",

@@ -1,6 +1,7 @@
 package com.example.ledgercore.interest.command.repository;
 
 import com.example.ledgercore.interest.entity.InterestRun;
+import com.example.ledgercore.interest.enums.InterestRunType;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
@@ -45,7 +46,8 @@ public interface InterestRunCommandRepository
             @Param("staleBefore") Instant staleBefore
     );
 
-    boolean existsByBusinessDate(
-            LocalDate businessDate
+    boolean existsByBusinessDateAndRunType(
+            LocalDate businessDate,
+            InterestRunType runType
     );
 }

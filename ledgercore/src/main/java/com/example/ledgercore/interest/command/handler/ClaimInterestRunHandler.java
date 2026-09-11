@@ -54,6 +54,7 @@ public class ClaimInterestRunHandler
                 new ClaimedInterestRun(
                         run.getId(),
                         run.getBusinessDate(),
+                        run.getRunType(),
                         run.getLastProcessedId(),
                         run.getProcessedCount()
                 )

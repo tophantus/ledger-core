@@ -109,3 +109,5 @@ databaseChangeLog:
       file: db/changelog/054-add-hold-id-to-withdrawal-intents.yaml
   - include:
       file: db/changelog/055-create-withdrawal-lookup-codes.yaml
+  - include:
+      file: db/changelog/056-add-interest-run-type-and-posting-run-id.yaml

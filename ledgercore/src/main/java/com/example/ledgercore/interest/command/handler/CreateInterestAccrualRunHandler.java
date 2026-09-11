@@ -4,6 +4,7 @@ import com.example.ledgercore.interest.command.port.inbound.CreateInterestAccrua
 import com.example.ledgercore.interest.command.repository.InterestRunCommandRepository;
 import com.example.ledgercore.interest.entity.InterestRun;
 import com.example.ledgercore.interest.enums.InterestRunStatus;
+import com.example.ledgercore.interest.enums.InterestRunType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,13 +25,17 @@ public class CreateInterestAccrualRunHandler
     public void execute(LocalDate businessDate) {
 
         if (interestRunCommandRepository
-                .existsByBusinessDate(businessDate)) {
+                .existsByBusinessDateAndRunType(
+                        businessDate,
+                        InterestRunType.ACCRUAL
+                )) {
             return;
         }
 
         InterestRun interestRun =
                 InterestRun.builder()
                         .businessDate(businessDate)
+                        .runType(InterestRunType.ACCRUAL)
                         .status(InterestRunStatus.PENDING)
                         .processedCount(0L)
                         .createdAt(Instant.now())

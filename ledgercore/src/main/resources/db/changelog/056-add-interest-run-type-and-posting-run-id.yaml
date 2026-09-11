@@ -1,0 +1,60 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 056-add-interest-run-type-and-posting-run-id
+      author: tu
+
+      changes:
+
+        - addColumn:
+            tableName: interest_runs
+            columns:
+              - column:
+                  name: run_type
+                  type: VARCHAR(20)
+                  defaultValue: ACCRUAL
+                  constraints:
+                    nullable: false
+
+        - dropUniqueConstraint:
+            tableName: interest_runs
+            constraintName: uk_interest_runs_business_date
+
+        - addUniqueConstraint:
+            tableName: interest_runs
+            columnNames: business_date, run_type
+            constraintName: uk_interest_runs_business_date_type
+
+        - addColumn:
+            tableName: interest_postings
+            columns:
+              - column:
+                  name: run_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: interest_postings
+            baseColumnNames: run_id
+            referencedTableName: interest_runs
+            referencedColumnNames: id
+            constraintName: fk_interest_postings_run
+
+        - createIndex:
+            tableName: interest_postings
+            indexName: idx_interest_postings_run_id
+            columns:
+              - column:
+                  name: run_id
+
+        - sql:
+            sql: >
+              ALTER TABLE interest_runs
+              ADD CONSTRAINT chk_interest_runs_run_type
+              CHECK (
+                run_type IN (
+                  'ACCRUAL',
+                  'POSTING'
+                )
+              );
