@@ -1,5 +1,7 @@
 package com.example.ledgercore.interest.command.port.inbound;
 
+import com.example.ledgercore.interest.command.dto.InterestRunBatchResult;
+
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -18,6 +20,6 @@ public interface ProcessInterestPostingBatchUseCase {
             UUID lastProcessedId,
             long processedCount,
             boolean completed
-    ) {
+    ) implements InterestRunBatchResult {
     }
 }
