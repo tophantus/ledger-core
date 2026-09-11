@@ -5,7 +5,9 @@
 
     "businessDay": {
       "title": "Business Day",
-      "description": "Manage the current business day."
+      "description": "Current business day and closing operations.",
+      "currentDay": "Current Business Day",
+      "close": "Close Business Day"
     }
   },
   "account": {

@@ -80,7 +80,10 @@ export const API_ENDPOINTS = {
             EXCEPTIONS: "/api/v1/admin/reconciliation/exceptions",
         },
         BUSINESS_DAY: {
-            CLOSE: "/api/v1/admin/business-days/close",
+            CURRENT:
+                "/api/v1/admin/business-days/current",
+            CLOSE:
+                "/api/v1/admin/business-days/close",
         },
     },
 } as const;
