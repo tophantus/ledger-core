@@ -6,7 +6,7 @@ import com.example.ledgercore.webhook.command.dto.UpdateWebhookSubscriptionsComm
 import com.example.ledgercore.webhook.command.port.inbound.UpdateWebhookSubscriptionsUseCase;
 import com.example.ledgercore.webhook.command.repository.WebhookEndpointCommandRepository;
 import com.example.ledgercore.webhook.command.repository.WebhookSubscriptionCommandRepository;
-import com.example.ledgercore.webhook.port.outbound.AccountOwnerPort;
+import com.example.ledgercore.webhook.port.outbound.WebhookAccountOwnerPort;
 import com.example.ledgercore.webhook.entity.WebhookEndpoint;
 import com.example.ledgercore.webhook.entity.WebhookSubscription;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ import java.util.Set;
 public class UpdateWebhookSubscriptionsHandler
         implements UpdateWebhookSubscriptionsUseCase {
 
-    private final AccountOwnerPort accountOwnerPort;
+    private final WebhookAccountOwnerPort webhookAccountOwnerPort;
     private final WebhookEndpointCommandRepository webhookEndpointCommandRepository;
     private final WebhookSubscriptionCommandRepository webhookSubscriptionCommandRepository;
 
@@ -36,7 +36,7 @@ public class UpdateWebhookSubscriptionsHandler
                         ErrorCode.WEBHOOK_ENDPOINT_NOT_FOUND
                 ));
 
-        accountOwnerPort.verifyOwnership(
+        webhookAccountOwnerPort.verifyOwnership(
                 command.userId(),
                 endpoint.getAccountId()
         );

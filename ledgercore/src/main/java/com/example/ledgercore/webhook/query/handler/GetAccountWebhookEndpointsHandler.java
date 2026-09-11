@@ -3,7 +3,7 @@ package com.example.ledgercore.webhook.query.handler;
 import com.example.ledgercore.common.dto.PageResponse;
 import com.example.ledgercore.webhook.entity.WebhookEndpoint;
 import com.example.ledgercore.webhook.entity.WebhookSubscription;
-import com.example.ledgercore.webhook.port.outbound.AccountOwnerPort;
+import com.example.ledgercore.webhook.port.outbound.WebhookAccountOwnerPort;
 import com.example.ledgercore.webhook.query.dto.WebhookResponse;
 import com.example.ledgercore.webhook.query.mapper.WebhookResponseMapper;
 import com.example.ledgercore.webhook.query.port.inbound.GetAccountWebhookEndpointsUseCase;
@@ -25,7 +25,7 @@ import java.util.UUID;
 public class GetAccountWebhookEndpointsHandler
         implements GetAccountWebhookEndpointsUseCase {
 
-    private final AccountOwnerPort accountOwnerPort;
+    private final WebhookAccountOwnerPort webhookAccountOwnerPort;
 
     private final WebhookEndpointQueryRepository
             webhookEndpointQueryRepository;
@@ -43,7 +43,7 @@ public class GetAccountWebhookEndpointsHandler
             int page,
             int size
     ) {
-        accountOwnerPort.verifyOwnership(
+        webhookAccountOwnerPort.verifyOwnership(
                 userId,
                 accountId
         );

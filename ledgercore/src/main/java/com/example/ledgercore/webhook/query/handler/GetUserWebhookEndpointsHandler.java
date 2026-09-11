@@ -6,7 +6,7 @@ import com.example.ledgercore.webhook.entity.WebhookSubscription;
 import com.example.ledgercore.webhook.query.dto.WebhookResponse;
 import com.example.ledgercore.webhook.query.mapper.WebhookResponseMapper;
 import com.example.ledgercore.webhook.query.port.inbound.GetUserWebhookEndpointsUseCase;
-import com.example.ledgercore.webhook.query.port.outbound.UserAccountPort;
+import com.example.ledgercore.webhook.query.port.outbound.WebhookUserAccountPort;
 import com.example.ledgercore.webhook.query.repository.WebhookEndpointQueryRepository;
 import com.example.ledgercore.webhook.query.repository.WebhookSubscriptionQueryRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ import java.util.UUID;
 public class GetUserWebhookEndpointsHandler
         implements GetUserWebhookEndpointsUseCase {
 
-    private final UserAccountPort userAccountPort;
+    private final WebhookUserAccountPort webhookUserAccountPort;
 
     private final WebhookEndpointQueryRepository
             webhookEndpointQueryRepository;
@@ -43,7 +43,7 @@ public class GetUserWebhookEndpointsHandler
             int size
     ) {
         List<UUID> accountIds =
-                userAccountPort.getAccountIds(userId);
+                webhookUserAccountPort.getAccountIds(userId);
 
         if (accountIds.isEmpty()) {
             return new PageResponse<>(

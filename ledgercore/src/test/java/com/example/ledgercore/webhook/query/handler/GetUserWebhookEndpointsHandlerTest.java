@@ -5,7 +5,7 @@ import com.example.ledgercore.webhook.entity.WebhookEndpoint;
 import com.example.ledgercore.webhook.entity.WebhookSubscription;
 import com.example.ledgercore.webhook.query.dto.WebhookResponse;
 import com.example.ledgercore.webhook.query.mapper.WebhookResponseMapper;
-import com.example.ledgercore.webhook.query.port.outbound.UserAccountPort;
+import com.example.ledgercore.webhook.query.port.outbound.WebhookUserAccountPort;
 import com.example.ledgercore.webhook.query.repository.WebhookEndpointQueryRepository;
 import com.example.ledgercore.webhook.query.repository.WebhookSubscriptionQueryRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,7 +29,7 @@ import static org.mockito.Mockito.*;
 class GetUserWebhookEndpointsHandlerTest {
 
     @Mock
-    private UserAccountPort userAccountPort;
+    private WebhookUserAccountPort webhookUserAccountPort;
 
     @Mock
     private WebhookEndpointQueryRepository
@@ -62,7 +62,7 @@ class GetUserWebhookEndpointsHandlerTest {
 
     @Test
     void shouldReturnEmptyPageWhenUserHasNoAccounts() {
-        when(userAccountPort.getAccountIds(userId))
+        when(webhookUserAccountPort.getAccountIds(userId))
                 .thenReturn(List.of());
 
         PageResponse<WebhookResponse> response =
@@ -75,7 +75,7 @@ class GetUserWebhookEndpointsHandlerTest {
         assertEquals(0, response.totalElements());
         assertEquals(0, response.totalPages());
 
-        verify(userAccountPort).getAccountIds(userId);
+        verify(webhookUserAccountPort).getAccountIds(userId);
         verifyNoInteractions(
                 webhookEndpointQueryRepository,
                 webhookSubscriptionQueryRepository,
@@ -85,7 +85,7 @@ class GetUserWebhookEndpointsHandlerTest {
 
     @Test
     void shouldReturnEmptyPageWhenUserHasNoWebhooks() {
-        when(userAccountPort.getAccountIds(userId))
+        when(webhookUserAccountPort.getAccountIds(userId))
                 .thenReturn(List.of(accountId1));
 
         Page<WebhookEndpoint> endpointPage =
@@ -113,7 +113,7 @@ class GetUserWebhookEndpointsHandlerTest {
         assertEquals(0, response.totalElements());
         assertEquals(0, response.totalPages());
 
-        verify(userAccountPort).getAccountIds(userId);
+        verify(webhookUserAccountPort).getAccountIds(userId);
         verify(webhookEndpointQueryRepository)
                 .findAllByAccountIdIn(
                         eq(List.of(accountId1)),
@@ -146,7 +146,7 @@ class GetUserWebhookEndpointsHandlerTest {
         when(endpoint1.getId()).thenReturn(webhookId1);
         when(endpoint2.getId()).thenReturn(webhookId2);
 
-        when(userAccountPort.getAccountIds(userId))
+        when(webhookUserAccountPort.getAccountIds(userId))
                 .thenReturn(List.of(accountId1, accountId2));
 
         Page<WebhookEndpoint> endpointPage =
@@ -188,7 +188,7 @@ class GetUserWebhookEndpointsHandlerTest {
         assertEquals(42, response.totalElements());
         assertEquals(3, response.totalPages());
 
-        verify(userAccountPort).getAccountIds(userId);
+        verify(webhookUserAccountPort).getAccountIds(userId);
 
         verify(webhookEndpointQueryRepository)
                 .findAllByAccountIdIn(
@@ -215,7 +215,7 @@ class GetUserWebhookEndpointsHandlerTest {
 
         when(endpoint.getId()).thenReturn(webhookId1);
 
-        when(userAccountPort.getAccountIds(userId))
+        when(webhookUserAccountPort.getAccountIds(userId))
                 .thenReturn(List.of(accountId1));
 
         Page<WebhookEndpoint> endpointPage =
@@ -271,7 +271,7 @@ class GetUserWebhookEndpointsHandlerTest {
 
     @Test
     void shouldNormalizeNegativePageToZero() {
-        when(userAccountPort.getAccountIds(userId))
+        when(webhookUserAccountPort.getAccountIds(userId))
                 .thenReturn(List.of());
 
         PageResponse<WebhookResponse> response =
@@ -280,7 +280,7 @@ class GetUserWebhookEndpointsHandlerTest {
         assertEquals(0, response.page());
         assertEquals(20, response.size());
 
-        verify(userAccountPort).getAccountIds(userId);
+        verify(webhookUserAccountPort).getAccountIds(userId);
         verifyNoInteractions(
                 webhookEndpointQueryRepository,
                 webhookSubscriptionQueryRepository,
@@ -290,7 +290,7 @@ class GetUserWebhookEndpointsHandlerTest {
 
     @Test
     void shouldClampSizeToOneWhenSizeIsLessThanOne() {
-        when(userAccountPort.getAccountIds(userId))
+        when(webhookUserAccountPort.getAccountIds(userId))
                 .thenReturn(List.of());
 
         PageResponse<WebhookResponse> response =
@@ -299,7 +299,7 @@ class GetUserWebhookEndpointsHandlerTest {
         assertEquals(0, response.page());
         assertEquals(1, response.size());
 
-        verify(userAccountPort).getAccountIds(userId);
+        verify(webhookUserAccountPort).getAccountIds(userId);
         verifyNoInteractions(
                 webhookEndpointQueryRepository,
                 webhookSubscriptionQueryRepository,
@@ -309,7 +309,7 @@ class GetUserWebhookEndpointsHandlerTest {
 
     @Test
     void shouldClampSizeToOneHundredWhenSizeExceedsMaximum() {
-        when(userAccountPort.getAccountIds(userId))
+        when(webhookUserAccountPort.getAccountIds(userId))
                 .thenReturn(List.of());
 
         PageResponse<WebhookResponse> response =
@@ -318,7 +318,7 @@ class GetUserWebhookEndpointsHandlerTest {
         assertEquals(0, response.page());
         assertEquals(100, response.size());
 
-        verify(userAccountPort).getAccountIds(userId);
+        verify(webhookUserAccountPort).getAccountIds(userId);
         verifyNoInteractions(
                 webhookEndpointQueryRepository,
                 webhookSubscriptionQueryRepository,
@@ -328,7 +328,7 @@ class GetUserWebhookEndpointsHandlerTest {
 
     @Test
     void shouldNotQuerySubscriptionsWhenEndpointPageIsEmpty() {
-        when(userAccountPort.getAccountIds(userId))
+        when(webhookUserAccountPort.getAccountIds(userId))
                 .thenReturn(List.of(accountId1, accountId2));
 
         Page<WebhookEndpoint> endpointPage =

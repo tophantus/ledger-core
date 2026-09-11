@@ -5,7 +5,7 @@ import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.webhook.command.dto.UpdateWebhookCommand;
 import com.example.ledgercore.webhook.command.dto.UpdateWebhookResult;
 import com.example.ledgercore.webhook.command.port.inbound.UpdateWebhookUseCase;
-import com.example.ledgercore.webhook.port.outbound.AccountOwnerPort;
+import com.example.ledgercore.webhook.port.outbound.WebhookAccountOwnerPort;
 import com.example.ledgercore.webhook.command.repository.WebhookEndpointCommandRepository;
 import com.example.ledgercore.webhook.entity.WebhookEndpoint;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,7 @@ import java.net.URI;
 @RequiredArgsConstructor
 public class UpdateWebhookHandler implements UpdateWebhookUseCase {
 
-    private final AccountOwnerPort accountOwnerPort;
+    private final WebhookAccountOwnerPort webhookAccountOwnerPort;
     private final WebhookEndpointCommandRepository webhookEndpointCommandRepository;
 
     @Override
@@ -30,7 +30,7 @@ public class UpdateWebhookHandler implements UpdateWebhookUseCase {
                                 ErrorCode.WEBHOOK_ENDPOINT_NOT_FOUND
                         ));
 
-        accountOwnerPort.verifyOwnership(
+        webhookAccountOwnerPort.verifyOwnership(
                 command.userId(),
                 endpoint.getAccountId()
         );

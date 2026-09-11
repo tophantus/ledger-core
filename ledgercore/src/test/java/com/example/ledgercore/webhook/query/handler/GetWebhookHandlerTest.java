@@ -3,7 +3,7 @@ package com.example.ledgercore.webhook.query.handler;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.webhook.entity.WebhookEndpoint;
 import com.example.ledgercore.webhook.entity.WebhookSubscription;
-import com.example.ledgercore.webhook.port.outbound.AccountOwnerPort;
+import com.example.ledgercore.webhook.port.outbound.WebhookAccountOwnerPort;
 import com.example.ledgercore.webhook.query.dto.WebhookResponse;
 import com.example.ledgercore.webhook.query.mapper.WebhookResponseMapper;
 import com.example.ledgercore.webhook.query.repository.WebhookEndpointQueryRepository;
@@ -27,7 +27,7 @@ import static org.mockito.Mockito.*;
 class GetWebhookHandlerTest {
 
     @Mock
-    private AccountOwnerPort accountOwnerPort;
+    private WebhookAccountOwnerPort webhookAccountOwnerPort;
 
     @Mock
     private WebhookEndpointQueryRepository
@@ -84,7 +84,7 @@ class GetWebhookHandlerTest {
 
         assertSame(expectedResponse, response);
 
-        verify(accountOwnerPort)
+        verify(webhookAccountOwnerPort)
                 .verifyOwnership(
                         userId,
                         accountId
@@ -148,7 +148,7 @@ class GetWebhookHandlerTest {
         );
 
         verifyNoInteractions(
-                accountOwnerPort,
+                webhookAccountOwnerPort,
                 webhookSubscriptionQueryRepository,
                 webhookResponseMapper
         );
@@ -162,7 +162,7 @@ class GetWebhookHandlerTest {
                 .thenReturn(Optional.of(endpoint));
 
         doThrow(BusinessException.class)
-                .when(accountOwnerPort)
+                .when(webhookAccountOwnerPort)
                 .verifyOwnership(userId, accountId);
 
         assertThrows(
@@ -173,7 +173,7 @@ class GetWebhookHandlerTest {
         verify(webhookEndpointQueryRepository)
                 .findById(webhookId);
 
-        verify(accountOwnerPort)
+        verify(webhookAccountOwnerPort)
                 .verifyOwnership(
                         userId,
                         accountId
@@ -212,7 +212,7 @@ class GetWebhookHandlerTest {
         ArgumentCaptor<UUID> accountIdCaptor =
                 ArgumentCaptor.forClass(UUID.class);
 
-        verify(accountOwnerPort).verifyOwnership(
+        verify(webhookAccountOwnerPort).verifyOwnership(
                 userIdCaptor.capture(),
                 accountIdCaptor.capture()
         );
@@ -229,7 +229,7 @@ class GetWebhookHandlerTest {
                 .thenReturn(Optional.of(endpoint));
 
         doThrow(BusinessException.class)
-                .when(accountOwnerPort)
+                .when(webhookAccountOwnerPort)
                 .verifyOwnership(userId, accountId);
 
         assertThrows(

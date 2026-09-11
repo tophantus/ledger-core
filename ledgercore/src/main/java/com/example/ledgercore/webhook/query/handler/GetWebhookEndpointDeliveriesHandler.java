@@ -11,7 +11,7 @@ import com.example.ledgercore.webhook.query.dto.WebhookDeliveryResponse;
 import com.example.ledgercore.webhook.query.port.inbound.GetWebhookEndpointDeliveriesUseCase;
 import com.example.ledgercore.webhook.query.repository.WebhookDeliveryQueryRepository;
 import com.example.ledgercore.webhook.query.repository.WebhookEndpointQueryRepository;
-import com.example.ledgercore.webhook.port.outbound.AccountOwnerPort;
+import com.example.ledgercore.webhook.port.outbound.WebhookAccountOwnerPort;
 import com.example.ledgercore.webhook.query.specification.WebhookDeliverySpecifications;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -32,8 +32,8 @@ public class GetWebhookEndpointDeliveriesHandler
     private final WebhookDeliveryQueryRepository
             webhookDeliveryQueryRepository;
 
-    private final AccountOwnerPort
-            accountOwnerPort;
+    private final WebhookAccountOwnerPort
+            webhookAccountOwnerPort;
 
     @Override
     public PageResponse<WebhookDeliveryResponse> execute(
@@ -50,7 +50,7 @@ public class GetWebhookEndpointDeliveriesHandler
                                 )
                         );
 
-        accountOwnerPort.verifyOwnership(
+        webhookAccountOwnerPort.verifyOwnership(
                 query.userId(),
                 endpoint.getAccountId()
         );

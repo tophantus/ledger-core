@@ -1,7 +1,7 @@
 package com.example.ledgercore.webhook.adapter.outbound.account;
 
 import com.example.ledgercore.account.query.port.inbound.GetAccountIdsByUserUseCase;
-import com.example.ledgercore.webhook.query.port.outbound.UserAccountPort;
+import com.example.ledgercore.webhook.query.port.outbound.WebhookUserAccountPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -10,7 +10,7 @@ import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
-public class UserAccountAdapter implements UserAccountPort {
+public class WebhookUserAccountAdapter implements WebhookUserAccountPort {
 
     private final GetAccountIdsByUserUseCase
             getAccountIdsByUserUseCase;

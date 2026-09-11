@@ -10,7 +10,7 @@ import com.example.ledgercore.webhook.query.dto.GetWebhookEndpointDeliveriesQuer
 import com.example.ledgercore.webhook.query.dto.WebhookDeliveryResponse;
 import com.example.ledgercore.webhook.query.repository.WebhookDeliveryQueryRepository;
 import com.example.ledgercore.webhook.query.repository.WebhookEndpointQueryRepository;
-import com.example.ledgercore.webhook.port.outbound.AccountOwnerPort;
+import com.example.ledgercore.webhook.port.outbound.WebhookAccountOwnerPort;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,7 +45,7 @@ class GetWebhookEndpointDeliveriesHandlerTest {
             webhookDeliveryQueryRepository;
 
     @Mock
-    private AccountOwnerPort accountOwnerPort;
+    private WebhookAccountOwnerPort webhookAccountOwnerPort;
 
     @InjectMocks
     private GetWebhookEndpointDeliveriesHandler handler;
@@ -130,7 +130,7 @@ class GetWebhookEndpointDeliveriesHandlerTest {
                 response.content().get(1).status()
         );
 
-        verify(accountOwnerPort)
+        verify(webhookAccountOwnerPort)
                 .verifyOwnership(userId, accountId);
 
         verify(webhookDeliveryQueryRepository)
@@ -273,7 +273,7 @@ class GetWebhookEndpointDeliveriesHandlerTest {
 
         handler.execute(query);
 
-        verify(accountOwnerPort)
+        verify(webhookAccountOwnerPort)
                 .verifyOwnership(
                         userId,
                         accountId
@@ -300,7 +300,7 @@ class GetWebhookEndpointDeliveriesHandlerTest {
                 () -> handler.execute(query)
         );
 
-        verify(accountOwnerPort, never())
+        verify(webhookAccountOwnerPort, never())
                 .verifyOwnership(any(), any());
 
         verify(webhookDeliveryQueryRepository, never())
@@ -319,7 +319,7 @@ class GetWebhookEndpointDeliveriesHandlerTest {
                 .thenReturn(Optional.of(endpoint));
 
         doThrow(BusinessException.class)
-                .when(accountOwnerPort)
+                .when(webhookAccountOwnerPort)
                 .verifyOwnership(userId, accountId);
 
         GetWebhookEndpointDeliveriesQuery query =
@@ -354,7 +354,7 @@ class GetWebhookEndpointDeliveriesHandlerTest {
         verifyNoInteractions(
                 webhookEndpointQueryRepository,
                 webhookDeliveryQueryRepository,
-                accountOwnerPort
+                webhookAccountOwnerPort
         );
     }
 
@@ -378,7 +378,7 @@ class GetWebhookEndpointDeliveriesHandlerTest {
         verifyNoInteractions(
                 webhookEndpointQueryRepository,
                 webhookDeliveryQueryRepository,
-                accountOwnerPort
+                webhookAccountOwnerPort
         );
     }
 
@@ -402,7 +402,7 @@ class GetWebhookEndpointDeliveriesHandlerTest {
         verifyNoInteractions(
                 webhookEndpointQueryRepository,
                 webhookDeliveryQueryRepository,
-                accountOwnerPort
+                webhookAccountOwnerPort
         );
     }
 
@@ -426,7 +426,7 @@ class GetWebhookEndpointDeliveriesHandlerTest {
         verifyNoInteractions(
                 webhookEndpointQueryRepository,
                 webhookDeliveryQueryRepository,
-                accountOwnerPort
+                webhookAccountOwnerPort
         );
     }
 

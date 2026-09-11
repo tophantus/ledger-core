@@ -10,7 +10,7 @@ import com.example.ledgercore.webhook.config.WebhookProperties;
 import com.example.ledgercore.webhook.entity.WebhookEndpoint;
 import com.example.ledgercore.webhook.entity.WebhookSubscription;
 import com.example.ledgercore.webhook.enums.WebhookEventType;
-import com.example.ledgercore.webhook.port.outbound.AccountOwnerPort;
+import com.example.ledgercore.webhook.port.outbound.WebhookAccountOwnerPort;
 import com.example.ledgercore.webhook.service.WebhookSecretGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,7 +34,7 @@ import static org.mockito.Mockito.*;
 class RegisterWebhookHandlerTest {
 
     @Mock
-    private AccountOwnerPort accountOwnerPort;
+    private WebhookAccountOwnerPort webhookAccountOwnerPort;
 
     @Mock
     private WebhookEndpointCommandRepository webhookEndpointCommandRepository;
@@ -120,7 +120,7 @@ class RegisterWebhookHandlerTest {
                 result.createdAt()
         );
 
-        verify(accountOwnerPort)
+        verify(webhookAccountOwnerPort)
                 .verifyOwnership(userId, accountId);
 
         verify(webhookSecretGenerator)
@@ -224,7 +224,7 @@ class RegisterWebhookHandlerTest {
                 exception.getErrorCode()
         );
 
-        verify(accountOwnerPort)
+        verify(webhookAccountOwnerPort)
                 .verifyOwnership(userId, accountId);
 
         verify(webhookProperties)
@@ -297,7 +297,7 @@ class RegisterWebhookHandlerTest {
                 exception.getErrorCode()
         );
 
-        verify(accountOwnerPort)
+        verify(webhookAccountOwnerPort)
                 .verifyOwnership(userId, accountId);
 
         // null => return trước khi gọi allowHttp()
@@ -332,7 +332,7 @@ class RegisterWebhookHandlerTest {
                 exception.getErrorCode()
         );
 
-        verify(accountOwnerPort)
+        verify(webhookAccountOwnerPort)
                 .verifyOwnership(userId, accountId);
 
         verify(webhookProperties, never())
@@ -513,11 +513,11 @@ class RegisterWebhookHandlerTest {
         handler.execute(command);
 
         var inOrder = inOrder(
-                accountOwnerPort,
+                webhookAccountOwnerPort,
                 webhookEndpointCommandRepository
         );
 
-        inOrder.verify(accountOwnerPort)
+        inOrder.verify(webhookAccountOwnerPort)
                 .verifyOwnership(userId, accountId);
 
         inOrder.verify(webhookEndpointCommandRepository)

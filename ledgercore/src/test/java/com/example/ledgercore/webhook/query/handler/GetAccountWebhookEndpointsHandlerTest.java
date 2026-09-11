@@ -3,7 +3,7 @@ package com.example.ledgercore.webhook.query.handler;
 import com.example.ledgercore.common.dto.PageResponse;
 import com.example.ledgercore.webhook.entity.WebhookEndpoint;
 import com.example.ledgercore.webhook.entity.WebhookSubscription;
-import com.example.ledgercore.webhook.port.outbound.AccountOwnerPort;
+import com.example.ledgercore.webhook.port.outbound.WebhookAccountOwnerPort;
 import com.example.ledgercore.webhook.query.dto.WebhookResponse;
 import com.example.ledgercore.webhook.query.mapper.WebhookResponseMapper;
 import com.example.ledgercore.webhook.query.repository.WebhookEndpointQueryRepository;
@@ -27,7 +27,7 @@ import static org.mockito.Mockito.*;
 class GetAccountWebhookEndpointsHandlerTest {
 
     @Mock
-    private AccountOwnerPort accountOwnerPort;
+    private WebhookAccountOwnerPort webhookAccountOwnerPort;
 
     @Mock
     private WebhookEndpointQueryRepository
@@ -115,7 +115,7 @@ class GetAccountWebhookEndpointsHandlerTest {
         assertEquals(2, result.totalElements());
         assertEquals(1, result.totalPages());
 
-        verify(accountOwnerPort)
+        verify(webhookAccountOwnerPort)
                 .verifyOwnership(userId, accountId);
 
         verify(webhookEndpointQueryRepository)
@@ -165,7 +165,7 @@ class GetAccountWebhookEndpointsHandlerTest {
         assertEquals(0, result.totalElements());
         assertEquals(0, result.totalPages());
 
-        verify(accountOwnerPort)
+        verify(webhookAccountOwnerPort)
                 .verifyOwnership(userId, accountId);
 
         verify(webhookEndpointQueryRepository)
@@ -183,7 +183,7 @@ class GetAccountWebhookEndpointsHandlerTest {
     @Test
     void shouldVerifyOwnershipBeforeQueryingWebhooks() {
         doThrow(new RuntimeException("Access denied"))
-                .when(accountOwnerPort)
+                .when(webhookAccountOwnerPort)
                 .verifyOwnership(userId, accountId);
 
         assertThrows(
@@ -196,7 +196,7 @@ class GetAccountWebhookEndpointsHandlerTest {
                 )
         );
 
-        verify(accountOwnerPort)
+        verify(webhookAccountOwnerPort)
                 .verifyOwnership(userId, accountId);
 
         verifyNoInteractions(

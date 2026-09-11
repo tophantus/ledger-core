@@ -6,7 +6,7 @@ import com.example.ledgercore.webhook.command.dto.RegisterWebhookCommand;
 import com.example.ledgercore.webhook.command.dto.RegisterWebhookResult;
 import com.example.ledgercore.webhook.command.port.inbound.RegisterWebhookUseCase;
 import com.example.ledgercore.webhook.config.WebhookProperties;
-import com.example.ledgercore.webhook.port.outbound.AccountOwnerPort;
+import com.example.ledgercore.webhook.port.outbound.WebhookAccountOwnerPort;
 import com.example.ledgercore.webhook.command.repository.WebhookEndpointCommandRepository;
 import com.example.ledgercore.webhook.command.repository.WebhookSubscriptionCommandRepository;
 import com.example.ledgercore.webhook.entity.WebhookEndpoint;
@@ -26,7 +26,7 @@ import java.util.Set;
 public class RegisterWebhookHandler
         implements RegisterWebhookUseCase {
 
-    private final AccountOwnerPort accountOwnerPort;
+    private final WebhookAccountOwnerPort webhookAccountOwnerPort;
     private final WebhookEndpointCommandRepository webhookEndpointCommandRepository;
     private final WebhookSubscriptionCommandRepository webhookSubscriptionCommandRepository;
     private final WebhookSecretGenerator webhookSecretGenerator;
@@ -37,7 +37,7 @@ public class RegisterWebhookHandler
     public RegisterWebhookResult execute(
             RegisterWebhookCommand command
     ) {
-        accountOwnerPort.verifyOwnership(
+        webhookAccountOwnerPort.verifyOwnership(
                 command.userId(),
                 command.accountId()
         );

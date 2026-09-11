@@ -6,7 +6,7 @@ import com.example.ledgercore.webhook.command.dto.UpdateWebhookCommand;
 import com.example.ledgercore.webhook.command.dto.UpdateWebhookResult;
 import com.example.ledgercore.webhook.command.repository.WebhookEndpointCommandRepository;
 import com.example.ledgercore.webhook.entity.WebhookEndpoint;
-import com.example.ledgercore.webhook.port.outbound.AccountOwnerPort;
+import com.example.ledgercore.webhook.port.outbound.WebhookAccountOwnerPort;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,7 +24,7 @@ import static org.mockito.Mockito.*;
 class UpdateWebhookHandlerTest {
 
     @Mock
-    private AccountOwnerPort accountOwnerPort;
+    private WebhookAccountOwnerPort webhookAccountOwnerPort;
 
     @Mock
     private WebhookEndpointCommandRepository webhookEndpointCommandRepository;
@@ -75,7 +75,7 @@ class UpdateWebhookHandlerTest {
                 result.url()
         );
 
-        verify(accountOwnerPort)
+        verify(webhookAccountOwnerPort)
                 .verifyOwnership(userId, accountId);
 
         assertEquals(
@@ -111,7 +111,7 @@ class UpdateWebhookHandlerTest {
         verify(webhookEndpointCommandRepository)
                 .findById(webhookId);
 
-        verifyNoInteractions(accountOwnerPort);
+        verifyNoInteractions(webhookAccountOwnerPort);
     }
 
     @Test
@@ -146,7 +146,7 @@ class UpdateWebhookHandlerTest {
                 exception.getErrorCode()
         );
 
-        verify(accountOwnerPort)
+        verify(webhookAccountOwnerPort)
                 .verifyOwnership(userId, accountId);
     }
 
@@ -182,7 +182,7 @@ class UpdateWebhookHandlerTest {
                 exception.getErrorCode()
         );
 
-        verify(accountOwnerPort)
+        verify(webhookAccountOwnerPort)
                 .verifyOwnership(userId, accountId);
     }
 
@@ -218,7 +218,7 @@ class UpdateWebhookHandlerTest {
                 exception.getErrorCode()
         );
 
-        verify(accountOwnerPort)
+        verify(webhookAccountOwnerPort)
                 .verifyOwnership(userId, accountId);
     }
 
@@ -254,7 +254,7 @@ class UpdateWebhookHandlerTest {
                 exception.getErrorCode()
         );
 
-        verify(accountOwnerPort)
+        verify(webhookAccountOwnerPort)
                 .verifyOwnership(userId, accountId);
 
         assertEquals(

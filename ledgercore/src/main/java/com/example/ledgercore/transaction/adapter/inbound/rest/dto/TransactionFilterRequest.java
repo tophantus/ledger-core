@@ -7,10 +7,13 @@ import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Setter
 @Getter
 public class TransactionFilterRequest {
+
+    private UUID accountId;
 
     private TransactionStatus status;
 

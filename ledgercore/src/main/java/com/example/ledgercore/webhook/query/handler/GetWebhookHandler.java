@@ -2,7 +2,7 @@ package com.example.ledgercore.webhook.query.handler;
 
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
-import com.example.ledgercore.webhook.port.outbound.AccountOwnerPort;
+import com.example.ledgercore.webhook.port.outbound.WebhookAccountOwnerPort;
 import com.example.ledgercore.webhook.entity.WebhookEndpoint;
 import com.example.ledgercore.webhook.query.dto.WebhookResponse;
 import com.example.ledgercore.webhook.query.mapper.WebhookResponseMapper;
@@ -20,7 +20,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class GetWebhookHandler implements GetWebhookUseCase {
 
-    private final AccountOwnerPort accountOwnerPort;
+    private final WebhookAccountOwnerPort webhookAccountOwnerPort;
     private final WebhookEndpointQueryRepository webhookEndpointQueryRepository;
     private final WebhookSubscriptionQueryRepository webhookSubscriptionQueryRepository;
     private final WebhookResponseMapper webhookResponseMapper;
@@ -37,7 +37,7 @@ public class GetWebhookHandler implements GetWebhookUseCase {
                                 ErrorCode.WEBHOOK_ENDPOINT_NOT_FOUND
                         ));
 
-        accountOwnerPort.verifyOwnership(
+        webhookAccountOwnerPort.verifyOwnership(
                 userId,
                 endpoint.getAccountId()
         );

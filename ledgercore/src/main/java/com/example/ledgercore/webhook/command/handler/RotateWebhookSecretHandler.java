@@ -5,7 +5,7 @@ import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.webhook.command.dto.RotateWebhookSecretCommand;
 import com.example.ledgercore.webhook.command.dto.RotateWebhookSecretResult;
 import com.example.ledgercore.webhook.command.port.inbound.RotateWebhookSecretUseCase;
-import com.example.ledgercore.webhook.port.outbound.AccountOwnerPort;
+import com.example.ledgercore.webhook.port.outbound.WebhookAccountOwnerPort;
 import com.example.ledgercore.webhook.command.repository.WebhookEndpointCommandRepository;
 import com.example.ledgercore.webhook.entity.WebhookEndpoint;
 import com.example.ledgercore.webhook.service.WebhookSecretGenerator;
@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class RotateWebhookSecretHandler
         implements RotateWebhookSecretUseCase {
 
-    private final AccountOwnerPort accountOwnerPort;
+    private final WebhookAccountOwnerPort webhookAccountOwnerPort;
     private final WebhookEndpointCommandRepository webhookEndpointCommandRepository;
     private final WebhookSecretGenerator webhookSecretGenerator;
 
@@ -33,7 +33,7 @@ public class RotateWebhookSecretHandler
                         ErrorCode.WEBHOOK_ENDPOINT_NOT_FOUND
                 ));
 
-        accountOwnerPort.verifyOwnership(
+        webhookAccountOwnerPort.verifyOwnership(
                 command.userId(),
                 endpoint.getAccountId()
         );
