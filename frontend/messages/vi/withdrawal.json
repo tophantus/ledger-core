@@ -12,6 +12,11 @@
   "availableBalance": "Số dư khả dụng",
   "noAccounts": "Không có tài khoản đủ số dư để thực hiện giao dịch.",
   "amountExceedsBalance": "Số tiền rút không được vượt quá số dư khả dụng.",
+  "errors": {
+    "amountRequired": "Vui lòng nhập số tiền.",
+    "invalidAmount": "Số tiền không hợp lệ.",
+    "amountMultiple": "Số tiền phải là bội số của {denomination}."
+  },
   "continue": "Tiếp tục",
   "confirmTitle": "Xác nhận rút tiền",
   "confirmDescription": "Nhập mã OTP đã được gửi để xác nhận yêu cầu rút tiền.",

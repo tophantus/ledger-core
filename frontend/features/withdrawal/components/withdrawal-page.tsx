@@ -119,6 +119,7 @@ export default function WithdrawalPageContent() {
             ),
             defaultValues: {
                 amount: "",
+                currency: "VND",
             },
         });
 

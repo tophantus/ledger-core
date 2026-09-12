@@ -1,7 +1,10 @@
 "use client";
 
 import {Loader2} from "lucide-react";
-import {Controller, UseFormReturn} from "react-hook-form";
+import {
+    Controller,
+    UseFormReturn,
+} from "react-hook-form";
 import {
     useLocale,
     useTranslations,
@@ -13,6 +16,9 @@ import {MoneyInput} from "@/components/ui/money-input";
 import type {AccountSummary} from "@/features/account/types/account";
 import type {WithdrawalFormValues} from "../schemas/withdrawal-schema";
 
+import {
+    getWithdrawalDenomination,
+} from "@/lib/constants/currency";
 import {formatMoney} from "@/lib/utils/currency";
 import {isAmountGreaterThanZero} from "@/lib/utils/money";
 
@@ -35,14 +41,14 @@ interface WithdrawalFormProps {
 }
 
 export function WithdrawalForm({
-                                   accounts,
-                                   selectedAccount,
-                                   isAccountsLoading,
-                                   isCreateLoading,
-                                   form,
-                                   onAccountChange,
-                                   onCreateRequest,
-                               }: WithdrawalFormProps) {
+    accounts,
+    selectedAccount,
+    isAccountsLoading,
+    isCreateLoading,
+    form,
+    onAccountChange,
+    onCreateRequest,
+}: WithdrawalFormProps) {
     const t =
         useTranslations("withdrawal");
 
@@ -54,6 +60,44 @@ export function WithdrawalForm({
                 account.availableBalance,
             ),
         );
+
+    const getAmountErrorMessage = (
+        error?: string,
+    ): string | undefined => {
+        if (!error) {
+            return undefined;
+        }
+
+        switch (error) {
+            case "amountRequired":
+                return t("errors.amountRequired");
+
+            case "invalidAmount":
+                return t("errors.invalidAmount");
+
+            case "amountMultiple":
+                if (!selectedAccount) {
+                    return undefined;
+                }
+
+                return t(
+                    "errors.amountMultiple",
+                    {
+                        denomination:
+                            formatMoney(
+                                getWithdrawalDenomination(
+                                    selectedAccount.currency,
+                                ),
+                                selectedAccount.currency,
+                                locale,
+                            ),
+                    },
+                );
+
+            default:
+                return error;
+        }
+    };
 
     return (
         <form
@@ -82,22 +126,22 @@ export function WithdrawalForm({
                         text-foreground
                     "
                 >
-                    {t(
-                        "sourceAccount",
-                    )}
+                    {t("sourceAccount")}
                 </label>
 
                 {isAccountsLoading ? (
-                    <div className="
-                        flex
-                        h-11
-                        items-center
-                        rounded-md
-                        border
-                        border-border
-                        bg-background
-                        px-3
-                    ">
+                    <div
+                        className="
+                            flex
+                            h-11
+                            items-center
+                            rounded-md
+                            border
+                            border-border
+                            bg-background
+                            px-3
+                        "
+                    >
                         <Loader2
                             className="
                                 h-4
@@ -107,19 +151,18 @@ export function WithdrawalForm({
                             "
                         />
                     </div>
-                ) : availableAccounts.length ===
-                0 ? (
-                    <div className="
-                        rounded-md
-                        border
-                        border-border
-                        bg-background-subtle
-                        p-3
-                    ">
+                ) : availableAccounts.length === 0 ? (
+                    <div
+                        className="
+                            rounded-md
+                            border
+                            border-border
+                            bg-background-subtle
+                            p-3
+                        "
+                    >
                         <p className="text-sm text-muted">
-                            {t(
-                                "noAccounts",
-                            )}
+                            {t("noAccounts")}
                         </p>
                     </div>
                 ) : (
@@ -134,9 +177,7 @@ export function WithdrawalForm({
                                 availableAccounts.find(
                                     (item) =>
                                         item.id ===
-                                        event
-                                            .target
-                                            .value,
+                                        event.target.value,
                                 );
 
                             if (account) {
@@ -166,16 +207,10 @@ export function WithdrawalForm({
                         {availableAccounts.map(
                             (account) => (
                                 <option
-                                    key={
-                                        account.id
-                                    }
-                                    value={
-                                        account.id
-                                    }
+                                    key={account.id}
+                                    value={account.id}
                                 >
-                                    {
-                                        account.accountNo
-                                    }{" "}
+                                    {account.accountNo}{" "}
                                     -{" "}
                                     {formatMoney(
                                         account.availableBalance,
@@ -204,36 +239,30 @@ export function WithdrawalForm({
                                 text-foreground
                             "
                         >
-                            {t(
-                                "amount",
-                            )}
+                            {t("amount")}
                         </label>
 
                         <Controller
                             name="amount"
-                            control={
-                                form.control
-                            }
+                            control={form.control}
                             render={({
-                                         field,
-                                         fieldState,
-                                     }) => (
+                                field,
+                                fieldState,
+                            }) => (
                                 <MoneyInput
                                     id="withdrawal-amount"
-                                    value={
-                                        field.value
-                                    }
+                                    value={field.value}
                                     currency={
                                         selectedAccount.currency
                                     }
                                     onChange={
                                         field.onChange
                                     }
-                                    error={
+                                    error={getAmountErrorMessage(
                                         fieldState
                                             .error
-                                            ?.message
-                                    }
+                                            ?.message,
+                                    )}
                                     placeholder="0"
                                     disabled={
                                         isCreateLoading
@@ -263,13 +292,10 @@ export function WithdrawalForm({
                     loading={isCreateLoading}
                     disabled={
                         !selectedAccount ||
-                        availableAccounts.length ===
-                        0
+                        availableAccounts.length === 0
                     }
                 >
-                    {t(
-                        "continue",
-                    )}
+                    {t("continue")}
                 </Button>
             </div>
         </form>

@@ -6,6 +6,20 @@ export const SUPPORTED_CURRENCIES = [
 export type Currency =
     (typeof SUPPORTED_CURRENCIES)[number];
 
+export const WITHDRAWAL_DENOMINATIONS: Record<
+    Currency,
+    string
+> = {
+    VND: "50000",
+    USD: "20",
+};
+
+export function getWithdrawalDenomination(
+    currency: Currency,
+): string {
+    return WITHDRAWAL_DENOMINATIONS[currency];
+}
+
 export function isCurrency(
     value: string,
 ): value is Currency {
