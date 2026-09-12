@@ -67,7 +67,6 @@ export function WithdrawalListRow({
         <tr className="
             border-b
             border-border
-            last:border-b-0
             hover:bg-background-subtle
         ">
             <td className="

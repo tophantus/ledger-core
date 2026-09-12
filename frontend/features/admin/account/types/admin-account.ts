@@ -1,4 +1,4 @@
-import type {ApiResponse, PageResponse} from "@/lib/api/types";
+import {Currency} from "@/lib/constants/currency";
 
 export type AccountStatus =
     | "ACTIVE"
@@ -10,7 +10,7 @@ export interface AdminAccount {
     userId: string;
     accountNo: string;
     productId: string;
-    currency: string;
+    currency: Currency;
     balance: string;
     holdAmount: string;
     availableBalance: string;
@@ -23,7 +23,7 @@ export interface AdminAccount {
 export interface AdminAccountFilters {
     accountNo?: string;
     status?: AccountStatus;
-    currency?: string;
+    currency?: Currency;
     userId?: string;
     page?: number;
     size?: number;
@@ -40,7 +40,7 @@ export interface AdminAccountDetail {
     id: string;
     accountNo: string;
     productId: string;
-    currency: string;
+    currency: Currency;
     balance: string;
     holdAmount: string;
     availableBalance: string;
@@ -50,6 +50,3 @@ export interface AdminAccountDetail {
     updatedAt: string;
     user: AdminAccountUserInfo;
 }
-
-export type AdminAccountPageResponse =
-    ApiResponse<PageResponse<AdminAccount>>;

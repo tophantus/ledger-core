@@ -6,7 +6,7 @@ import type {
     AccountStatus,
     AdminAccountFilters as AdminAccountFilterValues,
 } from "../types/admin-account";
-import {SUPPORTED_CURRENCIES} from "@/lib/constants/currency";
+import {getCurrency, SUPPORTED_CURRENCIES} from "@/lib/constants/currency";
 
 interface AdminAccountFiltersProps {
     filters: AdminAccountFilterValues;
@@ -96,9 +96,9 @@ export function AdminAccountFilters({
                 onChange={(event) =>
                     onChange({
                         ...filters,
-                        currency:
-                            event.target.value ||
-                            undefined,
+                        currency: getCurrency(
+                            event.target.value,
+                        ),
                         page: 0,
                     })
                 }

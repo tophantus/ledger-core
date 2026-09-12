@@ -15,12 +15,13 @@ import {
     type AdminDepositFormValues,
 } from "../schemas/admin-deposit-schema";
 import { MoneyInput } from "@/components/ui/money-input";
+import {Currency} from "@/lib/constants/currency";
 
 interface AdminDepositModalProps {
     open: boolean;
     accountId: string;
     accountNo: string;
-    currency: string;
+    currency: Currency;
     onClose: () => void;
     onSuccess: () => void | Promise<void>;
 }

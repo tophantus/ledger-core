@@ -30,6 +30,7 @@ import type {
     Transaction,
     TransactionFilters,
 } from "@/features/transaction/types/transaction";
+import {Currency, isCurrency} from "@/lib/constants/currency";
 
 const PAGE_SIZE = 20;
 
@@ -59,9 +60,14 @@ export default function TransactionListPage() {
         ) as TransactionFilters["status"])
         ?? undefined;
 
-    const currency =
-        searchParams.get("currency")
-        ?? undefined;
+    const currencyParam =
+        searchParams.get("currency");
+
+    const currency: Currency | undefined =
+        currencyParam &&
+        isCurrency(currencyParam)
+            ? currencyParam
+            : undefined;
 
     const from =
         searchParams.get("from")

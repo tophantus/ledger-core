@@ -51,7 +51,6 @@ export function WithdrawalListSkeleton() {
                                 className="
                                         border-b
                                         border-border
-                                        last:border-b-0
                                     "
                             >
                                 {Array.from(
