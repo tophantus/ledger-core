@@ -1,4 +1,4 @@
-import type {ApiResponse} from "@/lib/api/types";
+import {Currency} from "@/lib/constants/currency";
 
 export type AccountStatus =
     | "ACTIVE"
@@ -10,7 +10,7 @@ export interface Account {
     userId: string;
     accountNo: string;
     productId: string;
-    currency: string;
+    currency: Currency;
     balance: string;
     holdAmount: string;
     availableBalance: string;
@@ -23,7 +23,7 @@ export interface AccountSummary {
     id: string;
     accountNo: string;
     productId: string;
-    currency: string;
+    currency: Currency;
     balance: string;
     holdAmount: string;
     availableBalance: string;
@@ -37,14 +37,5 @@ export interface AccountHolder {
 
 export interface CreateAccountRequest {
     productId: string;
-    currency: string;
+    currency: Currency;
 }
-
-export type AccountResponse =
-    ApiResponse<Account>;
-
-export type AccountSummaryResponse =
-    ApiResponse<AccountSummary[]>;
-
-export type AccountHolderApiResponse =
-    ApiResponse<AccountHolder>;

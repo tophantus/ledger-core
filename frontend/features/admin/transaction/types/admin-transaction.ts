@@ -1,13 +1,9 @@
-import type {Transaction} from "@/features/transaction/types/transaction";
-import type {ApiResponse} from "@/lib/api/types";
+import {Currency} from "@/lib/constants/currency";
 
 export interface DepositMoneyRequest {
     destinationAccountId: string;
     amount: string;
-    currency: string;
+    currency: Currency;
     reference: string;
     description?: string;
 }
-
-export type DepositMoneyResponse =
-    ApiResponse<Transaction>;

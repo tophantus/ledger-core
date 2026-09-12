@@ -1,14 +1,16 @@
-const CURRENCY_DECIMAL_DIGITS: Record<string, number> = {
+import {Currency} from "@/lib/constants/currency";
+
+const CURRENCY_DECIMAL_DIGITS: Record<Currency, number> = {
     VND: 0,
     USD: 2,
 };
 
 export function getCurrencyDecimalDigits(
-    currency: string,
+    currency: Currency,
 ): number {
     return (
         CURRENCY_DECIMAL_DIGITS[
-            currency.toUpperCase()
+            currency
             ] ?? 2
     );
 }
@@ -35,7 +37,7 @@ export function getThousandsSeparator(
 
 export function normalizeMoneyInput(
     value: string,
-    currency: string,
+    currency: Currency,
     locale: string,
 ): string {
     if (!value) {
@@ -88,7 +90,7 @@ export function normalizeMoneyInput(
 
 export function formatMoneyInput(
     value: string | number,
-    currency: string,
+    currency: Currency,
     locale: string,
 ): string {
     if (value === "") {
@@ -142,7 +144,7 @@ export function formatMoneyInput(
 
 export function formatMoney(
     amount: string | number,
-    currency: string,
+    currency: Currency,
     locale: string,
 ): string {
     return new Intl.NumberFormat(locale, {

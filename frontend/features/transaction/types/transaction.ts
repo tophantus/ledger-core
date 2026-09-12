@@ -1,4 +1,4 @@
-import type {ApiResponse, PageResponse} from "@/lib/api/types";
+import {Currency} from "@/lib/constants/currency";
 
 export type TransactionType =
     | "TRANSFER"
@@ -21,7 +21,7 @@ export interface Transaction {
     sourceAccountId: string | null;
     destinationAccountId: string | null;
     amount: string;
-    currency: string;
+    currency: Currency;
     description: string | null;
     incoming: boolean;
     createdAt: string;
@@ -32,7 +32,7 @@ export interface TransactionFilters {
     accountId?: string;
     status?: TransactionStatus;
     type?: TransactionType;
-    currency?: string;
+    currency?: Currency;
     from?: string;
     to?: string;
     page?: number;
@@ -43,7 +43,7 @@ export interface CreateTransferIntentRequest {
     sourceAccountId: string;
     destinationAccountNo: string;
     amount: string;
-    currency: string;
+    currency: Currency;
     reference: string;
     description?: string;
 }
@@ -59,7 +59,7 @@ export interface CreateTransferIntentResult {
     sourceAccountId: string;
     destinationAccountId: string;
     amount: string;
-    currency: string;
+    currency: Currency;
     reference: string;
     status: TransferIntentStatus;
     expiresAt: string;
@@ -70,12 +70,3 @@ export interface ConfirmTransferRequest {
     intentId: string;
     otp: string;
 }
-
-export type TransactionApiResponse =
-    ApiResponse<Transaction>;
-
-export type TransactionPageResponse =
-    ApiResponse<PageResponse<Transaction>>;
-
-export type TransferIntentApiResponse =
-    ApiResponse<CreateTransferIntentResult>;

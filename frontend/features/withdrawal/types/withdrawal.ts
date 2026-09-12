@@ -1,7 +1,4 @@
-import type {
-    ApiResponse,
-    PageResponse,
-} from "@/lib/api/types";
+import {Currency} from "@/lib/constants/currency";
 
 export type WithdrawalRequestStatus =
     | "PENDING"
@@ -18,14 +15,14 @@ export type WithdrawalIntentStatus =
 export interface CreateWithdrawalRequest {
     accountId: string;
     amount: string;
-    currency: string;
+    currency: Currency;
 }
 
 export interface WithdrawalRequestResponse {
     requestId: string;
     accountId: string;
     amount: string;
-    currency: string;
+    currency: Currency;
     status: WithdrawalRequestStatus;
     expiresAt: string;
 }
@@ -40,7 +37,7 @@ export interface ConfirmWithdrawalRequestResponse {
     intentId: string;
     withdrawalReference: string;
     amount: string;
-    currency: string;
+    currency: Currency;
     intentExpiresAt: string;
 }
 
@@ -49,7 +46,7 @@ export interface WithdrawalIntent {
     accountId: string;
     withdrawalReference: string;
     amount: string;
-    currency: string;
+    currency: Currency;
     status: WithdrawalIntentStatus;
     expiresAt: string;
     createdAt: string;
@@ -62,12 +59,3 @@ export interface WithdrawalIntentFilters {
     page?: number;
     size?: number;
 }
-
-export type CreateWithdrawalResponse =
-    ApiResponse<WithdrawalRequestResponse>;
-
-export type ConfirmWithdrawalResponse =
-    ApiResponse<ConfirmWithdrawalRequestResponse>;
-
-export type WithdrawalIntentPageResponse =
-    ApiResponse<PageResponse<WithdrawalIntent>>;

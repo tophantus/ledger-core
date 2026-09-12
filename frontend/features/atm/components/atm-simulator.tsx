@@ -344,8 +344,6 @@ export function AtmSimulator() {
 
                                 {step === "CONFIRM" && (
                                     <AtmConfirm
-                                        lookupCode={lookupCode}
-                                        amount={amount}
                                         isLoading={
                                             isLoading
                                         }

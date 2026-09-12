@@ -13,6 +13,7 @@ import {
     formatMoneyInput,
     normalizeMoneyInput,
 } from "@/lib/utils/currency";
+import {Currency} from "@/lib/constants/currency";
 
 interface MoneyInputProps
     extends Omit<
@@ -20,7 +21,7 @@ interface MoneyInputProps
         "value" | "onChange" | "type"
     > {
     value?: string;
-    currency: string;
+    currency: Currency;
     onChange?: (value: string) => void;
     error?: string;
 }

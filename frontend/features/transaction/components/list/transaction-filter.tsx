@@ -8,7 +8,7 @@ import {ChevronDown, ChevronUp} from "lucide-react";
 import {useTranslations} from "next-intl";
 
 import type {AccountSummary} from "@/features/account/types/account";
-import {SUPPORTED_CURRENCIES} from "@/lib/constants/currency";
+import {getCurrency, SUPPORTED_CURRENCIES} from "@/lib/constants/currency";
 
 import type {
     TransactionFilters,
@@ -105,12 +105,13 @@ export function TransactionFilter({
     const handleCurrencyChange = (
         event: ChangeEvent<HTMLSelectElement>,
     ) => {
-        const value = event.target.value;
+        const currency = getCurrency(
+            event.target.value,
+        );
 
         onChange({
             ...filters,
-            currency:
-                value || undefined,
+            currency,
             page: 0,
         });
     };

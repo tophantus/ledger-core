@@ -1,4 +1,5 @@
 import type {ApiResponse} from "@/lib/api/types";
+import {Currency} from "@/lib/constants/currency";
 
 export interface ExecuteWithdrawalRequest {
     lookupCode: string;
@@ -13,7 +14,7 @@ export interface ExecuteWithdrawalResponse {
     atmTerminalId: string;
     withdrawalReference: string;
     amount: string;
-    currency: string;
+    currency: Currency;
     executedAt: string;
 }
 
