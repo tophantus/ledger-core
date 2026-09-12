@@ -297,6 +297,32 @@ class CreateAccountHoldHandlerTest {
     }
 
     @Test
+    void shouldThrowWhenAmountScaleExceedsCurrencyScale() {
+
+        CreateAccountHoldCommand command =
+                command(
+                        "100.1",
+                        Currency.VND
+                );
+
+        BusinessException exception =
+                assertThrows(
+                        BusinessException.class,
+                        () -> handler.execute(command)
+                );
+
+        assertEquals(
+                ErrorCode.INVALID_CURRENCY_AMOUNT,
+                exception.getErrorCode()
+        );
+
+        verifyNoInteractions(
+                accountHoldCommandRepository,
+                accountHoldPort
+        );
+    }
+
+    @Test
     void shouldThrowWhenCurrencyIsNull() {
 
         CreateAccountHoldCommand command =
