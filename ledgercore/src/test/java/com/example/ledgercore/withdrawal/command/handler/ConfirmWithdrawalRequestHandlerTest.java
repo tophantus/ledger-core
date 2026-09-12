@@ -23,7 +23,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -212,6 +211,84 @@ class ConfirmWithdrawalRequestHandlerTest {
 
         verifyNoInteractions(
                 withdrawalRequestCommandRepository,
+                withdrawalOtpPort,
+                confirmWithdrawalExecutionService
+        );
+    }
+
+    @Test
+    void shouldThrowWhenRequestAmountScaleExceedsCurrencyScale() {
+        WithdrawalRequest request =
+                pendingRequest(
+                        NOW.plusSeconds(300)
+                );
+
+        request.setAmount(
+                new BigDecimal("100.1")
+        );
+
+        when(
+                withdrawalRequestCommandRepository
+                        .findById(requestId)
+        ).thenReturn(
+                Optional.of(request)
+        );
+
+        BusinessException exception =
+                assertThrows(
+                        BusinessException.class,
+                        () -> handler.execute(command())
+                );
+
+        assertEquals(
+                ErrorCode.INVALID_CURRENCY_AMOUNT,
+                exception.getErrorCode()
+        );
+
+        verify(
+                withdrawalRequestCommandRepository
+        ).findById(requestId);
+
+        verifyNoInteractions(
+                withdrawalOtpPort,
+                confirmWithdrawalExecutionService
+        );
+    }
+
+    @Test
+    void shouldThrowWhenRequestAmountIsNotWithdrawalDenomination() {
+        WithdrawalRequest request =
+                pendingRequest(
+                        NOW.plusSeconds(300)
+                );
+
+        request.setAmount(
+                new BigDecimal("100001")
+        );
+
+        when(
+                withdrawalRequestCommandRepository
+                        .findById(requestId)
+        ).thenReturn(
+                Optional.of(request)
+        );
+
+        BusinessException exception =
+                assertThrows(
+                        BusinessException.class,
+                        () -> handler.execute(command())
+                );
+
+        assertEquals(
+                ErrorCode.INVALID_WITHDRAW_AMOUNT,
+                exception.getErrorCode()
+        );
+
+        verify(
+                withdrawalRequestCommandRepository
+        ).findById(requestId);
+
+        verifyNoInteractions(
                 withdrawalOtpPort,
                 confirmWithdrawalExecutionService
         );

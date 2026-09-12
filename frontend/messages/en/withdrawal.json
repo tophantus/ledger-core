@@ -12,6 +12,11 @@
   "availableBalance": "Available Balance",
   "noAccounts": "No account has sufficient balance to make a withdrawal.",
   "amountExceedsBalance": "Withdrawal amount cannot exceed the available balance.",
+  "errors": {
+    "amountRequired": "Amount is required.",
+    "invalidAmount": "Enter a valid amount.",
+    "amountMultiple": "Amount must be a multiple of {denomination}."
+  },
   "continue": "Continue",
   "confirmTitle": "Confirm Withdrawal",
   "confirmDescription": "Enter the OTP sent to you to confirm the withdrawal request.",

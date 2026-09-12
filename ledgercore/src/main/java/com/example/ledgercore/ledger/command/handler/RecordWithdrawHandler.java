@@ -1,5 +1,6 @@
 package com.example.ledgercore.ledger.command.handler;
 
+import com.example.ledgercore.common.currency.CurrencyAmountPolicy;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.ledger.command.dto.RecordWithdrawCommand;
@@ -97,5 +98,10 @@ public class RecordWithdrawHandler
                     ErrorCode.INVALID_WITHDRAW_AMOUNT
             );
         }
+
+        CurrencyAmountPolicy.validate(
+                command.amount(),
+                command.currency()
+        );
     }
 }

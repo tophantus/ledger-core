@@ -1,5 +1,6 @@
 package com.example.ledgercore.transaction.command.handler;
 
+import com.example.ledgercore.common.currency.CurrencyAmountPolicy;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.transaction.command.dto.WithdrawMoneyCommand;
@@ -88,6 +89,11 @@ public class WithdrawMoneyHandler
                     ErrorCode.INVALID_WITHDRAW_AMOUNT
             );
         }
+
+        CurrencyAmountPolicy.validate(
+                command.amount(),
+                command.currency()
+        );
     }
 
     private MoneyTransaction createTransaction(

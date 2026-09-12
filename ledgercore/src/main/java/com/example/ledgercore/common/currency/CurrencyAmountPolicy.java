@@ -4,7 +4,6 @@ import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 
 public final class CurrencyAmountPolicy {
 
@@ -20,7 +19,10 @@ public final class CurrencyAmountPolicy {
                 currency
         );
 
-        if (amount.scale() > currency.scale()) {
+        BigDecimal normalizedAmount =
+                amount.stripTrailingZeros();
+
+        if (normalizedAmount.scale() > currency.scale()) {
             throw new BusinessException(
                     ErrorCode.INVALID_CURRENCY_AMOUNT
             );

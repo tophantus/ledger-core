@@ -156,6 +156,66 @@ class CreateWithdrawalRequestHandlerTest {
     }
 
     @Test
+    void shouldThrowWhenAmountScaleExceedsCurrencyScale() {
+        // Given
+        CreateWithdrawalRequestCommand command =
+                command(
+                        "100000.1",
+                        Currency.VND
+                );
+
+        // When
+        BusinessException exception =
+                assertThrows(
+                        BusinessException.class,
+                        () -> handler.execute(command)
+                );
+
+        // Then
+        assertEquals(
+                ErrorCode.INVALID_CURRENCY_AMOUNT,
+                exception.getErrorCode()
+        );
+
+        verifyNoInteractions(
+                withdrawalAccountPort,
+                withdrawalRequestRepository,
+                withdrawalOtpPort,
+                withdrawalRequestProperties
+        );
+    }
+
+    @Test
+    void shouldThrowWhenAmountIsNotWithdrawalDenomination() {
+        // Given
+        CreateWithdrawalRequestCommand command =
+                command(
+                        "100001",
+                        Currency.VND
+                );
+
+        // When
+        BusinessException exception =
+                assertThrows(
+                        BusinessException.class,
+                        () -> handler.execute(command)
+                );
+
+        // Then
+        assertEquals(
+                ErrorCode.INVALID_WITHDRAW_AMOUNT,
+                exception.getErrorCode()
+        );
+
+        verifyNoInteractions(
+                withdrawalAccountPort,
+                withdrawalRequestRepository,
+                withdrawalOtpPort,
+                withdrawalRequestProperties
+        );
+    }
+
+    @Test
     void shouldCreatePendingWithdrawalRequest() {
 
         when(withdrawalRequestProperties.getExpiration())

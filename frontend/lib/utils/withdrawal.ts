@@ -1,6 +1,7 @@
 import type {
     WithdrawalIntentStatus,
 } from "@/features/withdrawal/types/withdrawal";
+import {Currency, getWithdrawalDenomination} from "@/lib/constants/currency";
 
 type Variant =
     | "text"
@@ -42,4 +43,25 @@ export function getWithdrawalStatusColor(
     variant: Variant,
 ): string {
     return STATUS_COLORS[status][variant];
+}
+
+export function isWithdrawalAmountMultiple(
+    amount: string,
+    currency: Currency,
+): boolean {
+    if (!amount) {
+        return false;
+    }
+
+    if (!/^\d+$/.test(amount)) {
+        return false;
+    }
+
+    const value = BigInt(amount);
+
+    const denomination = BigInt(
+        getWithdrawalDenomination(currency),
+    );
+
+    return value % denomination === BigInt(0);
 }

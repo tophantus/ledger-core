@@ -5,6 +5,7 @@ import {useLocale} from "next-intl";
 import type {
     InterestAccrual,
 } from "../../types/admin-interest";
+import {formatMoney} from "@/lib/utils/currency";
 
 interface InterestAccrualListRowProps {
     accrual: InterestAccrual;
@@ -90,7 +91,11 @@ export function InterestAccrualListRow({
                 py-3
                 text-foreground
             ">
-                {accrual.principalAmount}
+                {formatMoney(
+                    accrual.principalAmount,
+                    accrual.currency,
+                    locale
+                )}
             </td>
 
             <td className="

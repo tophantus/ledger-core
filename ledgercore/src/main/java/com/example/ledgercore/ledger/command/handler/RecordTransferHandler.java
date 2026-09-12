@@ -1,5 +1,6 @@
 package com.example.ledgercore.ledger.command.handler;
 
+import com.example.ledgercore.common.currency.CurrencyAmountPolicy;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.ledger.command.dto.RecordTransferCommand;
@@ -103,5 +104,10 @@ public class RecordTransferHandler
                     ErrorCode.SAME_ACCOUNT_TRANSFER
             );
         }
+
+        CurrencyAmountPolicy.validate(
+                command.amount(),
+                command.currency()
+        );
     }
 }

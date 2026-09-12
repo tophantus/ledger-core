@@ -279,7 +279,7 @@ class PostInterestTransactionHandlerTest {
 
         PostInterestTransactionCommand command =
                 command(
-                        "250.5000",
+                        "250",
                         Currency.VND
                 );
 
@@ -342,6 +342,33 @@ class PostInterestTransactionHandlerTest {
 
         assertEquals(
                 ErrorCode.INVALID_REQUEST,
+                exception.getErrorCode()
+        );
+
+        verifyNoInteractions(
+                transactionCommandRepository,
+                accountDepositPort,
+                interestLedgerPort
+        );
+    }
+
+    @Test
+    void shouldThrowWhenAmountScaleExceedsCurrencyScale() {
+
+        PostInterestTransactionCommand command =
+                command(
+                        "100.1",
+                        Currency.VND
+                );
+
+        BusinessException exception =
+                assertThrows(
+                        BusinessException.class,
+                        () -> handler.execute(command)
+                );
+
+        assertEquals(
+                ErrorCode.INVALID_CURRENCY_AMOUNT,
                 exception.getErrorCode()
         );
 

@@ -2,6 +2,7 @@ package com.example.ledgercore.ledger.command.handler;
 
 import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.common.exception.BusinessException;
+import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.ledger.command.dto.RecordInterestPostingCommand;
 import com.example.ledgercore.ledger.command.port.outbound.AccountLedgerMappingPort;
 import com.example.ledgercore.ledger.command.repository.JournalEntryCommandRepository;
@@ -62,7 +63,7 @@ class RecordInterestPostingHandlerTest {
         UUID interestPayableLedgerAccountId = UUID.randomUUID();
         UUID customerLedgerAccountId = UUID.randomUUID();
 
-        BigDecimal amount = new BigDecimal("10000.0000");
+        BigDecimal amount = new BigDecimal("10000");
         Currency currency = Currency.VND;
         LocalDate businessDate = LocalDate.of(2026, 9, 7);
 
@@ -195,6 +196,33 @@ class RecordInterestPostingHandlerTest {
                 () -> handler.execute(command)
         )
                 .isInstanceOf(BusinessException.class);
+
+        verifyNoInteractions(
+                systemLedgerAccountService,
+                accountLedgerMappingPort,
+                journalEntryCommandRepository,
+                journalEntryLineCommandRepository
+        );
+    }
+
+    @Test
+    void shouldRejectAmountWithScaleExceedingCurrencyScale() {
+        RecordInterestPostingCommand command =
+                new RecordInterestPostingCommand(
+                        UUID.randomUUID(),
+                        UUID.randomUUID(),
+                        new BigDecimal("100.1"),
+                        Currency.VND,
+                        LocalDate.of(2026, 9, 7)
+                );
+
+        assertThatThrownBy(
+                () -> handler.execute(command)
+        )
+                .isInstanceOf(BusinessException.class)
+                .hasMessageContaining(
+                        ErrorCode.INVALID_CURRENCY_AMOUNT.getMessage()
+                );
 
         verifyNoInteractions(
                 systemLedgerAccountService,
