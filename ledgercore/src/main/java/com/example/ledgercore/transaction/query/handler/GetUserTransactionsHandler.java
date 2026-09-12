@@ -1,6 +1,5 @@
 package com.example.ledgercore.transaction.query.handler;
 
-import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.common.dto.PageResponse;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
@@ -11,6 +10,7 @@ import com.example.ledgercore.transaction.query.mapper.TransactionQueryMapper;
 import com.example.ledgercore.transaction.query.port.inbound.GetUserTransactionsUseCase;
 import com.example.ledgercore.transaction.query.port.outbound.AccountQueryPort;
 import com.example.ledgercore.transaction.query.repository.TransactionQueryRepository;
+import com.example.ledgercore.transaction.query.specification.TransactionSpecifications;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,7 +20,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -136,102 +135,39 @@ public class GetUserTransactionsHandler
             GetUserTransactionsQuery query
     ) {
         Specification<MoneyTransaction> specification =
-                accountSpecification(accountIds);
+                TransactionSpecifications.accounts(accountIds);
 
         if (query.status() != null) {
             specification = specification.and(
-                    statusSpecification(query.status())
+                    TransactionSpecifications.status(query.status())
             );
         }
 
         if (query.type() != null) {
             specification = specification.and(
-                    typeSpecification(query.type())
+                    TransactionSpecifications.type(query.type())
             );
         }
 
         if (query.currency() != null) {
-
             specification = specification.and(
-                    currencySpecification(query.currency())
+                    TransactionSpecifications.currency(query.currency())
             );
         }
 
         if (query.from() != null) {
             specification = specification.and(
-                    createdAtGreaterThanOrEqualTo(query.from())
+                    TransactionSpecifications.createdAtFrom(query.from())
             );
         }
 
         if (query.to() != null) {
             specification = specification.and(
-                    createdAtLessThanOrEqualTo(query.to())
+                    TransactionSpecifications.createdAtTo(query.to())
             );
         }
 
         return specification;
-    }
-
-    private Specification<MoneyTransaction> accountSpecification(
-            List<UUID> accountIds
-    ) {
-        return (root, query, criteriaBuilder) ->
-                criteriaBuilder.or(
-                        root.get("sourceAccountId")
-                                .in(accountIds),
-                        root.get("destinationAccountId")
-                                .in(accountIds)
-                );
-    }
-
-    private Specification<MoneyTransaction> statusSpecification(
-            com.example.ledgercore.transaction.enums.TransactionStatus status
-    ) {
-        return (root, query, criteriaBuilder) ->
-                criteriaBuilder.equal(
-                        root.get("status"),
-                        status
-                );
-    }
-
-    private Specification<MoneyTransaction> typeSpecification(
-            com.example.ledgercore.transaction.enums.TransactionType type
-    ) {
-        return (root, query, criteriaBuilder) ->
-                criteriaBuilder.equal(
-                        root.get("type"),
-                        type
-                );
-    }
-
-    private Specification<MoneyTransaction> currencySpecification(
-            Currency currency
-    ) {
-        return (root, query, criteriaBuilder) ->
-                criteriaBuilder.equal(
-                        root.get("currency"),
-                        currency
-                );
-    }
-
-    private Specification<MoneyTransaction>
-    createdAtGreaterThanOrEqualTo(Instant from) {
-
-        return (root, query, criteriaBuilder) ->
-                criteriaBuilder.greaterThanOrEqualTo(
-                        root.get("createdAt"),
-                        from
-                );
-    }
-
-    private Specification<MoneyTransaction>
-    createdAtLessThanOrEqualTo(Instant to) {
-
-        return (root, query, criteriaBuilder) ->
-                criteriaBuilder.lessThanOrEqualTo(
-                        root.get("createdAt"),
-                        to
-                );
     }
 
     private void validateQuery(
