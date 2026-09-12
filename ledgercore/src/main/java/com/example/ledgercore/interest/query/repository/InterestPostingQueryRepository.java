@@ -2,22 +2,11 @@ package com.example.ledgercore.interest.query.repository;
 
 import com.example.ledgercore.interest.entity.InterestPosting;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-import java.time.LocalDate;
-import java.util.List;
 import java.util.UUID;
 
 public interface InterestPostingQueryRepository
-        extends JpaRepository<InterestPosting, UUID> {
-
-    List<InterestPosting> findByPeriodStartAndPeriodEnd(
-            LocalDate periodStart,
-            LocalDate periodEnd
-    );
-
-    boolean existsByAccountIdAndPeriodStartAndPeriodEnd(
-            UUID accountId,
-            LocalDate periodStart,
-            LocalDate periodEnd
-    );
+        extends JpaRepository<InterestPosting, UUID>,
+        JpaSpecificationExecutor<InterestPosting> {
 }
