@@ -55,7 +55,7 @@ class RecordWithdrawHandlerTest {
     private static final Currency CURRENCY = Currency.VND;
 
     private static final BigDecimal AMOUNT =
-            new BigDecimal("1000000.0000");
+            new BigDecimal("1000000");
 
     private static final LocalDate BUSINESS_DATE =
             LocalDate.of(2026, 9, 4);
@@ -293,6 +293,38 @@ class RecordWithdrawHandlerTest {
         // Then
         assertEquals(
                 ErrorCode.INVALID_REQUEST,
+                exception.getErrorCode()
+        );
+
+        verifyNoInteractions(
+                journalEntryCommandRepository,
+                journalEntryLineCommandRepository,
+                accountLedgerMappingPort,
+                systemLedgerAccountService
+        );
+    }
+
+    @Test
+    void shouldRejectAmountWithScaleExceedingCurrencyScale() {
+        // Given
+        RecordWithdrawCommand command =
+                new RecordWithdrawCommand(
+                        transactionId,
+                        sourceAccountId,
+                        new BigDecimal("100.1"),
+                        CURRENCY,
+                        BUSINESS_DATE
+                );
+
+        // When
+        BusinessException exception = assertThrows(
+                BusinessException.class,
+                () -> handler.execute(command)
+        );
+
+        // Then
+        assertEquals(
+                ErrorCode.INVALID_CURRENCY_AMOUNT,
                 exception.getErrorCode()
         );
 
