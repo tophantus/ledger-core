@@ -79,6 +79,14 @@ export const API_ENDPOINTS = {
             SUMMARY: "/api/v1/admin/reconciliation/summary",
             EXCEPTIONS: "/api/v1/admin/reconciliation/exceptions",
         },
+        INTEREST: {
+            RUNS:
+                "/api/v1/admin/interest/runs",
+            ACCRUALS:
+                "/api/v1/admin/interest/accruals",
+            POSTINGS:
+                "/api/v1/admin/interest/postings",
+        },
         BUSINESS_DAY: {
             CURRENT:
                 "/api/v1/admin/business-days/current",

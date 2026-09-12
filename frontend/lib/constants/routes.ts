@@ -33,5 +33,11 @@ export const ROUTES = {
             `/admin/accounts/${accountId}`,
         TRANSACTIONS: "/admin/transactions",
         RECONCILIATION: "/admin/reconciliation",
+        INTERESTS: {
+            OVERVIEW: "/admin/interests",
+            RUNS: "/admin/interests/runs",
+            ACCRUALS: "/admin/interests/accruals",
+            POSTINGS: "/admin/interests/postings",
+        },
     },
 } as const;

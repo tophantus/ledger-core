@@ -32,6 +32,12 @@
       "users": "Users",
       "accounts": "Accounts",
       "transactions": "Transactions",
+      "interests": {
+        "overview": "Interest",
+        "runs": "Runs",
+        "accruals": "Accruals",
+        "postings": "Postings"
+      },
       "reconciliation": "Reconciliation"
     }
   }
