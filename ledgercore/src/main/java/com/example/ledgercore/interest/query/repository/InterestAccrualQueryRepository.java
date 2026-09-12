@@ -3,6 +3,7 @@ package com.example.ledgercore.interest.query.repository;
 import com.example.ledgercore.interest.entity.InterestAccrual;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -11,7 +12,8 @@ import java.util.List;
 import java.util.UUID;
 
 public interface InterestAccrualQueryRepository
-        extends JpaRepository<InterestAccrual, UUID> {
+        extends JpaRepository<InterestAccrual, UUID>,
+        JpaSpecificationExecutor<InterestAccrual> {
 
     @Query("""
         SELECT DISTINCT accrual.accountId
