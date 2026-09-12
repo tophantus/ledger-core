@@ -1,5 +1,7 @@
 package com.example.ledgercore.withdrawal.command.handler;
 
+import com.example.ledgercore.common.currency.Currency;
+import com.example.ledgercore.common.currency.CurrencyAmountPolicy;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.withdrawal.command.dto.CreateWithdrawalRequestCommand;
@@ -12,6 +14,7 @@ import com.example.ledgercore.withdrawal.command.repository.WithdrawalRequestCom
 import com.example.ledgercore.withdrawal.config.WithdrawalRequestProperties;
 import com.example.ledgercore.withdrawal.entity.WithdrawalRequest;
 import com.example.ledgercore.withdrawal.enums.WithdrawalRequestStatus;
+import com.example.ledgercore.withdrawal.policy.WithdrawalAmountPolicy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,7 +40,7 @@ public class CreateWithdrawalRequestHandler
     public WithdrawalRequestResponse execute(
             CreateWithdrawalRequestCommand command
     ) {
-        validateAmount(command.amount());
+        validateAmount(command.amount(), command.currency());
 
         WithdrawalAccountInfo account =
                 withdrawalAccountPort.getWithdrawalInfo(
@@ -96,12 +99,22 @@ public class CreateWithdrawalRequestHandler
         );
     }
 
-    private void validateAmount(BigDecimal amount) {
+    private void validateAmount(BigDecimal amount, Currency currency) {
         if (amount == null
                 || amount.signum() <= 0) {
             throw new BusinessException(
                     ErrorCode.INVALID_WITHDRAW_AMOUNT
             );
         }
+
+        CurrencyAmountPolicy.validate(
+                amount,
+                currency
+        );
+
+        WithdrawalAmountPolicy.validate(
+                amount,
+                currency
+        );
     }
 }

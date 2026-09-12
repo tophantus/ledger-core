@@ -1,5 +1,6 @@
 package com.example.ledgercore.withdrawal.command.handler;
 
+import com.example.ledgercore.common.currency.CurrencyAmountPolicy;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.withdrawal.command.dto.ConfirmWithdrawalRequestCommand;
@@ -8,6 +9,7 @@ import com.example.ledgercore.withdrawal.command.port.inbound.ConfirmWithdrawalR
 import com.example.ledgercore.withdrawal.command.port.outbound.WithdrawalOtpPort;
 import com.example.ledgercore.withdrawal.command.repository.WithdrawalRequestCommandRepository;
 import com.example.ledgercore.withdrawal.entity.WithdrawalRequest;
+import com.example.ledgercore.withdrawal.policy.WithdrawalAmountPolicy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -115,5 +117,15 @@ public class ConfirmWithdrawalRequestHandler
                     ErrorCode.WITHDRAWAL_REQUEST_EXPIRED
             );
         }
+
+        CurrencyAmountPolicy.validate(
+                request.getAmount(),
+                request.getCurrency()
+        );
+
+        WithdrawalAmountPolicy.validate(
+                request.getAmount(),
+                request.getCurrency()
+        );
     }
 }
