@@ -97,14 +97,6 @@ public class GetAdminInterestAccrualsHandler
             );
         }
 
-        if (query.currency() != null) {
-            specification = specification.and(
-                    InterestAccrualSpecifications.currency(
-                            query.currency()
-                    )
-            );
-        }
-
         return specification;
     }
 
@@ -118,7 +110,8 @@ public class GetAdminInterestAccrualsHandler
         }
 
         if (query.runId() == null
-                && query.businessDate() == null) {
+                && query.businessDate() == null
+                && query.accountId() == null) {
             throw new BusinessException(
                     ErrorCode.INVALID_REQUEST
             );

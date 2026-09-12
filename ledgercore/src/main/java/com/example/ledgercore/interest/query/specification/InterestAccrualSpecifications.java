@@ -41,14 +41,4 @@ public final class InterestAccrualSpecifications {
                         accountId
                 );
     }
-
-    public static Specification<InterestAccrual> currency(
-            Currency currency
-    ) {
-        return (root, query, criteriaBuilder) ->
-                criteriaBuilder.equal(
-                        root.get("currency"),
-                        currency
-                );
-    }
 }

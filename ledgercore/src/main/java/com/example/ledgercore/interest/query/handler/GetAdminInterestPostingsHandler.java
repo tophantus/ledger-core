@@ -110,7 +110,8 @@ public class GetAdminInterestPostingsHandler
         }
 
         if (query.runId() == null
-                && query.businessDate() == null) {
+                && query.businessDate() == null
+                && query.accountId() == null) {
             throw new BusinessException(
                     ErrorCode.INVALID_REQUEST
             );
