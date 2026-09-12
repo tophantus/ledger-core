@@ -79,42 +79,36 @@ class PostInterestHandlerTest {
                 );
 
         PostInterestCommand command =
-                new PostInterestCommand(
+                command(
                         runId,
                         accountId,
                         periodStart,
                         periodEnd
                 );
 
-        when(
-                interestPostingCommandRepository
-                        .existsByAccountIdAndPeriodStartAndPeriodEnd(
-                                accountId,
-                                periodStart,
-                                periodEnd
-                        )
-        ).thenReturn(false);
+        mockNoExistingPosting(
+                accountId,
+                periodStart,
+                periodEnd
+        );
 
-        when(
-                interestAccrualCommandRepository
-                        .findByAccountIdAndBusinessDateBetweenAndPostingIdIsNull(
-                                accountId,
-                                periodStart,
-                                periodEnd
-                        )
-        ).thenReturn(List.of(accrual1, accrual2));
+        mockUnpostedAccruals(
+                accountId,
+                periodStart,
+                periodEnd,
+                accrual1,
+                accrual2
+        );
 
         InterestPosting savedPosting =
-                InterestPosting.builder()
-                        .id(postingId)
-                        .runId(runId)
-                        .accountId(accountId)
-                        .periodStart(periodStart)
-                        .periodEnd(periodEnd)
-                        .interestAmount(
-                                new BigDecimal("3000.0000")
-                        )
-                        .build();
+                savedPosting(
+                        postingId,
+                        runId,
+                        accountId,
+                        periodStart,
+                        periodEnd,
+                        "3000"
+                );
 
         when(
                 interestPostingCommandRepository.save(
@@ -125,7 +119,7 @@ class PostInterestHandlerTest {
         when(
                 interestTransactionPort.postInterest(
                         accountId,
-                        new BigDecimal("3000.0000"),
+                        new BigDecimal("3000"),
                         Currency.VND,
                         periodEnd
                 )
@@ -157,27 +151,24 @@ class PostInterestHandlerTest {
                 .isEqualTo(periodEnd);
 
         assertThat(createdPosting.getInterestAmount())
-                .isEqualByComparingTo("3000.0000");
+                .isEqualByComparingTo("3000");
 
         verify(interestTransactionPort)
                 .postInterest(
                         accountId,
-                        new BigDecimal("3000.0000"),
+                        new BigDecimal("3000"),
                         Currency.VND,
                         periodEnd
                 );
 
-        assertThat(savedPosting.getRunId())
-                .isEqualTo(runId);
+        InterestPosting updatedPosting =
+                postingCaptor.getAllValues().get(1);
 
-        assertThat(savedPosting.getTransactionId())
+        assertThat(updatedPosting.getTransactionId())
                 .isEqualTo(transactionId);
 
-        assertThat(savedPosting.getPostedAt())
+        assertThat(updatedPosting.getPostedAt())
                 .isNotNull();
-
-        verify(interestPostingCommandRepository, times(2))
-                .save(any(InterestPosting.class));
 
         verify(interestAccrualCommandRepository)
                 .saveAll(List.of(accrual1, accrual2));
@@ -187,6 +178,288 @@ class PostInterestHandlerTest {
 
         assertThat(accrual2.getPostingId())
                 .isEqualTo(postingId);
+    }
+
+    @Test
+    void shouldRoundTotalInterestBeforePosting() {
+        UUID runId = UUID.randomUUID();
+        UUID accountId = UUID.randomUUID();
+        UUID transactionId = UUID.randomUUID();
+        UUID postingId = UUID.randomUUID();
+
+        LocalDate periodStart =
+                LocalDate.of(2026, 8, 1);
+
+        LocalDate periodEnd =
+                LocalDate.of(2026, 8, 31);
+
+        InterestAccrual accrual1 =
+                createAccrual(
+                        accountId,
+                        LocalDate.of(2026, 8, 30),
+                        "10.123",
+                        Currency.USD
+                );
+
+        InterestAccrual accrual2 =
+                createAccrual(
+                        accountId,
+                        LocalDate.of(2026, 8, 31),
+                        "20.456",
+                        Currency.USD
+                );
+
+        mockNoExistingPosting(
+                accountId,
+                periodStart,
+                periodEnd
+        );
+
+        mockUnpostedAccruals(
+                accountId,
+                periodStart,
+                periodEnd,
+                accrual1,
+                accrual2
+        );
+
+        InterestPosting savedPosting =
+                savedPosting(
+                        postingId,
+                        runId,
+                        accountId,
+                        periodStart,
+                        periodEnd,
+                        "30.58"
+                );
+
+        when(
+                interestPostingCommandRepository.save(
+                        any(InterestPosting.class)
+                )
+        ).thenReturn(savedPosting);
+
+        when(
+                interestTransactionPort.postInterest(
+                        accountId,
+                        new BigDecimal("30.58"),
+                        Currency.USD,
+                        periodEnd
+                )
+        ).thenReturn(transactionId);
+
+        handler.execute(
+                command(
+                        runId,
+                        accountId,
+                        periodStart,
+                        periodEnd
+                )
+        );
+
+        ArgumentCaptor<InterestPosting> captor =
+                ArgumentCaptor.forClass(InterestPosting.class);
+
+        verify(
+                interestPostingCommandRepository,
+                times(2)
+        ).save(captor.capture());
+
+        InterestPosting posting =
+                captor.getAllValues().getFirst();
+
+        assertThat(posting.getInterestAmount())
+                .isEqualByComparingTo("30.58");
+
+        verify(interestTransactionPort)
+                .postInterest(
+                        accountId,
+                        new BigDecimal("30.58"),
+                        Currency.USD,
+                        periodEnd
+                );
+    }
+
+    @Test
+    void shouldRoundTotalInterestAfterSummingAccruals() {
+        UUID runId = UUID.randomUUID();
+        UUID accountId = UUID.randomUUID();
+        UUID transactionId = UUID.randomUUID();
+        UUID postingId = UUID.randomUUID();
+
+        LocalDate periodStart =
+                LocalDate.of(2026, 8, 1);
+
+        LocalDate periodEnd =
+                LocalDate.of(2026, 8, 31);
+
+        InterestAccrual accrual1 =
+                createAccrual(
+                        accountId,
+                        LocalDate.of(2026, 8, 30),
+                        "10.005",
+                        Currency.USD
+                );
+
+        InterestAccrual accrual2 =
+                createAccrual(
+                        accountId,
+                        LocalDate.of(2026, 8, 31),
+                        "10.005",
+                        Currency.USD
+                );
+
+        mockNoExistingPosting(
+                accountId,
+                periodStart,
+                periodEnd
+        );
+
+        mockUnpostedAccruals(
+                accountId,
+                periodStart,
+                periodEnd,
+                accrual1,
+                accrual2
+        );
+
+        InterestPosting savedPosting =
+                savedPosting(
+                        postingId,
+                        runId,
+                        accountId,
+                        periodStart,
+                        periodEnd,
+                        "20.01"
+                );
+
+        when(
+                interestPostingCommandRepository.save(
+                        any(InterestPosting.class)
+                )
+        ).thenReturn(savedPosting);
+
+        when(
+                interestTransactionPort.postInterest(
+                        accountId,
+                        new BigDecimal("20.01"),
+                        Currency.USD,
+                        periodEnd
+                )
+        ).thenReturn(transactionId);
+
+        handler.execute(
+                command(
+                        runId,
+                        accountId,
+                        periodStart,
+                        periodEnd
+                )
+        );
+
+        ArgumentCaptor<InterestPosting> captor =
+                ArgumentCaptor.forClass(InterestPosting.class);
+
+        verify(
+                interestPostingCommandRepository,
+                times(2)
+        ).save(captor.capture());
+
+        assertThat(
+                captor.getAllValues()
+                        .getFirst()
+                        .getInterestAmount()
+        ).isEqualByComparingTo("20.01");
+
+        verify(interestTransactionPort)
+                .postInterest(
+                        accountId,
+                        new BigDecimal("20.01"),
+                        Currency.USD,
+                        periodEnd
+                );
+    }
+
+    @Test
+    void shouldCreatePostingWithoutTransactionWhenInterestRoundsToZero() {
+        UUID runId = UUID.randomUUID();
+        UUID accountId = UUID.randomUUID();
+        UUID postingId = UUID.randomUUID();
+
+        LocalDate periodStart =
+                LocalDate.of(2026, 8, 1);
+
+        LocalDate periodEnd =
+                LocalDate.of(2026, 8, 31);
+
+        InterestAccrual accrual =
+                createAccrual(
+                        accountId,
+                        LocalDate.of(2026, 8, 31),
+                        "0.004",
+                        Currency.USD
+                );
+
+        mockNoExistingPosting(
+                accountId,
+                periodStart,
+                periodEnd
+        );
+
+        mockUnpostedAccruals(
+                accountId,
+                periodStart,
+                periodEnd,
+                accrual
+        );
+
+        InterestPosting savedPosting =
+                savedPosting(
+                        postingId,
+                        runId,
+                        accountId,
+                        periodStart,
+                        periodEnd,
+                        "0.00"
+                );
+
+        when(
+                interestPostingCommandRepository.save(
+                        any(InterestPosting.class)
+                )
+        ).thenReturn(savedPosting);
+
+        handler.execute(
+                command(
+                        runId,
+                        accountId,
+                        periodStart,
+                        periodEnd
+                )
+        );
+
+        ArgumentCaptor<InterestPosting> captor =
+                ArgumentCaptor.forClass(InterestPosting.class);
+
+        verify(
+                interestPostingCommandRepository
+        ).save(captor.capture());
+
+        assertThat(captor.getValue().getInterestAmount())
+                .isZero();
+
+        verifyNoInteractions(
+                interestTransactionPort
+        );
+
+        verify(interestAccrualCommandRepository)
+                .saveAll(List.of(accrual));
+
+        assertThat(accrual.getPostingId())
+                .isEqualTo(postingId);
+
+        assertThat(savedPosting.getTransactionId())
+                .isNull();
     }
 
     @Test
@@ -201,7 +474,7 @@ class PostInterestHandlerTest {
                 LocalDate.of(2026, 8, 31);
 
         PostInterestCommand command =
-                new PostInterestCommand(
+                command(
                         runId,
                         accountId,
                         periodStart,
@@ -250,21 +523,18 @@ class PostInterestHandlerTest {
                 LocalDate.of(2026, 8, 31);
 
         PostInterestCommand command =
-                new PostInterestCommand(
+                command(
                         runId,
                         accountId,
                         periodStart,
                         periodEnd
                 );
 
-        when(
-                interestPostingCommandRepository
-                        .existsByAccountIdAndPeriodStartAndPeriodEnd(
-                                accountId,
-                                periodStart,
-                                periodEnd
-                        )
-        ).thenReturn(false);
+        mockNoExistingPosting(
+                accountId,
+                periodStart,
+                periodEnd
+        );
 
         when(
                 interestAccrualCommandRepository
@@ -300,107 +570,6 @@ class PostInterestHandlerTest {
     }
 
     @Test
-    void shouldCreatePostingWithoutTransactionWhenInterestIsZero() {
-        UUID runId = UUID.randomUUID();
-        UUID accountId = UUID.randomUUID();
-        UUID postingId = UUID.randomUUID();
-
-        LocalDate periodStart =
-                LocalDate.of(2026, 8, 1);
-
-        LocalDate periodEnd =
-                LocalDate.of(2026, 8, 31);
-
-        InterestAccrual accrual =
-                createAccrual(
-                        accountId,
-                        LocalDate.of(2026, 8, 31),
-                        "0.0000",
-                        Currency.VND
-                );
-
-        PostInterestCommand command =
-                new PostInterestCommand(
-                        runId,
-                        accountId,
-                        periodStart,
-                        periodEnd
-                );
-
-        when(
-                interestPostingCommandRepository
-                        .existsByAccountIdAndPeriodStartAndPeriodEnd(
-                                accountId,
-                                periodStart,
-                                periodEnd
-                        )
-        ).thenReturn(false);
-
-        when(
-                interestAccrualCommandRepository
-                        .findByAccountIdAndBusinessDateBetweenAndPostingIdIsNull(
-                                accountId,
-                                periodStart,
-                                periodEnd
-                        )
-        ).thenReturn(List.of(accrual));
-
-        InterestPosting savedPosting =
-                InterestPosting.builder()
-                        .id(postingId)
-                        .runId(runId)
-                        .accountId(accountId)
-                        .periodStart(periodStart)
-                        .periodEnd(periodEnd)
-                        .interestAmount(BigDecimal.ZERO)
-                        .build();
-
-        when(
-                interestPostingCommandRepository.save(
-                        any(InterestPosting.class)
-                )
-        ).thenReturn(savedPosting);
-
-        handler.execute(command);
-
-        ArgumentCaptor<InterestPosting> postingCaptor =
-                ArgumentCaptor.forClass(InterestPosting.class);
-
-        verify(
-                interestPostingCommandRepository,
-                times(1)
-        ).save(postingCaptor.capture());
-
-        InterestPosting posting =
-                postingCaptor.getValue();
-
-        assertThat(posting.getRunId())
-                .isEqualTo(runId);
-
-        assertThat(posting.getAccountId())
-                .isEqualTo(accountId);
-
-        assertThat(posting.getInterestAmount())
-                .isZero();
-
-        verifyNoInteractions(
-                interestTransactionPort
-        );
-
-        verify(interestAccrualCommandRepository)
-                .saveAll(List.of(accrual));
-
-        assertThat(accrual.getPostingId())
-                .isEqualTo(postingId);
-
-        assertThat(savedPosting.getRunId())
-                .isEqualTo(runId);
-
-        assertThat(savedPosting.getTransactionId())
-                .isNull();
-    }
-
-    @Test
     void shouldRejectDifferentCurrencies() {
         UUID runId = UUID.randomUUID();
         UUID accountId = UUID.randomUUID();
@@ -427,34 +596,29 @@ class PostInterestHandlerTest {
                         Currency.USD
                 );
 
-        PostInterestCommand command =
-                new PostInterestCommand(
-                        runId,
-                        accountId,
-                        periodStart,
-                        periodEnd
-                );
+        mockNoExistingPosting(
+                accountId,
+                periodStart,
+                periodEnd
+        );
 
-        when(
-                interestPostingCommandRepository
-                        .existsByAccountIdAndPeriodStartAndPeriodEnd(
-                                accountId,
-                                periodStart,
-                                periodEnd
-                        )
-        ).thenReturn(false);
-
-        when(
-                interestAccrualCommandRepository
-                        .findByAccountIdAndBusinessDateBetweenAndPostingIdIsNull(
-                                accountId,
-                                periodStart,
-                                periodEnd
-                        )
-        ).thenReturn(List.of(vndAccrual, usdAccrual));
+        mockUnpostedAccruals(
+                accountId,
+                periodStart,
+                periodEnd,
+                vndAccrual,
+                usdAccrual
+        );
 
         assertThatThrownBy(
-                () -> handler.execute(command)
+                () -> handler.execute(
+                        command(
+                                runId,
+                                accountId,
+                                periodStart,
+                                periodEnd
+                        )
+                )
         )
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage(
@@ -606,6 +770,71 @@ class PostInterestHandlerTest {
                 interestPostingCommandRepository,
                 interestTransactionPort
         );
+    }
+
+    private PostInterestCommand command(
+            UUID runId,
+            UUID accountId,
+            LocalDate periodStart,
+            LocalDate periodEnd
+    ) {
+        return new PostInterestCommand(
+                runId,
+                accountId,
+                periodStart,
+                periodEnd
+        );
+    }
+
+    private void mockNoExistingPosting(
+            UUID accountId,
+            LocalDate periodStart,
+            LocalDate periodEnd
+    ) {
+        when(
+                interestPostingCommandRepository
+                        .existsByAccountIdAndPeriodStartAndPeriodEnd(
+                                accountId,
+                                periodStart,
+                                periodEnd
+                        )
+        ).thenReturn(false);
+    }
+
+    private void mockUnpostedAccruals(
+            UUID accountId,
+            LocalDate periodStart,
+            LocalDate periodEnd,
+            InterestAccrual... accruals
+    ) {
+        when(
+                interestAccrualCommandRepository
+                        .findByAccountIdAndBusinessDateBetweenAndPostingIdIsNull(
+                                accountId,
+                                periodStart,
+                                periodEnd
+                        )
+        ).thenReturn(List.of(accruals));
+    }
+
+    private InterestPosting savedPosting(
+            UUID postingId,
+            UUID runId,
+            UUID accountId,
+            LocalDate periodStart,
+            LocalDate periodEnd,
+            String interestAmount
+    ) {
+        return InterestPosting.builder()
+                .id(postingId)
+                .runId(runId)
+                .accountId(accountId)
+                .periodStart(periodStart)
+                .periodEnd(periodEnd)
+                .interestAmount(
+                        new BigDecimal(interestAmount)
+                )
+                .build();
     }
 
     private InterestAccrual createAccrual(
