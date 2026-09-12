@@ -407,6 +407,37 @@ class WithdrawMoneyHandlerTest {
     }
 
     @Test
+    void shouldThrowWhenAmountScaleExceedsCurrencyScale() {
+
+        WithdrawMoneyCommand command =
+                command(
+                        "100.1",
+                        Currency.VND,
+                        "WD-009",
+                        null
+                );
+
+        BusinessException exception =
+                assertThrows(
+                        BusinessException.class,
+                        () -> handler.execute(command)
+                );
+
+        assertEquals(
+                ErrorCode.INVALID_CURRENCY_AMOUNT,
+                exception.getErrorCode()
+        );
+
+        verifyNoInteractions(
+                transactionCommandRepository,
+                accountWithdrawPort,
+                ledgerWithdrawPort,
+                transactionEventPort,
+                businessDayPort
+        );
+    }
+
+    @Test
     void shouldThrowWhenAmountIsZero() {
 
         WithdrawMoneyCommand command =

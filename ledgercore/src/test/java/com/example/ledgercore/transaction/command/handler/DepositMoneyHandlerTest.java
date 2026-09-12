@@ -78,7 +78,7 @@ class DepositMoneyHandlerTest {
         DepositMoneyCommand command =
                 command(
                         destinationAccountId,
-                        "100.00",
+                        "100",
                         Currency.VND,
                         "DEP-001",
                         "Cash deposit"
@@ -132,7 +132,7 @@ class DepositMoneyHandlerTest {
                 response.destinationAccountId()
         );
         assertEquals(
-                new BigDecimal("100.00"),
+                new BigDecimal("100"),
                 response.amount()
         );
         assertEquals(
@@ -169,7 +169,7 @@ class DepositMoneyHandlerTest {
         verify(accountDepositPort)
                 .deposit(
                         destinationAccountId,
-                        new BigDecimal("100.00"),
+                        new BigDecimal("100"),
                         BUSINESS_DATE
                 );
 
@@ -177,7 +177,7 @@ class DepositMoneyHandlerTest {
                 .recordDeposit(
                         transactionId,
                         destinationAccountId,
-                        new BigDecimal("100.00"),
+                        new BigDecimal("100"),
                         Currency.VND,
                         BUSINESS_DATE
                 );
@@ -197,7 +197,7 @@ class DepositMoneyHandlerTest {
         DepositMoneyCommand command =
                 command(
                         destinationAccountId,
-                        "100.00",
+                        "100",
                         Currency.VND,
                         "DEP-002",
                         null
@@ -245,7 +245,7 @@ class DepositMoneyHandlerTest {
             );
 
             assertEquals(
-                    new BigDecimal("100.00"),
+                    new BigDecimal("100"),
                     transaction.getAmount()
             );
 
@@ -295,7 +295,7 @@ class DepositMoneyHandlerTest {
         DepositMoneyCommand command =
                 command(
                         destinationAccountId,
-                        "100.00",
+                        "100",
                         Currency.VND,
                         "DEP-003",
                         "duplicate"
@@ -583,6 +583,41 @@ class DepositMoneyHandlerTest {
                         Currency.VND,
                         BUSINESS_DATE
                 );
+    }
+
+    @Test
+    void shouldThrowWhenAmountScaleExceedsCurrencyScale() {
+
+        DepositMoneyCommand command =
+                command(
+                        destinationAccountId,
+                        "100.1",
+                        Currency.VND,
+                        "DEP-009",
+                        null
+                );
+
+        BusinessException exception =
+                assertThrows(
+                        BusinessException.class,
+                        () -> handler.execute(
+                                adminUserId,
+                                command
+                        )
+                );
+
+        assertEquals(
+                ErrorCode.INVALID_CURRENCY_AMOUNT,
+                exception.getErrorCode()
+        );
+
+        verifyNoInteractions(
+                transactionCommandRepository,
+                accountDepositPort,
+                ledgerDepositPort,
+                transactionEventPort,
+                businessDayPort
+        );
     }
 
     @Test

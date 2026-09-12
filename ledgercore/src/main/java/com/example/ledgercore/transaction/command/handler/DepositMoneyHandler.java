@@ -1,5 +1,6 @@
 package com.example.ledgercore.transaction.command.handler;
 
+import com.example.ledgercore.common.currency.CurrencyAmountPolicy;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.common.lock.DistributedLock;
@@ -116,6 +117,11 @@ public class DepositMoneyHandler implements DepositMoneyUseCase {
                     ErrorCode.INVALID_DEPOSIT_AMOUNT
             );
         }
+
+        CurrencyAmountPolicy.validate(
+                command.amount(),
+                command.currency()
+        );
     }
 
     private void validateDeposit(

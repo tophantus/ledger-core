@@ -203,6 +203,48 @@ class ConfirmTransferHandlerTest {
     }
 
     @Test
+    void shouldThrowWhenAmountScaleExceedsCurrencyScale() {
+        TransferIntent intent =
+                createPendingIntent(
+                        now.plusSeconds(300)
+                );
+
+        intent.setAmount(
+                new BigDecimal("100.1")
+        );
+
+        ConfirmTransferCommand command =
+                new ConfirmTransferCommand(
+                        intentId,
+                        "123456"
+                );
+
+        when(
+                transferIntentCommandRepository
+                        .findById(intentId)
+        ).thenReturn(Optional.of(intent));
+
+        BusinessException exception =
+                assertThrows(
+                        BusinessException.class,
+                        () -> handler.execute(
+                                userId,
+                                command
+                        )
+                );
+
+        assertEquals(
+                ErrorCode.INVALID_CURRENCY_AMOUNT,
+                exception.getErrorCode()
+        );
+
+        verifyNoInteractions(
+                transferOtpPort,
+                confirmTransferExecutionService
+        );
+    }
+
+    @Test
     void shouldThrowWhenIntentIsNotPending() {
         TransferIntent intent =
                 createPendingIntent(
@@ -340,7 +382,7 @@ class ConfirmTransferHandlerTest {
                 .userId(userId)
                 .sourceAccountId(sourceAccountId)
                 .destinationAccountId(destinationAccountId)
-                .amount(new BigDecimal("100.00"))
+                .amount(new BigDecimal("100"))
                 .currency(Currency.VND)
                 .reference("REF-001")
                 .description("Test transfer")

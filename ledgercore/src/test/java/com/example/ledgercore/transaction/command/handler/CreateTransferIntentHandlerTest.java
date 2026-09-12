@@ -360,6 +360,48 @@ class CreateTransferIntentHandlerTest {
     }
 
     @Test
+    void shouldThrowInvalidCurrencyAmountWhenAmountScaleExceedsCurrencyScale() {
+        CreateTransferIntentCommand command =
+                new CreateTransferIntentCommand(
+                        sourceAccountId,
+                        "0987654321",
+                        new BigDecimal("100.1"),
+                        Currency.VND,
+                        "REF-001",
+                        "Test transfer"
+                );
+
+        when(
+                transferIntentCommandRepository
+                        .findByReference("REF-001")
+        ).thenReturn(Optional.empty());
+
+        BusinessException exception =
+                assertThrows(
+                        BusinessException.class,
+                        () -> handler.execute(
+                                userId,
+                                command
+                        )
+                );
+
+        assertEquals(
+                ErrorCode.INVALID_CURRENCY_AMOUNT,
+                exception.getErrorCode()
+        );
+
+        verifyNoInteractions(
+                accountTransferPort,
+                transferOtpPort
+        );
+
+        verify(
+                transferIntentCommandRepository,
+                never()
+        ).save(any());
+    }
+
+    @Test
     void shouldThrowAccessDeniedWhenReferenceBelongsToAnotherUser() {
         CreateTransferIntentCommand command =
                 createCommand();

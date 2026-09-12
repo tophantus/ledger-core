@@ -1,5 +1,6 @@
 package com.example.ledgercore.transaction.command.handler;
 
+import com.example.ledgercore.common.currency.CurrencyAmountPolicy;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.transaction.command.dto.ConfirmTransferCommand;
@@ -96,5 +97,10 @@ public class ConfirmTransferHandler
                     ErrorCode.TRANSFER_INTENT_EXPIRED
             );
         }
+
+        CurrencyAmountPolicy.validate(
+                intent.getAmount(),
+                intent.getCurrency()
+        );
     }
 }
