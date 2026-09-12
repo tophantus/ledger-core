@@ -31,6 +31,12 @@
       "dashboard": "Tổng quan",
       "users": "Người dùng",
       "accounts": "Tài khoản",
+      "interests": {
+        "overview": "Lãi suất",
+        "runs": "Các lần chạy",
+        "accruals": "Tích lũy lãi",
+        "postings": "Ghi nhận lãi"
+      },
       "transactions": "Giao dịch",
       "reconciliation": "Đối soát"
     }

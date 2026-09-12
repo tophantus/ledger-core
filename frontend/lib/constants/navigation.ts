@@ -1,7 +1,7 @@
 import {
     ArrowDownToLine,
     ClipboardList, GitCompare,
-    LayoutDashboard,
+    LayoutDashboard, Percent,
     ReceiptText, Users, Wallet, Webhook,
 } from "lucide-react";
 
@@ -52,8 +52,31 @@ export const ADMIN_NAVIGATION_ITEMS = [
         icon: ClipboardList,
     },
     {
+        href: ROUTES.ADMIN.INTERESTS.OVERVIEW,
+        labelKey: "navigation.admin.interests.overview",
+        icon: Percent,
+        children: [
+            {
+                href: ROUTES.ADMIN.INTERESTS.RUNS,
+                labelKey:
+                    "navigation.admin.interests.runs",
+            },
+            {
+                href: ROUTES.ADMIN.INTERESTS.ACCRUALS,
+                labelKey:
+                    "navigation.admin.interests.accruals",
+            },
+            {
+                href: ROUTES.ADMIN.INTERESTS.POSTINGS,
+                labelKey:
+                    "navigation.admin.interests.postings",
+            },
+        ],
+    },
+    {
         href: ROUTES.ADMIN.RECONCILIATION,
         labelKey: "navigation.admin.reconciliation",
         icon: GitCompare,
     },
+
 ] as const;

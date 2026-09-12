@@ -163,6 +163,158 @@
       "OPENING_BALANCE_MISMATCH": "Sai lệch số dư đầu kỳ"
     }
   },
+  "interest": {
+    "overview": {
+      "title": "Tổng quan lãi suất",
+      "description": "Theo dõi hoạt động xử lý lãi gần đây.",
+      "latestRun": "Lần chạy gần nhất",
+      "latestAccrual": "Lần tích lũy lãi gần nhất",
+      "latestPosting": "Lần hạch toán lãi gần nhất",
+      "processed": "đã xử lý",
+      "noRun": "Chưa có lần chạy nào.",
+      "recentRuns": "Các lần chạy gần đây",
+      "recentRunsDescription": "Các lần xử lý lãi gần nhất.",
+      "viewAll": "Xem tất cả",
+      "loadError": "Không thể tải các lần chạy lãi.",
+      "noRuns": "Chưa có lần chạy lãi nào.",
+      "quickLinks": "Truy cập nhanh",
+      "runType": {
+        "ACCRUAL": "Tích lũy lãi",
+        "POSTING": "Hạch toán lãi"
+      },
+      "status": {
+        "PENDING": "Chờ xử lý",
+        "RUNNING": "Đang chạy",
+        "COMPLETED": "Hoàn thành"
+      },
+      "columns": {
+        "businessDate": "Ngày nghiệp vụ",
+        "type": "Loại",
+        "status": "Trạng thái",
+        "processed": "Đã xử lý",
+        "startedAt": "Bắt đầu",
+        "completedAt": "Hoàn thành"
+      },
+      "links": {
+        "runs": {
+          "title": "Lần chạy lãi",
+          "description": "Xem và theo dõi các lần xử lý lãi."
+        },
+        "accruals": {
+          "title": "Tích lũy lãi",
+          "description": "Xem số tiền lãi được tích lũy cho tài khoản khách hàng."
+        },
+        "postings": {
+          "title": "Hạch toán lãi",
+          "description": "Xem các khoản lãi đã được hạch toán vào tài khoản khách hàng."
+        }
+      }
+    },
+    "runs": {
+      "title": "Lần chạy tính lãi",
+      "description": "Xem và theo dõi các lần chạy tính lãi.",
+      "loading": "Đang tải các lần chạy tính lãi...",
+      "empty": "Không tìm thấy lần chạy tính lãi nào.",
+      "loadError": "Không thể tải các lần chạy tính lãi.",
+      "filters": {
+        "title": "Bộ lọc",
+        "businessDate": "Ngày nghiệp vụ",
+        "fromDate": "Từ ngày",
+        "toDate": "Đến ngày",
+        "runType": "Loại chạy",
+        "allRunTypes": "Tất cả loại chạy",
+        "status": "Trạng thái",
+        "allStatuses": "Tất cả trạng thái",
+        "clear": "Xóa"
+      },
+      "runTypes": {
+        "ACCRUAL": "Trích trước lãi",
+        "POSTING": "Hạch toán lãi"
+      },
+      "statuses": {
+        "PENDING": "Đang chờ",
+        "RUNNING": "Đang chạy",
+        "COMPLETED": "Hoàn tất"
+      },
+      "table": {
+        "businessDate": "Ngày nghiệp vụ",
+        "runType": "Loại chạy",
+        "status": "Trạng thái",
+        "processedCount": "Đã xử lý",
+        "startedAt": "Bắt đầu lúc",
+        "completedAt": "Hoàn tất lúc",
+        "createdAt": "Ngày tạo"
+      },
+      "pagination": {
+        "total": "Tổng: {count}",
+        "previous": "Trước",
+        "next": "Sau",
+        "page": "Trang {current} / {total}"
+      }
+    },
+    "accruals": {
+      "title": "Tích lũy lãi",
+      "description": "Xem các bản ghi tích lũy lãi được tạo cho tài khoản khách hàng.",
+      "total": "{count} bản ghi",
+      "columns": {
+        "account": "Tài khoản",
+        "currency": "Loại tiền",
+        "businessDate": "Ngày nghiệp vụ",
+        "principal": "Tiền gốc",
+        "rate": "Lãi suất",
+        "interest": "Tiền lãi",
+        "run": "Run ID",
+        "createdAt": "Ngày tạo"
+      },
+      "emptyTitle": "Chưa có bản ghi tích lũy lãi",
+      "emptyDescription": "Không có bản ghi tích lũy lãi phù hợp với bộ lọc.",
+      "filters": {
+        "title": "Bộ lọc",
+        "runId": "Run ID",
+        "runIdPlaceholder": "Nhập Run ID",
+        "accountId": "Account ID",
+        "accountIdPlaceholder": "Nhập Account ID",
+        "businessDate": "Ngày nghiệp vụ",
+        "clear": "Xóa"
+      },
+      "pagination": {
+        "previous": "Trước",
+        "next": "Sau",
+        "page": "Trang {current} / {total}"
+      }
+    },
+    "postings": {
+      "title": "Ghi nhận lãi",
+      "description": "Xem các khoản lãi đã được ghi nhận cho tài khoản khách hàng.",
+      "loadError": "Không thể tải các bản ghi ghi nhận lãi.",
+      "columns": {
+        "account": "Tài khoản",
+        "run": "Run ID",
+        "period": "Kỳ tính lãi",
+        "interest": "Tiền lãi",
+        "transaction": "Giao dịch",
+        "postedAt": "Thời điểm ghi nhận",
+        "createdAt": "Ngày tạo"
+      },
+      "emptyTitle": "Chưa có bản ghi ghi nhận lãi",
+      "emptyDescription": "Không có bản ghi ghi nhận lãi phù hợp với bộ lọc.",
+      "filters": {
+        "title": "Bộ lọc",
+        "runId": "Run ID",
+        "runIdPlaceholder": "Nhập Run ID",
+        "accountId": "Account ID",
+        "accountIdPlaceholder": "Nhập Account ID",
+        "businessDate": "Ngày nghiệp vụ",
+        "clear": "Xóa"
+      },
+      "pagination": {
+        "total": "{count} bản ghi",
+        "previous": "Trước",
+        "next": "Sau",
+        "page": "Trang {current} / {total}"
+      }
+    }
+  },
   "businessDay": {
     "close": "Đóng ngày nghiệp vụ"
   }

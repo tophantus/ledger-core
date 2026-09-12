@@ -163,6 +163,158 @@
       "OPENING_BALANCE_MISMATCH": "Opening Balance Mismatch"
     }
   },
+  "interest": {
+    "overview": {
+      "title": "Interest Overview",
+      "description": "Monitor recent interest processing activity.",
+      "latestRun": "Latest Run",
+      "latestAccrual": "Latest Accrual Run",
+      "latestPosting": "Latest Posting Run",
+      "processed": "processed",
+      "noRun": "No run available.",
+      "recentRuns": "Recent Runs",
+      "recentRunsDescription": "The latest interest processing runs.",
+      "viewAll": "View All",
+      "loadError": "Failed to load interest runs.",
+      "noRuns": "No interest runs available.",
+      "quickLinks": "Quick Links",
+      "runType": {
+        "ACCRUAL": "Accrual",
+        "POSTING": "Posting"
+      },
+      "status": {
+        "PENDING": "Pending",
+        "RUNNING": "Running",
+        "COMPLETED": "Completed"
+      },
+      "columns": {
+        "businessDate": "Business Date",
+        "type": "Type",
+        "status": "Status",
+        "processed": "Processed",
+        "startedAt": "Started At",
+        "completedAt": "Completed At"
+      },
+      "links": {
+        "runs": {
+          "title": "Interest Runs",
+          "description": "View and monitor interest processing runs."
+        },
+        "accruals": {
+          "title": "Interest Accruals",
+          "description": "View interest accrued for customer accounts."
+        },
+        "postings": {
+          "title": "Interest Postings",
+          "description": "View interest posted to customer accounts."
+        }
+      }
+    },
+    "runs": {
+      "title": "Interest Runs",
+      "description": "View and monitor interest calculation runs.",
+      "loading": "Loading interest runs...",
+      "empty": "No interest runs found.",
+      "loadError": "Failed to load interest runs.",
+      "filters": {
+        "title": "Filters",
+        "businessDate": "Business Date",
+        "fromDate": "From Date",
+        "toDate": "To Date",
+        "runType": "Run Type",
+        "allRunTypes": "All Run Types",
+        "status": "Status",
+        "allStatuses": "All Statuses",
+        "clear": "Clear"
+      },
+      "runTypes": {
+        "ACCRUAL": "Accrual",
+        "POSTING": "Posting"
+      },
+      "statuses": {
+        "PENDING": "Pending",
+        "RUNNING": "Running",
+        "COMPLETED": "Completed"
+      },
+      "table": {
+        "businessDate": "Business Date",
+        "runType": "Run Type",
+        "status": "Status",
+        "processedCount": "Processed",
+        "startedAt": "Started At",
+        "completedAt": "Completed At",
+        "createdAt": "Created At"
+      },
+      "pagination": {
+        "total": "Total: {count}",
+        "previous": "Previous",
+        "next": "Next",
+        "page": "Page {current} of {total}"
+      }
+    },
+    "accruals": {
+      "title": "Interest Accruals",
+      "description": "View interest accrual records generated for customer accounts.",
+      "total": "{count} accruals",
+      "columns": {
+        "account": "Account",
+        "currency": "Currency",
+        "businessDate": "Business Date",
+        "principal": "Principal",
+        "rate": "Interest Rate",
+        "interest": "Interest Amount",
+        "run": "Run ID",
+        "createdAt": "Created At"
+      },
+      "emptyTitle": "No interest accruals",
+      "emptyDescription": "No interest accrual records match the selected filters.",
+      "filters": {
+        "title": "Filters",
+        "runId": "Run ID",
+        "runIdPlaceholder": "Enter run ID",
+        "accountId": "Account ID",
+        "accountIdPlaceholder": "Enter account ID",
+        "businessDate": "Business Date",
+        "clear": "Clear"
+      },
+      "pagination": {
+        "previous": "Previous",
+        "next": "Next",
+        "page": "Page {current} of {total}"
+      }
+    },
+    "postings": {
+      "title": "Interest Postings",
+      "description": "View interest postings recorded for customer accounts.",
+      "loadError": "Failed to load interest postings.",
+      "columns": {
+        "account": "Account",
+        "run": "Run ID",
+        "period": "Interest Period",
+        "interest": "Interest Amount",
+        "transaction": "Transaction",
+        "postedAt": "Posted At",
+        "createdAt": "Created At"
+      },
+      "emptyTitle": "No Interest Postings",
+      "emptyDescription": "No interest posting records match the selected filters.",
+      "filters": {
+        "title": "Filters",
+        "runId": "Run ID",
+        "runIdPlaceholder": "Enter run ID",
+        "accountId": "Account ID",
+        "accountIdPlaceholder": "Enter account ID",
+        "businessDate": "Business Date",
+        "clear": "Clear"
+      },
+      "pagination": {
+        "total": "{count} postings",
+        "previous": "Previous",
+        "next": "Next",
+        "page": "Page {current} of {total}"
+      }
+    }
+  },
   "businessDay": {
     "close": "Close Business Day"
   }
