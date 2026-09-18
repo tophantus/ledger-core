@@ -169,6 +169,32 @@ public enum ErrorCode {
             HttpStatus.CONFLICT
     ),
 
+    // Credit
+
+    CREDIT_FACILITY_NOT_FOUND(
+            "CREDIT_001",
+            "Credit facility not found",
+            HttpStatus.NOT_FOUND
+    ),
+
+    CREDIT_FACILITY_NOT_ACTIVE(
+            "CREDIT_002",
+            "Credit facility is not active",
+            HttpStatus.CONFLICT
+    ),
+
+    CREDIT_FACILITY_LIMIT_INVALID(
+            "CREDIT_003",
+            "Credit limit must be greater than zero",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    CREDIT_FACILITY_PRODUCT_TYPE_INVALID(
+            "CREDIT_004",
+            "Credit facility must use a credit product",
+            HttpStatus.BAD_REQUEST
+    ),
+
     // Hold
 
     ACCOUNT_HOLD_NOT_FOUND(
