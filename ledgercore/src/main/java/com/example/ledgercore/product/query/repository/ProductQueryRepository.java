@@ -16,6 +16,11 @@ public interface ProductQueryRepository
             ProductStatus status
     );
 
+    List<Product> findAllByTypeAndStatus(
+            ProductType type,
+            ProductStatus status
+    );
+
     Optional<Product> findByIdAndStatusAndType(
             UUID id,
             ProductStatus status,
