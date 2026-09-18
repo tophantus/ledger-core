@@ -1,7 +1,7 @@
 package com.example.ledgercore.product.query.dto;
 
 import com.example.ledgercore.product.entity.Product;
-import com.example.ledgercore.product.entity.ProductStatus;
+import com.example.ledgercore.product.enums.ProductStatus;
 
 import java.time.Instant;
 import java.util.UUID;

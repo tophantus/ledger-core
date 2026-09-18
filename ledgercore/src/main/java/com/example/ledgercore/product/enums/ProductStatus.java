@@ -1,4 +1,4 @@
-package com.example.ledgercore.product.entity;
+package com.example.ledgercore.product.enums;
 
 public enum ProductStatus {
     ACTIVE,

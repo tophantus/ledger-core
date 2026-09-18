@@ -4,7 +4,7 @@ import com.example.ledgercore.account.port.outbound.ProductAccountInfo;
 import com.example.ledgercore.account.port.outbound.ProductAccountPort;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
-import com.example.ledgercore.product.entity.ProductStatus;
+import com.example.ledgercore.product.enums.ProductStatus;
 import com.example.ledgercore.product.query.dto.ProductResponse;
 import com.example.ledgercore.product.query.port.inbound.GetProductUseCase;
 import lombok.RequiredArgsConstructor;

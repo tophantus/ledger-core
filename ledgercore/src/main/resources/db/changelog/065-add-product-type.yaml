@@ -1,0 +1,40 @@
+databaseChangeLog:
+  - changeSet:
+      id: 065-add-product-type
+      author: tophantus
+
+      changes:
+        - addColumn:
+            tableName: products
+            columns:
+              - column:
+                  name: type
+                  type: VARCHAR(20)
+
+        - update:
+            tableName: products
+            columns:
+              - column:
+                  name: type
+                  value: DEPOSIT
+            where: type IS NULL
+
+        - addNotNullConstraint:
+            tableName: products
+            columnName: type
+            columnDataType: VARCHAR(20)
+
+        - createIndex:
+            tableName: products
+            indexName: idx_products_type
+            columns:
+              - column:
+                  name: type
+
+        - sql:
+            sql: >
+              ALTER TABLE products
+              ADD CONSTRAINT chk_products_type
+              CHECK (
+                type IN ('DEPOSIT', 'CREDIT')
+              );

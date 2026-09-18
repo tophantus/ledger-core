@@ -1,6 +1,6 @@
 package com.example.ledgercore.product.query.handler;
 
-import com.example.ledgercore.product.entity.ProductStatus;
+import com.example.ledgercore.product.enums.ProductStatus;
 import com.example.ledgercore.product.query.dto.ProductResponse;
 import com.example.ledgercore.product.query.port.inbound.GetActiveProductsUseCase;
 import com.example.ledgercore.product.query.repository.ProductQueryRepository;

@@ -1,7 +1,7 @@
 package com.example.ledgercore.product.query.repository;
 
 import com.example.ledgercore.product.entity.Product;
-import com.example.ledgercore.product.entity.ProductStatus;
+import com.example.ledgercore.product.enums.ProductStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
