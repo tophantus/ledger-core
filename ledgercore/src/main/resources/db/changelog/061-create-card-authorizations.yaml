@@ -1,0 +1,116 @@
+databaseChangeLog:
+  - changeSet:
+      id: 061-create-card-authorizations
+      author: tophantus
+
+      changes:
+        - createTable:
+            tableName: card_authorizations
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: card_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: reference
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+                    unique: true
+
+              - column:
+                  name: merchant_reference
+                  type: VARCHAR(100)
+
+              - column:
+                  name: amount
+                  type: NUMERIC(19,2)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: currency
+                  type: VARCHAR(3)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: status
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: hold_id
+                  type: UUID
+
+              - column:
+                  name: authorized_at
+                  type: TIMESTAMPTZ
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: expires_at
+                  type: TIMESTAMPTZ
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: captured_at
+                  type: TIMESTAMPTZ
+
+              - column:
+                  name: created_at
+                  type: TIMESTAMPTZ
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: updated_at
+                  type: TIMESTAMPTZ
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: card_authorizations
+            baseColumnNames: card_id
+            referencedTableName: cards
+            referencedColumnNames: id
+            constraintName: fk_card_authorizations_card
+
+        - addForeignKeyConstraint:
+            baseTableName: card_authorizations
+            baseColumnNames: hold_id
+            referencedTableName: account_holds
+            referencedColumnNames: id
+            constraintName: fk_card_authorizations_hold
+
+        - createIndex:
+            tableName: card_authorizations
+            indexName: idx_card_authorizations_card_id
+            columns:
+              - column:
+                  name: card_id
+
+        - createIndex:
+            tableName: card_authorizations
+            indexName: idx_card_authorizations_status
+            columns:
+              - column:
+                  name: status
+
+        - sql:
+            sql: >
+              ALTER TABLE card_authorizations
+              ADD CONSTRAINT chk_card_authorizations_amount
+              CHECK (amount > 0);

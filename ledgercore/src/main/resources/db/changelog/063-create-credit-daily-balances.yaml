@@ -1,0 +1,64 @@
+databaseChangeLog:
+  - changeSet:
+      id: 063-create-credit-daily-balances
+      author: tophantus
+
+      changes:
+        - createTable:
+            tableName: credit_daily_balances
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: credit_facility_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: business_date
+                  type: DATE
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: opening_balance
+                  type: NUMERIC(19,2)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: closing_balance
+                  type: NUMERIC(19,2)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: created_at
+                  type: TIMESTAMPTZ
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: credit_daily_balances
+            baseColumnNames: credit_facility_id
+            referencedTableName: credit_facilities
+            referencedColumnNames: id
+            constraintName: fk_credit_daily_balances_credit_facility
+
+        - addUniqueConstraint:
+            tableName: credit_daily_balances
+            columnNames: credit_facility_id, business_date
+            constraintName: uk_credit_daily_balances_date
+
+        - createIndex:
+            tableName: credit_daily_balances
+            indexName: idx_credit_daily_balances_business_date
+            columns:
+              - column:
+                  name: business_date

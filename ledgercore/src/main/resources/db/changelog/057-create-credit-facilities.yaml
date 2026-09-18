@@ -1,0 +1,113 @@
+databaseChangeLog:
+  - changeSet:
+      id: 057-create-credit-facilities
+      author: tophantus
+
+      changes:
+        - createTable:
+            tableName: credit_facilities
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: customer_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: product_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: credit_limit
+                  type: NUMERIC(19,2)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: outstanding_balance
+                  type: NUMERIC(19,2)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: currency
+                  type: VARCHAR(3)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: status
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: opened_at
+                  type: TIMESTAMPTZ
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: closed_at
+                  type: TIMESTAMPTZ
+
+              - column:
+                  name: created_at
+                  type: TIMESTAMPTZ
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: updated_at
+                  type: TIMESTAMPTZ
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: version
+                  type: BIGINT
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: credit_facilities
+            baseColumnNames: product_id
+            referencedTableName: products
+            referencedColumnNames: id
+            constraintName: fk_credit_facilities_product
+
+        - createIndex:
+            tableName: credit_facilities
+            indexName: idx_credit_facilities_customer_id
+            columns:
+              - column:
+                  name: customer_id
+
+        - createIndex:
+            tableName: credit_facilities
+            indexName: idx_credit_facilities_product_id
+            columns:
+              - column:
+                  name: product_id
+
+        - sql:
+            sql: >
+              ALTER TABLE credit_facilities
+              ADD CONSTRAINT chk_credit_facilities_credit_limit
+              CHECK (credit_limit >= 0);
+
+        - sql:
+            sql: >
+              ALTER TABLE credit_facilities
+              ADD CONSTRAINT chk_credit_facilities_outstanding_balance
+              CHECK (outstanding_balance >= 0);

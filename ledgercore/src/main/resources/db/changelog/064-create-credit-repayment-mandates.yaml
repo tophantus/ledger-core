@@ -1,0 +1,77 @@
+databaseChangeLog:
+  - changeSet:
+      id: 064-create-credit-repayment-mandates
+      author: tophantus
+
+      changes:
+        - createTable:
+            tableName: credit_repayment_mandates
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: credit_facility_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: account_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: repayment_type
+                  type: VARCHAR(30)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: status
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: created_at
+                  type: TIMESTAMPTZ
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: revoked_at
+                  type: TIMESTAMPTZ
+
+        - addForeignKeyConstraint:
+            baseTableName: credit_repayment_mandates
+            baseColumnNames: credit_facility_id
+            referencedTableName: credit_facilities
+            referencedColumnNames: id
+            constraintName: fk_credit_repayment_mandates_facility
+
+        - addForeignKeyConstraint:
+            baseTableName: credit_repayment_mandates
+            baseColumnNames: account_id
+            referencedTableName: accounts
+            referencedColumnNames: id
+            constraintName: fk_credit_repayment_mandates_account
+
+        - createIndex:
+            tableName: credit_repayment_mandates
+            indexName: idx_credit_repayment_mandates_facility_id
+            columns:
+              - column:
+                  name: credit_facility_id
+
+        - createIndex:
+            tableName: credit_repayment_mandates
+            indexName: idx_credit_repayment_mandates_account_id
+            columns:
+              - column:
+                  name: account_id

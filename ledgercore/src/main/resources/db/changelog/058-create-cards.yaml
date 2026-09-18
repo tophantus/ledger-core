@@ -1,0 +1,161 @@
+databaseChangeLog:
+  - changeSet:
+      id: 058-create-cards
+      author: tophantus
+
+      changes:
+        - createTable:
+            tableName: cards
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: customer_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: type
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: form
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: status
+                  type: VARCHAR(30)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: account_id
+                  type: UUID
+
+              - column:
+                  name: credit_facility_id
+                  type: UUID
+
+              - column:
+                  name: pan_last4
+                  type: VARCHAR(4)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: expiry_month
+                  type: SMALLINT
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: expiry_year
+                  type: SMALLINT
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: issued_at
+                  type: TIMESTAMPTZ
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: activated_at
+                  type: TIMESTAMPTZ
+
+              - column:
+                  name: closed_at
+                  type: TIMESTAMPTZ
+
+              - column:
+                  name: created_at
+                  type: TIMESTAMPTZ
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: updated_at
+                  type: TIMESTAMPTZ
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: version
+                  type: BIGINT
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+
+        - createIndex:
+            tableName: cards
+            indexName: idx_cards_customer_id
+            columns:
+              - column:
+                  name: customer_id
+
+        - createIndex:
+            tableName: cards
+            indexName: idx_cards_account_id
+            columns:
+              - column:
+                  name: account_id
+
+        - createIndex:
+            tableName: cards
+            indexName: idx_cards_credit_facility_id
+            columns:
+              - column:
+                  name: credit_facility_id
+
+        - sql:
+            sql: >
+              ALTER TABLE cards
+              ADD CONSTRAINT chk_cards_type
+              CHECK (type IN ('DEBIT', 'CREDIT'));
+
+        - sql:
+            sql: >
+              ALTER TABLE cards
+              ADD CONSTRAINT chk_cards_form
+              CHECK (form IN ('PHYSICAL', 'VIRTUAL'));
+
+        - sql:
+            sql: >
+              ALTER TABLE cards
+              ADD CONSTRAINT chk_cards_pan_last4
+              CHECK (pan_last4 ~ '^[0-9]{4}$');
+
+        - sql:
+            sql: >
+              ALTER TABLE cards
+              ADD CONSTRAINT chk_cards_expiry_month
+              CHECK (expiry_month BETWEEN 1 AND 12);
+
+        - sql:
+            sql: >
+              ALTER TABLE cards
+              ADD CONSTRAINT chk_cards_owner_reference
+              CHECK (
+                (
+                  type = 'DEBIT'
+                  AND account_id IS NOT NULL
+                  AND credit_facility_id IS NULL
+                )
+                OR
+                (
+                  type = 'CREDIT'
+                  AND account_id IS NULL
+                  AND credit_facility_id IS NOT NULL
+                )
+              );
