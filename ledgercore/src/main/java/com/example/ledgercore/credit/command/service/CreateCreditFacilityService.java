@@ -1,11 +1,11 @@
-package com.example.ledgercore.credit.command.port.inbound;
+package com.example.ledgercore.credit.command.service;
 
 import com.example.ledgercore.credit.command.service.dto.CreateCreditFacilityCommand;
 import com.example.ledgercore.credit.command.service.dto.CreateCreditFacilityResult;
 
-public interface CreateCreditFacilityUseCase {
+public interface CreateCreditFacilityService {
 
-    CreateCreditFacilityResult execute(
+    CreateCreditFacilityResult create(
             CreateCreditFacilityCommand command
     );
 }

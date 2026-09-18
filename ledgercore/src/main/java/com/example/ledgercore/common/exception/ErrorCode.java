@@ -195,6 +195,24 @@ public enum ErrorCode {
             HttpStatus.BAD_REQUEST
     ),
 
+    CREDIT_OFFER_NOT_FOUND(
+            "CREDIT_005",
+            "Credit offer not found",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    CREDIT_OFFER_NOT_AVAILABLE(
+            "CREDIT_006",
+            "Credit offer is not available",
+            HttpStatus.CONFLICT
+    ),
+
+    CREDIT_OFFER_EXPIRED(
+            "CREDIT_007",
+            "Credit offer has expired",
+            HttpStatus.CONFLICT
+    ),
+
     // Hold
 
     ACCOUNT_HOLD_NOT_FOUND(

@@ -1,6 +1,7 @@
-package com.example.ledgercore.credit.command.service;
+package com.example.ledgercore.credit.command.service.impl;
 
 import com.example.ledgercore.credit.command.repository.CreditOfferCommandRepository;
+import com.example.ledgercore.credit.command.service.CreateCreditOfferService;
 import com.example.ledgercore.credit.command.service.dto.CreateCreditOfferCommand;
 import com.example.ledgercore.credit.command.service.dto.CreateCreditOfferResult;
 import com.example.ledgercore.credit.entity.CreditOffer;

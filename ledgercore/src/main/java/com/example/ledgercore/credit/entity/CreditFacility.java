@@ -81,4 +81,16 @@ public class CreditFacility {
     @Version
     @Column(name = "version", nullable = false)
     private Long version;
+
+    public void updateCreditTerms(
+            UUID productId,
+            BigDecimal creditLimit,
+            Currency currency,
+            Instant updatedAt
+    ) {
+        this.productId = productId;
+        this.creditLimit = creditLimit;
+        this.currency = currency;
+        this.updatedAt = updatedAt;
+    }
 }

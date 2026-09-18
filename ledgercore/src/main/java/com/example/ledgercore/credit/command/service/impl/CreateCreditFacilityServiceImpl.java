@@ -1,10 +1,10 @@
-package com.example.ledgercore.credit.command.handler;
+package com.example.ledgercore.credit.command.service.impl;
 
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
+import com.example.ledgercore.credit.command.service.CreateCreditFacilityService;
 import com.example.ledgercore.credit.command.service.dto.CreateCreditFacilityCommand;
 import com.example.ledgercore.credit.command.service.dto.CreateCreditFacilityResult;
-import com.example.ledgercore.credit.command.port.inbound.CreateCreditFacilityUseCase;
 import com.example.ledgercore.credit.command.port.outbound.ActiveCreditProductPort;
 import com.example.ledgercore.credit.command.port.outbound.dto.ActiveCreditProductInfo;
 import com.example.ledgercore.credit.command.repository.CreditFacilityCommandRepository;
@@ -20,8 +20,8 @@ import java.time.Instant;
 
 @Service
 @RequiredArgsConstructor
-public class CreateCreditFacilityHandler
-        implements CreateCreditFacilityUseCase {
+public class CreateCreditFacilityServiceImpl
+        implements CreateCreditFacilityService {
 
     private final ActiveCreditProductPort activeCreditProductPort;
     private final CreditFacilityCommandRepository
@@ -29,7 +29,7 @@ public class CreateCreditFacilityHandler
 
     @Override
     @Transactional
-    public CreateCreditFacilityResult execute(
+    public CreateCreditFacilityResult create(
             CreateCreditFacilityCommand command
     ) {
         validateCommand(command);
@@ -51,7 +51,6 @@ public class CreateCreditFacilityHandler
                 .currency(command.currency())
                 .status(CreditFacilityStatus.ACTIVE)
                 .openedAt(now)
-                .closedAt(null)
                 .createdAt(now)
                 .updatedAt(now)
                 .build();

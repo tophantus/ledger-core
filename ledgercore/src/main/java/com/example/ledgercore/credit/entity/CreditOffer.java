@@ -81,4 +81,14 @@ public class CreditOffer {
 
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
+
+    public void accept(
+            UUID creditFacilityId,
+            Instant acceptedAt
+    ) {
+        this.creditFacilityId = creditFacilityId;
+        this.status = CreditOfferStatus.ACCEPTED;
+        this.acceptedAt = acceptedAt;
+        this.updatedAt = acceptedAt;
+    }
 }
