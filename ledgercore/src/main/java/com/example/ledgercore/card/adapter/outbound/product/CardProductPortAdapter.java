@@ -1,7 +1,7 @@
-package com.example.ledgercore.card.adapter.outbound;
+package com.example.ledgercore.card.adapter.outbound.product;
 
-import com.example.ledgercore.card.command.port.outbound.ProductPort;
-import com.example.ledgercore.card.command.port.outbound.dto.ProductInfo;
+import com.example.ledgercore.card.command.port.outbound.CardProductPort;
+import com.example.ledgercore.card.command.port.outbound.dto.CardProductInfo;
 import com.example.ledgercore.product.query.dto.GetActiveProductQuery;
 import com.example.ledgercore.product.query.dto.GetActiveProductResult;
 import com.example.ledgercore.product.query.port.inbound.GetActiveProductUseCase;
@@ -12,14 +12,14 @@ import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
-public class ProductPortAdapter
-        implements ProductPort {
+public class CardProductPortAdapter
+        implements CardProductPort {
 
     private final GetActiveProductUseCase
             getActiveProductUseCase;
 
     @Override
-    public ProductInfo getActiveProduct(
+    public CardProductInfo getActiveProduct(
             UUID productId
     ) {
         GetActiveProductResult result =
@@ -27,7 +27,7 @@ public class ProductPortAdapter
                         new GetActiveProductQuery(productId)
                 );
 
-        return new ProductInfo(
+        return new CardProductInfo(
                 result.id(),
                 result.code(),
                 result.type()

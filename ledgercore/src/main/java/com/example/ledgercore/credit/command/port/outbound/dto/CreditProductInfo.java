@@ -1,10 +1,10 @@
-package com.example.ledgercore.card.command.port.outbound.dto;
+package com.example.ledgercore.credit.command.port.outbound.dto;
 
 import com.example.ledgercore.product.enums.ProductType;
 
 import java.util.UUID;
 
-public record ProductInfo(
+public record CreditProductInfo(
         UUID id,
         String code,
         ProductType type

@@ -5,8 +5,8 @@ import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.credit.command.dto.CreateCreditFacilityCommand;
 import com.example.ledgercore.credit.command.dto.CreateCreditFacilityResult;
 import com.example.ledgercore.credit.command.port.inbound.CreateCreditFacilityUseCase;
-import com.example.ledgercore.credit.command.port.outbound.ProductPort;
-import com.example.ledgercore.credit.command.port.outbound.dto.ProductInfo;
+import com.example.ledgercore.credit.command.port.outbound.CreditProductPort;
+import com.example.ledgercore.credit.command.port.outbound.dto.CreditProductInfo;
 import com.example.ledgercore.credit.command.repository.CreditFacilityCommandRepository;
 import com.example.ledgercore.credit.entity.CreditFacility;
 import com.example.ledgercore.credit.enums.CreditFacilityStatus;
@@ -23,7 +23,7 @@ import java.time.Instant;
 public class CreateCreditFacilityHandler
         implements CreateCreditFacilityUseCase {
 
-    private final ProductPort productPort;
+    private final CreditProductPort creditProductPort;
     private final CreditFacilityCommandRepository
             creditFacilityCommandRepository;
 
@@ -34,8 +34,8 @@ public class CreateCreditFacilityHandler
     ) {
         validateCommand(command);
 
-        ProductInfo product =
-                productPort.getActiveProduct(
+        CreditProductInfo product =
+                creditProductPort.getActiveProduct(
                         command.productId()
                 );
 
@@ -92,7 +92,7 @@ public class CreateCreditFacilityHandler
     }
 
     private void validateCreditProduct(
-            ProductInfo product
+            CreditProductInfo product
     ) {
         if (product.type() != ProductType.CREDIT) {
             throw new BusinessException(

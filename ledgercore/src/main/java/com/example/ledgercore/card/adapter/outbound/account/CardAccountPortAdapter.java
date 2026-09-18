@@ -1,10 +1,10 @@
-package com.example.ledgercore.card.adapter.outbound;
+package com.example.ledgercore.card.adapter.outbound.account;
 
 import com.example.ledgercore.account.query.dto.GetActiveOwnedAccountQuery;
 import com.example.ledgercore.account.query.dto.GetActiveOwnedAccountResult;
 import com.example.ledgercore.account.query.port.inbound.GetActiveOwnedAccountUseCase;
-import com.example.ledgercore.card.command.port.outbound.AccountPort;
-import com.example.ledgercore.card.command.port.outbound.dto.AccountInfo;
+import com.example.ledgercore.card.command.port.outbound.CardAccountPort;
+import com.example.ledgercore.card.command.port.outbound.dto.CardAccountInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -12,13 +12,13 @@ import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
-public class AccountPortAdapter
-        implements AccountPort {
+public class CardAccountPortAdapter
+        implements CardAccountPort {
 
     private final GetActiveOwnedAccountUseCase getActiveOwnedAccountUseCase;
 
     @Override
-    public AccountInfo getOwnedAccount(
+    public CardAccountInfo getOwnedAccount(
             UUID customerId,
             UUID accountId
     ) {
@@ -30,7 +30,7 @@ public class AccountPortAdapter
                         )
                 );
 
-        return new AccountInfo(
+        return new CardAccountInfo(
                 result.id(),
                 result.userId(),
                 result.productId()

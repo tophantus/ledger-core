@@ -3,10 +3,10 @@ package com.example.ledgercore.card.command.handler;
 import com.example.ledgercore.card.command.dto.CreateDebitCardCommand;
 import com.example.ledgercore.card.command.dto.CreateDebitCardResult;
 import com.example.ledgercore.card.command.port.inbound.CreateDebitCardUseCase;
-import com.example.ledgercore.card.command.port.outbound.AccountPort;
-import com.example.ledgercore.card.command.port.outbound.ProductPort;
-import com.example.ledgercore.card.command.port.outbound.dto.AccountInfo;
-import com.example.ledgercore.card.command.port.outbound.dto.ProductInfo;
+import com.example.ledgercore.card.command.port.outbound.CardAccountPort;
+import com.example.ledgercore.card.command.port.outbound.CardProductPort;
+import com.example.ledgercore.card.command.port.outbound.dto.CardAccountInfo;
+import com.example.ledgercore.card.command.port.outbound.dto.CardProductInfo;
 import com.example.ledgercore.card.command.repository.CardCommandRepository;
 import com.example.ledgercore.card.command.repository.CardCredentialCommandRepository;
 import com.example.ledgercore.card.command.repository.CardVaultSecretCommandRepository;
@@ -39,8 +39,8 @@ public class CreateDebitCardHandler
 
     private static final int CARD_EXPIRY_YEARS = 5;
 
-    private final AccountPort accountPort;
-    private final ProductPort productPort;
+    private final CardAccountPort cardAccountPort;
+    private final CardProductPort cardProductPort;
 
     private final CardCommandRepository cardCommandRepository;
     private final CardCredentialCommandRepository
@@ -62,16 +62,16 @@ public class CreateDebitCardHandler
     ) {
         validateCommand(command);
 
-        AccountInfo account =
-                accountPort.getOwnedAccount(
+        CardAccountInfo account =
+                cardAccountPort.getOwnedAccount(
                         command.customerId(),
                         command.accountId()
                 );
 
         validateAccount(account);
 
-        ProductInfo product =
-                productPort.getActiveProduct(
+        CardProductInfo product =
+                cardProductPort.getActiveProduct(
                         account.productId()
                 );
 
@@ -205,7 +205,7 @@ public class CreateDebitCardHandler
     }
 
     private void validateAccount(
-            AccountInfo account
+            CardAccountInfo account
     ) {
         if (account == null) {
             throw new BusinessException(
@@ -215,7 +215,7 @@ public class CreateDebitCardHandler
     }
 
     private void validateDepositProduct(
-            ProductInfo product
+            CardProductInfo product
     ) {
         if (product == null) {
             throw new BusinessException(

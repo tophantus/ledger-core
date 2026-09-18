@@ -129,3 +129,5 @@ databaseChangeLog:
       file: db/changelog/064-create-credit-repayment-mandates.yaml
   - include:
       file: db/changelog/065-add-product-type.yaml
+  - include:
+      file: db/changelog/066-create-credit-offers.yaml
