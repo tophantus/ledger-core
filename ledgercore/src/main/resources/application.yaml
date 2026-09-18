@@ -105,6 +105,13 @@ security:
   encryption:
     key: ${ENCRYPTION_KEY}
 
+card:
+  security:
+    encryption:
+      active-version: v1
+      keys:
+        v1: ${CARD_ENCRYPTION_KEY_V1}
+
 webhook:
   delivery:
     max-attempts: 5
