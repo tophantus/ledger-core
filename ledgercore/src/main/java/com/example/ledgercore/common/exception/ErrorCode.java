@@ -137,6 +137,38 @@ public enum ErrorCode {
             HttpStatus.NOT_FOUND
     ),
 
+    // Card
+
+    CARD_CUSTOMER_ID_REQUIRED(
+            "CARD_001",
+            "Customer ID must not be null",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    CARD_ACCOUNT_ID_REQUIRED(
+            "CARD_002",
+            "Account ID must not be null",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    CARD_PIN_INVALID(
+            "CARD_003",
+            "Card PIN must contain exactly 6 digits",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    CARD_PRODUCT_TYPE_INVALID(
+            "CARD_004",
+            "Debit card must be linked to a deposit product",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    CARD_ALREADY_EXISTS(
+            "CARD_005",
+            "Account already has an active debit card",
+            HttpStatus.CONFLICT
+    ),
+
     // Hold
 
     ACCOUNT_HOLD_NOT_FOUND(
