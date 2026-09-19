@@ -98,4 +98,9 @@ public class CreditOffer {
         this.acceptedAt = acceptedAt;
         this.updatedAt = acceptedAt;
     }
+
+    public void reject(Instant rejectedAt) {
+        this.status = CreditOfferStatus.REJECTED;
+        this.updatedAt = rejectedAt;
+    }
 }
