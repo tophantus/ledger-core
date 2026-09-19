@@ -5,6 +5,7 @@ import com.example.ledgercore.reconciliation.command.port.inbound.ClaimReconcili
 import com.example.ledgercore.reconciliation.command.repository.ReconciliationRunCommandRepository;
 import com.example.ledgercore.reconciliation.config.ReconciliationRunProperties;
 import com.example.ledgercore.reconciliation.entity.ReconciliationRun;
+import com.example.ledgercore.reconciliation.enums.ReconciliationRunStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,7 +39,11 @@ public class ClaimReconciliationRunHandler
                 );
 
         Optional<ReconciliationRun> optionalRun =
-                repository.findClaimableRun(staleBefore);
+                repository.findClaimableRun(
+                        ReconciliationRunStatus.PENDING.name(),
+                        ReconciliationRunStatus.RUNNING.name(),
+                        staleBefore
+                );
 
         if (optionalRun.isEmpty()) {
             return Optional.empty();

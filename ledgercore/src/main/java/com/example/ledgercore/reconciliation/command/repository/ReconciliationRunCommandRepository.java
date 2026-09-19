@@ -16,21 +16,23 @@ public interface ReconciliationRunCommandRepository
 
     @Query(
             value = """
-                    SELECT *
-                    FROM reconciliation_runs
-                    WHERE
-                        status = 'PENDING'
-                        OR (
-                            status = 'RUNNING'
-                            AND heartbeat_at < :staleBefore
-                        )
-                    ORDER BY created_at ASC
-                    FOR UPDATE SKIP LOCKED
-                    LIMIT 1
-                    """,
+                SELECT *
+                FROM reconciliation_runs
+                WHERE
+                    status = :pendingStatus
+                    OR (
+                        status = :runningStatus
+                        AND heartbeat_at < :staleBefore
+                    )
+                ORDER BY created_at ASC
+                FOR UPDATE SKIP LOCKED
+                LIMIT 1
+                """,
             nativeQuery = true
     )
     Optional<ReconciliationRun> findClaimableRun(
+            @Param("pendingStatus") String pendingStatus,
+            @Param("runningStatus") String runningStatus,
             @Param("staleBefore") Instant staleBefore
     );
 

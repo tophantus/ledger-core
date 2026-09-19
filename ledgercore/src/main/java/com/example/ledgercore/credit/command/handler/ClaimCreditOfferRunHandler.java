@@ -34,10 +34,9 @@ public class ClaimCreditOfferRunHandler
                 );
 
         Optional<CreditOfferRun> run =
-                creditOfferRunCommandRepository
-                        .findFirstClaimable(
-                                CreditOfferRunStatus.PENDING,
-                                CreditOfferRunStatus.RUNNING,
+                creditOfferRunCommandRepository.findClaimableRun(
+                                CreditOfferRunStatus.PENDING.name(),
+                                CreditOfferRunStatus.RUNNING.name(),
                                 staleBefore
                         );
 
