@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface CreditOfferQueryRepository
@@ -25,5 +26,11 @@ public interface CreditOfferQueryRepository
             @Param("customerIds") Collection<UUID> customerIds,
             @Param("status") CreditOfferStatus status,
             @Param("now") Instant now
+    );
+
+    Optional<CreditOffer> findFirstByCustomerIdAndStatusAndExpiresAtAfterOrderByCreatedAtDesc(
+            UUID customerId,
+            CreditOfferStatus status,
+            Instant now
     );
 }
