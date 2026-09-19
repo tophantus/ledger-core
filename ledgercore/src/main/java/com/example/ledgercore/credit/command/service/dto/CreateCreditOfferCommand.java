@@ -8,6 +8,7 @@ import java.util.UUID;
 
 public record CreateCreditOfferCommand(
         UUID customerId,
+        UUID runId,
         UUID creditFacilityId,
         UUID productId,
         BigDecimal approvedLimit,

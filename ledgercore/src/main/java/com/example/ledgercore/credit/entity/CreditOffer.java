@@ -18,6 +18,10 @@ import java.util.UUID;
                         columnList = "customer_id"
                 ),
                 @Index(
+                        name = "idx_credit_offers_run_id",
+                        columnList = "run_id"
+                ),
+                @Index(
                         name = "idx_credit_offers_credit_facility_id",
                         columnList = "credit_facility_id"
                 ),
@@ -47,6 +51,9 @@ public class CreditOffer {
 
     @Column(name = "customer_id", nullable = false)
     private UUID customerId;
+
+    @Column(name = "run_id")
+    private UUID runId;
 
     @Column(name = "credit_facility_id")
     private UUID creditFacilityId;

@@ -131,3 +131,7 @@ databaseChangeLog:
       file: db/changelog/065-add-product-type.yaml
   - include:
       file: db/changelog/066-create-credit-offers.yaml
+  - include:
+      file: db/changelog/067-create-credit-offer-runs.yaml
+  - include:
+      file: db/changelog/068-add-run-id-to-credit-offers.yaml

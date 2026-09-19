@@ -10,6 +10,7 @@ import java.util.UUID;
 public record CreateCreditOfferResult(
         UUID offerId,
         UUID customerId,
+        UUID runId,
         UUID creditFacilityId,
         UUID productId,
         BigDecimal approvedLimit,

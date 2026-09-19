@@ -1,0 +1,26 @@
+databaseChangeLog:
+  - changeSet:
+      id: 068-add-run-id-to-credit-offers
+      author: tophantus
+
+      changes:
+        - addColumn:
+            tableName: credit_offers
+            columns:
+              - column:
+                  name: run_id
+                  type: UUID
+
+        - createIndex:
+            tableName: credit_offers
+            indexName: idx_credit_offers_run_id
+            columns:
+              - column:
+                  name: run_id
+
+        - addForeignKeyConstraint:
+            baseTableName: credit_offers
+            baseColumnNames: run_id
+            referencedTableName: credit_offer_runs
+            referencedColumnNames: id
+            constraintName: fk_credit_offers_run

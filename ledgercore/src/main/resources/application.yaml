@@ -153,6 +153,14 @@ interest:
     batch-size: 500
     lease-duration: 5m
 
+credit:
+  offer:
+    scheduler:
+      enabled: true
+      fixed-delay: 1000
+    run:
+      batch-size: 100
+
 withdrawal:
   request:
     expiration: 5m

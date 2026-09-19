@@ -28,6 +28,7 @@ public class CreateCreditOfferServiceImpl
 
         CreditOffer offer = CreditOffer.builder()
                 .customerId(command.customerId())
+                .runId(command.runId())
                 .creditFacilityId(command.creditFacilityId())
                 .productId(command.productId())
                 .approvedLimit(command.approvedLimit())
@@ -44,6 +45,7 @@ public class CreateCreditOfferServiceImpl
         return new CreateCreditOfferResult(
                 savedOffer.getId(),
                 savedOffer.getCustomerId(),
+                savedOffer.getRunId(),
                 savedOffer.getCreditFacilityId(),
                 savedOffer.getProductId(),
                 savedOffer.getApprovedLimit(),

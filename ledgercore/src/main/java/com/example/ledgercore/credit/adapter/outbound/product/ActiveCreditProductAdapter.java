@@ -1,4 +1,4 @@
-package com.example.ledgercore.credit.adpater.outbound.product;
+package com.example.ledgercore.credit.adapter.outbound.product;
 
 import com.example.ledgercore.credit.command.port.outbound.ActiveCreditProductPort;
 import com.example.ledgercore.credit.command.port.outbound.dto.ActiveCreditProductInfo;
