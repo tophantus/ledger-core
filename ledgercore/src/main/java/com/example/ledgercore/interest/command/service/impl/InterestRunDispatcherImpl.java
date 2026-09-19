@@ -1,8 +1,10 @@
-package com.example.ledgercore.interest.command.service;
+package com.example.ledgercore.interest.command.service.impl;
 
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.interest.command.dto.ClaimedInterestRun;
+import com.example.ledgercore.interest.command.service.InterestRunDispatcher;
+import com.example.ledgercore.interest.command.service.InterestRunProcessor;
 import com.example.ledgercore.interest.enums.InterestRunType;
 import org.springframework.stereotype.Service;
 

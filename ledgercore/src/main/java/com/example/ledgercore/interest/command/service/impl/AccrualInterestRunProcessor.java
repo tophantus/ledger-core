@@ -1,23 +1,24 @@
-package com.example.ledgercore.interest.command.service;
+package com.example.ledgercore.interest.command.service.impl;
 
 import com.example.ledgercore.interest.command.dto.ClaimedInterestRun;
-import com.example.ledgercore.interest.command.port.inbound.ProcessInterestPostingBatchUseCase;
+import com.example.ledgercore.interest.command.port.inbound.ProcessInterestAccrualBatchUseCase;
+import com.example.ledgercore.interest.command.service.InterestRunProcessor;
+import com.example.ledgercore.interest.command.service.ProcessInterestRunBatchResultService;
 import com.example.ledgercore.interest.config.InterestRunProperties;
 import com.example.ledgercore.interest.enums.InterestRunType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.UUID;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class PostingInterestRunProcessor
+public class AccrualInterestRunProcessor
         implements InterestRunProcessor {
 
-    private final ProcessInterestPostingBatchUseCase
+    private final ProcessInterestAccrualBatchUseCase
             processBatchUseCase;
 
     private final ProcessInterestRunBatchResultService
@@ -28,52 +29,39 @@ public class PostingInterestRunProcessor
 
     @Override
     public InterestRunType getType() {
-        return InterestRunType.POSTING;
+        return InterestRunType.ACCRUAL;
     }
 
     @Override
     public void process(ClaimedInterestRun run) {
 
         UUID runId = run.runId();
-
-        UUID lastProcessedId =
-                run.lastProcessedId();
-
-        long processedCount =
-                run.processedCount();
-
-        LocalDate periodEnd =
-                run.businessDate();
-
-        LocalDate periodStart =
-                periodEnd.withDayOfMonth(1);
+        UUID lastProcessedId = run.lastProcessedId();
+        long processedCount = run.processedCount();
 
         log.info(
-                "Starting interest posting run: runId={}, periodStart={}, periodEnd={}, lastProcessedId={}, processedCount={}",
+                "Starting interest accrual run: runId={}, businessDate={}, lastProcessedId={}, processedCount={}",
                 runId,
-                periodStart,
-                periodEnd,
+                run.businessDate(),
                 lastProcessedId,
                 processedCount
         );
 
         while (true) {
 
-            ProcessInterestPostingBatchUseCase.BatchResult result =
+            ProcessInterestAccrualBatchUseCase.BatchResult result =
                     processBatchUseCase.execute(
                             runId,
-                            periodStart,
-                            periodEnd,
+                            run.businessDate(),
                             lastProcessedId,
                             processedCount,
                             interestRunProperties.getBatchSize()
                     );
 
             log.info(
-                    "Processed interest posting batch: runId={}, periodStart={}, periodEnd={}, lastProcessedId={}, processedCount={}, completed={}",
+                    "Processed interest accrual batch: runId={}, businessDate={}, lastProcessedId={}, processedCount={}, completed={}",
                     runId,
-                    periodStart,
-                    periodEnd,
+                    run.businessDate(),
                     result.lastProcessedId(),
                     result.processedCount(),
                     result.completed()
@@ -87,10 +75,9 @@ public class PostingInterestRunProcessor
             if (result.completed()) {
 
                 log.info(
-                        "Completed interest posting run: runId={}, periodStart={}, periodEnd={}, processedCount={}",
+                        "Completed interest accrual run: runId={}, businessDate={}, processedCount={}",
                         runId,
-                        periodStart,
-                        periodEnd,
+                        run.businessDate(),
                         result.processedCount()
                 );
 

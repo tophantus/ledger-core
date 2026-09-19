@@ -1,7 +1,7 @@
-package com.example.ledgercore.interest.command.handler;
+package com.example.ledgercore.interest.command.service.impl;
 
 import com.example.ledgercore.interest.command.dto.AccrueInterestCommand;
-import com.example.ledgercore.interest.command.port.inbound.AccrueInterestUseCase;
+import com.example.ledgercore.interest.command.service.AccrueInterestUseCase;
 import com.example.ledgercore.interest.command.port.outbound.AccountDailyBalanceInfo;
 import com.example.ledgercore.interest.command.port.outbound.AccountDailyBalancePort;
 import com.example.ledgercore.interest.command.port.outbound.InterestJournalPort;

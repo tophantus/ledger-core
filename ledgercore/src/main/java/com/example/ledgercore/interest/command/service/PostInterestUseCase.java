@@ -1,4 +1,4 @@
-package com.example.ledgercore.interest.command.port.inbound;
+package com.example.ledgercore.interest.command.service;
 
 import com.example.ledgercore.interest.command.dto.PostInterestCommand;
 
