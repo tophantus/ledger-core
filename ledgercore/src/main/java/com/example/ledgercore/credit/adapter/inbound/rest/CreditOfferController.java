@@ -2,8 +2,11 @@ package com.example.ledgercore.credit.adapter.inbound.rest;
 
 import com.example.ledgercore.auth.security.AuthPrincipal;
 import com.example.ledgercore.common.response.ApiResponse;
+import com.example.ledgercore.credit.command.dto.AcceptCreditOfferCommand;
+import com.example.ledgercore.credit.command.dto.AcceptCreditOfferResult;
 import com.example.ledgercore.credit.command.dto.RejectCreditOfferCommand;
 import com.example.ledgercore.credit.command.dto.RejectCreditOfferResult;
+import com.example.ledgercore.credit.command.port.inbound.AcceptCreditOfferUseCase;
 import com.example.ledgercore.credit.command.port.inbound.RejectCreditOfferUseCase;
 import com.example.ledgercore.credit.query.dto.CreditOfferInfo;
 import com.example.ledgercore.credit.query.dto.GetLatestCreditOfferQuery;
@@ -28,6 +31,9 @@ public class CreditOfferController {
 
     private final GetLatestCreditOfferUseCase
             getLatestCreditOfferUseCase;
+
+    private final AcceptCreditOfferUseCase
+            acceptCreditOfferUseCase;
 
     private final RejectCreditOfferUseCase
             rejectCreditOfferUseCase;
@@ -60,6 +66,34 @@ public class CreditOfferController {
                 .orElseGet(() ->
                         ResponseEntity.noContent().build()
                 );
+    }
+
+    @PostMapping("/{offerId}/accept")
+    @Operation(
+            summary = "Accept credit offer",
+            description = """
+                    Accept an available credit offer
+                    for the currently authenticated customer
+                    """
+    )
+    public ResponseEntity<ApiResponse<AcceptCreditOfferResult>> acceptOffer(
+            @PathVariable UUID offerId,
+            @AuthenticationPrincipal AuthPrincipal principal
+    ) {
+        AcceptCreditOfferResult response =
+                acceptCreditOfferUseCase.execute(
+                        new AcceptCreditOfferCommand(
+                                principal.getUserId(),
+                                offerId
+                        )
+                );
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        response,
+                        "Credit offer accepted successfully"
+                )
+        );
     }
 
     @PostMapping("/{offerId}/reject")
