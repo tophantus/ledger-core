@@ -181,6 +181,23 @@ public enum ErrorCode {
             HttpStatus.BAD_REQUEST
     ),
 
+    CARD_CREDENTIAL_NOT_FOUND(
+            "CARD_008",
+            "Card credentials not found",
+            HttpStatus.NOT_FOUND
+    ),
+
+    CARD_VAULT_SECRET_NOT_FOUND(
+            "CARD_009",
+            "Card vault secret not found",
+            HttpStatus.NOT_FOUND
+    ),
+
+    CARD_NOT_ACTIVE(
+            "CARD_010",
+            "Card must be active",
+            HttpStatus.BAD_REQUEST
+    ),
 
     // Credit
 

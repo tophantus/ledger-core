@@ -3,17 +3,17 @@ package com.example.ledgercore.card.adapter.inbound.rest;
 import com.example.ledgercore.auth.security.AuthPrincipal;
 import com.example.ledgercore.card.adapter.inbound.rest.dto.CreateCreditCardRequest;
 import com.example.ledgercore.card.adapter.inbound.rest.dto.CreateDebitCardRequest;
+import com.example.ledgercore.card.adapter.inbound.rest.dto.RevealCardDetailsRequest;
 import com.example.ledgercore.card.command.dto.CreateCreditCardCommand;
 import com.example.ledgercore.card.command.dto.CreateCreditCardResult;
 import com.example.ledgercore.card.command.dto.CreateDebitCardCommand;
 import com.example.ledgercore.card.command.dto.CreateDebitCardResult;
 import com.example.ledgercore.card.command.port.inbound.CreateCreditCardUseCase;
 import com.example.ledgercore.card.command.port.inbound.CreateDebitCardUseCase;
-import com.example.ledgercore.card.query.dto.CardInfo;
-import com.example.ledgercore.card.query.dto.GetCardByIdQuery;
-import com.example.ledgercore.card.query.dto.GetUserCardsQuery;
+import com.example.ledgercore.card.query.dto.*;
 import com.example.ledgercore.card.query.port.inbound.GetCardByIdUseCase;
 import com.example.ledgercore.card.query.port.inbound.GetUserCardsUseCase;
+import com.example.ledgercore.card.query.port.inbound.RevealCardDetailsUseCase;
 import com.example.ledgercore.common.dto.PageResponse;
 import com.example.ledgercore.common.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -40,6 +40,7 @@ public class CardController {
 
     private final GetUserCardsUseCase getUserCardsUseCase;
     private final GetCardByIdUseCase getCardByIdUseCase;
+    private final RevealCardDetailsUseCase revealCardDetailsUseCase;
 
     @PostMapping("/debit")
     @Operation(
@@ -145,6 +146,33 @@ public class CardController {
                 ApiResponse.success(
                         response,
                         "Card retrieved successfully"
+                )
+        );
+    }
+
+    @PostMapping("/{cardId}/reveal")
+    @Operation(
+            summary = "Reveal card details",
+            description = "Reveal full card PAN and CVV after PIN verification"
+    )
+    public ResponseEntity<ApiResponse<RevealedCardDetails>> revealCardDetails(
+            @AuthenticationPrincipal AuthPrincipal principal,
+            @PathVariable UUID cardId,
+            @RequestBody RevealCardDetailsRequest request
+    ) {
+        RevealedCardDetails result =
+                revealCardDetailsUseCase.execute(
+                        new RevealCardDetailsQuery(
+                                principal.getUserId(),
+                                cardId,
+                                request.pin()
+                        )
+                );
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        result,
+                        "Card details revealed successfully"
                 )
         );
     }

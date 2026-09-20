@@ -116,7 +116,7 @@ public class CreateDebitCardHandler
                         (short) expiry.getYear()
                 )
                 .issuedAt(now)
-                .activatedAt(null)
+                .activatedAt(now)
                 .closedAt(null)
                 .createdAt(now)
                 .updatedAt(now)
