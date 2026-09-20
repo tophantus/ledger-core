@@ -5,6 +5,7 @@ import com.example.ledgercore.card.enums.CardStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Collection;
+import java.util.Set;
 import java.util.UUID;
 
 public interface CardCommandRepository
@@ -13,5 +14,10 @@ public interface CardCommandRepository
     boolean existsByAccountIdAndStatusIn(
             UUID accountId,
             Collection<CardStatus> statuses
+    );
+
+    boolean existsByCreditFacilityIdAndStatusIn(
+            UUID creditFacilityId,
+            Set<CardStatus> statuses
     );
 }

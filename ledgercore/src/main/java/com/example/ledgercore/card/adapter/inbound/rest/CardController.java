@@ -1,9 +1,13 @@
 package com.example.ledgercore.card.adapter.inbound.rest;
 
 import com.example.ledgercore.auth.security.AuthPrincipal;
+import com.example.ledgercore.card.adapter.inbound.rest.dto.CreateCreditCardRequest;
 import com.example.ledgercore.card.adapter.inbound.rest.dto.CreateDebitCardRequest;
+import com.example.ledgercore.card.command.dto.CreateCreditCardCommand;
+import com.example.ledgercore.card.command.dto.CreateCreditCardResult;
 import com.example.ledgercore.card.command.dto.CreateDebitCardCommand;
 import com.example.ledgercore.card.command.dto.CreateDebitCardResult;
+import com.example.ledgercore.card.command.port.inbound.CreateCreditCardUseCase;
 import com.example.ledgercore.card.command.port.inbound.CreateDebitCardUseCase;
 import com.example.ledgercore.common.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,6 +30,7 @@ import java.util.UUID;
 public class CardController {
 
     private final CreateDebitCardUseCase createDebitCardUseCase;
+    private final CreateCreditCardUseCase createCreditCardUseCase;
 
     @PostMapping("/debit")
     @Operation(
@@ -51,6 +56,34 @@ public class CardController {
                 ApiResponse.success(
                         result,
                         "Debit card created successfully"
+                )
+        );
+    }
+
+    @PostMapping("/credit")
+    @Operation(
+            summary = "Create credit card",
+            description = "Create a credit card linked to the authenticated customer's credit facility"
+    )
+    public ResponseEntity<ApiResponse<CreateCreditCardResult>> createCreditCard(
+            @AuthenticationPrincipal AuthPrincipal principal,
+            @Valid @RequestBody CreateCreditCardRequest request
+    ) {
+        UUID customerId = principal.getUserId();
+
+        CreateCreditCardResult result =
+                createCreditCardUseCase.execute(
+                        new CreateCreditCardCommand(
+                                customerId,
+                                request.creditFacilityId(),
+                                request.pin()
+                        )
+                );
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        result,
+                        "Credit card created successfully"
                 )
         );
     }
