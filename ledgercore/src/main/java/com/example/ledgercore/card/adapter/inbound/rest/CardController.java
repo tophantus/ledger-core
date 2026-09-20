@@ -9,6 +9,10 @@ import com.example.ledgercore.card.command.dto.CreateDebitCardCommand;
 import com.example.ledgercore.card.command.dto.CreateDebitCardResult;
 import com.example.ledgercore.card.command.port.inbound.CreateCreditCardUseCase;
 import com.example.ledgercore.card.command.port.inbound.CreateDebitCardUseCase;
+import com.example.ledgercore.card.query.dto.CardInfo;
+import com.example.ledgercore.card.query.dto.GetUserCardsQuery;
+import com.example.ledgercore.card.query.port.inbound.GetUserCardsUseCase;
+import com.example.ledgercore.common.dto.PageResponse;
 import com.example.ledgercore.common.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -31,6 +35,8 @@ public class CardController {
 
     private final CreateDebitCardUseCase createDebitCardUseCase;
     private final CreateCreditCardUseCase createCreditCardUseCase;
+
+    private final GetUserCardsUseCase getUserCardsUseCase;
 
     @PostMapping("/debit")
     @Operation(
@@ -84,6 +90,33 @@ public class CardController {
                 ApiResponse.success(
                         result,
                         "Credit card created successfully"
+                )
+        );
+    }
+
+    @GetMapping
+    @Operation(
+            summary = "Get user cards",
+            description = "Get paginated cards of the authenticated customer"
+    )
+    public ResponseEntity<ApiResponse<PageResponse<CardInfo>>> getUserCards(
+            @AuthenticationPrincipal AuthPrincipal principal,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        PageResponse<CardInfo> response =
+                getUserCardsUseCase.execute(
+                        new GetUserCardsQuery(
+                                principal.getUserId(),
+                                page,
+                                size
+                        )
+                );
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        response,
+                        "Cards retrieved successfully"
                 )
         );
     }
