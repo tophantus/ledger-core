@@ -169,8 +169,14 @@ public enum ErrorCode {
             HttpStatus.CONFLICT
     ),
 
-    CARD_CREDIT_FACILITY_ID_REQUIRED(
+    CARD_NOT_FOUND(
             "CARD_006",
+            "Card not found",
+            HttpStatus.NOT_FOUND
+    ),
+
+    CARD_CREDIT_FACILITY_ID_REQUIRED(
+            "CARD_007",
             "Credit facility ID must not be null",
             HttpStatus.BAD_REQUEST
     ),

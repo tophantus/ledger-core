@@ -10,7 +10,9 @@ import com.example.ledgercore.card.command.dto.CreateDebitCardResult;
 import com.example.ledgercore.card.command.port.inbound.CreateCreditCardUseCase;
 import com.example.ledgercore.card.command.port.inbound.CreateDebitCardUseCase;
 import com.example.ledgercore.card.query.dto.CardInfo;
+import com.example.ledgercore.card.query.dto.GetCardByIdQuery;
 import com.example.ledgercore.card.query.dto.GetUserCardsQuery;
+import com.example.ledgercore.card.query.port.inbound.GetCardByIdUseCase;
 import com.example.ledgercore.card.query.port.inbound.GetUserCardsUseCase;
 import com.example.ledgercore.common.dto.PageResponse;
 import com.example.ledgercore.common.response.ApiResponse;
@@ -37,6 +39,7 @@ public class CardController {
     private final CreateCreditCardUseCase createCreditCardUseCase;
 
     private final GetUserCardsUseCase getUserCardsUseCase;
+    private final GetCardByIdUseCase getCardByIdUseCase;
 
     @PostMapping("/debit")
     @Operation(
@@ -117,6 +120,31 @@ public class CardController {
                 ApiResponse.success(
                         response,
                         "Cards retrieved successfully"
+                )
+        );
+    }
+
+    @GetMapping("/{cardId}")
+    @Operation(
+            summary = "Get card by ID",
+            description = "Get a card owned by the authenticated customer"
+    )
+    public ResponseEntity<ApiResponse<CardInfo>> getCardById(
+            @AuthenticationPrincipal AuthPrincipal principal,
+            @PathVariable UUID cardId
+    ) {
+        CardInfo response =
+                getCardByIdUseCase.execute(
+                        new GetCardByIdQuery(
+                                principal.getUserId(),
+                                cardId
+                        )
+                );
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        response,
+                        "Card retrieved successfully"
                 )
         );
     }
