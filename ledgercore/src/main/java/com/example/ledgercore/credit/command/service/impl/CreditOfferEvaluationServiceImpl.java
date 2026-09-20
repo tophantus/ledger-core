@@ -49,7 +49,7 @@ public class CreditOfferEvaluationServiceImpl
 
         Optional<CreditFacility> facility =
                 creditFacilityQueryRepository
-                        .findByCustomerIdAndStatus(
+                        .findFirstByCustomerIdAndStatus(
                                 command.customerId(),
                                 CreditFacilityStatus.ACTIVE
                         );

@@ -15,7 +15,7 @@ public interface CreditFacilityQueryRepository
             UUID customerId
     );
 
-    Optional<CreditFacility> findByCustomerIdAndStatus(
+    Optional<CreditFacility> findFirstByCustomerIdAndStatus(
             UUID customerId,
             CreditFacilityStatus status
     );

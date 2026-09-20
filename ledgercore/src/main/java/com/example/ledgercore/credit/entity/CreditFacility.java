@@ -3,10 +3,7 @@ package com.example.ledgercore.credit.entity;
 import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.credit.enums.CreditFacilityStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -26,6 +23,7 @@ import java.util.UUID;
                 )
         }
 )
+@Setter
 @Getter
 @Builder
 @NoArgsConstructor
