@@ -3,6 +3,7 @@ package com.example.ledgercore.card.query.handler;
 import com.example.ledgercore.card.entity.Card;
 import com.example.ledgercore.card.query.dto.CardInfo;
 import com.example.ledgercore.card.query.dto.GetCardByIdQuery;
+import com.example.ledgercore.card.query.mapper.CardQueryMapper;
 import com.example.ledgercore.card.query.port.inbound.GetCardByIdUseCase;
 import com.example.ledgercore.card.query.repository.CardQueryRepository;
 import com.example.ledgercore.common.exception.BusinessException;
@@ -32,24 +33,6 @@ public class GetCardByIdHandler
                         )
                 );
 
-        return toCardInfo(card);
-    }
-
-    private CardInfo toCardInfo(Card card) {
-        return new CardInfo(
-                card.getId(),
-                card.getCustomerId(),
-                card.getType(),
-                card.getForm(),
-                card.getStatus(),
-                card.getAccountId(),
-                card.getCreditFacilityId(),
-                card.getPanLast4(),
-                card.getExpiryMonth(),
-                card.getExpiryYear(),
-                card.getIssuedAt(),
-                card.getActivatedAt(),
-                card.getClosedAt()
-        );
+        return CardQueryMapper.toCardInfo(card);
     }
 }

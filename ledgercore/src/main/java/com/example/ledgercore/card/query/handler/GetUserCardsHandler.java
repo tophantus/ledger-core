@@ -3,6 +3,7 @@ package com.example.ledgercore.card.query.handler;
 import com.example.ledgercore.card.entity.Card;
 import com.example.ledgercore.card.query.dto.CardInfo;
 import com.example.ledgercore.card.query.dto.GetUserCardsQuery;
+import com.example.ledgercore.card.query.mapper.CardQueryMapper;
 import com.example.ledgercore.card.query.port.inbound.GetUserCardsUseCase;
 import com.example.ledgercore.card.query.repository.CardQueryRepository;
 import com.example.ledgercore.common.dto.PageResponse;
@@ -44,30 +45,12 @@ public class GetUserCardsHandler
         return new PageResponse<>(
                 cardPage.getContent()
                         .stream()
-                        .map(this::toCardInfo)
+                        .map(CardQueryMapper::toCardInfo)
                         .toList(),
                 cardPage.getNumber(),
                 cardPage.getSize(),
                 cardPage.getTotalElements(),
                 cardPage.getTotalPages()
-        );
-    }
-
-    private CardInfo toCardInfo(Card card) {
-        return new CardInfo(
-                card.getId(),
-                card.getCustomerId(),
-                card.getType(),
-                card.getForm(),
-                card.getStatus(),
-                card.getAccountId(),
-                card.getCreditFacilityId(),
-                card.getPanLast4(),
-                card.getExpiryMonth(),
-                card.getExpiryYear(),
-                card.getIssuedAt(),
-                card.getActivatedAt(),
-                card.getClosedAt()
         );
     }
 }
