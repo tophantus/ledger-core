@@ -1,9 +1,9 @@
 package com.example.ledgercore.product.query.handler;
 
-import com.example.ledgercore.product.entity.Product;
 import com.example.ledgercore.product.enums.ProductStatus;
 import com.example.ledgercore.product.query.dto.GetActiveProductsByTypeQuery;
 import com.example.ledgercore.product.query.dto.GetActiveProductsByTypeResult;
+import com.example.ledgercore.product.query.dto.ProductResponse;
 import com.example.ledgercore.product.query.port.inbound.GetActiveProductsByTypeUseCase;
 import com.example.ledgercore.product.query.repository.ProductQueryRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,18 +27,8 @@ public class GetActiveProductsByTypeHandler
                                 ProductStatus.ACTIVE
                         )
                         .stream()
-                        .map(this::toProductInfo)
+                        .map(ProductResponse::from)
                         .toList()
-        );
-    }
-
-    private GetActiveProductsByTypeResult.ProductInfo toProductInfo(
-            Product product
-    ) {
-        return new GetActiveProductsByTypeResult.ProductInfo(
-                product.getId(),
-                product.getCode(),
-                product.getType()
         );
     }
 }
