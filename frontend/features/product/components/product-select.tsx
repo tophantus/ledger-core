@@ -4,26 +4,32 @@ import {useEffect} from "react";
 import {useTranslations} from "next-intl";
 
 import {useProduct} from "../hooks/use-product";
+import {ProductType} from "@/features/product/types/product";
 
 interface ProductSelectProps {
+    type: ProductType;
     value: string;
     onChange: (value: string) => void;
     disabled?: boolean;
     error?: string;
 }
 
-export function ProductSelect({
-                                  value,
-                                  onChange,
-                                  disabled = false,
-                                  error,
-                              }: ProductSelectProps) {
+export function ProductSelect(
+    {
+        type,
+        value,
+        onChange,
+        disabled = false,
+        error,
+    }: ProductSelectProps
+) {
     const t = useTranslations("product");
 
     const {
         products,
         initialized,
         getActiveProducts,
+        getProductsByType,
     } = useProduct();
 
     useEffect(() => {
@@ -50,7 +56,9 @@ export function ProductSelect({
         onChange,
     ]);
 
-    if (!initialized || products.length === 0) {
+    const productsByType = getProductsByType(type);
+
+    if (!initialized || productsByType.length === 0) {
         return null;
     }
 
@@ -90,7 +98,7 @@ export function ProductSelect({
                 }
                 `}
             >
-                {products.map((product) => (
+                {productsByType.map((product) => (
                     <option
                         key={product.id}
                         value={product.id}

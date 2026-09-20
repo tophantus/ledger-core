@@ -7,12 +7,13 @@ import com.example.ledgercore.account.command.port.outbound.UserAccountPort;
 import com.example.ledgercore.account.command.repository.AccountCommandRepository;
 import com.example.ledgercore.account.entity.Account;
 import com.example.ledgercore.account.enums.AccountStatus;
-import com.example.ledgercore.account.port.outbound.ProductAccountInfo;
 import com.example.ledgercore.account.port.outbound.ProductAccountPort;
+import com.example.ledgercore.account.port.outbound.dto.ProductAccountInfo;
 import com.example.ledgercore.account.query.dto.AccountResponse;
 import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
+import com.example.ledgercore.product.enums.ProductType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,8 +25,14 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CreateAccountHandlerTest {
@@ -76,22 +83,13 @@ class CreateAccountHandlerTest {
 
     @Test
     void shouldCreateAccount() {
-        CreateAccountCommand command =
-                new CreateAccountCommand(
-                        userId,
-                        productId,
-                        currency
-                );
+        CreateAccountCommand command = validCommand();
 
         UUID accountId = UUID.randomUUID();
         Instant createdAt = Instant.now();
         Instant updatedAt = Instant.now();
 
-        ProductAccountInfo product =
-                new ProductAccountInfo(
-                        productId,
-                        productCode
-                );
+        ProductAccountInfo product = givenDepositProduct();
 
         Account savedAccount = Account.builder()
                 .id(accountId)
@@ -106,47 +104,18 @@ class CreateAccountHandlerTest {
                 .updatedAt(updatedAt)
                 .build();
 
-        when(userAccountPort.existsById(userId))
-                .thenReturn(true);
-
-        when(productAccountPort.getActiveProduct(productId))
-                .thenReturn(product);
-
-        when(accountNumberGeneratorPort.generate())
-                .thenReturn(accountNo);
-
-        when(ledgerAccountPort.createCustomerAccount(
-                accountNo,
-                currency
-        )).thenReturn(ledgerAccountId);
-
-        when(accountCommandRepository.save(any(Account.class)))
-                .thenReturn(savedAccount);
+        givenUserExists();
+        givenAccountCreation(product, savedAccount);
 
         AccountResponse response =
                 handler.execute(command);
 
         assertAll(
-                () -> assertEquals(
-                        accountId,
-                        response.id()
-                ),
-                () -> assertEquals(
-                        userId,
-                        response.userId()
-                ),
-                () -> assertEquals(
-                        productId,
-                        response.productId()
-                ),
-                () -> assertEquals(
-                        accountNo,
-                        response.accountNo()
-                ),
-                () -> assertEquals(
-                        currency,
-                        response.currency()
-                ),
+                () -> assertEquals(accountId, response.id()),
+                () -> assertEquals(userId, response.userId()),
+                () -> assertEquals(productId, response.productId()),
+                () -> assertEquals(accountNo, response.accountNo()),
+                () -> assertEquals(currency, response.currency()),
                 () -> assertEquals(
                         BigDecimal.ZERO.toPlainString(),
                         response.balance()
@@ -155,14 +124,8 @@ class CreateAccountHandlerTest {
                         AccountStatus.ACTIVE,
                         response.status()
                 ),
-                () -> assertEquals(
-                        createdAt,
-                        response.createdAt()
-                ),
-                () -> assertEquals(
-                        updatedAt,
-                        response.updatedAt()
-                )
+                () -> assertEquals(createdAt, response.createdAt()),
+                () -> assertEquals(updatedAt, response.updatedAt())
         );
 
         verify(userAccountPort)
@@ -186,12 +149,7 @@ class CreateAccountHandlerTest {
 
     @Test
     void shouldThrowWhenUserNotFound() {
-        CreateAccountCommand command =
-                new CreateAccountCommand(
-                        userId,
-                        productId,
-                        currency
-                );
+        CreateAccountCommand command = validCommand();
 
         when(userAccountPort.existsById(userId))
                 .thenReturn(false);
@@ -219,59 +177,10 @@ class CreateAccountHandlerTest {
     }
 
     @Test
-    void shouldThrowWhenProductNotActive() {
-        CreateAccountCommand command =
-                new CreateAccountCommand(
-                        userId,
-                        productId,
-                        currency
-                );
-
-        when(userAccountPort.existsById(userId))
-                .thenReturn(true);
-
-        when(productAccountPort.getActiveProduct(productId))
-                .thenThrow(
-                        new BusinessException(
-                                ErrorCode.PRODUCT_NOT_ACTIVE
-                        )
-                );
-
-        BusinessException exception =
-                assertThrows(
-                        BusinessException.class,
-                        () -> handler.execute(command)
-                );
-
-        assertEquals(
-                ErrorCode.PRODUCT_NOT_ACTIVE,
-                exception.getErrorCode()
-        );
-
-        verify(userAccountPort)
-                .existsById(userId);
-
-        verify(productAccountPort)
-                .getActiveProduct(productId);
-
-        verifyNoInteractions(
-                accountNumberGeneratorPort,
-                ledgerAccountPort,
-                accountCommandRepository
-        );
-    }
-
-    @Test
     void shouldThrowWhenProductNotFound() {
-        CreateAccountCommand command =
-                new CreateAccountCommand(
-                        userId,
-                        productId,
-                        currency
-                );
+        CreateAccountCommand command = validCommand();
 
-        when(userAccountPort.existsById(userId))
-                .thenReturn(true);
+        givenUserExists();
 
         when(productAccountPort.getActiveProduct(productId))
                 .thenThrow(
@@ -305,33 +214,87 @@ class CreateAccountHandlerTest {
     }
 
     @Test
-    void shouldCreateCustomerLedgerAccountWithGeneratedAccountNumber() {
-        CreateAccountCommand command =
-                new CreateAccountCommand(
-                        userId,
-                        productId,
-                        currency
+    void shouldThrowWhenProductNotActive() {
+        CreateAccountCommand command = validCommand();
+
+        givenUserExists();
+
+        when(productAccountPort.getActiveProduct(productId))
+                .thenThrow(
+                        new BusinessException(
+                                ErrorCode.PRODUCT_NOT_ACTIVE
+                        )
                 );
+
+        BusinessException exception =
+                assertThrows(
+                        BusinessException.class,
+                        () -> handler.execute(command)
+                );
+
+        assertEquals(
+                ErrorCode.PRODUCT_NOT_ACTIVE,
+                exception.getErrorCode()
+        );
+
+        verify(userAccountPort)
+                .existsById(userId);
+
+        verify(productAccountPort)
+                .getActiveProduct(productId);
+
+        verifyNoInteractions(
+                accountNumberGeneratorPort,
+                ledgerAccountPort,
+                accountCommandRepository
+        );
+    }
+
+    @Test
+    void shouldThrowWhenProductIsNotDeposit() {
+        CreateAccountCommand command = validCommand();
 
         ProductAccountInfo product =
                 new ProductAccountInfo(
                         productId,
-                        productCode
+                        productCode,
+                        ProductType.CREDIT
                 );
 
-        when(userAccountPort.existsById(userId))
-                .thenReturn(true);
+        givenUserExists();
 
         when(productAccountPort.getActiveProduct(productId))
                 .thenReturn(product);
 
-        when(accountNumberGeneratorPort.generate())
-                .thenReturn(accountNo);
+        BusinessException exception =
+                assertThrows(
+                        BusinessException.class,
+                        () -> handler.execute(command)
+                );
 
-        when(ledgerAccountPort.createCustomerAccount(
-                accountNo,
-                currency
-        )).thenReturn(ledgerAccountId);
+        assertEquals(
+                ErrorCode.ACCOUNT_PRODUCT_TYPE_INVALID,
+                exception.getErrorCode()
+        );
+
+        verify(userAccountPort)
+                .existsById(userId);
+
+        verify(productAccountPort)
+                .getActiveProduct(productId);
+
+        verifyNoInteractions(
+                accountNumberGeneratorPort,
+                ledgerAccountPort,
+                accountCommandRepository
+        );
+    }
+
+    @Test
+    void shouldCreateCustomerLedgerAccountWithGeneratedAccountNumber() {
+        CreateAccountCommand command = validCommand();
+
+        ProductAccountInfo product = givenDepositProduct();
 
         Account savedAccount = Account.builder()
                 .id(UUID.randomUUID())
@@ -344,10 +307,13 @@ class CreateAccountHandlerTest {
                 .status(AccountStatus.ACTIVE)
                 .build();
 
-        when(accountCommandRepository.save(any(Account.class)))
-                .thenReturn(savedAccount);
+        givenUserExists();
+        givenAccountCreation(product, savedAccount);
 
         handler.execute(command);
+
+        verify(accountNumberGeneratorPort)
+                .generate();
 
         verify(ledgerAccountPort)
                 .createCustomerAccount(
@@ -358,32 +324,9 @@ class CreateAccountHandlerTest {
 
     @Test
     void shouldSaveAccountWithCorrectData() {
-        CreateAccountCommand command =
-                new CreateAccountCommand(
-                        userId,
-                        productId,
-                        currency
-                );
+        CreateAccountCommand command = validCommand();
 
-        ProductAccountInfo product =
-                new ProductAccountInfo(
-                        productId,
-                        productCode
-                );
-
-        when(userAccountPort.existsById(userId))
-                .thenReturn(true);
-
-        when(productAccountPort.getActiveProduct(productId))
-                .thenReturn(product);
-
-        when(accountNumberGeneratorPort.generate())
-                .thenReturn(accountNo);
-
-        when(ledgerAccountPort.createCustomerAccount(
-                accountNo,
-                currency
-        )).thenReturn(ledgerAccountId);
+        ProductAccountInfo product = givenDepositProduct();
 
         Account savedAccount = Account.builder()
                 .id(UUID.randomUUID())
@@ -396,8 +339,8 @@ class CreateAccountHandlerTest {
                 .status(AccountStatus.ACTIVE)
                 .build();
 
-        when(accountCommandRepository.save(any(Account.class)))
-                .thenReturn(savedAccount);
+        givenUserExists();
+        givenAccountCreation(product, savedAccount);
 
         handler.execute(command);
 
@@ -407,8 +350,7 @@ class CreateAccountHandlerTest {
         verify(accountCommandRepository)
                 .save(captor.capture());
 
-        Account account =
-                captor.getValue();
+        Account account = captor.getValue();
 
         assertAll(
                 () -> assertEquals(
@@ -431,6 +373,127 @@ class CreateAccountHandlerTest {
                         ledgerAccountId,
                         account.getLedgerAccountId()
                 )
+        );
+    }
+
+    @Test
+    void shouldThrowWhenCommandIsNull() {
+        BusinessException exception =
+                assertThrows(
+                        BusinessException.class,
+                        () -> handler.execute(null)
+                );
+
+        assertEquals(
+                ErrorCode.INVALID_REQUEST,
+                exception.getErrorCode()
+        );
+
+        verifyNoInteractions(
+                userAccountPort,
+                productAccountPort,
+                accountNumberGeneratorPort,
+                ledgerAccountPort,
+                accountCommandRepository
+        );
+    }
+
+    @Test
+    void shouldThrowWhenUserIdIsNull() {
+        CreateAccountCommand command =
+                new CreateAccountCommand(
+                        null,
+                        productId,
+                        currency
+                );
+
+        assertInvalidRequest(command);
+    }
+
+    @Test
+    void shouldThrowWhenProductIdIsNull() {
+        CreateAccountCommand command =
+                new CreateAccountCommand(
+                        userId,
+                        null,
+                        currency
+                );
+
+        assertInvalidRequest(command);
+    }
+
+    @Test
+    void shouldThrowWhenCurrencyIsNull() {
+        CreateAccountCommand command =
+                new CreateAccountCommand(
+                        userId,
+                        productId,
+                        null
+                );
+
+        assertInvalidRequest(command);
+    }
+
+    private CreateAccountCommand validCommand() {
+        return new CreateAccountCommand(
+                userId,
+                productId,
+                currency
+        );
+    }
+
+    private ProductAccountInfo givenDepositProduct() {
+        return new ProductAccountInfo(
+                productId,
+                productCode,
+                ProductType.DEPOSIT
+        );
+    }
+
+    private void givenUserExists() {
+        when(userAccountPort.existsById(userId))
+                .thenReturn(true);
+    }
+
+    private void givenAccountCreation(
+            ProductAccountInfo product,
+            Account savedAccount
+    ) {
+        when(productAccountPort.getActiveProduct(productId))
+                .thenReturn(product);
+
+        when(accountNumberGeneratorPort.generate())
+                .thenReturn(accountNo);
+
+        when(ledgerAccountPort.createCustomerAccount(
+                accountNo,
+                currency
+        )).thenReturn(ledgerAccountId);
+
+        when(accountCommandRepository.save(any(Account.class)))
+                .thenReturn(savedAccount);
+    }
+
+    private void assertInvalidRequest(
+            CreateAccountCommand command
+    ) {
+        BusinessException exception =
+                assertThrows(
+                        BusinessException.class,
+                        () -> handler.execute(command)
+                );
+
+        assertEquals(
+                ErrorCode.INVALID_REQUEST,
+                exception.getErrorCode()
+        );
+
+        verifyNoInteractions(
+                userAccountPort,
+                productAccountPort,
+                accountNumberGeneratorPort,
+                ledgerAccountPort,
+                accountCommandRepository
         );
     }
 }

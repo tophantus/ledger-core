@@ -2,10 +2,7 @@
 
 import {X} from "lucide-react";
 import {useState} from "react";
-import {
-    Controller,
-    useForm,
-} from "react-hook-form";
+import {Controller, useForm,} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useTranslations} from "next-intl";
 
@@ -13,11 +10,9 @@ import {Button} from "@/components/ui/button";
 import {ProductSelect} from "@/features/product/components/product-select";
 
 import {useCreateAccount} from "../hooks/use-create-account";
-import {
-    createAccountSchema,
-    type CreateAccountForm,
-} from "../schemas/create-account-schema";
+import {type CreateAccountForm, createAccountSchema,} from "../schemas/create-account-schema";
 import {SUPPORTED_CURRENCIES} from "@/lib/constants/currency";
+import {ProductType} from "@/features/product/types/product";
 
 interface CreateAccountModalProps {
     open: boolean;
@@ -216,6 +211,9 @@ export function CreateAccountModal({
                                          fieldState,
                                      }) => (
                                 <ProductSelect
+                                    type={
+                                        ProductType.DEPOSIT
+                                    }
                                     value={
                                         field.value
                                     }

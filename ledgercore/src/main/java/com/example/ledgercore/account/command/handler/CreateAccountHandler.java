@@ -6,11 +6,12 @@ import com.example.ledgercore.account.command.port.outbound.*;
 import com.example.ledgercore.account.command.repository.AccountCommandRepository;
 import com.example.ledgercore.account.entity.Account;
 import com.example.ledgercore.account.mapper.AccountMapper;
-import com.example.ledgercore.account.port.outbound.ProductAccountInfo;
+import com.example.ledgercore.account.port.outbound.dto.ProductAccountInfo;
 import com.example.ledgercore.account.port.outbound.ProductAccountPort;
 import com.example.ledgercore.account.query.dto.AccountResponse;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
+import com.example.ledgercore.product.enums.ProductType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,7 +32,6 @@ public class CreateAccountHandler
 
     private final ProductAccountPort productAccountPort;
 
-
     @Override
     @Transactional
     public AccountResponse execute(
@@ -51,6 +51,12 @@ public class CreateAccountHandler
                 productAccountPort.getActiveProduct(
                         command.productId()
                 );
+
+        if (product.type() != ProductType.DEPOSIT) {
+            throw new BusinessException(
+                    ErrorCode.ACCOUNT_PRODUCT_TYPE_INVALID
+            );
+        }
 
         String accountNo =
                 accountNumberGeneratorPort.generate();

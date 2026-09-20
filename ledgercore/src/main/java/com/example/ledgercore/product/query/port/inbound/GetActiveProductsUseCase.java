@@ -1,10 +1,11 @@
 package com.example.ledgercore.product.query.port.inbound;
 
-import com.example.ledgercore.product.query.dto.ProductResponse;
-
-import java.util.List;
+import com.example.ledgercore.product.query.dto.GetActiveProductsQuery;
+import com.example.ledgercore.product.query.dto.GetActiveProductsResult;
 
 public interface GetActiveProductsUseCase {
 
-    List<ProductResponse> execute();
+    GetActiveProductsResult execute(
+            GetActiveProductsQuery query
+    );
 }

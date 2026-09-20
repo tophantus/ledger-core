@@ -1,6 +1,6 @@
 import {create} from "zustand";
 
-import type {Product} from "../types/product";
+import type {Product, ProductType} from "../types/product";
 
 interface ProductState {
     products: Product[];
@@ -8,11 +8,16 @@ interface ProductState {
     initialized: boolean;
 
     setProducts: (products: Product[]) => void;
+
+    getProductsByType: (
+        type: ProductType
+    ) => Product[];
+
     clearProducts: () => void;
 }
 
 export const useProductStore =
-    create<ProductState>((set) => ({
+    create<ProductState>((set, get) => ({
         products: [],
         productMap: new Map(),
         initialized: false,
@@ -28,6 +33,12 @@ export const useProductStore =
                 ),
                 initialized: true,
             }),
+
+        getProductsByType: (type) =>
+            get().products.filter(
+                (product) =>
+                    product.type === type
+            ),
 
         clearProducts: () =>
             set({

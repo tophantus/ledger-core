@@ -129,6 +129,12 @@ public enum ErrorCode {
             HttpStatus.BAD_REQUEST
     ),
 
+    ACCOUNT_PRODUCT_TYPE_INVALID(
+            "ACCOUNT_010",
+            "Account must be linked to a deposit product",
+            HttpStatus.BAD_REQUEST
+    ),
+
     // Account Daily Balance
 
     ACCOUNT_DAILY_BALANCE_NOT_FOUND(

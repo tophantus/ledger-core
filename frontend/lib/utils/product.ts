@@ -1,9 +1,11 @@
+import {ProductCode} from "@/features/product/types/product";
+
 type ProductColorType =
     | "text"
     | "background";
 
 const PRODUCT_COLORS: Record<
-    string,
+    ProductCode,
     Record<ProductColorType, string>
 > = {
     SAVINGS: {
@@ -22,7 +24,7 @@ const DEFAULT_PRODUCT_COLOR = {
 };
 
 export function getProductColor(
-    code: string,
+    code: ProductCode,
     type: ProductColorType,
 ): string {
     return (

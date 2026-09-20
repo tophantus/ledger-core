@@ -1,33 +1,36 @@
 package com.example.ledgercore.product.query.handler;
 
 import com.example.ledgercore.product.enums.ProductStatus;
+import com.example.ledgercore.product.query.dto.GetActiveProductsQuery;
+import com.example.ledgercore.product.query.dto.GetActiveProductsResult;
 import com.example.ledgercore.product.query.dto.ProductResponse;
 import com.example.ledgercore.product.query.port.inbound.GetActiveProductsUseCase;
 import com.example.ledgercore.product.query.repository.ProductQueryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class GetActiveProductsHandler
         implements GetActiveProductsUseCase {
 
-    private final ProductQueryRepository
-            productQueryRepository;
+    private final ProductQueryRepository productQueryRepository;
 
     @Override
-    @Transactional(readOnly = true)
-    public List<ProductResponse> execute() {
+    public GetActiveProductsResult execute(
+            GetActiveProductsQuery query
+    ) {
+        var products = query.type() == null
+                ? productQueryRepository.findAllByStatus(ProductStatus.ACTIVE)
+                : productQueryRepository.findAllByTypeAndStatus(
+                query.type(),
+                ProductStatus.ACTIVE
+        );
 
-        return productQueryRepository
-                .findByStatusOrderByCodeAsc(
-                        ProductStatus.ACTIVE
-                )
-                .stream()
-                .map(ProductResponse::from)
-                .toList();
+        return new GetActiveProductsResult(
+                products.stream()
+                        .map(ProductResponse::from)
+                        .toList()
+        );
     }
 }

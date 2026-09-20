@@ -2,6 +2,7 @@ package com.example.ledgercore.product.query.dto;
 
 import com.example.ledgercore.product.entity.Product;
 import com.example.ledgercore.product.enums.ProductStatus;
+import com.example.ledgercore.product.enums.ProductType;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -10,6 +11,7 @@ public record ProductResponse(
         UUID id,
         String code,
         String name,
+        ProductType type,
         ProductStatus status,
         Instant createdAt,
         Instant updatedAt
@@ -22,6 +24,7 @@ public record ProductResponse(
                 product.getId(),
                 product.getCode(),
                 product.getName(),
+                product.getType(),
                 product.getStatus(),
                 product.getCreatedAt(),
                 product.getUpdatedAt()

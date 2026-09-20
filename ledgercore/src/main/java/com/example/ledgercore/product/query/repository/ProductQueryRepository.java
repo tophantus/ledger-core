@@ -12,18 +12,10 @@ import java.util.UUID;
 public interface ProductQueryRepository
         extends JpaRepository<Product, UUID> {
 
-    List<Product> findByStatusOrderByCodeAsc(
-            ProductStatus status
-    );
+    List<Product> findAllByStatus(ProductStatus status);
 
     List<Product> findAllByTypeAndStatus(
             ProductType type,
             ProductStatus status
-    );
-
-    Optional<Product> findByIdAndStatusAndType(
-            UUID id,
-            ProductStatus status,
-            ProductType type
     );
 }
