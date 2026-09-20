@@ -1,21 +1,33 @@
 import type {ApiResponse} from "@/lib/api/types";
 
-export type ProductCode =
-    | "SAVINGS"
-    | "CURRENT";
+export enum ProductCode {
+    SAVINGS = "SAVINGS",
+    CURRENT = "CURRENT",
+}
 
-export type ProductStatus =
-    | "ACTIVE"
-    | "INACTIVE";
+export enum ProductStatus {
+    ACTIVE = "ACTIVE",
+    INACTIVE = "INACTIVE",
+}
+
+export enum ProductType {
+    DEPOSIT = "DEPOSIT",
+    CREDIT = "CREDIT",
+}
 
 export interface Product {
     id: string;
     code: ProductCode;
     name: string;
+    type: ProductType;
     status: ProductStatus;
     createdAt: string;
     updatedAt: string;
 }
 
+export interface GetActiveProductsData {
+    products: Product[];
+}
+
 export type GetActiveProductsResponse =
-    ApiResponse<Product[]>;
+    ApiResponse<GetActiveProductsData>;

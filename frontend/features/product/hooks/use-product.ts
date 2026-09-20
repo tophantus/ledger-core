@@ -18,6 +18,11 @@ export function useProduct() {
         (state) => state.setProducts,
     );
 
+    const getProductsByType =
+        useProductStore(
+            (state) => state.getProductsByType,
+        );
+
     const getActiveProducts = useCallback(
         async () => {
             if (initialized) {
@@ -28,17 +33,21 @@ export function useProduct() {
                 await productApi.getActiveProducts();
 
             if (response.success) {
-                setProducts(response.data);
+                setProducts(response.data.products);
             }
 
             return response;
         },
-        [initialized, setProducts],
+        [
+            initialized,
+            setProducts,
+        ],
     );
 
     return {
         products,
         initialized,
         getActiveProducts,
+        getProductsByType,
     };
 }
