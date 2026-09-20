@@ -1,0 +1,68 @@
+databaseChangeLog:
+  - changeSet:
+      id: 067-create-credit-offer-runs
+      author: tophantus
+
+      changes:
+        - createTable:
+            tableName: credit_offer_runs
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: business_date
+                  type: DATE
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: status
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: last_processed_id
+                  type: UUID
+
+              - column:
+                  name: started_at
+                  type: TIMESTAMP WITH TIME ZONE
+
+              - column:
+                  name: heartbeat_at
+                  type: TIMESTAMP WITH TIME ZONE
+
+              - column:
+                  name: completed_at
+                  type: TIMESTAMP WITH TIME ZONE
+
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+        - addUniqueConstraint:
+            tableName: credit_offer_runs
+            columnNames: business_date
+            constraintName: uk_credit_offer_runs_business_date
+
+        - createIndex:
+            tableName: credit_offer_runs
+            indexName: idx_credit_offer_runs_status
+            columns:
+              - column:
+                  name: status
+
+        - createIndex:
+            tableName: credit_offer_runs
+            indexName: idx_credit_offer_runs_business_date
+            columns:
+              - column:
+                  name: business_date

@@ -1,5 +1,7 @@
 package com.example.ledgercore.product.entity;
 
+import com.example.ledgercore.product.enums.ProductStatus;
+import com.example.ledgercore.product.enums.ProductType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,6 +21,10 @@ import java.util.UUID;
                 @Index(
                         name = "idx_products_status",
                         columnList = "status"
+                ),
+                @Index(
+                        name = "idx_products_type",
+                        columnList = "type"
                 )
         }
 )
@@ -44,6 +50,13 @@ public class Product {
             length = 100
     )
     private String name;
+
+    @Enumerated(EnumType.STRING)
+    @Column(
+            nullable = false,
+            length = 20
+    )
+    private ProductType type;
 
     @Enumerated(EnumType.STRING)
     @Column(

@@ -28,21 +28,23 @@ public interface InterestRunCommandRepository
 
     @Query(
             value = """
-                SELECT *
-                FROM interest_runs
-                WHERE
-                    status = 'PENDING'
-                    OR (
-                        status = 'RUNNING'
-                        AND heartbeat_at < :staleBefore
-                    )
-                ORDER BY created_at ASC
-                FOR UPDATE SKIP LOCKED
-                LIMIT 1
-                """,
+            SELECT *
+            FROM interest_runs
+            WHERE
+                status = :pendingStatus
+                OR (
+                    status = :runningStatus
+                    AND heartbeat_at < :staleBefore
+                )
+            ORDER BY created_at ASC
+            FOR UPDATE SKIP LOCKED
+            LIMIT 1
+            """,
             nativeQuery = true
     )
     Optional<InterestRun> findClaimableRun(
+            @Param("pendingStatus") String pendingStatus,
+            @Param("runningStatus") String runningStatus,
             @Param("staleBefore") Instant staleBefore
     );
 

@@ -7,6 +7,7 @@ import com.example.ledgercore.interest.command.port.inbound.ClaimInterestRunUseC
 import com.example.ledgercore.interest.command.repository.InterestRunCommandRepository;
 import com.example.ledgercore.interest.config.InterestRunProperties;
 import com.example.ledgercore.interest.entity.InterestRun;
+import com.example.ledgercore.interest.enums.InterestRunStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,6 +38,8 @@ public class ClaimInterestRunHandler
 
         Optional<InterestRun> optionalRun =
                 interestRunCommandRepository.findClaimableRun(
+                        InterestRunStatus.PENDING.name(),
+                        InterestRunStatus.RUNNING.name(),
                         staleBefore
                 );
 

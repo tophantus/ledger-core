@@ -111,3 +111,27 @@ databaseChangeLog:
       file: db/changelog/055-create-withdrawal-lookup-codes.yaml
   - include:
       file: db/changelog/056-add-interest-run-type-and-posting-run-id.yaml
+  - include:
+      file: db/changelog/057-create-credit-facilities.yaml
+  - include:
+      file: db/changelog/058-create-cards.yaml
+  - include:
+      file: db/changelog/059-create-card-credentials.yaml
+  - include:
+      file: db/changelog/060-create-card-vault-secrets.yaml
+  - include:
+      file: db/changelog/061-create-card-authorizations.yaml
+  - include:
+      file: db/changelog/062-create-credit-statements.yaml
+  - include:
+      file: db/changelog/063-create-credit-daily-balances.yaml
+  - include:
+      file: db/changelog/064-create-credit-repayment-mandates.yaml
+  - include:
+      file: db/changelog/065-add-product-type.yaml
+  - include:
+      file: db/changelog/066-create-credit-offers.yaml
+  - include:
+      file: db/changelog/067-create-credit-offer-runs.yaml
+  - include:
+      file: db/changelog/068-add-run-id-to-credit-offers.yaml

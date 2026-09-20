@@ -5,6 +5,7 @@ import com.example.ledgercore.interest.command.dto.PostInterestCommand;
 import com.example.ledgercore.interest.command.port.outbound.InterestTransactionPort;
 import com.example.ledgercore.interest.command.repository.InterestAccrualCommandRepository;
 import com.example.ledgercore.interest.command.repository.InterestPostingCommandRepository;
+import com.example.ledgercore.interest.command.service.impl.PostInterestHandler;
 import com.example.ledgercore.interest.entity.InterestAccrual;
 import com.example.ledgercore.interest.entity.InterestPosting;
 import org.junit.jupiter.api.BeforeEach;

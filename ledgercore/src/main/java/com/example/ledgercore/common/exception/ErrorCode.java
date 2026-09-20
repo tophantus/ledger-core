@@ -137,6 +137,112 @@ public enum ErrorCode {
             HttpStatus.NOT_FOUND
     ),
 
+    // Card
+
+    CARD_CUSTOMER_ID_REQUIRED(
+            "CARD_001",
+            "Customer ID must not be null",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    CARD_ACCOUNT_ID_REQUIRED(
+            "CARD_002",
+            "Account ID must not be null",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    CARD_PIN_INVALID(
+            "CARD_003",
+            "Card PIN must contain exactly 6 digits",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    CARD_PRODUCT_TYPE_INVALID(
+            "CARD_004",
+            "Debit card must be linked to a deposit product",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    CARD_ALREADY_EXISTS(
+            "CARD_005",
+            "Account already has an active debit card",
+            HttpStatus.CONFLICT
+    ),
+
+    CARD_NOT_FOUND(
+            "CARD_006",
+            "Card not found",
+            HttpStatus.NOT_FOUND
+    ),
+
+    CARD_CREDIT_FACILITY_ID_REQUIRED(
+            "CARD_007",
+            "Credit facility ID must not be null",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    CARD_CREDENTIAL_NOT_FOUND(
+            "CARD_008",
+            "Card credentials not found",
+            HttpStatus.NOT_FOUND
+    ),
+
+    CARD_VAULT_SECRET_NOT_FOUND(
+            "CARD_009",
+            "Card vault secret not found",
+            HttpStatus.NOT_FOUND
+    ),
+
+    CARD_NOT_ACTIVE(
+            "CARD_010",
+            "Card must be active",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    // Credit
+
+    CREDIT_FACILITY_NOT_FOUND(
+            "CREDIT_001",
+            "Credit facility not found",
+            HttpStatus.NOT_FOUND
+    ),
+
+    CREDIT_FACILITY_NOT_ACTIVE(
+            "CREDIT_002",
+            "Credit facility is not active",
+            HttpStatus.CONFLICT
+    ),
+
+    CREDIT_FACILITY_LIMIT_INVALID(
+            "CREDIT_003",
+            "Credit limit must be greater than zero",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    CREDIT_FACILITY_PRODUCT_TYPE_INVALID(
+            "CREDIT_004",
+            "Credit facility must use a credit product",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    CREDIT_OFFER_NOT_FOUND(
+            "CREDIT_005",
+            "Credit offer not found",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    CREDIT_OFFER_NOT_AVAILABLE(
+            "CREDIT_006",
+            "Credit offer is not available",
+            HttpStatus.CONFLICT
+    ),
+
+    CREDIT_OFFER_EXPIRED(
+            "CREDIT_007",
+            "Credit offer has expired",
+            HttpStatus.CONFLICT
+    ),
+
     // Hold
 
     ACCOUNT_HOLD_NOT_FOUND(

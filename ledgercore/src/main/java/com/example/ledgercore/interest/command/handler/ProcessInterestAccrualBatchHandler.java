@@ -1,7 +1,7 @@
 package com.example.ledgercore.interest.command.handler;
 
 import com.example.ledgercore.interest.command.dto.AccrueInterestCommand;
-import com.example.ledgercore.interest.command.port.inbound.AccrueInterestUseCase;
+import com.example.ledgercore.interest.command.service.AccrueInterestUseCase;
 import com.example.ledgercore.interest.command.port.inbound.ProcessInterestAccrualBatchUseCase;
 import com.example.ledgercore.interest.command.port.outbound.account.InterestEligibleAccount;
 import com.example.ledgercore.interest.command.port.outbound.account.InterestEligibleAccountQueryPort;

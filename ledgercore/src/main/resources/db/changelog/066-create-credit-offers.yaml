@@ -1,0 +1,128 @@
+databaseChangeLog:
+  - changeSet:
+      id: 066-create-credit-offers
+      author: tophantus
+
+      changes:
+        - createTable:
+            tableName: credit_offers
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: customer_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: credit_facility_id
+                  type: UUID
+
+              - column:
+                  name: product_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: approved_limit
+                  type: DECIMAL(19,2)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: currency
+                  type: VARCHAR(3)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: status
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: expires_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: accepted_at
+                  type: TIMESTAMP WITH TIME ZONE
+
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+        - createIndex:
+            tableName: credit_offers
+            indexName: idx_credit_offers_customer_id
+            columns:
+              - column:
+                  name: customer_id
+
+        - createIndex:
+            tableName: credit_offers
+            indexName: idx_credit_offers_credit_facility_id
+            columns:
+              - column:
+                  name: credit_facility_id
+
+        - createIndex:
+            tableName: credit_offers
+            indexName: idx_credit_offers_status
+            columns:
+              - column:
+                  name: status
+
+        - createIndex:
+            tableName: credit_offers
+            indexName: idx_credit_offers_expires_at
+            columns:
+              - column:
+                  name: expires_at
+
+        - createIndex:
+            tableName: credit_offers
+            indexName: idx_credit_offers_customer_status
+            columns:
+              - column:
+                  name: customer_id
+              - column:
+                  name: status
+
+        - addForeignKeyConstraint:
+            baseTableName: credit_offers
+            baseColumnNames: credit_facility_id
+            referencedTableName: credit_facilities
+            referencedColumnNames: id
+            constraintName: fk_credit_offers_credit_facility
+
+        - addForeignKeyConstraint:
+            baseTableName: credit_offers
+            baseColumnNames: product_id
+            referencedTableName: products
+            referencedColumnNames: id
+            constraintName: fk_credit_offers_product
+
+        - sql:
+            sql: >
+              ALTER TABLE credit_offers
+              ADD CONSTRAINT chk_credit_offers_approved_limit
+              CHECK (approved_limit > 0);
