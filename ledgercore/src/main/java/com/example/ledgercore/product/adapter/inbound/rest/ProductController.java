@@ -1,10 +1,10 @@
 package com.example.ledgercore.product.adapter.inbound.rest;
 
 import com.example.ledgercore.common.response.ApiResponse;
-import com.example.ledgercore.product.query.dto.GetActiveProductsByTypeQuery;
-import com.example.ledgercore.product.query.dto.GetActiveProductsByTypeResult;
-import com.example.ledgercore.product.query.port.inbound.GetActiveProductsByTypeUseCase;
 import com.example.ledgercore.product.enums.ProductType;
+import com.example.ledgercore.product.query.dto.GetActiveProductsQuery;
+import com.example.ledgercore.product.query.dto.GetActiveProductsResult;
+import com.example.ledgercore.product.query.port.inbound.GetActiveProductsUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,24 +24,21 @@ import org.springframework.web.bind.annotation.RestController;
 )
 public class ProductController {
 
-    private final GetActiveProductsByTypeUseCase
-            getActiveProductsByTypeUseCase;
+    private final GetActiveProductsUseCase
+            getActiveProductsUseCase;
 
     @GetMapping
     @Operation(
-            summary = "Get active products by type",
-            description = "Get all currently active banking products by product type"
+            summary = "Get active products",
+            description = "Get all active banking products, optionally filtered by product type"
     )
-    public ResponseEntity<ApiResponse<GetActiveProductsByTypeResult>> getActiveProductsByType(
-            @Parameter(
-                    description = "Product type",
-                    required = true
-            )
-            @RequestParam ProductType type
+    public ResponseEntity<ApiResponse<GetActiveProductsResult>> getActiveProducts(
+            @Parameter(description = "Product type")
+            @RequestParam(required = false) ProductType type
     ) {
-        GetActiveProductsByTypeResult response =
-                getActiveProductsByTypeUseCase.execute(
-                        new GetActiveProductsByTypeQuery(type)
+        GetActiveProductsResult response =
+                getActiveProductsUseCase.execute(
+                        new GetActiveProductsQuery(type)
                 );
 
         return ResponseEntity.ok(
