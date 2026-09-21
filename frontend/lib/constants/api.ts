@@ -63,6 +63,21 @@ export const API_ENDPOINTS = {
     PRODUCT: {
         BASE: "/api/v1/products",
     },
+    CREDIT: {
+        OFFERS: {
+            LATEST:
+                "/api/v1/credit/offers/latest",
+
+            ACCEPT: (offerId: string) =>
+                `/api/v1/credit/offers/${offerId}/accept`,
+
+            REJECT: (offerId: string) =>
+                `/api/v1/credit/offers/${offerId}/reject`,
+        },
+
+        FACILITY:
+            "/api/v1/credit/facilities",
+    },
     ATM: {
         EXECUTE_WITHDRAWAL: "/api/v1/withdrawals/execute",
     },
