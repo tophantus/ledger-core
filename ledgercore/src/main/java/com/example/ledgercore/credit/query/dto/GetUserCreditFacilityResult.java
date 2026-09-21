@@ -3,7 +3,6 @@ package com.example.ledgercore.credit.query.dto;
 import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.credit.enums.CreditFacilityStatus;
 
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -13,6 +12,8 @@ public record GetUserCreditFacilityResult(
         UUID productId,
         String creditLimit,
         String outstandingBalance,
+        String holdAmount,
+        String availableCredit,
         Currency currency,
         CreditFacilityStatus status,
         Instant openedAt

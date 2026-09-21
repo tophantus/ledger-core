@@ -89,6 +89,12 @@ public class CreditFacility {
     @Column(name = "version", nullable = false)
     private Long version;
 
+    public BigDecimal getAvailableCredit() {
+        return creditLimit
+                .subtract(outstandingBalance)
+                .subtract(holdAmount);
+    }
+
     public void updateCreditTerms(
             UUID productId,
             BigDecimal creditLimit,

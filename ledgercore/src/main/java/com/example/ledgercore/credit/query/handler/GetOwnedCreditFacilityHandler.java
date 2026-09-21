@@ -37,15 +37,11 @@ public class GetOwnedCreditFacilityHandler
                                 )
                         );
 
-        BigDecimal availableCredit = facility.getCreditLimit()
-                .subtract(facility.getOutstandingBalance())
-                .subtract(facility.getHoldAmount());
-
         return new OwnedCreditFacilityInfo(
                 facility.getId(),
                 facility.getCustomerId(),
                 facility.getProductId(),
-                availableCredit,
+                facility.getAvailableCredit(),
                 facility.getCurrency(),
                 facility.getStatus()
         );

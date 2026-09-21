@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: 069
+      id: 069-add-pan-hash-to-cards
       author: tophantus
       changes:
         - addColumn:
@@ -8,7 +8,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: pan_hash
-                  type: varchar(64)
+                  type: varchar
 
         - addUniqueConstraint:
             tableName: cards
