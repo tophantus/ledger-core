@@ -1,12 +1,10 @@
 import {z} from "zod";
 
-import type {WebhookEventType} from "../types/webhook";
+import {WebhookEventType} from "../types/webhook";
 
-export const WEBHOOK_EVENT_TYPES: WebhookEventType[] = [
-    "ACCOUNT_BALANCE_CHANGED",
-    "TRANSACTION_COMPLETED",
-    "TRANSACTION_FAILED",
-];
+export const WEBHOOK_EVENT_TYPES = Object.values(
+    WebhookEventType
+)
 
 export const registerWebhookSchema = z.object({
     accountId: z.uuid("Account is required"),
@@ -15,11 +13,7 @@ export const registerWebhookSchema = z.object({
         .max(2048, "URL is too long"),
 
     eventTypes: z
-        .array(z.enum([
-            "ACCOUNT_BALANCE_CHANGED",
-            "TRANSACTION_COMPLETED",
-            "TRANSACTION_FAILED",
-        ]))
+        .array(z.enum(WebhookEventType))
         .min(1, "At least one event is required"),
 });
 

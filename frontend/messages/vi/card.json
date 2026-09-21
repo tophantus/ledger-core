@@ -1,6 +1,6 @@
 {
   "title": "Thẻ của tôi",
-  "description": "Quản lý thẻ ghi nợ và thẻ tín dụng.",
+  "description": "Quản lý thẻ ghi nợ và thẻ tín dụng của bạn.",
   "empty": "Bạn chưa có thẻ nào.",
   "cardNumber": "Số thẻ",
   "expires": "Hết hạn",
@@ -8,14 +8,31 @@
   "physical": "Thẻ vật lý",
   "debitCard": "Thẻ ghi nợ",
   "creditCard": "Thẻ tín dụng",
+  "pin": "PIN",
+  "cvv": "CVV",
   "types": {
     "DEBIT": "Ghi nợ",
     "CREDIT": "Tín dụng"
   },
   "statuses": {
     "ACTIVE": "Đang hoạt động",
-    "INACTIVE": "Chưa kích hoạt",
+    "INACTIVE": "Không hoạt động",
     "BLOCKED": "Đã khóa",
     "CLOSED": "Đã đóng"
+  },
+  "details": {
+    "title": "Chi tiết thẻ",
+    "enterPin": "Nhập PIN thẻ để xem thông tin chi tiết.",
+    "pinPlaceholder": "Nhập PIN"
+  },
+  "actions": {
+    "viewDetails": "Xem chi tiết thẻ",
+    "reveal": "Hiển thị chi tiết thẻ",
+    "close": "Đóng",
+    "showPin": "Hiện PIN",
+    "hidePin": "Ẩn PIN"
+  },
+  "validation": {
+    "pinRequired": "Vui lòng nhập PIN."
   }
 }

@@ -1,7 +1,7 @@
-import {CardList} from "@/features/card/components/card-list";
+import {CardListPage} from "@/features/card/components/card-list-page";
 
 export default function CardsPage() {
     return (
-        <CardList/>
+        <CardListPage/>
     )
 }

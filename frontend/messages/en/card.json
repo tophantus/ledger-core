@@ -8,6 +8,8 @@
   "physical": "Physical",
   "debitCard": "Debit Card",
   "creditCard": "Credit Card",
+  "pin": "PIN",
+  "cvv": "CVV",
   "types": {
     "DEBIT": "Debit",
     "CREDIT": "Credit"
@@ -17,5 +19,20 @@
     "INACTIVE": "Inactive",
     "BLOCKED": "Blocked",
     "CLOSED": "Closed"
+  },
+  "details": {
+    "title": "Card Details",
+    "enterPin": "Enter your card PIN to view the card details.",
+    "pinPlaceholder": "Enter PIN"
+  },
+  "actions": {
+    "viewDetails": "View card details",
+    "reveal": "Reveal Card Details",
+    "close": "Close",
+    "showPin": "Show PIN",
+    "hidePin": "Hide PIN"
+  },
+  "validation": {
+    "pinRequired": "Please enter your PIN."
   }
 }

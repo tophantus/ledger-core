@@ -1,47 +1,41 @@
 "use client";
 
-import {Eye} from "lucide-react";
+import {CreditCard, Landmark} from "lucide-react";
 import {useTranslations} from "next-intl";
 
-import {getCardStatusColor} from "@/lib/utils/card";
-
-import {
-    CardForm,
-    CardType,
-    type CardInfo,
+import type {
+    CardInfo,
+    RevealedCardDetails,
 } from "../types/card";
+import {CardType} from "../types/card";
 
-interface CardItemProps {
+interface CardDetailsItemProps {
     card: CardInfo;
-    onReveal: (card: CardInfo) => void;
+    details: RevealedCardDetails;
 }
 
-export function CardItem({
-                             card,
-                             onReveal,
-                         }: CardItemProps) {
+export function CardDetailsItem({
+                                    card,
+                                    details,
+                                }: CardDetailsItemProps) {
     const t = useTranslations("card");
+
+    const formattedPan =
+        details.pan.match(/.{1,4}/g)?.join(" ") ??
+        details.pan;
 
     const isCredit =
         card.type === CardType.CREDIT;
 
-    const isVirtual =
-        card.form === CardForm.VIRTUAL;
-
     return (
         <div
             className={`
-                group
                 relative
-                min-h-[220px]
+                min-h-[260px]
                 overflow-hidden
                 rounded-2xl
                 p-6
-                shadow-md
-                transition-all
-                duration-200
-                hover:-translate-y-1
-                hover:shadow-lg
+                shadow-lg
                 ${
                 isCredit
                     ? "bg-gradient-to-br from-indigo-950 via-indigo-900 to-slate-900"
@@ -49,7 +43,6 @@ export function CardItem({
             }
             `}
         >
-            {/* Decorative background */}
             <div
                 className="
                     pointer-events-none
@@ -93,43 +86,31 @@ export function CardItem({
                         </p>
                     </div>
 
-                    <button
-                        type="button"
-                        onClick={() =>
-                            onReveal(card)
-                        }
-                        className="
-                            rounded-full
-                            p-2
-                            text-white/60
-                            transition-colors
-                            hover:bg-white/10
-                            hover:text-white
-                        "
-                        aria-label={t(
-                            "actions.viewDetails",
-                        )}
-                    >
-                        <Eye
-                            className="size-5"
-                            strokeWidth={1.8}
+                    {isCredit ? (
+                        <CreditCard
+                            className="size-7 text-white/80"
+                            strokeWidth={1.7}
                         />
-                    </button>
+                    ) : (
+                        <Landmark
+                            className="size-7 text-white/80"
+                            strokeWidth={1.7}
+                        />
+                    )}
                 </div>
 
-                {/* Card Number */}
+                {/* PAN */}
                 <div>
                     <p className="text-xs text-white/60">
                         {t("cardNumber")}
                     </p>
 
-                    <p className="mt-2 font-mono text-lg font-medium tracking-[0.18em] text-white">
-                        •••• •••• ••••{" "}
-                        {card.panLast4}
+                    <p className="mt-2 font-mono text-xl font-medium tracking-[0.16em] text-white">
+                        {formattedPan}
                     </p>
                 </div>
 
-                {/* Footer */}
+                {/* Details */}
                 <div className="flex items-end justify-between">
                     <div>
                         <p className="text-[10px] uppercase tracking-wider text-white/50">
@@ -147,31 +128,13 @@ export function CardItem({
                         </p>
                     </div>
 
-                    <div className="text-right">
-                        <span
-                            className={`
-                                inline-flex
-                                items-center
-                                rounded-full
-                                px-2.5
-                                py-1
-                                text-xs
-                                font-medium
-                                ${getCardStatusColor(
-                                card.status,
-                                "text-background",
-                            )}
-                            `}
-                        >
-                            {t(
-                                `statuses.${card.status}`,
-                            )}
-                        </span>
+                    <div>
+                        <p className="text-[10px] uppercase tracking-wider text-white/50">
+                            {t("cvv")}
+                        </p>
 
-                        <p className="mt-1 text-[10px] text-white/50">
-                            {isVirtual
-                                ? t("virtual")
-                                : t("physical")}
+                        <p className="mt-1 font-mono text-sm font-medium tracking-widest text-white">
+                            {details.cvv}
                         </p>
                     </div>
                 </div>

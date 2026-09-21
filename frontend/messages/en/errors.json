@@ -1,6 +1,8 @@
 {
   "fallback": "Something went wrong.",
+
   "COMMON_001": "Invalid request.",
+  "COMMON_002": "Invalid currency amount.",
 
   "USER_001": "User not found.",
   "USER_002": "Email already exists.",
@@ -20,12 +22,50 @@
   "ACCOUNT_005": "Account balance must be zero before closing.",
   "ACCOUNT_006": "Account has insufficient balance.",
   "ACCOUNT_007": "Account is not active.",
+  "ACCOUNT_008": "Account currency mismatch.",
+  "ACCOUNT_009": "Account hold amount is insufficient.",
+  "ACCOUNT_010": "Account must be linked to a deposit product.",
+
+  "ACCOUNT_010": "Account daily balance not found.",
+
+  "CARD_001": "Customer ID must not be null.",
+  "CARD_002": "Account ID must not be null.",
+  "CARD_003": "Card PIN must contain exactly 6 digits.",
+  "CARD_004": "Debit card must be linked to a deposit product.",
+  "CARD_005": "Account already has an active debit card.",
+  "CARD_006": "Card not found.",
+  "CARD_007": "Credit facility ID must not be null.",
+  "CARD_008": "Card credentials not found.",
+  "CARD_009": "Card vault secret not found.",
+  "CARD_010": "Card must be active.",
+
+  "CREDIT_001": "Credit facility not found.",
+  "CREDIT_002": "Credit facility is not active.",
+  "CREDIT_003": "Credit limit must be greater than zero.",
+  "CREDIT_004": "Credit facility must use a credit product.",
+  "CREDIT_005": "Credit offer not found.",
+  "CREDIT_006": "Credit offer is not available.",
+  "CREDIT_007": "Credit offer has expired.",
+
+  "HOLD_001": "Account hold not found.",
+  "HOLD_002": "Account hold is not active.",
+  "HOLD_003": "Hold amount must be greater than zero.",
+
+  "PRODUCT_001": "Product not found.",
+  "PRODUCT_002": "Product is not active.",
 
   "BUSINESS_DAY_001": "Current business day not found.",
   "BUSINESS_DAY_002": "Invalid business day status.",
   "BUSINESS_DAY_003": "Business day can only be closed during the closing window.",
   "BUSINESS_DAY_004": "Current business day does not match system date.",
   "BUSINESS_DAY_005": "Next business day already exists.",
+  "BUSINESS_DAY_008": "Next business day not found.",
+
+  "INTEREST_001": "Applicable interest configuration not found.",
+  "INTEREST_002": "Interest run not found.",
+  "INTEREST_003": "Invalid interest run status.",
+  "INTEREST_004": "Interest run already completed.",
+  "INTEREST_005": "Interest processor not found.",
 
   "LEDGER_001": "Ledger account not found.",
   "LEDGER_002": "Ledger account is not active.",
@@ -43,6 +83,24 @@
   "TRANSACTION_011": "Transfer intent not found.",
   "TRANSACTION_012": "Transfer intent has expired.",
 
+  "WITHDRAWAL_001": "Withdrawal request not found.",
+  "WITHDRAWAL_002": "Withdrawal request is not pending.",
+  "WITHDRAWAL_003": "Withdrawal request has expired.",
+  "WITHDRAWAL_004": "Withdrawal intent not found.",
+  "WITHDRAWAL_005": "Withdrawal intent is not ready.",
+  "WITHDRAWAL_006": "Withdrawal intent has expired.",
+  "WITHDRAWAL_007": "Withdrawal code is invalid.",
+  "WITHDRAWAL_008": "Withdrawal amount does not match the withdrawal intent.",
+  "WITHDRAWAL_009": "Withdrawal has already been executed.",
+  "WITHDRAWAL_010": "Withdrawal lookup code not found.",
+
+  "WEBHOOK_001": "Invalid webhook URL.",
+  "WEBHOOK_002": "Webhook event types must not be empty.",
+  "WEBHOOK_003": "Webhook endpoint already exists.",
+  "WEBHOOK_004": "Webhook endpoint not found.",
+  "WEBHOOK_005": "Webhook endpoint is disabled.",
+  "WEBHOOK_007": "Webhook delivery not found.",
+
   "AUTH_001": "Invalid credentials.",
   "AUTH_002": "User is not active.",
   "AUTH_003": "Invalid verification code.",
@@ -58,14 +116,15 @@
   "AUTH_013": "Current password is incorrect.",
   "AUTH_014": "New password must be different from current password.",
 
-  "WEBHOOK_001": "Invalid webhook URL.",
-  "WEBHOOK_002": "Webhook event types must not be empty.",
-  "WEBHOOK_003": "Webhook endpoint already exists.",
-  "WEBHOOK_004": "Webhook endpoint not found.",
-  "WEBHOOK_005": "Webhook endpoint is disabled.",
-
   "RECONCILIATION_001": "Reconciliation processor not found.",
   "RECONCILIATION_002": "Reconciliation run not found.",
+
+  "ATM_001": "ATM terminal already exists.",
+  "ATM_002": "ATM terminal not found.",
+  "ATM_003": "ATM terminal is already active.",
+  "ATM_004": "ATM terminal is already inactive.",
+  "ATM_005": "ATM terminal is not active.",
+  "ATM_006": "ATM terminal authentication failed.",
 
   "SYSTEM_001": "Internal server error.",
   "SYSTEM_002": "Request is being processed."
