@@ -2,22 +2,23 @@
 
 import {
     useEffect,
-    useMemo,
     useState,
 } from "react";
 import {useTranslations} from "next-intl";
-import {useParams, useRouter} from "next/navigation";
+import {
+    useParams,
+    useRouter,
+} from "next/navigation";
 
 import {Button} from "@/components/ui/button";
 
-import {useMyAccounts} from "@/features/account/hooks/use-my-accounts";
+import {useAccount} from "@/features/account/hooks/use-account";
 
 import {useWebhook} from "../hooks/use-webhook";
 import type {Webhook} from "../types/webhook";
 
 import {WebhookDetailsSummary} from "./webhook-details-summary";
 import {WebhookDeliveryList} from "./webhook-delivery-list";
-import {AccountSummary} from "@/features/account/types/account";
 
 export default function WebhookDetailsPage() {
     const params = useParams<{
@@ -41,8 +42,8 @@ export default function WebhookDetailsPage() {
     } = useWebhook();
 
     const {
-        getMyAccounts,
-    } = useMyAccounts();
+        getAccount,
+    } = useAccount();
 
     const [
         webhook,
@@ -50,9 +51,9 @@ export default function WebhookDetailsPage() {
     ] = useState<Webhook | null>(null);
 
     const [
-        accounts,
-        setAccounts,
-    ] = useState<AccountSummary[]>([]);
+        accountNo,
+        setAccountNo,
+    ] = useState<string>();
 
     const [
         isLoading,
@@ -72,13 +73,8 @@ export default function WebhookDetailsPage() {
             setError(null);
 
             try {
-                const [
-                    webhookResponse,
-                    accountsResponse,
-                ] = await Promise.all([
-                    getWebhook(webhookId),
-                    getMyAccounts(),
-                ]);
+                const webhookResponse =
+                    await getWebhook(webhookId);
 
                 if (!mounted) {
                     return;
@@ -109,15 +105,26 @@ export default function WebhookDetailsPage() {
                     return;
                 }
 
-                setWebhook(
-                    webhookResponse.data,
-                );
+                const webhookData =
+                    webhookResponse.data;
+
+                setWebhook(webhookData);
+
+                const accountResponse =
+                    await getAccount(
+                        webhookData.accountId,
+                    );
+
+                if (!mounted) {
+                    return;
+                }
 
                 if (
-                    accountsResponse.success
+                    accountResponse.success
                 ) {
-                    setAccounts(
-                        accountsResponse.data,
+                    setAccountNo(
+                        accountResponse.data
+                            .accountNo,
                     );
                 }
             } catch {
@@ -143,84 +150,84 @@ export default function WebhookDetailsPage() {
     }, [
         webhookId,
         getWebhook,
-        getMyAccounts,
+        getAccount,
         tErrors,
     ]);
 
-    const accountNo =
-        useMemo(
-            () =>
-                webhook
-                    ? accounts.find(
-                        (account) =>
-                            account.id ===
-                            webhook.accountId,
-                    )?.accountNo
-                    : undefined,
-            [
-                accounts,
-                webhook,
-            ],
-        );
-
     if (isLoading) {
         return (
-            <section className="
-                mx-auto
-                w-full
-                space-y-6
-            ">
-                <div className="
-                    h-8
-                    w-48
-                    animate-pulse
-                    rounded
-                    bg-secondary"
+            <section
+                className="
+                    mx-auto
+                    w-full
+                    space-y-6
+                "
+            >
+                <div
+                    className="
+                        h-8
+                        w-48
+                        animate-pulse
+                        rounded
+                        bg-secondary
+                    "
                 />
 
-                <div className="
-                     h-48
-                     animate-pulse
-                     rounded-lg
-                     bg-secondary
-                    "/>
+                <div
+                    className="
+                        h-48
+                        animate-pulse
+                        rounded-lg
+                        bg-secondary
+                    "
+                />
 
-                <div className="
-                     h-8
-                     w-40
-                     animate-pulse
-                     rounded
-                     bg-secondary
-                    "/>
+                <div
+                    className="
+                        h-8
+                        w-40
+                        animate-pulse
+                        rounded
+                        bg-secondary
+                    "
+                />
 
-                <div className="
-                     h-96
-                     animate-pulse
-                     rounded-lg
-                     bg-secondary
-                    "/>
+                <div
+                    className="
+                        h-96
+                        animate-pulse
+                        rounded-lg
+                        bg-secondary
+                    "
+                />
             </section>
         );
     }
 
     if (error || !webhook) {
         return (
-            <section className="
-                     mx-auto
-                     w-full
-                     space-y-4
-                    ">
-                <div className="
-                     rounded-lg
-                     border
-                     border-danger
-                     bg-surface
-                     p-4
-                    ">
-                    <p className="
-                     text-sm
-                     text-danger
-                    ">
+            <section
+                className="
+                    mx-auto
+                    w-full
+                    space-y-4
+                "
+            >
+                <div
+                    className="
+                        rounded-lg
+                        border
+                        border-danger
+                        bg-surface
+                        p-4
+                    "
+                >
+                    <p
+                        className="
+                            text-sm
+                            text-danger
+                        "
+                    >
                         {error ??
                             tErrors(
                                 "fallback",
@@ -244,33 +251,41 @@ export default function WebhookDetailsPage() {
     }
 
     return (
-        <section className="
-                     mx-auto
-                     w-full
-                     space-y-6
-                    ">
-            <div className="
-                     flex
-                     items-start
-                     justify-between
-                     gap-4
-                    ">
+        <section
+            className="
+                mx-auto
+                w-full
+                space-y-6
+            "
+        >
+            <div
+                className="
+                    flex
+                    items-start
+                    justify-between
+                    gap-4
+                "
+            >
                 <div>
-                    <h1 className="
-                     text-2xl
-                     font-semibold
-                     text-primary
-                    ">
+                    <h1
+                        className="
+                            text-2xl
+                            font-semibold
+                            text-primary
+                        "
+                    >
                         {t(
                             "details.title",
                         )}
                     </h1>
 
-                    <p className="
-                     mt-1
-                     text-sm
-                     text-muted
-                    ">
+                    <p
+                        className="
+                            mt-1
+                            text-sm
+                            text-muted
+                        "
+                    >
                         {t(
                             "details.description",
                         )}
@@ -296,9 +311,7 @@ export default function WebhookDetailsPage() {
             />
 
             <WebhookDeliveryList
-                webhookId={
-                    webhook.id
-                }
+                webhookId={webhook.id}
             />
         </section>
     );
