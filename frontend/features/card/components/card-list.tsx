@@ -3,15 +3,18 @@
 import type {CardInfo} from "../types/card";
 
 import {CardItem} from "./card-item";
+import {CreateCardItem} from "./create-card-item";
 
 interface CardListProps {
     cards: CardInfo[];
     onReveal: (card: CardInfo) => void;
+    onCreate: () => void;
 }
 
 export function CardList({
                              cards,
                              onReveal,
+                             onCreate,
                          }: CardListProps) {
     return (
         <div
@@ -29,6 +32,10 @@ export function CardList({
                     onReveal={onReveal}
                 />
             ))}
+
+            <CreateCardItem
+                onClick={onCreate}
+            />
         </div>
     );
 }

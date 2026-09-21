@@ -32,7 +32,35 @@
     "showPin": "Hiện PIN",
     "hidePin": "Ẩn PIN"
   },
+  "create": {
+    "title": "Tạo thẻ",
+    "description": "Chọn loại thẻ và cung cấp thông tin cần thiết.",
+    "type": {
+      "label": "Loại thẻ"
+    },
+    "debit": {
+      "account": "Tài khoản",
+      "accountPlaceholder": "Chọn tài khoản",
+      "noAvailableAccount": "Bạn không có tài khoản phù hợp để tạo thẻ ghi nợ."
+    },
+    "credit": {
+      "facility": "Hạn mức tín dụng",
+      "outstanding": "Dư nợ hiện tại",
+      "loading": "Đang tải hạn mức tín dụng...",
+      "noFacility": "Bạn không có hạn mức tín dụng phù hợp.",
+      "alreadyHasCard": "Bạn đã có thẻ tín dụng."
+    },
+    "pinPlaceholder": "Nhập PIN gồm 6 chữ số",
+    "validation": {
+      "accountRequired": "Vui lòng chọn tài khoản.",
+      "creditFacilityRequired": "Vui lòng chọn hạn mức tín dụng.",
+      "pinRequired": "Vui lòng nhập PIN.",
+      "pinInvalid": "PIN phải gồm đúng 6 chữ số."
+    },
+    "action": "Tạo"
+  },
   "validation": {
-    "pinRequired": "Vui lòng nhập PIN."
+    "pinRequired": "Vui lòng nhập PIN.",
+    "pinInvalid": "PIN phải gồm đúng 6 chữ số."
   }
 }

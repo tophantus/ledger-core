@@ -1,15 +1,20 @@
 "use client";
 
 import {useTranslations} from "next-intl";
-import {useEffect, useState} from "react";
+import {
+    useCallback,
+    useEffect,
+    useState,
+} from "react";
+
+import {CreateCardModal} from "./create-card-modal";
+import {CardDetailsModal} from "./card-details-modal";
+import {CardItemSkeleton} from "./card-item-skeleton";
+import {CardList} from "./card-list";
 
 import {useGetCards} from "../hooks/use-get-cards";
 import {useCardStore} from "../stores/card-store";
 import type {CardInfo} from "../types/card";
-
-import {CardDetailsModal} from "./card-details-modal";
-import {CardItemSkeleton} from "./card-item-skeleton";
-import {CardList} from "./card-list";
 
 export function CardListPage() {
     const t = useTranslations("card");
@@ -37,17 +42,20 @@ export function CardListPage() {
     const [selectedCard, setSelectedCard] =
         useState<CardInfo | null>(null);
 
-    useEffect(() => {
-        let mounted = true;
+    const [
+        isCreateModalOpen,
+        setIsCreateModalOpen,
+    ] = useState(false);
 
-        const loadCards = async () => {
+    const loadCards = useCallback(
+        async () => {
+            setIsLoading(true);
+            setHasError(false);
+            setErrorMessage(null);
+
             try {
                 const response =
                     await getCards(0, 20);
-
-                if (!mounted) {
-                    return;
-                }
 
                 if (!response.success) {
                     setHasError(true);
@@ -72,40 +80,51 @@ export function CardListPage() {
                     response.data.content,
                 );
             } catch {
-                if (!mounted) {
-                    return;
-                }
-
                 setHasError(true);
 
                 setErrorMessage(
                     tErrors("fallback"),
                 );
             } finally {
-                if (mounted) {
-                    setIsLoading(false);
-                }
+                setIsLoading(false);
             }
-        };
+        },
+        [
+            getCards,
+            setCards,
+            tErrors,
+        ],
+    );
 
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         void loadCards();
-
-        return () => {
-            mounted = false;
-        };
-    }, [
-        getCards,
-        setCards,
-        tErrors,
-    ]);
+    }, [loadCards]);
 
     if (isLoading) {
         return (
             <section className="space-y-6">
                 <div>
-                    <div className="h-8 w-32 animate-pulse rounded bg-background-subtle" />
+                    <div
+                        className="
+                            h-8
+                            w-32
+                            animate-pulse
+                            rounded
+                            bg-background-subtle
+                        "
+                    />
 
-                    <div className="mt-2 h-4 w-72 animate-pulse rounded bg-background-subtle" />
+                    <div
+                        className="
+                            mt-2
+                            h-4
+                            w-72
+                            animate-pulse
+                            rounded
+                            bg-background-subtle
+                        "
+                    />
                 </div>
 
                 <div
@@ -132,11 +151,23 @@ export function CardListPage() {
         return (
             <section className="space-y-6">
                 <div>
-                    <h1 className="text-2xl font-semibold text-primary">
+                    <h1
+                        className="
+                            text-2xl
+                            font-semibold
+                            text-primary
+                        "
+                    >
                         {t("title")}
                     </h1>
 
-                    <p className="mt-1 text-sm text-text-muted">
+                    <p
+                        className="
+                            mt-1
+                            text-sm
+                            text-text-muted
+                        "
+                    >
                         {t("description")}
                     </p>
                 </div>
@@ -165,41 +196,39 @@ export function CardListPage() {
         <>
             <section className="space-y-6">
                 <div>
-                    <h1 className="text-2xl font-semibold text-primary">
+                    <h1
+                        className="
+                            text-2xl
+                            font-semibold
+                            text-primary
+                        "
+                    >
                         {t("title")}
                     </h1>
 
-                    <p className="mt-1 text-sm text-text-muted">
+                    <p
+                        className="
+                            mt-1
+                            text-sm
+                            text-text-muted
+                        "
+                    >
                         {t("description")}
                     </p>
                 </div>
 
-                {cards.length === 0 ? (
-                    <div
-                        className="
-                            rounded-xl
-                            border
-                            border-border
-                            bg-surface
-                            p-8
-                            text-center
-                        "
-                    >
-                        <p className="text-sm text-text-muted">
-                            {t("empty")}
-                        </p>
-                    </div>
-                ) : (
-                    <CardList
-                        cards={cards}
-                        onReveal={
-                            setSelectedCard
-                        }
-                    />
-                )}
+                <CardList
+                    cards={cards}
+                    onReveal={setSelectedCard}
+                    onCreate={() =>
+                        setIsCreateModalOpen(
+                            true,
+                        )
+                    }
+                />
             </section>
 
-            {selectedCard &&
+            {selectedCard && (
                 <CardDetailsModal
                     card={selectedCard}
                     open={true}
@@ -207,8 +236,18 @@ export function CardListPage() {
                         setSelectedCard(null)
                     }
                 />
-            }
+            )}
 
+            <CreateCardModal
+                open={isCreateModalOpen}
+                cards={cards}
+                onClose={() =>
+                    setIsCreateModalOpen(false)
+                }
+                onCreated={() => {
+                    void loadCards();
+                }}
+            />
         </>
     );
 }

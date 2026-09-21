@@ -38,6 +38,7 @@
   "CARD_008": "Card credentials not found.",
   "CARD_009": "Card vault secret not found.",
   "CARD_010": "Card must be active.",
+  "CARD_011": "Card PIN verification failed.",
 
   "CREDIT_001": "Credit facility not found.",
   "CREDIT_002": "Credit facility is not active.",

@@ -51,6 +51,7 @@ export function CardDetailsModal({
     const schema =
         createCardDetailsSchema(
             t("validation.pinRequired"),
+            t("validation.pinInvalid"),
         );
 
     const {

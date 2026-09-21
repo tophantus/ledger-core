@@ -38,6 +38,7 @@
   "CARD_008": "Không tìm thấy thông tin xác thực của thẻ.",
   "CARD_009": "Không tìm thấy khóa bí mật của kho lưu trữ thẻ.",
   "CARD_010": "Thẻ phải đang hoạt động.",
+  "CARD_011": "Xác thực PIN thẻ không thành công.",
 
   "CREDIT_001": "Không tìm thấy hạn mức tín dụng.",
   "CREDIT_002": "Hạn mức tín dụng chưa được kích hoạt.",

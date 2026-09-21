@@ -14,11 +14,28 @@ import {CreateAccountModal} from "@/features/account/components/create-account-m
 export function AccountList() {
     const tErrors = useTranslations("errors");
 
-    const {getMyAccounts} = useMyAccounts();
-
     const accounts = useAccountStore(
         (state) => state.accounts,
     );
+
+    const accountsInitialized =
+        useAccountStore(
+            (state) => state.initialized,
+        );
+
+    const {getMyAccounts} =
+        useMyAccounts();
+
+    useEffect(() => {
+        if (accountsInitialized) {
+            return;
+        }
+
+        void getMyAccounts();
+    }, [
+        accountsInitialized,
+        getMyAccounts,
+    ]);
 
     const [isLoading, setIsLoading] =
         useState(true);
