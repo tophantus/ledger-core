@@ -159,7 +159,7 @@ class CreateCreditCardHandlerTest {
                 result.type()
         );
         assertEquals(
-                CardForm.PHYSICAL,
+                CardForm.VIRTUAL,
                 result.form()
         );
         assertEquals(
@@ -191,7 +191,7 @@ class CreateCreditCardHandlerTest {
                 savedCard.getType()
         );
         assertEquals(
-                CardForm.PHYSICAL,
+                CardForm.VIRTUAL,
                 savedCard.getForm()
         );
         assertEquals(

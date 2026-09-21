@@ -102,7 +102,7 @@ public class CreateDebitCardHandler
                 .id(cardId)
                 .customerId(command.customerId())
                 .type(CardType.DEBIT)
-                .form(CardForm.PHYSICAL)
+                .form(CardForm.VIRTUAL)
                 .status(CardStatus.ACTIVE)
                 .accountId(account.id())
                 .creditFacilityId(null)
