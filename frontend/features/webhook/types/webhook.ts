@@ -3,20 +3,26 @@ import type {
     PageResponse,
 } from "@/lib/api/types";
 
-export type WebhookStatus =
-    | "ACTIVE"
-    | "INACTIVE";
+export enum WebhookStatus {
+    ACTIVE = "ACTIVE",
+    INACTIVE = "INACTIVE",
+}
 
-export type WebhookDeliveryStatus =
-    | "PENDING"
-    | "RETRYING"
-    | "DELIVERED"
-    | "FAILED";
+export enum WebhookDeliveryStatus {
+    PENDING = "PENDING",
+    RETRYING = "RETRYING",
+    DELIVERED = "DELIVERED",
+    FAILED = "FAILED",
+}
 
-export type WebhookEventType =
-    | "ACCOUNT_BALANCE_CHANGED"
-    | "TRANSACTION_COMPLETED"
-    | "TRANSACTION_FAILED";
+export enum WebhookEventType {
+    ACCOUNT_BALANCE_CHANGED =
+        "ACCOUNT_BALANCE_CHANGED",
+    TRANSACTION_COMPLETED =
+        "TRANSACTION_COMPLETED",
+    TRANSACTION_FAILED =
+        "TRANSACTION_FAILED",
+}
 
 export interface RegisterWebhookRequest {
     accountId: string;
@@ -89,27 +95,3 @@ export interface WebhookDeliveryFilters {
     page?: number;
     size?: number;
 }
-
-export type RegisterWebhookApiResponse =
-    ApiResponse<RegisterWebhookResponse>;
-
-export type UpdateWebhookApiResponse =
-    ApiResponse<UpdateWebhookResponse>;
-
-export type UpdateWebhookSubscriptionsApiResponse =
-    ApiResponse<void>;
-
-export type DeleteWebhookApiResponse =
-    ApiResponse<void>;
-
-export type RotateWebhookSecretApiResponse =
-    ApiResponse<RotateWebhookSecretResponse>;
-
-export type WebhookApiResponse =
-    ApiResponse<Webhook>;
-
-export type WebhookPageApiResponse =
-    ApiResponse<PageResponse<Webhook>>;
-
-export type WebhookDeliveryPageApiResponse =
-    ApiResponse<PageResponse<WebhookDelivery>>;

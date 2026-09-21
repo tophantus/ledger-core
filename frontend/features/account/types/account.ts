@@ -1,9 +1,10 @@
 import {Currency} from "@/lib/constants/currency";
 
-export type AccountStatus =
-    | "ACTIVE"
-    | "BLOCKED"
-    | "CLOSED";
+export enum AccountStatus {
+    ACTIVE = "ACTIVE",
+    BLOCKED = "BLOCKED",
+    CLOSED = "CLOSED",
+}
 
 export interface Account {
     id: string;

@@ -23,9 +23,10 @@ export interface TokenResponse {
     refreshToken: string;
 }
 
-export type LoginStatus =
-    | "AUTHENTICATED"
-    | "EMAIL_NOT_VERIFIED";
+export enum LoginStatus {
+    AUTHENTICATED = "AUTHENTICATED",
+    EMAIL_NOT_VERIFIED = "EMAIL_NOT_VERIFIED",
+}
 
 export interface LoginResponse {
     status: LoginStatus;

@@ -1,16 +1,18 @@
 import {Currency} from "@/lib/constants/currency";
 
-export type WithdrawalRequestStatus =
-    | "PENDING"
-    | "CONFIRMED"
-    | "EXPIRED"
-    | "CANCELLED";
+export enum WithdrawalRequestStatus {
+    PENDING = "PENDING",
+    CONFIRMED = "CONFIRMED",
+    EXPIRED = "EXPIRED",
+    CANCELLED = "CANCELLED"
+}
 
-export type WithdrawalIntentStatus =
-    | "READY"
-    | "COMPLETED"
-    | "EXPIRED"
-    | "CANCELLED";
+export enum WithdrawalIntentStatus {
+    READY = "READY",
+    COMPLETED = "COMPLETED",
+    EXPIRED = "EXPIRED",
+    CANCELLED = "CANCELLED"
+}
 
 export interface CreateWithdrawalRequest {
     accountId: string;

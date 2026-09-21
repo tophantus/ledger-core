@@ -4,7 +4,7 @@ import {useTranslations} from "next-intl";
 
 import {Button} from "@/components/ui/button";
 
-import type {
+import {
     ReconciliationErrorCode,
     ReconciliationTargetType,
 } from "../types/admin-reconciliation";
@@ -33,20 +33,14 @@ interface ReconciliationExceptionFiltersProps {
     onClear: () => void;
 }
 
-const TARGET_TYPES: ReconciliationTargetType[] = [
-    "TRANSACTION",
-    "JOURNAL",
-    "ACCOUNT",
-];
+const TARGET_TYPES = Object.values(
+    ReconciliationTargetType
+)
 
-const ERROR_CODES: ReconciliationErrorCode[] = [
-    "JOURNAL_NOT_FOUND",
-    "TRANSACTION_AMOUNT_MISMATCH",
-    "BUSINESS_DATE_MISMATCH",
-    "JOURNAL_NOT_BALANCED",
-    "BALANCE_MISMATCH",
-    "OPENING_BALANCE_MISMATCH",
-];
+const ERROR_CODES = Object.values(
+    ReconciliationErrorCode
+)
+
 
 export function ReconciliationExceptionFilters({
                                                    targetType,

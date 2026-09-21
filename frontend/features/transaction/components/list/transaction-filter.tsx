@@ -12,8 +12,12 @@ import {getCurrency, SUPPORTED_CURRENCIES} from "@/lib/constants/currency";
 
 import type {
     TransactionFilters,
-    TransactionStatus,
+
+} from "../../types/transaction";
+
+import {
     TransactionType,
+    TransactionStatus,
 } from "../../types/transaction";
 
 interface TransactionFilterProps {
@@ -25,21 +29,13 @@ interface TransactionFilterProps {
     ) => void;
 }
 
-const TRANSACTION_TYPES: TransactionType[] = [
-    "TRANSFER",
-    "DEPOSIT",
-    "WITHDRAW",
-    "FEE",
-    "REFUND",
-];
+const TRANSACTION_TYPES = Object.values(
+    TransactionType,
+);
 
-const TRANSACTION_STATUSES: TransactionStatus[] = [
-    "PENDING",
-    "COMPLETED",
-    "FAILED",
-    "CANCELLED",
-];
-
+const TRANSACTION_STATUSES = Object.values(
+    TransactionStatus,
+);
 export function TransactionFilter({
                                       accounts,
                                       isAccountsLoading,

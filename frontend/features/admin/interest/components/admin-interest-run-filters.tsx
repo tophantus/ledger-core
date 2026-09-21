@@ -11,7 +11,10 @@ import {
 import {useTranslations} from "next-intl";
 
 import type {
-    InterestRunFilters,
+    InterestRunFilters
+} from "../types/admin-interest";
+
+import {
     InterestRunStatus,
     InterestRunType,
 } from "../types/admin-interest";
@@ -23,16 +26,12 @@ interface AdminInterestRunFiltersProps {
     ) => void;
 }
 
-const RUN_TYPES: InterestRunType[] = [
-    "ACCRUAL",
-    "POSTING",
-];
-
-const RUN_STATUSES: InterestRunStatus[] = [
-    "PENDING",
-    "RUNNING",
-    "COMPLETED",
-];
+const RUN_TYPES = Object.values(
+    InterestRunType
+)
+const RUN_STATUSES = Object.values(
+    InterestRunStatus
+)
 
 export function AdminInterestRunFilters({
                                             filters,

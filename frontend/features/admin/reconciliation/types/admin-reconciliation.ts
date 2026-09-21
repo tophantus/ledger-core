@@ -3,28 +3,36 @@ import type {
     PageResponse,
 } from "@/lib/api/types";
 
-export type ReconciliationType =
-    | "TRANSACTION_JOURNAL"
-    | "JOURNAL_BALANCE"
-    | "ACCOUNT_BALANCE";
+export enum ReconciliationType {
+    TRANSACTION_JOURNAL = "TRANSACTION_JOURNAL",
+    JOURNAL_BALANCE = "JOURNAL_BALANCE",
+    ACCOUNT_BALANCE = "ACCOUNT_BALANCE",
+}
 
-export type ReconciliationRunStatus =
-    | "PENDING"
-    | "RUNNING"
-    | "COMPLETED";
+export enum ReconciliationRunStatus {
+    PENDING = "PENDING",
+    RUNNING = "RUNNING",
+    COMPLETED = "COMPLETED",
+}
 
-export type ReconciliationTargetType =
-    | "TRANSACTION"
-    | "JOURNAL"
-    | "ACCOUNT";
+export enum ReconciliationTargetType {
+    TRANSACTION = "TRANSACTION",
+    JOURNAL = "JOURNAL",
+    ACCOUNT = "ACCOUNT",
+}
 
-export type ReconciliationErrorCode =
-    | "JOURNAL_NOT_FOUND"
-    | "TRANSACTION_AMOUNT_MISMATCH"
-    | "BUSINESS_DATE_MISMATCH"
-    | "JOURNAL_NOT_BALANCED"
-    | "BALANCE_MISMATCH"
-    | "OPENING_BALANCE_MISMATCH";
+export enum ReconciliationErrorCode {
+    JOURNAL_NOT_FOUND = "JOURNAL_NOT_FOUND",
+    TRANSACTION_AMOUNT_MISMATCH =
+        "TRANSACTION_AMOUNT_MISMATCH",
+    BUSINESS_DATE_MISMATCH =
+        "BUSINESS_DATE_MISMATCH",
+    JOURNAL_NOT_BALANCED =
+        "JOURNAL_NOT_BALANCED",
+    BALANCE_MISMATCH = "BALANCE_MISMATCH",
+    OPENING_BALANCE_MISMATCH =
+        "OPENING_BALANCE_MISMATCH",
+}
 
 export interface ReconciliationRunSummary {
     id: string;
@@ -58,11 +66,3 @@ export interface ReconciliationExceptionFilters {
     page?: number;
     size?: number;
 }
-
-export type ReconciliationSummaryResponse =
-    ApiResponse<ReconciliationSummary>;
-
-export type ReconciliationExceptionPageResponse =
-    ApiResponse<
-        PageResponse<ReconciliationException>
-    >;

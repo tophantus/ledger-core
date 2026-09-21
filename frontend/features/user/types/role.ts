@@ -1,4 +1,5 @@
-export type UserRole =
-    | "CUSTOMER"
-    | "STAFF"
-    | "ADMIN";
+export enum UserRole {
+    CUSTOMER = "CUSTOMER",
+    STAFF = "STAFF",
+    ADMIN = "ADMIN",
+}

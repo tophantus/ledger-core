@@ -1,10 +1,11 @@
 import type {UserRole} from "./role";
 
-export type UserStatus =
-    | "PENDING_VERIFICATION"
-    | "ACTIVE"
-    | "BLOCKED"
-    | "CLOSED";
+export enum UserStatus {
+    PENDING_VERIFICATION = "PENDING_VERIFICATION",
+    ACTIVE = "ACTIVE",
+    BLOCKED = "BLOCKED",
+    CLOSED = "CLOSED",
+}
 
 export interface UserProfile {
     fullName: string;
