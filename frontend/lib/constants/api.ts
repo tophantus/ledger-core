@@ -78,6 +78,21 @@ export const API_ENDPOINTS = {
         FACILITY:
             "/api/v1/credit/facilities",
     },
+    CARD: {
+        BASE: "/api/v1/cards",
+
+        DEBIT:
+            "/api/v1/cards/debit",
+
+        CREDIT:
+            "/api/v1/cards/credit",
+
+        BY_ID: (cardId: string) =>
+            `/api/v1/cards/${cardId}`,
+
+        REVEAL: (cardId: string) =>
+            `/api/v1/cards/${cardId}/reveal`,
+    },
     ATM: {
         EXECUTE_WITHDRAWAL: "/api/v1/withdrawals/execute",
     },
