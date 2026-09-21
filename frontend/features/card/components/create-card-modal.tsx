@@ -154,6 +154,11 @@ export function CreateCardModal({
         name: "type",
     });
 
+    const accountId = useWatch({
+        control,
+        name: "accountId",
+    });
+
     const isDebit =
         type === CardType.DEBIT;
 
@@ -600,7 +605,17 @@ export function CreateCardModal({
 
                                     <AccountSelect
                                         accounts={availableAccounts}
-                                        registration={register("accountId")}
+                                        value={accountId}
+                                        onChange={(event) =>
+                                            setValue(
+                                                "accountId",
+                                                event.target.value,
+                                                {
+                                                    shouldValidate: true,
+                                                    shouldDirty: true,
+                                                },
+                                            )
+                                        }
                                         disabled={isSubmitting}
                                         id="card-account"
                                         placeholder={t(
