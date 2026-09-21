@@ -16,8 +16,8 @@ import {ROUTES} from "@/lib/constants/routes";
 
 import {useMyAccounts} from "@/features/account/hooks/use-my-accounts";
 import {useAccountHolder} from "@/features/account/hooks/use-account-holder";
-import type {
-    AccountHolder,
+import {
+    AccountHolder, AccountStatus,
     AccountSummary,
 } from "@/features/account/types/account";
 
@@ -38,7 +38,7 @@ import {
     type TransferOtpForm,
 } from "@/features/transaction/schemas/transfer-schema";
 
-import {isAmountLessThanOrEqual} from "@/lib/utils/money";
+import {isAmountGreaterThanZero, isAmountLessThanOrEqual} from "@/lib/utils/money";
 import {generateTransactionReference} from "@/lib/utils/reference";
 
 import {TransferProgress} from "./transfer-progress";
@@ -449,6 +449,37 @@ export default function TransferPageContent() {
         setError(null);
     };
 
+    const availableAccounts =
+        accounts.filter(
+            (account) =>
+                account.status ===
+                AccountStatus.ACTIVE &&
+                isAmountGreaterThanZero(
+                    account.availableBalance,
+                ),
+        );
+
+    useEffect(() => {
+        if (
+            !accountsInitialized ||
+            selectedAccount ||
+            availableAccounts.length === 0
+        ) {
+            return;
+        }
+
+        const firstAccount =
+            availableAccounts[0];
+
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setSelectedAccount(firstAccount);
+    }, [
+        accounts,
+        accountsInitialized,
+        selectedAccount,
+        availableAccounts,
+    ]);
+
     return (
         <section className="mx-auto max-w-2xl space-y-3">
             <div className="space-y-2">
@@ -496,7 +527,7 @@ export default function TransferPageContent() {
 
             {step === "TRANSFER" && (
                 <TransferForm
-                    accounts={accounts}
+                    accounts={availableAccounts}
                     selectedAccount={selectedAccount}
                     holder={holder}
                     isAccountsLoading={
