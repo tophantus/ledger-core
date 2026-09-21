@@ -1,13 +1,7 @@
 "use client";
 
-import {
-    ArrowLeft,
-} from "lucide-react";
-import {
-    useCallback,
-    useEffect,
-    useState,
-} from "react";
+import {ArrowLeft,} from "lucide-react";
+import {useCallback, useEffect, useState,} from "react";
 import {useTranslations} from "next-intl";
 
 import {Link, useRouter} from "@/i18n/routing";
@@ -18,23 +12,18 @@ import {useMyAccounts} from "@/features/account/hooks/use-my-accounts";
 import {useCreateWithdrawalRequest} from "../hooks/use-create-withdrawal-request";
 import {useConfirmWithdrawalRequest} from "../hooks/use-confirm-withdrawal-request";
 
-import type {
-    AccountSummary,
-} from "@/features/account/types/account";
+import {AccountStatus, AccountSummary,} from "@/features/account/types/account";
 
-import type {
-    ConfirmWithdrawalRequestResponse,
-    WithdrawalRequestResponse,
-} from "../types/withdrawal";
+import type {ConfirmWithdrawalRequestResponse, WithdrawalRequestResponse,} from "../types/withdrawal";
 
 import {
-    withdrawalOtpSchema,
-    withdrawalSchema,
     type WithdrawalFormValues,
     type WithdrawalOtpForm,
+    withdrawalOtpSchema,
+    withdrawalSchema,
 } from "../schemas/withdrawal-schema";
 
-import {isAmountLessThanOrEqual} from "@/lib/utils/money";
+import {isAmountGreaterThanZero, isAmountLessThanOrEqual} from "@/lib/utils/money";
 
 import {WithdrawalProgress} from "./withdrawal-progress";
 import {WithdrawalForm} from "./withdrawal-form";
@@ -43,6 +32,7 @@ import {WithdrawalResult} from "./withdrawal-result";
 
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
+import {useAccountStore} from "@/features/account/stores/account-store";
 
 type WithdrawalStep =
     | "WITHDRAWAL"
@@ -54,6 +44,15 @@ export default function WithdrawalPageContent() {
     const tErrors = useTranslations("errors");
 
     const router = useRouter();
+
+    const accounts = useAccountStore(
+        (state) => state.accounts,
+    );
+
+    const accountsInitialized =
+        useAccountStore(
+            (state) => state.initialized,
+        );
 
     const {getMyAccounts} =
         useMyAccounts();
@@ -72,9 +71,6 @@ export default function WithdrawalPageContent() {
         useState<WithdrawalStep>(
             "WITHDRAWAL",
         );
-
-    const [accounts, setAccounts] =
-        useState<AccountSummary[]>([]);
 
     const [
         selectedAccount,
@@ -97,7 +93,7 @@ export default function WithdrawalPageContent() {
     const [
         isAccountsLoading,
         setIsAccountsLoading,
-    ] = useState(true);
+    ] = useState(false);
 
     const [
         isCreateLoading,
@@ -147,69 +143,15 @@ export default function WithdrawalPageContent() {
         [tErrors],
     );
 
-    /*
-     * Load active accounts.
-     */
     useEffect(() => {
-        let mounted = true;
+        if (accountsInitialized) {
+            return;
+        }
 
-        const loadAccounts = async () => {
-            try {
-                const response =
-                    await getMyAccounts();
-
-                if (!mounted) {
-                    return;
-                }
-
-                if (!response.success) {
-                    setError(
-                        getErrorMessage(
-                            response.code,
-                        ),
-                    );
-
-                    return;
-                }
-
-                const activeAccounts =
-                    response.data.filter(
-                        (account) =>
-                            account.status ===
-                            "ACTIVE",
-                    );
-
-                setAccounts(
-                    activeAccounts,
-                );
-
-                setSelectedAccount(
-                    activeAccounts[0] ?? null,
-                );
-            } catch {
-                if (mounted) {
-                    setError(
-                        tErrors("fallback"),
-                    );
-                }
-            } finally {
-                if (mounted) {
-                    setIsAccountsLoading(
-                        false,
-                    );
-                }
-            }
-        };
-
-        void loadAccounts();
-
-        return () => {
-            mounted = false;
-        };
+        void getMyAccounts();
     }, [
-        getErrorMessage,
+        accountsInitialized,
         getMyAccounts,
-        tErrors,
     ]);
 
     const handleCreateRequest =
@@ -375,6 +317,39 @@ export default function WithdrawalPageContent() {
             );
         };
 
+    const availableAccounts =
+        accounts.filter(
+            (account) =>
+                account.status ===
+                AccountStatus.ACTIVE &&
+                isAmountGreaterThanZero(
+                    account.availableBalance,
+                ),
+        );
+
+    useEffect(() => {
+        if (
+            !accountsInitialized ||
+            selectedAccount ||
+            availableAccounts.length <= 0
+        ) {
+            return;
+        }
+
+        const firstAccount =
+            availableAccounts[0]
+
+        if (firstAccount) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setSelectedAccount(firstAccount);
+
+            form.setValue(
+                "currency",
+                firstAccount.currency,
+            );
+        }
+    }, [accounts, accountsInitialized, selectedAccount, form, availableAccounts]);
+
     return (
         <section className="mx-auto max-w-2xl space-y-3">
             <div className="space-y-2">
@@ -424,7 +399,7 @@ export default function WithdrawalPageContent() {
 
             {step === "WITHDRAWAL" && (
                 <WithdrawalForm
-                    accounts={accounts}
+                    accounts={availableAccounts}
                     selectedAccount={
                         selectedAccount
                     }

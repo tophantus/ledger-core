@@ -17,8 +17,6 @@ import {ROUTES} from "@/lib/constants/routes";
 import {
     AccountSummaryCard
 } from "@/features/account/components/account-summary-card";
-import {AccountSummaryCardSkeleton} from "@/features/account/components/account-summary-card-skeleton";
-import type {AccountSummary} from "@/features/account/types/account";
 
 import {useMyAccounts} from "@/features/account/hooks/use-my-accounts";
 
@@ -31,6 +29,7 @@ import type {
     TransactionFilters,
 } from "@/features/transaction/types/transaction";
 import {Currency, isCurrency} from "@/lib/constants/currency";
+import {useAccountStore} from "@/features/account/stores/account-store";
 
 const PAGE_SIZE = 20;
 
@@ -41,7 +40,18 @@ export default function TransactionListPage() {
     const router = useRouter();
     const searchParams = useSearchParams();
 
-    const {getMyAccounts} = useMyAccounts();
+    const accounts = useAccountStore(
+        (state) => state.accounts,
+    );
+
+    const accountsInitialized =
+        useAccountStore(
+            (state) => state.initialized,
+        );
+
+    const {getMyAccounts} =
+        useMyAccounts();
+
     const {getTransactions} = useTransactions();
 
     const accountId =
@@ -112,16 +122,11 @@ export default function TransactionListPage() {
             ],
         );
 
-    const [accounts, setAccounts] =
-        useState<AccountSummary[]>([]);
 
     const [result, setResult] =
         useState<PageResponse<Transaction> | null>(
             null,
         );
-
-    const [isAccountsLoading, setIsAccountsLoading] =
-        useState(true);
 
     const [isTransactionLoading, setIsTransactionLoading] =
         useState(true);
@@ -143,43 +148,16 @@ export default function TransactionListPage() {
         [tErrors],
     );
 
-    /*
-     * Load accounts for the account filter.
-     */
     useEffect(() => {
-        let mounted = true;
+        if (accountsInitialized) {
+            return;
+        }
 
-        const loadAccounts = async () => {
-            try {
-                const response =
-                    await getMyAccounts();
-
-                if (!mounted) {
-                    return;
-                }
-
-                if (!response.success) {
-                    return;
-                }
-
-                setAccounts(response.data);
-            } catch {
-                // Account filter does not block
-                // the transaction page.
-            } finally {
-                if (mounted) {
-                    setIsAccountsLoading(false);
-                }
-            }
-        };
-
-        void loadAccounts();
-
-        return () => {
-            mounted = false;
-        };
-    }, [getMyAccounts]);
-
+        void getMyAccounts();
+    }, [
+        accountsInitialized,
+        getMyAccounts,
+    ]);
 
     const account = useMemo(
         () =>
@@ -357,24 +335,16 @@ export default function TransactionListPage() {
                 </div>
             </div>
 
-            {accountId && (
-                <>
-                    {isAccountsLoading && (
-                        <AccountSummaryCardSkeleton />
-                    )}
-
-                    {!isAccountsLoading && account && (
-                        <AccountSummaryCard
-                            account={account}
-                        />
-                    )}
-                </>
+            {accountId && account && (
+                <AccountSummaryCard
+                    account={account}
+                />
             )}
 
             <TransactionFilter
                 accounts={accounts}
                 isAccountsLoading={
-                    isAccountsLoading
+                    false
                 }
                 filters={filters}
                 onChange={handleFilterChange}

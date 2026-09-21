@@ -161,9 +161,6 @@ export function TransferForm({
                             }
                         }}
                         id="source-account"
-                        placeholder={t(
-                            "transfer.sourceAccountPlaceholder",
-                        )}
                     />
                 )}
             </div>

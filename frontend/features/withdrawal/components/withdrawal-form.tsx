@@ -21,6 +21,7 @@ import {
 } from "@/lib/constants/currency";
 import {formatMoney} from "@/lib/utils/currency";
 import {isAmountGreaterThanZero} from "@/lib/utils/money";
+import {AccountSelect} from "@/features/account/components/account-select";
 
 interface WithdrawalFormProps {
     accounts: AccountSummary[];
@@ -166,12 +167,9 @@ export function WithdrawalForm({
                         </p>
                     </div>
                 ) : (
-                    <select
-                        id="withdrawal-source-account"
-                        value={
-                            selectedAccount?.id ??
-                            ""
-                        }
+                    <AccountSelect
+                        accounts={availableAccounts}
+                        value={selectedAccount?.id ?? ""}
                         onChange={(event) => {
                             const account =
                                 availableAccounts.find(
@@ -181,46 +179,12 @@ export function WithdrawalForm({
                                 );
 
                             if (account) {
-                                onAccountChange(
-                                    account,
-                                );
+                                onAccountChange(account);
                             }
                         }}
-                        disabled={
-                            isCreateLoading
-                        }
-                        className="
-                            w-full
-                            rounded-md
-                            border
-                            border-border
-                            bg-background
-                            px-3
-                            py-2.5
-                            text-sm
-                            text-foreground
-                            outline-none
-                            disabled:cursor-not-allowed
-                            disabled:opacity-60
-                        "
-                    >
-                        {availableAccounts.map(
-                            (account) => (
-                                <option
-                                    key={account.id}
-                                    value={account.id}
-                                >
-                                    {account.accountNo}{" "}
-                                    -{" "}
-                                    {formatMoney(
-                                        account.availableBalance,
-                                        account.currency,
-                                        locale,
-                                    )}
-                                </option>
-                            ),
-                        )}
-                    </select>
+                        disabled={isCreateLoading}
+                        id="withdrawal-source-account"
+                    />
                 )}
             </div>
 

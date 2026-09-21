@@ -13,9 +13,6 @@ import {
 import {useTranslations} from "next-intl";
 
 import {Button} from "@/components/ui/button";
-import type {
-    AccountSummary,
-} from "@/features/account/types/account";
 import {useMyAccounts} from "@/features/account/hooks/use-my-accounts";
 import {AccountSummaryCard} from "@/features/account/components/account-summary-card";
 import {AccountSummaryCardSkeleton} from "@/features/account/components/account-summary-card-skeleton";
@@ -33,6 +30,7 @@ import {WebhookListSkeleton} from "./webhook-list-skeleton";
 import {WebhookListEmpty} from "./webhook-list-empty";
 import {WebhookListPagination} from "./webhook-list-pagination";
 import {RegisterWebhookModal} from "../register-webhook-modal";
+import {useAccountStore} from "@/features/account/stores/account-store";
 
 const PAGE_SIZE = 20;
 
@@ -49,9 +47,17 @@ export default function WebhookListPage() {
     const searchParams =
         useSearchParams();
 
-    const {
-        getMyAccounts,
-    } = useMyAccounts();
+    const accounts = useAccountStore(
+        (state) => state.accounts,
+    );
+
+    const accountsInitialized =
+        useAccountStore(
+            (state) => state.initialized,
+        );
+
+    const {getMyAccounts} =
+        useMyAccounts();
 
     const {
         getWebhooks,
@@ -86,9 +92,6 @@ export default function WebhookListPage() {
             ],
         );
 
-    const [accounts, setAccounts] =
-        useState<AccountSummary[]>([]);
-
     const [webhooks, setWebhooks] =
         useState<Webhook[]>([]);
 
@@ -98,7 +101,7 @@ export default function WebhookListPage() {
     const [
         isAccountsLoading,
         setIsAccountsLoading,
-    ] = useState(true);
+    ] = useState(false);
 
     const [
         isLoading,
@@ -145,43 +148,15 @@ export default function WebhookListPage() {
         );
 
     useEffect(() => {
-        let mounted = true;
+        if (accountsInitialized) {
+            return;
+        }
 
-        const loadAccounts =
-            async () => {
-                try {
-                    const response =
-                        await getMyAccounts();
-
-                    if (!mounted) {
-                        return;
-                    }
-
-                    if (!response.success) {
-                        return;
-                    }
-
-                    setAccounts(
-                        response.data,
-                    );
-                } catch {
-                    // Account filter does not
-                    // block the webhook list.
-                } finally {
-                    if (mounted) {
-                        setIsAccountsLoading(
-                            false,
-                        );
-                    }
-                }
-            };
-
-        void loadAccounts();
-
-        return () => {
-            mounted = false;
-        };
-    }, [getMyAccounts]);
+        void getMyAccounts();
+    }, [
+        accountsInitialized,
+        getMyAccounts,
+    ]);
 
     useEffect(() => {
         let mounted = true;

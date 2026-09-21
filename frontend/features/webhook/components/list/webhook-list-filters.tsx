@@ -15,6 +15,7 @@ import type {AccountSummary} from "@/features/account/types/account";
 import type {
     WebhookFilters,
 } from "../../types/webhook";
+import {AccountSelect} from "@/features/account/components/account-select";
 
 interface WebhookListFiltersProps {
     accounts: AccountSummary[];
@@ -136,64 +137,18 @@ export function WebhookListFilters({
                                 )}
                             </label>
 
-                            <select
+                            <AccountSelect
+                                accounts={accounts}
+                                value={filters.accountId ?? ""}
+                                onChange={handleAccountChange}
+                                disabled={isAccountsLoading}
                                 id="webhook-account"
-                                value={
-                                    filters.accountId
-                                    ?? ""
-                                }
-                                disabled={
+                                placeholder={
                                     isAccountsLoading
+                                        ? t("list.filter.loadingAccounts")
+                                        : t("list.filter.allAccounts")
                                 }
-                                onChange={
-                                    handleAccountChange
-                                }
-                                className="
-                                    w-full
-                                    rounded-md
-                                    border
-                                    border-border
-                                    bg-background
-                                    px-3
-                                    py-2
-                                    text-sm
-                                    text-foreground
-                                    outline-none
-                                    disabled:cursor-not-allowed
-                                    disabled:opacity-60
-                                "
-                            >
-                                <option value="">
-                                    {isAccountsLoading
-                                        ? t(
-                                            "list.filter.loadingAccounts",
-                                        )
-                                        : t(
-                                            "list.filter.allAccounts",
-                                        )}
-                                </option>
-
-                                {accounts.map(
-                                    (account) => (
-                                        <option
-                                            key={
-                                                account.id
-                                            }
-                                            value={
-                                                account.id
-                                            }
-                                        >
-                                            {
-                                                account.accountNo
-                                            }
-                                            {" · "}
-                                            {
-                                                account.currency
-                                            }
-                                        </option>
-                                    ),
-                                )}
-                            </select>
+                            />
                         </div>
 
                         <div className="
