@@ -12,4 +12,10 @@ public interface CreditHoldPort {
             BigDecimal amount,
             Currency currency
     );
+
+    void decreaseHold(
+            UUID creditFacilityId,
+            BigDecimal amount,
+            Currency currency
+    );
 }

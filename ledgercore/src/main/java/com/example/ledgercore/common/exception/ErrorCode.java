@@ -329,6 +329,18 @@ public enum ErrorCode {
             HttpStatus.CONFLICT
     ),
 
+    CREDIT_FACILITY_CURRENCY_MISMATCH(
+            "CREDIT_008",
+            "Credit facility currency does not match the hold currency",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    CREDIT_HOLD_AMOUNT_INSUFFICIENT(
+            "CREDIT_009",
+            "Credit facility hold amount is insufficient",
+            HttpStatus.CONFLICT
+    ),
+
     // Hold
 
     ACCOUNT_HOLD_NOT_FOUND(
@@ -347,6 +359,18 @@ public enum ErrorCode {
             "HOLD_003",
             "Hold amount must be greater than zero",
             HttpStatus.BAD_REQUEST
+    ),
+
+    CREDIT_HOLD_NOT_FOUND(
+            "HOLD_004",
+            "Credit hold not found",
+            HttpStatus.NOT_FOUND
+    ),
+
+    CREDIT_HOLD_NOT_ACTIVE(
+            "HOLD_005",
+            "Credit hold is not active",
+            HttpStatus.CONFLICT
     ),
 
     // Product

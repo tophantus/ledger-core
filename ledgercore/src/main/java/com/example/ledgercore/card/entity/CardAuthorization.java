@@ -88,4 +88,18 @@ public class CardAuthorization {
 
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
+
+    public boolean isAuthorized() {
+        return status == CardAuthorizationStatus.AUTHORIZED;
+    }
+
+    public boolean isExpired(Instant now) {
+        return expiresAt != null
+                && !expiresAt.isAfter(now);
+    }
+
+    public void expire(Instant now) {
+        this.status = CardAuthorizationStatus.EXPIRED;
+        this.updatedAt = now;
+    }
 }
