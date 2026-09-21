@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -35,12 +37,15 @@ public class GetOwnedCreditFacilityHandler
                                 )
                         );
 
+        BigDecimal availableCredit = facility.getCreditLimit()
+                .subtract(facility.getOutstandingBalance())
+                .subtract(facility.getHoldAmount());
+
         return new OwnedCreditFacilityInfo(
                 facility.getId(),
                 facility.getCustomerId(),
                 facility.getProductId(),
-                facility.getCreditLimit(),
-                facility.getOutstandingBalance(),
+                availableCredit,
                 facility.getCurrency(),
                 facility.getStatus()
         );

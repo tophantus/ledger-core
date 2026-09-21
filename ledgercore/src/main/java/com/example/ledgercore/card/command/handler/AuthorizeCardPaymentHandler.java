@@ -27,7 +27,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.YearMonth;
 import java.util.UUID;
@@ -394,14 +393,8 @@ public class AuthorizeCardPaymentHandler
             );
         }
 
-        BigDecimal availableCredit =
-                facility.creditLimit()
-                        .subtract(
-                                facility.outstandingBalance()
-                        );
-
         if (command.amount().compareTo(
-                availableCredit
+                facility.availableCredit()
         ) > 0) {
             throw new BusinessException(
                     ErrorCode.CARD_AUTHORIZATION_INSUFFICIENT_CREDIT

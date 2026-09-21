@@ -56,6 +56,15 @@ public class CreditFacility {
     )
     private BigDecimal outstandingBalance;
 
+    @Column(
+            name = "hold_amount",
+            nullable = false,
+            precision = 19,
+            scale = 2
+    )
+    @Builder.Default
+    private BigDecimal holdAmount = BigDecimal.ZERO;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "currency", nullable = false, length = 3)
     private Currency currency;

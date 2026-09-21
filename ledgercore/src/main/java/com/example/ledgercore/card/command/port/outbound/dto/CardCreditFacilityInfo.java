@@ -10,8 +10,7 @@ public record CardCreditFacilityInfo(
         UUID id,
         UUID customerId,
         UUID productId,
-        BigDecimal creditLimit,
-        BigDecimal outstandingBalance,
+        BigDecimal availableCredit,
         Currency currency,
         CreditFacilityStatus status
 ) {

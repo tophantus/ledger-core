@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: 070-add-credit-facility-hold-amount
+      author: tophantus
+      changes:
+        - addColumn:
+            tableName: credit_facilities
+            columns:
+              - column:
+                  name: hold_amount
+                  type: DECIMAL(19,2)
+                  defaultValueNumeric: 0
+                  remarks: Total amount currently held against the credit facility
+                  constraints:
+                    nullable: false
