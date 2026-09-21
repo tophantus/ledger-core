@@ -15,11 +15,20 @@
   },
   "facility": {
     "title": "Hạn mức tín dụng",
-    "description": "Hạn mức tín dụng hiện tại của bạn.",
-    "empty": "Bạn chưa có hạn mức tín dụng.",
+    "description": "Xem hạn mức tín dụng và số dư tín dụng hiện tại.",
+    "empty": "Bạn chưa có hạn mức tín dụng đang hoạt động.",
+    "cardTitle": "Tài khoản tín dụng",
+    "cardDescription": "Hạn mức tín dụng hiện tại của bạn",
     "creditLimit": "Hạn mức tín dụng",
-    "outstandingBalance": "Dư nợ hiện tại",
+    "outstandingBalance": "Dư nợ",
+    "holdAmount": "Số tiền tạm giữ",
+    "availableCredit": "Tín dụng khả dụng",
     "status": "Trạng thái",
-    "openedAt": "Ngày mở"
+    "openedAt": "Ngày mở",
+    "statuses": {
+      "ACTIVE": "Đang hoạt động",
+      "SUSPENDED": "Tạm ngưng",
+      "CLOSED": "Đã đóng"
+    }
   }
 }

@@ -56,6 +56,15 @@ public class CreditFacility {
     )
     private BigDecimal outstandingBalance;
 
+    @Column(
+            name = "hold_amount",
+            nullable = false,
+            precision = 19,
+            scale = 2
+    )
+    @Builder.Default
+    private BigDecimal holdAmount = BigDecimal.ZERO;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "currency", nullable = false, length = 3)
     private Currency currency;
@@ -79,6 +88,12 @@ public class CreditFacility {
     @Version
     @Column(name = "version", nullable = false)
     private Long version;
+
+    public BigDecimal getAvailableCredit() {
+        return creditLimit
+                .subtract(outstandingBalance)
+                .subtract(holdAmount);
+    }
 
     public void updateCreditTerms(
             UUID productId,

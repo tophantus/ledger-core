@@ -41,6 +41,8 @@ public class GetUserCreditFacilityHandler
                 facility.getProductId(),
                 facility.getCreditLimit().toPlainString(),
                 facility.getOutstandingBalance().toPlainString(),
+                facility.getHoldAmount().toPlainString(),
+                facility.getAvailableCredit().toPlainString(),
                 facility.getCurrency(),
                 facility.getStatus(),
                 facility.getOpenedAt()

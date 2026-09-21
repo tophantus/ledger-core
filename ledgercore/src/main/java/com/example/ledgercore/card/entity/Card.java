@@ -67,6 +67,13 @@ public class Card {
     @Column(name = "credit_facility_id")
     private UUID creditFacilityId;
 
+    @Column(
+            name = "pan_hash",
+            nullable = false,
+            length = 64
+    )
+    private String panHash;
+
     @Column(name = "pan_last4", nullable = false, length = 4)
     private String panLast4;
 

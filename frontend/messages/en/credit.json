@@ -22,16 +22,20 @@
   },
   "facility": {
     "title": "Credit Facility",
-    "description": "Your current credit facility.",
-    "empty": "No credit facility available.",
+    "description": "View your current credit facility and available credit.",
+    "empty": "You do not have an active credit facility.",
+    "cardTitle": "Credit Account",
+    "cardDescription": "Your current credit facility",
     "creditLimit": "Credit Limit",
     "outstandingBalance": "Outstanding Balance",
+    "holdAmount": "Hold Amount",
+    "availableCredit": "Available Credit",
     "status": "Status",
+    "openedAt": "Opened",
     "statuses": {
       "ACTIVE": "Active",
       "SUSPENDED": "Suspended",
       "CLOSED": "Closed"
-    },
-    "openedAt": "Opened At"
+    }
   }
 }

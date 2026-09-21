@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+
 @Service
 @RequiredArgsConstructor
 public class GetActiveOwnedAccountHandler
@@ -44,10 +46,16 @@ public class GetActiveOwnedAccountHandler
             );
         }
 
+        BigDecimal availableBalance =
+                account.getBalance()
+                        .subtract(account.getHoldAmount());
+
         return new GetActiveOwnedAccountResult(
                 account.getId(),
                 account.getUserId(),
                 account.getProductId(),
+                availableBalance,
+                account.getCurrency(),
                 account.getStatus()
         );
     }

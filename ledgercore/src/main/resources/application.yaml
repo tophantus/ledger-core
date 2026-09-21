@@ -106,7 +106,16 @@ security:
     key: ${ENCRYPTION_KEY}
 
 card:
+  authorization:
+    expiration:
+      batch-size: 100
+
+      scheduler:
+        enabled: true
+        fixed-delay: 1000
+
   security:
+    pan-hash-secret: ${CARD_PAN_HASH_SECRET}
     encryption:
       active-version: v1
       keys:

@@ -19,6 +19,7 @@ import com.example.ledgercore.card.enums.CardType;
 import com.example.ledgercore.card.infrastructure.generator.CardNumberGenerator;
 import com.example.ledgercore.card.infrastructure.generator.CardSecurityCodeGenerator;
 import com.example.ledgercore.card.infrastructure.security.CardEncryptionService;
+import com.example.ledgercore.card.infrastructure.security.CardPanHashService;
 import com.example.ledgercore.card.infrastructure.security.CardSecretHashService;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
@@ -53,6 +54,7 @@ public class CreateDebitCardHandler
             cardSecurityCodeGenerator;
 
     private final CardSecretHashService cardSecretHashService;
+    private final CardPanHashService cardPanHashService;
     private final CardEncryptionService cardEncryptionService;
 
     @Override
@@ -106,6 +108,7 @@ public class CreateDebitCardHandler
                 .status(CardStatus.ACTIVE)
                 .accountId(account.id())
                 .creditFacilityId(null)
+                .panHash(cardPanHashService.hash(pan))
                 .panLast4(
                         pan.substring(pan.length() - 4)
                 )
