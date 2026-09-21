@@ -106,6 +106,7 @@ public class CreateDebitCardHandler
                 .status(CardStatus.ACTIVE)
                 .accountId(account.id())
                 .creditFacilityId(null)
+                .panHash(cardSecretHashService.hash(pan))
                 .panLast4(
                         pan.substring(pan.length() - 4)
                 )

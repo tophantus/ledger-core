@@ -115,6 +115,7 @@ public class CreateCreditCardHandler
                 .status(CardStatus.ACTIVE)
                 .accountId(null)
                 .creditFacilityId(facility.id())
+                .panHash(cardSecretHashService.hash(pan))
                 .panLast4(
                         pan.substring(pan.length() - 4)
                 )

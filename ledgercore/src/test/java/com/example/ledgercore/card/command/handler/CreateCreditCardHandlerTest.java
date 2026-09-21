@@ -116,6 +116,7 @@ class CreateCreditCardHandlerTest {
         String pan = "4111111111111111";
         String cvv = "123";
         String pinVerifier = "hashed-pin";
+        String panHash = "hashed-pan";
         String encryptionVersion = "v1";
 
         givenActiveFacility();
@@ -131,6 +132,9 @@ class CreateCreditCardHandlerTest {
         when(cardSecretHashService.hash("123456"))
                 .thenReturn(pinVerifier);
 
+        when(cardSecretHashService.hash(pan))
+                .thenReturn(panHash);
+
         when(cardEncryptionService.getActiveEncryptionVersion())
                 .thenReturn(encryptionVersion);
 
@@ -142,7 +146,7 @@ class CreateCreditCardHandlerTest {
 
         when(cardCommandRepository.save(any(Card.class)))
                 .thenAnswer(invocation ->
-                        invocation.<Card>getArgument(0));
+                        invocation.getArgument(0));
 
         CreateCreditCardResult result =
                 handler.execute(command);
@@ -204,6 +208,10 @@ class CreateCreditCardHandlerTest {
         assertEquals(
                 creditFacilityId,
                 savedCard.getCreditFacilityId()
+        );
+        assertEquals(
+                panHash,
+                savedCard.getPanHash()
         );
         assertEquals(
                 "1111",
@@ -303,8 +311,14 @@ class CreateCreditCardHandlerTest {
                 );
 
         verify(cardNumberGenerator).generate();
+
         verify(cardSecurityCodeGenerator).generate();
-        verify(cardSecretHashService).hash("123456");
+
+        verify(cardSecretHashService)
+                .hash("123456");
+
+        verify(cardSecretHashService)
+                .hash(pan);
 
         verify(cardEncryptionService)
                 .getActiveEncryptionVersion();

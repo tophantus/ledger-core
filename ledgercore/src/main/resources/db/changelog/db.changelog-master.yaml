@@ -135,3 +135,5 @@ databaseChangeLog:
       file: db/changelog/067-create-credit-offer-runs.yaml
   - include:
       file: db/changelog/068-add-run-id-to-credit-offers.yaml
+  - include:
+      file: db/changelog/069-add-pan-hash-to-cards.yaml

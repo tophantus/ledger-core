@@ -112,10 +112,40 @@ class CreateDebitCardHandlerTest {
 
     @Test
     void shouldCreateDebitCardSuccessfully() {
+        String pan = "4111111111111111";
+        String cvv = "123";
+        String pinVerifier = "hashed-pin";
+        String panHash = "hashed-pan";
+        String encryptionVersion = "v1";
+
         givenActiveAccount();
         givenDepositProduct();
         givenNoExistingCard();
-        givenSuccessfulCardCreation();
+
+        when(cardNumberGenerator.generate())
+                .thenReturn(pan);
+
+        when(cardSecurityCodeGenerator.generate())
+                .thenReturn(cvv);
+
+        when(cardSecretHashService.hash("123456"))
+                .thenReturn(pinVerifier);
+
+        when(cardSecretHashService.hash(pan))
+                .thenReturn(panHash);
+
+        when(cardEncryptionService.getActiveEncryptionVersion())
+                .thenReturn(encryptionVersion);
+
+        when(cardEncryptionService.encrypt(pan))
+                .thenReturn("encrypted-pan");
+
+        when(cardEncryptionService.encrypt(cvv))
+                .thenReturn("encrypted-cvv");
+
+        when(cardCommandRepository.save(any(Card.class)))
+                .thenAnswer(invocation ->
+                        invocation.getArgument(0));
 
         CreateDebitCardResult result =
                 handler.execute(command);
@@ -139,20 +169,58 @@ class CreateDebitCardHandlerTest {
 
         Card savedCard = cardCaptor.getValue();
 
-        assertEquals(customerId, savedCard.getCustomerId());
-        assertEquals(CardType.DEBIT, savedCard.getType());
-        assertEquals(CardForm.VIRTUAL, savedCard.getForm());
-        assertEquals(CardStatus.ACTIVE, savedCard.getStatus());
-        assertEquals(accountId, savedCard.getAccountId());
-        assertNull(savedCard.getCreditFacilityId());
-        assertEquals("1111", savedCard.getPanLast4());
-        assertNotNull(savedCard.getExpiryMonth());
-        assertNotNull(savedCard.getExpiryYear());
-        assertNotNull(savedCard.getIssuedAt());
-        assertNotNull(savedCard.getActivatedAt());
-        assertNull(savedCard.getClosedAt());
-        assertNotNull(savedCard.getCreatedAt());
-        assertNotNull(savedCard.getUpdatedAt());
+        assertEquals(
+                customerId,
+                savedCard.getCustomerId()
+        );
+        assertEquals(
+                CardType.DEBIT,
+                savedCard.getType()
+        );
+        assertEquals(
+                CardForm.VIRTUAL,
+                savedCard.getForm()
+        );
+        assertEquals(
+                CardStatus.ACTIVE,
+                savedCard.getStatus()
+        );
+        assertEquals(
+                accountId,
+                savedCard.getAccountId()
+        );
+        assertNull(
+                savedCard.getCreditFacilityId()
+        );
+        assertEquals(
+                panHash,
+                savedCard.getPanHash()
+        );
+        assertEquals(
+                "1111",
+                savedCard.getPanLast4()
+        );
+        assertNotNull(
+                savedCard.getExpiryMonth()
+        );
+        assertNotNull(
+                savedCard.getExpiryYear()
+        );
+        assertNotNull(
+                savedCard.getIssuedAt()
+        );
+        assertNotNull(
+                savedCard.getActivatedAt()
+        );
+        assertNull(
+                savedCard.getClosedAt()
+        );
+        assertNotNull(
+                savedCard.getCreatedAt()
+        );
+        assertNotNull(
+                savedCard.getUpdatedAt()
+        );
 
         ArgumentCaptor<CardCredential> credentialCaptor =
                 ArgumentCaptor.forClass(CardCredential.class);
@@ -167,14 +235,16 @@ class CreateDebitCardHandlerTest {
                 savedCard.getId(),
                 credential.getCardId()
         );
-
         assertEquals(
-                "hashed-pin",
+                pinVerifier,
                 credential.getPinVerifier()
         );
-
-        assertNotNull(credential.getCreatedAt());
-        assertNotNull(credential.getUpdatedAt());
+        assertNotNull(
+                credential.getCreatedAt()
+        );
+        assertNotNull(
+                credential.getUpdatedAt()
+        );
 
         ArgumentCaptor<CardVaultSecret> vaultCaptor =
                 ArgumentCaptor.forClass(CardVaultSecret.class);
@@ -189,19 +259,16 @@ class CreateDebitCardHandlerTest {
                 savedCard.getId(),
                 vaultSecret.getCardId()
         );
-
         assertEquals(
                 "encrypted-pan",
                 vaultSecret.getEncryptedPan()
         );
-
         assertEquals(
                 "encrypted-cvv",
                 vaultSecret.getEncryptedCvv()
         );
-
         assertEquals(
-                "v1",
+                encryptionVersion,
                 vaultSecret.getEncryptionVersion()
         );
 
@@ -214,18 +281,26 @@ class CreateDebitCardHandlerTest {
         verify(cardProductPort)
                 .getActiveProduct(productId);
 
-        verify(cardNumberGenerator).generate();
-        verify(cardSecurityCodeGenerator).generate();
-        verify(cardSecretHashService).hash("123456");
+        verify(cardNumberGenerator)
+                .generate();
+
+        verify(cardSecurityCodeGenerator)
+                .generate();
+
+        verify(cardSecretHashService)
+                .hash("123456");
+
+        verify(cardSecretHashService)
+                .hash(pan);
 
         verify(cardEncryptionService)
                 .getActiveEncryptionVersion();
 
         verify(cardEncryptionService)
-                .encrypt("4111111111111111");
+                .encrypt(pan);
 
         verify(cardEncryptionService)
-                .encrypt("123");
+                .encrypt(cvv);
 
         verifyNoMoreInteractions(
                 cardAccountPort,
