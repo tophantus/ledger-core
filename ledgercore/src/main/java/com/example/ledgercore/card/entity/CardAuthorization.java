@@ -1,5 +1,6 @@
 package com.example.ledgercore.card.entity;
 
+import com.example.ledgercore.card.enums.CardAuthorizationHoldType;
 import com.example.ledgercore.card.enums.CardAuthorizationStatus;
 import com.example.ledgercore.common.currency.Currency;
 import jakarta.persistence.Column;
@@ -66,8 +67,12 @@ public class CardAuthorization {
     @Column(name = "status", nullable = false, length = 20)
     private CardAuthorizationStatus status;
 
-    @Column(name = "hold_id")
+    @Column(name = "hold_id", nullable = false)
     private UUID holdId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "hold_type", nullable = false, length = 20)
+    private CardAuthorizationHoldType holdType;
 
     @Column(name = "authorized_at", nullable = false)
     private Instant authorizedAt;

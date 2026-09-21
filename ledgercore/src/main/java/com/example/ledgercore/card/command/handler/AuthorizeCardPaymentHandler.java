@@ -15,10 +15,12 @@ import com.example.ledgercore.card.command.repository.CardVaultSecretCommandRepo
 import com.example.ledgercore.card.entity.Card;
 import com.example.ledgercore.card.entity.CardAuthorization;
 import com.example.ledgercore.card.entity.CardVaultSecret;
+import com.example.ledgercore.card.enums.CardAuthorizationHoldType;
 import com.example.ledgercore.card.enums.CardAuthorizationStatus;
 import com.example.ledgercore.card.enums.CardStatus;
 import com.example.ledgercore.card.enums.CardType;
 import com.example.ledgercore.card.infrastructure.security.CardEncryptionService;
+import com.example.ledgercore.card.infrastructure.security.CardPanHashService;
 import com.example.ledgercore.card.infrastructure.security.CardSecretHashService;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
@@ -53,6 +55,7 @@ public class AuthorizeCardPaymentHandler
             creditAuthorizationHoldPort;
 
     private final CardSecretHashService cardSecretHashService;
+    private final CardPanHashService cardPanHashService;
     private final CardEncryptionService cardEncryptionService;
 
     @Override
@@ -78,6 +81,7 @@ public class AuthorizeCardPaymentHandler
 
         verifyCardCredentials(
                 command,
+                card,
                 vaultSecret
         );
 
@@ -98,6 +102,11 @@ public class AuthorizeCardPaymentHandler
                         now
                 );
 
+        CardAuthorizationHoldType holdType =
+                card.getType() == CardType.DEBIT
+                        ? CardAuthorizationHoldType.ACCOUNT
+                        : CardAuthorizationHoldType.CREDIT;
+
         CardAuthorization authorization =
                 CardAuthorization.builder()
                         .id(authorizationId)
@@ -112,6 +121,7 @@ public class AuthorizeCardPaymentHandler
                                 CardAuthorizationStatus.AUTHORIZED
                         )
                         .holdId(holdId)
+                        .holdType(holdType)
                         .authorizedAt(now)
                         .expiresAt(expiresAt)
                         .capturedAt(null)
@@ -129,7 +139,7 @@ public class AuthorizeCardPaymentHandler
 
     private Card findCard(String pan) {
         String panHash =
-                cardSecretHashService.hash(pan);
+                cardPanHashService.hash(pan);
 
         return cardCommandRepository
                 .findByPanHash(panHash)
@@ -250,6 +260,7 @@ public class AuthorizeCardPaymentHandler
 
     private void verifyCardCredentials(
             AuthorizeCardPaymentCommand command,
+            Card card,
             CardVaultSecret vaultSecret
     ) {
         String actualPan =
@@ -276,13 +287,24 @@ public class AuthorizeCardPaymentHandler
             );
         }
 
-        YearMonth expiry =
+        int cardExpiryYear =
+                card.getExpiryYear() % 100;
+
+        if (!command.expiryMonth().equals(
+                card.getExpiryMonth()
+        ) || command.expiryYear() != cardExpiryYear) {
+            throw new BusinessException(
+                    ErrorCode.CARD_AUTHORIZATION_EXPIRY_INVALID
+            );
+        }
+
+        YearMonth cardExpiry =
                 YearMonth.of(
-                        command.expiryYear(),
-                        command.expiryMonth()
+                        card.getExpiryYear(),
+                        card.getExpiryMonth()
                 );
 
-        if (expiry.isBefore(YearMonth.now())) {
+        if (cardExpiry.isBefore(YearMonth.now())) {
             throw new BusinessException(
                     ErrorCode.CARD_AUTHORIZATION_CARD_EXPIRED
             );

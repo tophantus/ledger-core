@@ -107,6 +107,7 @@ security:
 
 card:
   security:
+    pan-hash-secret: ${CARD_PAN_HASH_SECRET}
     encryption:
       active-version: v1
       keys:

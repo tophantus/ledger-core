@@ -18,6 +18,7 @@ import com.example.ledgercore.card.enums.CardType;
 import com.example.ledgercore.card.infrastructure.generator.CardNumberGenerator;
 import com.example.ledgercore.card.infrastructure.generator.CardSecurityCodeGenerator;
 import com.example.ledgercore.card.infrastructure.security.CardEncryptionService;
+import com.example.ledgercore.card.infrastructure.security.CardPanHashService;
 import com.example.ledgercore.card.infrastructure.security.CardSecretHashService;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
@@ -69,6 +70,9 @@ class CreateDebitCardHandlerTest {
     private CardSecretHashService cardSecretHashService;
 
     @Mock
+    private CardPanHashService cardPanHashService;
+
+    @Mock
     private CardEncryptionService cardEncryptionService;
 
     private CreateDebitCardHandler handler;
@@ -93,6 +97,7 @@ class CreateDebitCardHandlerTest {
                 cardNumberGenerator,
                 cardSecurityCodeGenerator,
                 cardSecretHashService,
+                cardPanHashService,
                 cardEncryptionService
         );
 
@@ -131,7 +136,7 @@ class CreateDebitCardHandlerTest {
         when(cardSecretHashService.hash("123456"))
                 .thenReturn(pinVerifier);
 
-        when(cardSecretHashService.hash(pan))
+        when(cardPanHashService.hash(pan))
                 .thenReturn(panHash);
 
         when(cardEncryptionService.getActiveEncryptionVersion())
@@ -152,11 +157,32 @@ class CreateDebitCardHandlerTest {
 
         assertNotNull(result);
         assertNotNull(result.cardId());
-        assertEquals(accountId, result.accountId());
-        assertEquals(CardType.DEBIT, result.type());
-        assertEquals(CardForm.VIRTUAL, result.form());
-        assertEquals(CardStatus.ACTIVE, result.status());
-        assertEquals("1111", result.panLast4());
+
+        assertEquals(
+                accountId,
+                result.accountId()
+        );
+
+        assertEquals(
+                CardType.DEBIT,
+                result.type()
+        );
+
+        assertEquals(
+                CardForm.VIRTUAL,
+                result.form()
+        );
+
+        assertEquals(
+                CardStatus.ACTIVE,
+                result.status()
+        );
+
+        assertEquals(
+                "1111",
+                result.panLast4()
+        );
+
         assertNotNull(result.expiryMonth());
         assertNotNull(result.expiryYear());
         assertNotNull(result.issuedAt());
@@ -173,51 +199,65 @@ class CreateDebitCardHandlerTest {
                 customerId,
                 savedCard.getCustomerId()
         );
-        assertEquals(
-                CardType.DEBIT,
-                savedCard.getType()
-        );
-        assertEquals(
-                CardForm.VIRTUAL,
-                savedCard.getForm()
-        );
-        assertEquals(
-                CardStatus.ACTIVE,
-                savedCard.getStatus()
-        );
+
         assertEquals(
                 accountId,
                 savedCard.getAccountId()
         );
+
+        assertEquals(
+                CardType.DEBIT,
+                savedCard.getType()
+        );
+
+        assertEquals(
+                CardForm.VIRTUAL,
+                savedCard.getForm()
+        );
+
+        assertEquals(
+                CardStatus.ACTIVE,
+                savedCard.getStatus()
+        );
+
         assertNull(
                 savedCard.getCreditFacilityId()
         );
+
         assertEquals(
                 panHash,
                 savedCard.getPanHash()
         );
+
         assertEquals(
                 "1111",
                 savedCard.getPanLast4()
         );
+
         assertNotNull(
                 savedCard.getExpiryMonth()
         );
+
         assertNotNull(
                 savedCard.getExpiryYear()
         );
+
         assertNotNull(
                 savedCard.getIssuedAt()
         );
+
         assertNotNull(
                 savedCard.getActivatedAt()
         );
+
         assertNull(
                 savedCard.getClosedAt()
         );
+
         assertNotNull(
                 savedCard.getCreatedAt()
         );
+
         assertNotNull(
                 savedCard.getUpdatedAt()
         );
@@ -235,13 +275,16 @@ class CreateDebitCardHandlerTest {
                 savedCard.getId(),
                 credential.getCardId()
         );
+
         assertEquals(
                 pinVerifier,
                 credential.getPinVerifier()
         );
+
         assertNotNull(
                 credential.getCreatedAt()
         );
+
         assertNotNull(
                 credential.getUpdatedAt()
         );
@@ -259,17 +302,28 @@ class CreateDebitCardHandlerTest {
                 savedCard.getId(),
                 vaultSecret.getCardId()
         );
+
         assertEquals(
                 "encrypted-pan",
                 vaultSecret.getEncryptedPan()
         );
+
         assertEquals(
                 "encrypted-cvv",
                 vaultSecret.getEncryptedCvv()
         );
+
         assertEquals(
                 encryptionVersion,
                 vaultSecret.getEncryptionVersion()
+        );
+
+        assertNotNull(
+                vaultSecret.getCreatedAt()
+        );
+
+        assertNotNull(
+                vaultSecret.getUpdatedAt()
         );
 
         verify(cardAccountPort)
@@ -281,6 +335,12 @@ class CreateDebitCardHandlerTest {
         verify(cardProductPort)
                 .getActiveProduct(productId);
 
+        verify(cardCommandRepository)
+                .existsByAccountIdAndStatusIn(
+                        eq(accountId),
+                        eq(activeCardStatuses())
+                );
+
         verify(cardNumberGenerator)
                 .generate();
 
@@ -290,7 +350,7 @@ class CreateDebitCardHandlerTest {
         verify(cardSecretHashService)
                 .hash("123456");
 
-        verify(cardSecretHashService)
+        verify(cardPanHashService)
                 .hash(pan);
 
         verify(cardEncryptionService)
@@ -311,6 +371,7 @@ class CreateDebitCardHandlerTest {
                 cardNumberGenerator,
                 cardSecurityCodeGenerator,
                 cardSecretHashService,
+                cardPanHashService,
                 cardEncryptionService
         );
     }
@@ -337,6 +398,7 @@ class CreateDebitCardHandlerTest {
                 cardNumberGenerator,
                 cardSecurityCodeGenerator,
                 cardSecretHashService,
+                cardPanHashService,
                 cardEncryptionService
         );
     }
@@ -370,6 +432,7 @@ class CreateDebitCardHandlerTest {
                 cardNumberGenerator,
                 cardSecurityCodeGenerator,
                 cardSecretHashService,
+                cardPanHashService,
                 cardEncryptionService
         );
     }
@@ -403,6 +466,7 @@ class CreateDebitCardHandlerTest {
                 cardNumberGenerator,
                 cardSecurityCodeGenerator,
                 cardSecretHashService,
+                cardPanHashService,
                 cardEncryptionService
         );
     }
@@ -436,6 +500,7 @@ class CreateDebitCardHandlerTest {
                 cardNumberGenerator,
                 cardSecurityCodeGenerator,
                 cardSecretHashService,
+                cardPanHashService,
                 cardEncryptionService
         );
     }
@@ -481,6 +546,7 @@ class CreateDebitCardHandlerTest {
                 cardNumberGenerator,
                 cardSecurityCodeGenerator,
                 cardSecretHashService,
+                cardPanHashService,
                 cardEncryptionService
         );
     }
@@ -517,6 +583,7 @@ class CreateDebitCardHandlerTest {
                 cardNumberGenerator,
                 cardSecurityCodeGenerator,
                 cardSecretHashService,
+                cardPanHashService,
                 cardEncryptionService
         );
     }
@@ -555,6 +622,7 @@ class CreateDebitCardHandlerTest {
                 cardNumberGenerator,
                 cardSecurityCodeGenerator,
                 cardSecretHashService,
+                cardPanHashService,
                 cardEncryptionService
         );
     }
@@ -589,7 +657,8 @@ class CreateDebitCardHandlerTest {
         verify(cardProductPort)
                 .getActiveProduct(productId);
 
-        verify(product).type();
+        verify(product)
+                .type();
 
         verifyNoInteractions(
                 cardCommandRepository,
@@ -597,6 +666,8 @@ class CreateDebitCardHandlerTest {
                 cardVaultSecretCommandRepository,
                 cardNumberGenerator,
                 cardSecurityCodeGenerator,
+                cardSecretHashService,
+                cardPanHashService,
                 cardEncryptionService
         );
     }
@@ -606,10 +677,12 @@ class CreateDebitCardHandlerTest {
         givenActiveAccountForCardValidation();
         givenDepositProduct();
 
-        when(cardCommandRepository.existsByAccountIdAndStatusIn(
-                eq(accountId),
-                eq(activeCardStatuses())
-        )).thenReturn(true);
+        when(cardCommandRepository
+                .existsByAccountIdAndStatusIn(
+                        eq(accountId),
+                        eq(activeCardStatuses())
+                ))
+                .thenReturn(true);
 
         BusinessException exception =
                 assertThrows(
@@ -644,10 +717,33 @@ class CreateDebitCardHandlerTest {
                 cardNumberGenerator,
                 cardSecurityCodeGenerator,
                 cardSecretHashService,
+                cardPanHashService,
                 cardEncryptionService,
                 cardCredentialCommandRepository,
                 cardVaultSecretCommandRepository
         );
+    }
+
+    @Test
+    void shouldAllowCreationWhenNoExistingActiveCardExists() {
+        givenActiveAccount();
+        givenDepositProduct();
+        givenNoExistingCard();
+        givenSuccessfulCardCreation();
+
+        CreateDebitCardResult result =
+                handler.execute(command);
+
+        assertNotNull(result);
+
+        verify(cardCommandRepository)
+                .existsByAccountIdAndStatusIn(
+                        eq(accountId),
+                        eq(activeCardStatuses())
+                );
+
+        verify(cardCommandRepository)
+                .save(any(Card.class));
     }
 
     @Test
@@ -692,9 +788,36 @@ class CreateDebitCardHandlerTest {
         verify(cardCredentialCommandRepository)
                 .save(captor.capture());
 
+        CardCredential credential =
+                captor.getValue();
+
         assertEquals(
                 "hashed-pin",
-                captor.getValue().getPinVerifier()
+                credential.getPinVerifier()
+        );
+    }
+
+    @Test
+    void shouldHashPanBeforeSavingCard() {
+        givenActiveAccount();
+        givenDepositProduct();
+        givenNoExistingCard();
+        givenSuccessfulCardCreation();
+
+        handler.execute(command);
+
+        verify(cardPanHashService)
+                .hash("4111111111111111");
+
+        ArgumentCaptor<Card> captor =
+                ArgumentCaptor.forClass(Card.class);
+
+        verify(cardCommandRepository)
+                .save(captor.capture());
+
+        assertEquals(
+                "hashed-pan",
+                captor.getValue().getPanHash()
         );
     }
 
@@ -755,6 +878,8 @@ class CreateDebitCardHandlerTest {
 
         Card card = captor.getValue();
 
+        assertNotNull(card.getId());
+
         assertEquals(
                 customerId,
                 card.getCustomerId()
@@ -780,11 +905,46 @@ class CreateDebitCardHandlerTest {
                 card.getStatus()
         );
 
-        assertNull(card.getCreditFacilityId());
+        assertNull(
+                card.getCreditFacilityId()
+        );
+
+        assertEquals(
+                "hashed-pan",
+                card.getPanHash()
+        );
 
         assertEquals(
                 "1111",
                 card.getPanLast4()
+        );
+
+        assertNotNull(
+                card.getExpiryMonth()
+        );
+
+        assertNotNull(
+                card.getExpiryYear()
+        );
+
+        assertNotNull(
+                card.getIssuedAt()
+        );
+
+        assertNotNull(
+                card.getActivatedAt()
+        );
+
+        assertNull(
+                card.getClosedAt()
+        );
+
+        assertNotNull(
+                card.getCreatedAt()
+        );
+
+        assertNotNull(
+                card.getUpdatedAt()
         );
     }
 
@@ -817,11 +977,11 @@ class CreateDebitCardHandlerTest {
                 accountId
         )).thenReturn(account);
 
-        when(account.productId())
-                .thenReturn(productId);
-
         when(account.id())
                 .thenReturn(accountId);
+
+        when(account.productId())
+                .thenReturn(productId);
     }
 
     private void givenDepositProduct() {
@@ -850,6 +1010,10 @@ class CreateDebitCardHandlerTest {
 
         when(cardSecretHashService.hash("123456"))
                 .thenReturn("hashed-pin");
+
+        when(cardPanHashService.hash(
+                "4111111111111111"
+        )).thenReturn("hashed-pan");
 
         when(cardEncryptionService.getActiveEncryptionVersion())
                 .thenReturn("v1");

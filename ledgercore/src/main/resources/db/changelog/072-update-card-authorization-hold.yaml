@@ -1,0 +1,26 @@
+databaseChangeLog:
+  - changeSet:
+      id: 072-add-card-authorization-hold-type
+      author: tophantus
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableName: card_authorizations
+            constraintName: fk_card_authorizations_hold
+
+        - addColumn:
+            tableName: card_authorizations
+            columns:
+              - column:
+                  name: hold_type
+                  type: VARCHAR(20)
+                  remarks: Type of hold backing this card authorization
+
+        - addNotNullConstraint:
+            tableName: card_authorizations
+            columnName: hold_type
+            columnDataType: VARCHAR(20)
+
+        - addNotNullConstraint:
+            tableName: card_authorizations
+            columnName: hold_id
+            columnDataType: UUID
