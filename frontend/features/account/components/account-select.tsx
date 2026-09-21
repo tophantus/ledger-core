@@ -15,7 +15,7 @@ interface AccountSelectProps {
     ) => void;
     disabled?: boolean;
     id?: string;
-    placeholder: string;
+    placeholder?: string;
     error?: string;
 }
 
@@ -56,9 +56,11 @@ export function AccountSelect({
                     disabled:opacity-60
                 "
             >
-                <option value="">
-                    {placeholder}
-                </option>
+                {placeholder && (
+                    <option value="">
+                        {placeholder}
+                    </option>
+                )}
 
                 {accounts.map((account) => (
                     <option
