@@ -47,6 +47,7 @@ import {TransferConfirmation} from "./transfer-confirmation";
 import {TransferResult} from "./transfer-result";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
+import {useAccountStore} from "@/features/account/stores/account-store";
 
 type TransferStep =
     | "TRANSFER"
@@ -74,7 +75,18 @@ export default function TransferPageContent() {
                 generateTransactionReference(),
         );
 
-    const {getMyAccounts} = useMyAccounts();
+    const accounts = useAccountStore(
+        (state) => state.accounts,
+    );
+
+    const accountsInitialized =
+        useAccountStore(
+            (state) => state.initialized,
+        );
+
+    const {getMyAccounts} =
+        useMyAccounts();
+
     const {getAccountHolder} = useAccountHolder();
 
     const {
@@ -87,10 +99,6 @@ export default function TransferPageContent() {
 
     const [step, setStep] =
         useState<TransferStep>("TRANSFER");
-
-    const [accounts, setAccounts] = useState<
-        AccountSummary[]
-    >([]);
 
     const [selectedAccount, setSelectedAccount] =
         useState<AccountSummary | null>(null);
@@ -107,7 +115,7 @@ export default function TransferPageContent() {
         useState<Transaction | null>(null);
 
     const [isAccountsLoading, setIsAccountsLoading] =
-        useState(true);
+        useState(false);
 
     const [isHolderLoading, setIsHolderLoading] =
         useState(false);
@@ -233,65 +241,15 @@ export default function TransferPageContent() {
         tErrors,
     ]);
 
-    /*
-     * Load active accounts.
-     */
     useEffect(() => {
-        let mounted = true;
+        if (accountsInitialized) {
+            return;
+        }
 
-        const loadAccounts = async () => {
-            try {
-                const response =
-                    await getMyAccounts();
-
-                if (!mounted) {
-                    return;
-                }
-
-                if (!response.success) {
-                    setError(
-                        getErrorMessage(
-                            response.code,
-                        ),
-                    );
-
-                    return;
-                }
-
-                const activeAccounts =
-                    response.data.filter(
-                        (account) =>
-                            account.status ===
-                            "ACTIVE",
-                    );
-
-                setAccounts(activeAccounts);
-
-                setSelectedAccount(
-                    activeAccounts[0] ?? null,
-                );
-            } catch {
-                if (mounted) {
-                    setError(
-                        tErrors("fallback"),
-                    );
-                }
-            } finally {
-                if (mounted) {
-                    setIsAccountsLoading(false);
-                }
-            }
-        };
-
-        void loadAccounts();
-
-        return () => {
-            mounted = false;
-        };
+        void getMyAccounts();
     }, [
-        getErrorMessage,
+        accountsInitialized,
         getMyAccounts,
-        tErrors,
     ]);
 
     const handleFindHolder =
