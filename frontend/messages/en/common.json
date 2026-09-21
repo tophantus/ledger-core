@@ -26,6 +26,7 @@
     "dashboard": "Dashboard",
     "transactions": "Transactions",
     "withdrawals": "Withdrawal Codes",
+    "credit": "Credit",
     "webhooks": "Webhooks",
     "admin": {
       "dashboard": "Dashboard",
