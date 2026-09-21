@@ -12,7 +12,7 @@ public record AcceptCreditOfferResult(
         UUID creditFacilityId,
         UUID customerId,
         UUID productId,
-        BigDecimal creditLimit,
+        String creditLimit,
         Currency currency,
         CreditOfferStatus offerStatus,
         Instant acceptedAt

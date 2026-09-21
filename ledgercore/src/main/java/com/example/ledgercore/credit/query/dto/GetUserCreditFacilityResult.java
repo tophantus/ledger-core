@@ -11,8 +11,8 @@ public record GetUserCreditFacilityResult(
         UUID id,
         UUID customerId,
         UUID productId,
-        BigDecimal creditLimit,
-        BigDecimal outstandingBalance,
+        String creditLimit,
+        String outstandingBalance,
         Currency currency,
         CreditFacilityStatus status,
         Instant openedAt

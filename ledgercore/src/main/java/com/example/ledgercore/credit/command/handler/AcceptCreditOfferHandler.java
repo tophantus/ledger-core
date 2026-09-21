@@ -87,7 +87,7 @@ public class AcceptCreditOfferHandler
                 facility.facilityId(),
                 offer.getCustomerId(),
                 facility.productId(),
-                facility.creditLimit(),
+                facility.creditLimit().toPlainString(),
                 facility.currency(),
                 offer.getStatus(),
                 acceptedAt
@@ -119,7 +119,7 @@ public class AcceptCreditOfferHandler
                 facility.facilityId(),
                 offer.getCustomerId(),
                 facility.productId(),
-                facility.creditLimit(),
+                facility.creditLimit().toPlainString(),
                 facility.currency(),
                 offer.getStatus(),
                 acceptedAt

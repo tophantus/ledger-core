@@ -124,7 +124,7 @@ class AcceptCreditOfferHandlerTest {
         assertEquals(createdFacilityId, result.creditFacilityId());
         assertEquals(customerId, result.customerId());
         assertEquals(productId, result.productId());
-        assertEquals(facilityCreditLimit, result.creditLimit());
+        assertEquals(facilityCreditLimit.toPlainString(), result.creditLimit());
         assertEquals(currency, result.currency());
         assertEquals(
                 CreditOfferStatus.ACCEPTED,
@@ -194,7 +194,7 @@ class AcceptCreditOfferHandlerTest {
         assertEquals(existingFacilityId, result.creditFacilityId());
         assertEquals(customerId, result.customerId());
         assertEquals(productId, result.productId());
-        assertEquals(facilityCreditLimit, result.creditLimit());
+        assertEquals(facilityCreditLimit.toPlainString(), result.creditLimit());
         assertEquals(currency, result.currency());
         assertEquals(
                 CreditOfferStatus.ACCEPTED,
