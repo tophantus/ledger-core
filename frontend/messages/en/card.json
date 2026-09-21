@@ -1,0 +1,21 @@
+{
+  "title": "My Cards",
+  "description": "Manage your debit and credit cards.",
+  "empty": "You don't have any cards yet.",
+  "cardNumber": "Card Number",
+  "expires": "Expires",
+  "virtual": "Virtual",
+  "physical": "Physical",
+  "debitCard": "Debit Card",
+  "creditCard": "Credit Card",
+  "types": {
+    "DEBIT": "Debit",
+    "CREDIT": "Credit"
+  },
+  "statuses": {
+    "ACTIVE": "Active",
+    "INACTIVE": "Inactive",
+    "BLOCKED": "Blocked",
+    "CLOSED": "Closed"
+  }
+}

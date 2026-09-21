@@ -1,0 +1,21 @@
+{
+  "title": "Thẻ của tôi",
+  "description": "Quản lý thẻ ghi nợ và thẻ tín dụng.",
+  "empty": "Bạn chưa có thẻ nào.",
+  "cardNumber": "Số thẻ",
+  "expires": "Hết hạn",
+  "virtual": "Thẻ ảo",
+  "physical": "Thẻ vật lý",
+  "debitCard": "Thẻ ghi nợ",
+  "creditCard": "Thẻ tín dụng",
+  "types": {
+    "DEBIT": "Ghi nợ",
+    "CREDIT": "Tín dụng"
+  },
+  "statuses": {
+    "ACTIVE": "Đang hoạt động",
+    "INACTIVE": "Chưa kích hoạt",
+    "BLOCKED": "Đã khóa",
+    "CLOSED": "Đã đóng"
+  }
+}
