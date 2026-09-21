@@ -33,7 +33,9 @@ public class CardAccountPortAdapter
         return new CardAccountInfo(
                 result.id(),
                 result.userId(),
-                result.productId()
+                result.productId(),
+                result.availableBalance(),
+                result.currency()
         );
     }
 }

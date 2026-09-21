@@ -11,6 +11,7 @@ public record OwnedCreditFacilityInfo(
         UUID customerId,
         UUID productId,
         BigDecimal creditLimit,
+        BigDecimal outstandingBalance,
         Currency currency,
         CreditFacilityStatus status
 ) {

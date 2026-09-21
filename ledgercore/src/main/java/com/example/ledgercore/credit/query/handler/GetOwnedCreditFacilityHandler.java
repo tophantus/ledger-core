@@ -40,6 +40,7 @@ public class GetOwnedCreditFacilityHandler
                 facility.getCustomerId(),
                 facility.getProductId(),
                 facility.getCreditLimit(),
+                facility.getOutstandingBalance(),
                 facility.getCurrency(),
                 facility.getStatus()
         );

@@ -36,6 +36,7 @@ public class CardCreditFacilityAdapter
                 facility.customerId(),
                 facility.productId(),
                 facility.creditLimit(),
+                facility.outstandingBalance(),
                 facility.currency(),
                 facility.status()
         );

@@ -1,13 +1,12 @@
 package com.example.ledgercore.card.adapter.inbound.rest;
 
 import com.example.ledgercore.auth.security.AuthPrincipal;
+import com.example.ledgercore.card.adapter.inbound.rest.dto.AuthorizeCardPaymentRequest;
 import com.example.ledgercore.card.adapter.inbound.rest.dto.CreateCreditCardRequest;
 import com.example.ledgercore.card.adapter.inbound.rest.dto.CreateDebitCardRequest;
 import com.example.ledgercore.card.adapter.inbound.rest.dto.RevealCardDetailsRequest;
-import com.example.ledgercore.card.command.dto.CreateCreditCardCommand;
-import com.example.ledgercore.card.command.dto.CreateCreditCardResult;
-import com.example.ledgercore.card.command.dto.CreateDebitCardCommand;
-import com.example.ledgercore.card.command.dto.CreateDebitCardResult;
+import com.example.ledgercore.card.command.dto.*;
+import com.example.ledgercore.card.command.port.inbound.AuthorizeCardPaymentUseCase;
 import com.example.ledgercore.card.command.port.inbound.CreateCreditCardUseCase;
 import com.example.ledgercore.card.command.port.inbound.CreateDebitCardUseCase;
 import com.example.ledgercore.card.query.dto.*;
@@ -41,6 +40,8 @@ public class CardController {
     private final GetUserCardsUseCase getUserCardsUseCase;
     private final GetCardByIdUseCase getCardByIdUseCase;
     private final RevealCardDetailsUseCase revealCardDetailsUseCase;
+
+    private final AuthorizeCardPaymentUseCase authorizeCardPaymentUseCase;
 
     @PostMapping("/debit")
     @Operation(
@@ -173,6 +174,36 @@ public class CardController {
                 ApiResponse.success(
                         result,
                         "Card details revealed successfully"
+                )
+        );
+    }
+
+    @PostMapping("/authorizations")
+    @Operation(
+            summary = "Authorize card payment",
+            description = "Authorize a card payment using card payment credentials"
+    )
+    public ResponseEntity<ApiResponse<AuthorizeCardPaymentResult>> authorizeCardPayment(
+            @Valid @RequestBody AuthorizeCardPaymentRequest request
+    ) {
+        AuthorizeCardPaymentResult result =
+                authorizeCardPaymentUseCase.execute(
+                        new AuthorizeCardPaymentCommand(
+                                request.reference(),
+                                request.pan(),
+                                request.expiryMonth(),
+                                request.expiryYear(),
+                                request.cvv(),
+                                request.merchantReference(),
+                                request.amount(),
+                                request.currency()
+                        )
+                );
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        result,
+                        "Card payment authorized successfully"
                 )
         );
     }

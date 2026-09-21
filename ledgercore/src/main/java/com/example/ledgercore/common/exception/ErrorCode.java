@@ -211,6 +211,80 @@ public enum ErrorCode {
             HttpStatus.UNAUTHORIZED
     ),
 
+    // Card Authorization
+
+    CARD_AUTHORIZATION_REFERENCE_REQUIRED(
+            "CARD_012",
+            "Authorization reference must not be blank",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    CARD_AUTHORIZATION_REFERENCE_ALREADY_EXISTS(
+            "CARD_013",
+            "Authorization reference already exists",
+            HttpStatus.CONFLICT
+    ),
+
+    CARD_AUTHORIZATION_PAN_REQUIRED(
+            "CARD_014",
+            "Card PAN must not be blank",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    CARD_AUTHORIZATION_PAN_INVALID(
+            "CARD_015",
+            "Invalid card PAN",
+            HttpStatus.UNAUTHORIZED
+    ),
+
+    CARD_AUTHORIZATION_CVV_REQUIRED(
+            "CARD_016",
+            "Card CVV must not be blank",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    CARD_AUTHORIZATION_CVV_INVALID(
+            "CARD_017",
+            "Invalid card CVV",
+            HttpStatus.UNAUTHORIZED
+    ),
+
+    CARD_AUTHORIZATION_EXPIRY_INVALID(
+            "CARD_018",
+            "Invalid card expiry date",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    CARD_AUTHORIZATION_CARD_EXPIRED(
+            "CARD_019",
+            "Card has expired",
+            HttpStatus.UNAUTHORIZED
+    ),
+
+    CARD_AUTHORIZATION_AMOUNT_INVALID(
+            "CARD_020",
+            "Authorization amount must be greater than zero",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    CARD_AUTHORIZATION_CURRENCY_REQUIRED(
+            "CARD_021",
+            "Authorization currency must not be null",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    CARD_AUTHORIZATION_CURRENCY_MISMATCH(
+            "CARD_022",
+            "Authorization currency does not match the credit facility currency",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    CARD_AUTHORIZATION_INSUFFICIENT_CREDIT(
+            "CARD_023",
+            "Insufficient available credit",
+            HttpStatus.CONFLICT
+    ),
+
     // Credit
 
     CREDIT_FACILITY_NOT_FOUND(
