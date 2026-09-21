@@ -1,4 +1,3 @@
-import type {ApiResponse} from "@/lib/api/types";
 import type {Currency} from "@/lib/constants/currency";
 
 export enum CreditFacilityStatus {
@@ -13,10 +12,9 @@ export interface GetUserCreditFacilityResult {
     productId: string;
     creditLimit: string;
     outstandingBalance: string;
+    holdAmount: string;
+    availableCredit: string;
     currency: Currency;
     status: CreditFacilityStatus;
     openedAt: string;
 }
-
-export type CreditFacilityResponse =
-    ApiResponse<GetUserCreditFacilityResult>;
