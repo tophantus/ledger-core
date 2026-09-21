@@ -1,0 +1,66 @@
+{
+  "title": "My Cards",
+  "description": "Manage your debit and credit cards.",
+  "empty": "You don't have any cards yet.",
+  "cardNumber": "Card Number",
+  "expires": "Expires",
+  "virtual": "Virtual",
+  "physical": "Physical",
+  "debitCard": "Debit Card",
+  "creditCard": "Credit Card",
+  "pin": "PIN",
+  "cvv": "CVV",
+  "types": {
+    "DEBIT": "Debit",
+    "CREDIT": "Credit"
+  },
+  "statuses": {
+    "ACTIVE": "Active",
+    "INACTIVE": "Inactive",
+    "BLOCKED": "Blocked",
+    "CLOSED": "Closed"
+  },
+  "details": {
+    "title": "Card Details",
+    "enterPin": "Enter your card PIN to view the card details.",
+    "pinPlaceholder": "Enter PIN"
+  },
+  "actions": {
+    "viewDetails": "View card details",
+    "reveal": "Reveal Card Details",
+    "close": "Close",
+    "showPin": "Show PIN",
+    "hidePin": "Hide PIN"
+  },
+  "create": {
+    "title": "Create Card",
+    "description": "Choose a card type and provide the required information.",
+    "type": {
+      "label": "Card Type"
+    },
+    "debit": {
+      "account": "Account",
+      "accountPlaceholder": "Select an account",
+      "noAvailableAccount": "You don't have any eligible accounts for a debit card."
+    },
+    "credit": {
+      "facility": "Credit Facility",
+      "outstanding": "Outstanding balance",
+      "loading": "Loading your credit facility...",
+      "noFacility": "You don't have an eligible credit facility.",
+      "alreadyHasCard": "You already have a credit card."
+    },
+    "pinPlaceholder": "Enter 6-digit PIN",
+    "validation": {
+      "accountRequired": "Please select an account.",
+      "creditFacilityRequired": "Please select a credit facility.",
+      "pinRequired": "Please enter your PIN.",
+      "pinInvalid": "PIN must contain exactly 6 digits."
+    },
+    "action": "Create"
+  },
+  "validation": {
+    "pinRequired": "Please enter your PIN.",
+    "pinInvalid": "PIN must contain exactly 6 digits."
+  }
+}

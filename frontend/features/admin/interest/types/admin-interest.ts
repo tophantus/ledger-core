@@ -1,13 +1,15 @@
 import type {Currency} from "@/lib/constants/currency";
 
-export type InterestRunType =
-    | "ACCRUAL"
-    | "POSTING";
+export enum InterestRunType {
+    ACCRUAL = "ACCRUAL",
+    POSTING = "POSTING",
+}
 
-export type InterestRunStatus =
-    | "PENDING"
-    | "RUNNING"
-    | "COMPLETED";
+export enum InterestRunStatus {
+    PENDING = "PENDING",
+    RUNNING = "RUNNING",
+    COMPLETED = "COMPLETED",
+}
 
 export interface InterestRun {
     id: string;

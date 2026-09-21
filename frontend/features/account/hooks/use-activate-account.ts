@@ -2,6 +2,7 @@
 
 import {accountApi} from "../api/account-api";
 import {useAccountStore} from "../stores/account-store";
+import {AccountStatus} from "@/features/account/types/account";
 
 export function useActivateAccount() {
     const updateAccountStatus =
@@ -18,7 +19,7 @@ export function useActivateAccount() {
         if (response.success) {
             updateAccountStatus(
                 accountId,
-                "ACTIVE",
+                AccountStatus.ACTIVE,
             );
         }
 

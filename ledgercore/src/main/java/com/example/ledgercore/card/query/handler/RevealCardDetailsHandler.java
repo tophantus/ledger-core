@@ -67,7 +67,7 @@ public class RevealCardDetailsHandler
                 credential.getPinVerifier()
         )) {
             throw new BusinessException(
-                    ErrorCode.CARD_PIN_INVALID
+                    ErrorCode.CARD_PIN_VERIFICATION_FAILED
             );
         }
 

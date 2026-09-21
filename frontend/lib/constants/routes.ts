@@ -14,6 +14,8 @@ export const ROUTES = {
     TRANSFER: "/transfer",
     WITHDRAWAL: "/withdrawal",
     WITHDRAWALS: "/withdrawals",
+    CARDS: "/cards",
+    CREDIT: "/credit",
     WEBHOOKS: {
         LIST: "/webhooks",
         DETAILS: (webhookId: string) =>

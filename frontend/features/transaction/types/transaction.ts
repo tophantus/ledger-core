@@ -1,17 +1,19 @@
 import {Currency} from "@/lib/constants/currency";
 
-export type TransactionType =
-    | "TRANSFER"
-    | "DEPOSIT"
-    | "WITHDRAW"
-    | "FEE"
-    | "REFUND";
+export enum TransactionType {
+    TRANSFER = "TRANSFER",
+    DEPOSIT = "DEPOSIT",
+    WITHDRAW = "WITHDRAW",
+    FEE = "FEE",
+    REFUND = "REFUND",
+}
 
-export type TransactionStatus =
-    | "PENDING"
-    | "COMPLETED"
-    | "FAILED"
-    | "CANCELLED";
+export enum TransactionStatus {
+    PENDING = "PENDING",
+    COMPLETED = "COMPLETED",
+    FAILED = "FAILED",
+    CANCELLED = "CANCELLED",
+}
 
 export interface Transaction {
     id: string;
@@ -48,11 +50,12 @@ export interface CreateTransferIntentRequest {
     description?: string;
 }
 
-export type TransferIntentStatus =
-    | "PENDING"
-    | "CONFIRMED"
-    | "EXPIRED"
-    | "CANCELLED";
+export enum TransferIntentStatus {
+    PENDING = "PENDING",
+    CONFIRMED = "CONFIRMED",
+    EXPIRED = "EXPIRED",
+    CANCELLED = "CANCELLED",
+}
 
 export interface CreateTransferIntentResult {
     intentId: string;

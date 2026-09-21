@@ -111,7 +111,7 @@ public class CreateCreditCardHandler
                 .id(cardId)
                 .customerId(command.customerId())
                 .type(CardType.CREDIT)
-                .form(CardForm.PHYSICAL)
+                .form(CardForm.VIRTUAL)
                 .status(CardStatus.ACTIVE)
                 .accountId(null)
                 .creditFacilityId(facility.id())

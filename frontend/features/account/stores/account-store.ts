@@ -10,6 +10,7 @@ import type {
 
 interface AccountState {
     accounts: AccountSummary[];
+    initialized: boolean;
     currentAccount: Account | null;
 
     setAccounts: (
@@ -39,11 +40,13 @@ interface AccountState {
 export const useAccountStore =
     create<AccountState>((set) => ({
         accounts: [],
+        initialized: false,
         currentAccount: null,
 
         setAccounts: (accounts) =>
             set({
                 accounts,
+                initialized: true,
             }),
 
         setCurrentAccount: (account) =>

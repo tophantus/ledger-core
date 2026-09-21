@@ -1,6 +1,6 @@
 import {
     ArrowDownToLine,
-    ClipboardList, GitCompare,
+    ClipboardList, CreditCard, GitCompare, Landmark,
     LayoutDashboard, Percent,
     ReceiptText, Users, Wallet, Webhook,
 } from "lucide-react";
@@ -22,6 +22,16 @@ export const NAVIGATION_ITEMS = [
         href: ROUTES.WITHDRAWALS,
         labelKey: "navigation.withdrawals",
         icon: ArrowDownToLine,
+    },
+    {
+        href: ROUTES.CARDS,
+        labelKey: "navigation.cards",
+        icon: CreditCard,
+    },
+    {
+        href: ROUTES.CREDIT,
+        labelKey: "navigation.credit",
+        icon: Landmark,
     },
     {
         href: ROUTES.WEBHOOKS.LIST,

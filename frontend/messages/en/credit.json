@@ -1,0 +1,37 @@
+{
+  "errors": {
+    "loadFailed": "Failed to load credit information."
+  },
+  "offer": {
+    "title": "Credit Offer",
+    "description": "You have a new credit offer.",
+    "approvedLimit": "Approved Limit",
+    "status": "Status",
+    "statuses": {
+      "OFFERED": "Offered",
+      "ACCEPTED": "Accepted",
+      "EXPIRED": "Expired",
+      "REJECTED": "Rejected",
+      "CANCELLED": "Cancelled"
+    },
+    "expiresAt": "Expires At",
+    "actions": {
+      "accept": "Accept",
+      "reject": "Reject"
+    }
+  },
+  "facility": {
+    "title": "Credit Facility",
+    "description": "Your current credit facility.",
+    "empty": "No credit facility available.",
+    "creditLimit": "Credit Limit",
+    "outstandingBalance": "Outstanding Balance",
+    "status": "Status",
+    "statuses": {
+      "ACTIVE": "Active",
+      "SUSPENDED": "Suspended",
+      "CLOSED": "Closed"
+    },
+    "openedAt": "Opened At"
+  }
+}

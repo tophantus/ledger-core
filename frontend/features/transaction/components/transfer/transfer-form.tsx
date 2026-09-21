@@ -5,7 +5,6 @@ import {
 } from "lucide-react";
 import {Controller, UseFormReturn} from "react-hook-form";
 import {
-    useLocale,
     useTranslations,
 } from "next-intl";
 
@@ -22,8 +21,8 @@ import type {
     TransferDetailsForm,
 } from "@/features/transaction/schemas/transfer-schema";
 
-import {formatMoney} from "@/lib/utils/currency";
 import {isAmountGreaterThanZero} from "@/lib/utils/money";
+import {AccountSelect} from "@/features/account/components/account-select";
 
 interface TransferFormProps {
     accounts: AccountSummary[];
@@ -67,8 +66,6 @@ export function TransferForm({
                              }: TransferFormProps) {
     const t =
         useTranslations("transaction");
-
-    const locale = useLocale();
 
     const handleFindHolder = () => {
         const destination =
@@ -146,64 +143,28 @@ export function TransferForm({
                         </p>
                     </div>
                 ) : (
-                    <select
-                        id="source-account"
-                        value={
-                            selectedAccount?.id ??
-                            ""
-                        }
-                        onChange={(event) => {
-                            const account =
-                                accounts.find(
-                                    (item) =>
-                                        item.id ===
-                                        event
-                                            .target
-                                            .value,
-                                );
-
-                            if (account) {
-                                onAccountChange(
-                                    account,
-                                );
-                            }
-                        }}
-                        className="
-                            w-full
-                            rounded-md
-                            border
-                            border-border
-                            bg-background
-                            px-3
-                            py-2.5
-                            text-sm
-                            text-foreground
-                            outline-none
-                        "
-                    >
-                        {accounts.filter((a) => isAmountGreaterThanZero(a.availableBalance)).map(
-                            (account) => (
-                                <option
-                                    key={
-                                        account.id
-                                    }
-                                    value={
-                                        account.id
-                                    }
-                                >
-                                    {
-                                        account.accountNo
-                                    }{" "}
-                                    -{" "}
-                                    {formatMoney(
-                                        account.availableBalance,
-                                        account.currency,
-                                        locale,
-                                    )}
-                                </option>
+                    <AccountSelect
+                        accounts={accounts.filter((account) =>
+                            isAmountGreaterThanZero(
+                                account.availableBalance,
                             ),
                         )}
-                    </select>
+                        value={selectedAccount?.id ?? ""}
+                        onChange={(event) => {
+                            const account = accounts.find(
+                                (item) =>
+                                    item.id === event.target.value,
+                            );
+
+                            if (account) {
+                                onAccountChange(account);
+                            }
+                        }}
+                        id="source-account"
+                        placeholder={t(
+                            "transfer.sourceAccountPlaceholder",
+                        )}
+                    />
                 )}
             </div>
 

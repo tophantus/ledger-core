@@ -4,16 +4,14 @@ import {useTranslations} from "next-intl";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 
-import {useRouter, Link} from "@/i18n/routing";
+import {Link, useRouter} from "@/i18n/routing";
 import {ROUTES} from "@/lib/constants/routes";
 import {Button} from "@/components/ui/button";
 import {Logo} from "@/components/common/logo";
 
 import {useLogin} from "../hooks/use-login";
-import {
-    loginSchema,
-    type LoginFormValues,
-} from "../schemas/auth-schema";
+import {type LoginFormValues, loginSchema,} from "../schemas/auth-schema";
+import {LoginStatus} from "@/features/auth/types/auth";
 
 export function LoginForm() {
     const router = useRouter();
@@ -53,12 +51,12 @@ export function LoginForm() {
                 return;
             }
 
-            if (result.data.status === "EMAIL_NOT_VERIFIED") {
+            if (result.data.status === LoginStatus.EMAIL_NOT_VERIFIED) {
                 router.push(ROUTES.AUTH.VERIFY_EMAIL);
                 return;
             }
 
-            if (result.data.status === "AUTHENTICATED") {
+            if (result.data.status === LoginStatus.AUTHENTICATED) {
                 router.push(ROUTES.DASHBOARD);
                 return;
             }

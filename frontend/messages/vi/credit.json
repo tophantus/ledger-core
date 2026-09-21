@@ -1,0 +1,25 @@
+{
+  "errors": {
+    "loadFailed": "Không thể tải thông tin tín dụng."
+  },
+  "offer": {
+    "title": "Đề nghị tín dụng",
+    "description": "Bạn có một đề nghị tín dụng mới.",
+    "approvedLimit": "Hạn mức được duyệt",
+    "status": "Trạng thái",
+    "expiresAt": "Hết hạn vào",
+    "actions": {
+      "accept": "Chấp nhận",
+      "reject": "Từ chối"
+    }
+  },
+  "facility": {
+    "title": "Hạn mức tín dụng",
+    "description": "Hạn mức tín dụng hiện tại của bạn.",
+    "empty": "Bạn chưa có hạn mức tín dụng.",
+    "creditLimit": "Hạn mức tín dụng",
+    "outstandingBalance": "Dư nợ hiện tại",
+    "status": "Trạng thái",
+    "openedAt": "Ngày mở"
+  }
+}

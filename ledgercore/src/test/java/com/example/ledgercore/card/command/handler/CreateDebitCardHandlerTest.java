@@ -124,7 +124,7 @@ class CreateDebitCardHandlerTest {
         assertNotNull(result.cardId());
         assertEquals(accountId, result.accountId());
         assertEquals(CardType.DEBIT, result.type());
-        assertEquals(CardForm.PHYSICAL, result.form());
+        assertEquals(CardForm.VIRTUAL, result.form());
         assertEquals(CardStatus.ACTIVE, result.status());
         assertEquals("1111", result.panLast4());
         assertNotNull(result.expiryMonth());
@@ -141,7 +141,7 @@ class CreateDebitCardHandlerTest {
 
         assertEquals(customerId, savedCard.getCustomerId());
         assertEquals(CardType.DEBIT, savedCard.getType());
-        assertEquals(CardForm.PHYSICAL, savedCard.getForm());
+        assertEquals(CardForm.VIRTUAL, savedCard.getForm());
         assertEquals(CardStatus.ACTIVE, savedCard.getStatus());
         assertEquals(accountId, savedCard.getAccountId());
         assertNull(savedCard.getCreditFacilityId());
@@ -696,7 +696,7 @@ class CreateDebitCardHandlerTest {
         );
 
         assertEquals(
-                CardForm.PHYSICAL,
+                CardForm.VIRTUAL,
                 card.getForm()
         );
 
