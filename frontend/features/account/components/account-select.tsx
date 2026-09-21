@@ -1,14 +1,18 @@
 "use client";
 
-import type {UseFormRegisterReturn} from "react-hook-form";
+import type {ChangeEvent} from "react";
+import {useLocale} from "next-intl";
+
+import {formatMoney} from "@/lib/utils/currency";
 
 import type {AccountSummary} from "../types/account";
-import {formatMoney} from "@/lib/utils/currency";
-import {useLocale} from "next-intl";
 
 interface AccountSelectProps {
     accounts: AccountSummary[];
-    registration: UseFormRegisterReturn;
+    value: string;
+    onChange: (
+        event: ChangeEvent<HTMLSelectElement>,
+    ) => void;
     disabled?: boolean;
     id?: string;
     placeholder: string;
@@ -17,18 +21,21 @@ interface AccountSelectProps {
 
 export function AccountSelect({
                                   accounts,
-                                  registration,
+                                  value,
+                                  onChange,
                                   disabled = false,
                                   id = "account",
                                   placeholder,
                                   error,
                               }: AccountSelectProps) {
-    const locale = useLocale()
+    const locale = useLocale();
+
     return (
         <div>
             <select
                 id={id}
-                {...registration}
+                value={value}
+                onChange={onChange}
                 disabled={disabled}
                 className="
                     mt-2
