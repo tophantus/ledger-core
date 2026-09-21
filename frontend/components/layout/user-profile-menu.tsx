@@ -17,6 +17,8 @@ import {useLogout} from "@/features/auth/hooks/use-logout";
 import {useUserStore} from "@/features/user/stores/user-store";
 import {useRouter} from "@/i18n/routing";
 import {ROUTES} from "@/lib/constants/routes";
+import {LocaleToggle} from "@/components/ui/locale-toggle";
+import {ThemeToggle} from "@/components/ui/theme-toggle";
 
 export function UserProfileMenu() {
     const t = useTranslations("dashboard");
@@ -206,9 +208,15 @@ export function UserProfileMenu() {
                     </div>
 
                     <div className="border-t border-border p-2">
+                        <LocaleToggle />
+
+                        <ThemeToggle />
+                    </div>
+
+                    <div className="border-t border-border p-2">
                         <Button
                             type="button"
-                            variant="ghost"
+                            variant="danger"
                             className="w-full justify-start"
                             onClick={
                                 handleLogout
