@@ -370,9 +370,18 @@ class RevealCardDetailsHandlerTest {
                 );
 
         assertEquals(
-                ErrorCode.CARD_PIN_INVALID,
+                ErrorCode.CARD_PIN_VERIFICATION_FAILED,
                 exception.getErrorCode()
         );
+
+        verify(cardQueryRepository)
+                .findByIdAndCustomerId(
+                        cardId,
+                        customerId
+                );
+
+        verify(cardCredentialQueryRepository)
+                .findByCardId(cardId);
 
         verify(cardSecretHashService)
                 .matches(

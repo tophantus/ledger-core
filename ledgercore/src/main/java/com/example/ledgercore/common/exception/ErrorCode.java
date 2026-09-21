@@ -205,6 +205,12 @@ public enum ErrorCode {
             HttpStatus.BAD_REQUEST
     ),
 
+    CARD_PIN_VERIFICATION_FAILED(
+            "CARD_011",
+            "Card PIN verification failed",
+            HttpStatus.UNAUTHORIZED
+    ),
+
     // Credit
 
     CREDIT_FACILITY_NOT_FOUND(
