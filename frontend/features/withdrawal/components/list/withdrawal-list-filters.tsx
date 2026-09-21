@@ -14,8 +14,12 @@ import type {AccountSummary} from "@/features/account/types/account";
 
 import type {
     WithdrawalIntentFilters,
-    WithdrawalIntentStatus,
 } from "../../types/withdrawal";
+
+import {
+    WithdrawalIntentStatus
+} from "../../types/withdrawal";
+import {AccountSelect} from "@/features/account/components/account-select";
 
 interface WithdrawalListFiltersProps {
     accounts: AccountSummary[];
@@ -26,12 +30,9 @@ interface WithdrawalListFiltersProps {
     ) => void;
 }
 
-const WITHDRAWAL_STATUSES: WithdrawalIntentStatus[] = [
-    "READY",
-    "COMPLETED",
-    "EXPIRED",
-    "CANCELLED",
-];
+const WITHDRAWAL_STATUSES = Object.values(
+    WithdrawalIntentStatus
+)
 
 export function WithdrawalListFilters({
                                           accounts,
@@ -161,64 +162,22 @@ export function WithdrawalListFilters({
                                 )}
                             </label>
 
-                            <select
+                            <AccountSelect
+                                accounts={accounts}
+                                value={filters.accountId ?? ""}
+                                onChange={handleAccountChange}
+                                disabled={isAccountsLoading}
                                 id="withdrawal-account"
-                                value={
-                                    filters.accountId
-                                    ?? ""
-                                }
-                                disabled={
+                                placeholder={
                                     isAccountsLoading
-                                }
-                                onChange={
-                                    handleAccountChange
-                                }
-                                className="
-                                    w-full
-                                    rounded-md
-                                    border
-                                    border-border
-                                    bg-background
-                                    px-3
-                                    py-2
-                                    text-sm
-                                    text-foreground
-                                    outline-none
-                                    disabled:cursor-not-allowed
-                                    disabled:opacity-60
-                                "
-                            >
-                                <option value="">
-                                    {isAccountsLoading
                                         ? t(
                                             "list.filter.loadingAccounts",
                                         )
                                         : t(
                                             "list.filter.allAccounts",
-                                        )}
-                                </option>
-
-                                {accounts.map(
-                                    (account) => (
-                                        <option
-                                            key={
-                                                account.id
-                                            }
-                                            value={
-                                                account.id
-                                            }
-                                        >
-                                            {
-                                                account.accountNo
-                                            }
-                                            {" · "}
-                                            {
-                                                account.currency
-                                            }
-                                        </option>
-                                    ),
-                                )}
-                            </select>
+                                        )
+                                }
+                            />
                         </div>
 
                         {/* Status */}

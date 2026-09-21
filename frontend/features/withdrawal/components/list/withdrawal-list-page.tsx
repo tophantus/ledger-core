@@ -11,7 +11,6 @@ import {
 } from "next/navigation";
 import {useTranslations} from "next-intl";
 
-import type {AccountSummary} from "@/features/account/types/account";
 import {useMyAccounts} from "@/features/account/hooks/use-my-accounts";
 
 import {useWithdrawalIntents} from "../../hooks/use-withdrawal-intents";
@@ -29,6 +28,7 @@ import {WithdrawalListEmpty} from "./withdrawal-list-empty";
 import {WithdrawalListPagination} from "./withdrawal-list-pagination";
 import {AccountSummaryCardSkeleton} from "@/features/account/components/account-summary-card-skeleton";
 import {AccountSummaryCard} from "@/features/account/components/account-summary-card";
+import {useAccountStore} from "@/features/account/stores/account-store";
 
 const PAGE_SIZE = 20;
 
@@ -42,9 +42,17 @@ export default function WithdrawalListPage() {
     const router = useRouter();
     const searchParams = useSearchParams();
 
-    const {
-        getMyAccounts,
-    } = useMyAccounts();
+    const accounts = useAccountStore(
+        (state) => state.accounts,
+    );
+
+    const accountsInitialized =
+        useAccountStore(
+            (state) => state.initialized,
+        );
+
+    const {getMyAccounts} =
+        useMyAccounts();
 
     const {
         getWithdrawalIntents,
@@ -87,9 +95,6 @@ export default function WithdrawalListPage() {
             ],
         );
 
-    const [accounts, setAccounts] =
-        useState<AccountSummary[]>([]);
-
     const [withdrawals, setWithdrawals] =
         useState<WithdrawalIntent[]>([]);
 
@@ -97,7 +102,7 @@ export default function WithdrawalListPage() {
         useState(0);
 
     const [isAccountsLoading, setIsAccountsLoading] =
-        useState(true);
+        useState(false);
 
     const [isLoading, setIsLoading] =
         useState(true);
@@ -130,42 +135,16 @@ export default function WithdrawalListPage() {
         [accounts, accountId],
     );
 
-    /*
-     * Load accounts for the account filter.
-     */
     useEffect(() => {
-        let mounted = true;
+        if (accountsInitialized) {
+            return;
+        }
 
-        const loadAccounts = async () => {
-            try {
-                const response =
-                    await getMyAccounts();
-
-                if (!mounted) {
-                    return;
-                }
-
-                if (!response.success) {
-                    return;
-                }
-
-                setAccounts(response.data);
-            } catch {
-                // Account filter does not block
-                // the withdrawal list.
-            } finally {
-                if (mounted) {
-                    setIsAccountsLoading(false);
-                }
-            }
-        };
-
-        void loadAccounts();
-
-        return () => {
-            mounted = false;
-        };
-    }, [getMyAccounts]);
+        void getMyAccounts();
+    }, [
+        accountsInitialized,
+        getMyAccounts,
+    ]);
 
     /*
      * Load withdrawal intents whenever
