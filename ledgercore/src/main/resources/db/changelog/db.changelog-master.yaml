@@ -139,3 +139,5 @@ databaseChangeLog:
       file: db/changelog/069-add-pan-hash-to-cards.yaml
   - include:
       file: db/changelog/070-add-credit-facility-hold-amount.yaml
+  - include:
+      file: db/changelog/071-create-credit-holds.yaml
