@@ -71,7 +71,7 @@ public class ProvisionCardTokenHandler
                 .providerCustomerReference(
                         providerCustomerReference
                 )
-                .status(CardTokenStatus.ACTIVE)
+                .status(CardTokenStatus.PENDING)
                 .createdAt(now)
                 .updatedAt(now)
                 .build();

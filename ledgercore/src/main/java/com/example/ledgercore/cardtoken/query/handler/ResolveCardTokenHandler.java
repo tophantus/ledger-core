@@ -27,12 +27,11 @@ public class ResolveCardTokenHandler
     ) {
         validateQuery(query);
 
-        String token = query.token().trim();
-
         CardToken cardToken =
                 cardTokenQueryRepository
-                        .findByTokenAndStatus(
-                                token,
+                        .findByTokenAndProviderIdAndStatus(
+                                query.token().trim(),
+                                query.providerId(),
                                 CardTokenStatus.ACTIVE
                         )
                         .orElseThrow(() ->
@@ -50,6 +49,12 @@ public class ResolveCardTokenHandler
             ResolveCardTokenQuery query
     ) {
         if (query == null) {
+            throw new BusinessException(
+                    ErrorCode.INVALID_REQUEST
+            );
+        }
+
+        if (query.providerId() == null) {
             throw new BusinessException(
                     ErrorCode.INVALID_REQUEST
             );

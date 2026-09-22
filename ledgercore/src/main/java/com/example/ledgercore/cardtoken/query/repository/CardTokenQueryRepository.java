@@ -10,8 +10,9 @@ import java.util.UUID;
 public interface CardTokenQueryRepository
         extends JpaRepository<CardToken, UUID> {
 
-    Optional<CardToken> findByTokenAndStatus(
+    Optional<CardToken> findByTokenAndProviderIdAndStatus(
             String token,
+            UUID providerId,
             CardTokenStatus status
     );
 }
