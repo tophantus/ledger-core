@@ -285,6 +285,12 @@ public enum ErrorCode {
             HttpStatus.CONFLICT
     ),
 
+    CARD_TOKEN_INVALID_STATUS(
+            "CARD_TOKEN_001",
+            "Invalid card token status",
+            HttpStatus.CONFLICT
+    ),
+
     // Credit
 
     CREDIT_FACILITY_NOT_FOUND(

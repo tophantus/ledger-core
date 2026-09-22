@@ -1,6 +1,8 @@
 package com.example.ledgercore.cardtoken.entity;
 
 import com.example.ledgercore.cardtoken.enums.CardTokenStatus;
+import com.example.ledgercore.common.exception.BusinessException;
+import com.example.ledgercore.common.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -84,6 +86,64 @@ public class CardToken {
 
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
+
+    public void activate(Instant now) {
+        if (status != CardTokenStatus.PENDING) {
+            throw new BusinessException(
+                    ErrorCode.CARD_TOKEN_INVALID_STATUS
+            );
+        }
+
+        status = CardTokenStatus.ACTIVE;
+        activatedAt = now;
+    }
+
+    public void suspend(Instant now) {
+        if (status != CardTokenStatus.ACTIVE) {
+            throw new BusinessException(
+                    ErrorCode.CARD_TOKEN_INVALID_STATUS
+            );
+        }
+
+        status = CardTokenStatus.SUSPENDED;
+        suspendedAt = now;
+    }
+
+    public void resume(Instant now) {
+        if (status != CardTokenStatus.SUSPENDED) {
+            throw new BusinessException(
+                    ErrorCode.CARD_TOKEN_INVALID_STATUS
+            );
+        }
+
+        status = CardTokenStatus.ACTIVE;
+        suspendedAt = null;
+    }
+
+    public void revoke(Instant now) {
+        if (status == CardTokenStatus.REVOKED) {
+            return;
+        }
+
+        status = CardTokenStatus.REVOKED;
+        revokedAt = now;
+    }
+
+    public boolean isActive() {
+        return status == CardTokenStatus.ACTIVE;
+    }
+
+    public boolean isSuspended() {
+        return status == CardTokenStatus.SUSPENDED;
+    }
+
+    public boolean isRevoked() {
+        return status == CardTokenStatus.REVOKED;
+    }
+
+    public boolean canBeUsed() {
+        return status == CardTokenStatus.ACTIVE;
+    }
 
     @PrePersist
     protected void onCreate() {
