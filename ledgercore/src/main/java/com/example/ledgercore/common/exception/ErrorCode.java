@@ -451,6 +451,30 @@ public enum ErrorCode {
             HttpStatus.CONFLICT
     ),
 
+    PROVIDER_CLIENT_ID_REQUIRED(
+            "PROVIDER_005",
+            "Provider client ID must not be blank",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    PROVIDER_CREDENTIAL_REQUIRED(
+            "PROVIDER_006",
+            "Provider credential must not be blank",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    PROVIDER_AUTHENTICATION_FAILED(
+            "PROVIDER_007",
+            "Provider authentication failed",
+            HttpStatus.UNAUTHORIZED
+    ),
+
+    PROVIDER_NOT_ACTIVE(
+            "PROVIDER_008",
+            "Payment provider is not active",
+            HttpStatus.FORBIDDEN
+    ),
+
     // Interest
 
     INTEREST_CONFIG_NOT_FOUND(
