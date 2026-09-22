@@ -425,6 +425,32 @@ public enum ErrorCode {
             HttpStatus.NOT_FOUND
     ),
 
+    // Provider
+
+    PROVIDER_CODE_REQUIRED(
+            "PROVIDER_001",
+            "Provider code must not be blank",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    PROVIDER_NAME_REQUIRED(
+            "PROVIDER_002",
+            "Provider name must not be blank",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    PROVIDER_TYPE_REQUIRED(
+            "PROVIDER_003",
+            "Provider type must not be null",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    PROVIDER_CODE_ALREADY_EXISTS(
+            "PROVIDER_004",
+            "Provider code already exists",
+            HttpStatus.CONFLICT
+    ),
+
     // Interest
 
     INTEREST_CONFIG_NOT_FOUND(
