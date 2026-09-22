@@ -4,14 +4,11 @@ import com.example.ledgercore.common.currency.Currency;
 
 import java.math.BigDecimal;
 
-public record AuthorizeCardPaymentCommand(
+public record AuthorizeCardPaymentByTokenCommand(
+        String reference,
         String providerClientId,
         String providerCredential,
-        String reference,
-        String pan,
-        Short expiryMonth,
-        Short expiryYear,
-        String cvv,
+        String token,
         String merchantReference,
         BigDecimal amount,
         Currency currency

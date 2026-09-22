@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: 075-add-authorization-method-to-card-authorizations
+      author: tophantus
+      changes:
+        - addColumn:
+            tableName: card_authorizations
+            columns:
+              - column:
+                  name: authorization_method
+                  type: varchar(20)
+                  defaultValue: PAN
+                  constraints:
+                    nullable: false

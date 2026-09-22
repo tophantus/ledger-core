@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: 076-add-provider-id-to-card-authorizations
+      author: tophantus
+      changes:
+        - addColumn:
+            tableName: card_authorizations
+            columns:
+              - column:
+                  name: provider_id
+                  type: UUID
+                  defaultValueComputed: "'00000000-0000-0000-0000-000000000000'::uuid"
+                  constraints:
+                    nullable: false

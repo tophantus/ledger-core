@@ -1,11 +1,9 @@
 package com.example.ledgercore.card.adapter.inbound.rest;
 
 import com.example.ledgercore.auth.security.AuthPrincipal;
-import com.example.ledgercore.card.adapter.inbound.rest.dto.AuthorizeCardPaymentRequest;
-import com.example.ledgercore.card.adapter.inbound.rest.dto.CreateCreditCardRequest;
-import com.example.ledgercore.card.adapter.inbound.rest.dto.CreateDebitCardRequest;
-import com.example.ledgercore.card.adapter.inbound.rest.dto.RevealCardDetailsRequest;
+import com.example.ledgercore.card.adapter.inbound.rest.dto.*;
 import com.example.ledgercore.card.command.dto.*;
+import com.example.ledgercore.card.command.port.inbound.AuthorizeCardPaymentByTokenUseCase;
 import com.example.ledgercore.card.command.port.inbound.AuthorizeCardPaymentUseCase;
 import com.example.ledgercore.card.command.port.inbound.CreateCreditCardUseCase;
 import com.example.ledgercore.card.command.port.inbound.CreateDebitCardUseCase;
@@ -42,6 +40,8 @@ public class CardController {
     private final RevealCardDetailsUseCase revealCardDetailsUseCase;
 
     private final AuthorizeCardPaymentUseCase authorizeCardPaymentUseCase;
+    private final AuthorizeCardPaymentByTokenUseCase
+            authorizeCardPaymentByTokenUseCase;
 
     @PostMapping("/debit")
     @Operation(
@@ -184,16 +184,51 @@ public class CardController {
             description = "Authorize a card payment using card payment credentials"
     )
     public ResponseEntity<ApiResponse<AuthorizeCardPaymentResult>> authorizeCardPayment(
+            @RequestHeader("X-Provider-Client-Id") String clientId,
+            @RequestHeader("X-Provider-Credential") String credential,
             @Valid @RequestBody AuthorizeCardPaymentRequest request
     ) {
         AuthorizeCardPaymentResult result =
                 authorizeCardPaymentUseCase.execute(
                         new AuthorizeCardPaymentCommand(
+                                clientId,
+                                credential,
                                 request.reference(),
                                 request.pan(),
                                 request.expiryMonth(),
                                 request.expiryYear(),
                                 request.cvv(),
+                                request.merchantReference(),
+                                request.amount(),
+                                request.currency()
+                        )
+                );
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        result,
+                        "Card payment authorized successfully"
+                )
+        );
+    }
+
+    @PostMapping("/authorizations/token")
+    @Operation(
+            summary = "Authorize card payment by token",
+            description = "Authorize a card payment using a payment token"
+    )
+    public ResponseEntity<ApiResponse<AuthorizeCardPaymentByTokenResult>> authorizeCardPaymentByToken(
+            @RequestHeader("X-Provider-Client-Id") String clientId,
+            @RequestHeader("X-Provider-Credential") String credential,
+            @Valid @RequestBody AuthorizeCardPaymentByTokenRequest request
+    ) {
+        AuthorizeCardPaymentByTokenResult result =
+                authorizeCardPaymentByTokenUseCase.execute(
+                        new AuthorizeCardPaymentByTokenCommand(
+                                clientId,
+                                credential,
+                                request.token(),
+                                request.reference(),
                                 request.merchantReference(),
                                 request.amount(),
                                 request.currency()
