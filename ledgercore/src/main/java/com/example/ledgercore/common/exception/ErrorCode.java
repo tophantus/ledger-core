@@ -211,6 +211,7 @@ public enum ErrorCode {
             HttpStatus.UNAUTHORIZED
     ),
 
+
     // Card Authorization
 
     CARD_AUTHORIZATION_REFERENCE_REQUIRED(
@@ -283,6 +284,62 @@ public enum ErrorCode {
             "CARD_023",
             "Insufficient available credit",
             HttpStatus.CONFLICT
+    ),
+
+    PAN_REQUIRED(
+            "CARD_024",
+            "Card PAN is required",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    EXPIRY_MONTH_REQUIRED(
+            "CARD_026",
+            "Card expiry month is required",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    EXPIRY_YEAR_REQUIRED(
+            "CARD_028",
+            "Card expiry year is required",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    CVV_REQUIRED(
+            "CARD_030",
+            "Card CVV is required",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    // Card Token
+
+    CARD_TOKEN_INVALID_STATUS(
+            "CARD_TOKEN_001",
+            "Invalid card token status",
+            HttpStatus.CONFLICT
+    ),
+
+    CARD_TOKEN_PROVIDER_CUSTOMER_REFERENCE_REQUIRED(
+            "CARD_TOKEN_002",
+            "Provider customer reference is required",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    CARD_TOKEN_ALREADY_EXISTS(
+            "CARD_TOKEN_003",
+            "Card token already exists",
+            HttpStatus.CONFLICT
+    ),
+
+    CARD_TOKEN_NOT_FOUND(
+            "CARD_TOKEN_004",
+            "Card token not found",
+            HttpStatus.NOT_FOUND
+    ),
+
+    CARD_TOKEN_REQUIRED(
+            "CARD_TOKEN_005",
+            "Card token is required",
+            HttpStatus.BAD_REQUEST
     ),
 
     // Credit

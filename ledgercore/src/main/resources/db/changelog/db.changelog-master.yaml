@@ -145,3 +145,5 @@ databaseChangeLog:
       file: db/changelog/072-update-card-authorization-hold.yaml
   - include:
       file: db/changelog/073-create-payment-providers.yaml
+  - include:
+      file: db/changelog/074-create-card-tokens.yaml
