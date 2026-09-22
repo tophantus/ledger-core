@@ -330,6 +330,18 @@ public enum ErrorCode {
             HttpStatus.CONFLICT
     ),
 
+    CARD_TOKEN_NOT_FOUND(
+            "CARD_TOKEN_004",
+            "Card token not found",
+            HttpStatus.NOT_FOUND
+    ),
+
+    CARD_TOKEN_REQUIRED(
+            "CARD_TOKEN_005",
+            "Card token is required",
+            HttpStatus.BAD_REQUEST
+    ),
+
     // Credit
 
     CREDIT_FACILITY_NOT_FOUND(

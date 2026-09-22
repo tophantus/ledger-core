@@ -4,6 +4,7 @@ import com.example.ledgercore.cardtoken.entity.CardToken;
 import com.example.ledgercore.cardtoken.enums.CardTokenStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public interface CardTokenCommandRepository
@@ -16,5 +17,10 @@ public interface CardTokenCommandRepository
             UUID providerId,
             String providerCustomerReference,
             CardTokenStatus status
+    );
+
+    Optional<CardToken> findByTokenAndProviderId(
+            String token,
+            UUID providerId
     );
 }
