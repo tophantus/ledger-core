@@ -1,6 +1,7 @@
 package com.example.ledgercore.card.entity;
 
 import com.example.ledgercore.card.enums.CardAuthorizationHoldType;
+import com.example.ledgercore.card.enums.CardAuthorizationMethod;
 import com.example.ledgercore.card.enums.CardAuthorizationStatus;
 import com.example.ledgercore.common.currency.Currency;
 import jakarta.persistence.Column;
@@ -50,6 +51,14 @@ public class CardAuthorization {
 
     @Column(name = "merchant_reference", length = 100)
     private String merchantReference;
+
+    @Enumerated(EnumType.STRING)
+    @Column(
+            name = "authorization_method",
+            nullable = false,
+            length = 20
+    )
+    private CardAuthorizationMethod authorizationMethod;
 
     @Column(
             name = "amount",

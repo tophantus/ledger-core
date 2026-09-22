@@ -15,13 +15,9 @@ import com.example.ledgercore.card.command.repository.CardVaultSecretCommandRepo
 import com.example.ledgercore.card.entity.Card;
 import com.example.ledgercore.card.entity.CardAuthorization;
 import com.example.ledgercore.card.entity.CardVaultSecret;
-import com.example.ledgercore.card.enums.CardAuthorizationHoldType;
-import com.example.ledgercore.card.enums.CardAuthorizationStatus;
-import com.example.ledgercore.card.enums.CardStatus;
-import com.example.ledgercore.card.enums.CardType;
+import com.example.ledgercore.card.enums.*;
 import com.example.ledgercore.card.infrastructure.security.CardEncryptionService;
 import com.example.ledgercore.card.infrastructure.security.CardPanHashService;
-import com.example.ledgercore.card.infrastructure.security.CardSecretHashService;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.credit.enums.CreditFacilityStatus;
@@ -54,7 +50,6 @@ public class AuthorizeCardPaymentHandler
     private final CreditAuthorizationHoldPort
             creditAuthorizationHoldPort;
 
-    private final CardSecretHashService cardSecretHashService;
     private final CardPanHashService cardPanHashService;
     private final CardEncryptionService cardEncryptionService;
 
@@ -114,6 +109,9 @@ public class AuthorizeCardPaymentHandler
                         .reference(command.reference())
                         .merchantReference(
                                 command.merchantReference()
+                        )
+                        .authorizationMethod(
+                                CardAuthorizationMethod.PAN
                         )
                         .amount(command.amount())
                         .currency(command.currency())
