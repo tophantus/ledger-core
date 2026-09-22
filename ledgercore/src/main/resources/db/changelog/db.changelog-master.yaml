@@ -149,3 +149,5 @@ databaseChangeLog:
       file: db/changelog/074-create-card-tokens.yaml
   - include:
       file: db/changelog/075-add-authorization-method-to-card-authorizations.yaml
+  - include:
+      file: db/changelog/076-add-provider-id-to-card-authorizations.yaml

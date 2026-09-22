@@ -5,6 +5,8 @@ import com.example.ledgercore.common.currency.Currency;
 import java.math.BigDecimal;
 
 public record AuthorizeCardPaymentCommand(
+        String providerClientId,
+        String providerCredential,
         String reference,
         String pan,
         Short expiryMonth,

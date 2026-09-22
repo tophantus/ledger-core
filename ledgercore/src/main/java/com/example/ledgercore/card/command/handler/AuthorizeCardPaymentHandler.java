@@ -7,6 +7,7 @@ import com.example.ledgercore.card.command.port.outbound.AccountAuthorizationHol
 import com.example.ledgercore.card.command.port.outbound.CardAccountPort;
 import com.example.ledgercore.card.command.port.outbound.CardCreditFacilityPort;
 import com.example.ledgercore.card.command.port.outbound.CreditAuthorizationHoldPort;
+import com.example.ledgercore.card.command.port.outbound.ProviderAuthenticationPort;
 import com.example.ledgercore.card.command.port.outbound.dto.CardAccountInfo;
 import com.example.ledgercore.card.command.port.outbound.dto.CardCreditFacilityInfo;
 import com.example.ledgercore.card.command.repository.CardAuthorizationCommandRepository;
@@ -49,6 +50,7 @@ public class AuthorizeCardPaymentHandler
             accountAuthorizationHoldPort;
     private final CreditAuthorizationHoldPort
             creditAuthorizationHoldPort;
+    private final ProviderAuthenticationPort providerAuthenticationPort;
 
     private final CardPanHashService cardPanHashService;
     private final CardEncryptionService cardEncryptionService;
@@ -60,6 +62,12 @@ public class AuthorizeCardPaymentHandler
     ) {
         validateCommand(command);
         validateReference(command.reference());
+
+        ProviderAuthenticationPort.ProviderAuthenticationResult provider =
+                providerAuthenticationPort.authenticate(
+                        command.providerClientId(),
+                        command.providerCredential()
+                );
 
         Card card = findCard(command.pan());
 
@@ -107,6 +115,7 @@ public class AuthorizeCardPaymentHandler
                         .id(authorizationId)
                         .cardId(card.getId())
                         .reference(command.reference())
+                        .providerId(provider.providerId())
                         .merchantReference(
                                 command.merchantReference()
                         )
@@ -161,6 +170,20 @@ public class AuthorizeCardPaymentHandler
                 || command.reference().isBlank()) {
             throw new BusinessException(
                     ErrorCode.CARD_AUTHORIZATION_REFERENCE_REQUIRED
+            );
+        }
+
+        if (command.providerClientId() == null
+                || command.providerClientId().isBlank()) {
+            throw new BusinessException(
+                    ErrorCode.INVALID_REQUEST
+            );
+        }
+
+        if (command.providerCredential() == null
+                || command.providerCredential().isBlank()) {
+            throw new BusinessException(
+                    ErrorCode.INVALID_REQUEST
             );
         }
 

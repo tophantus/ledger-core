@@ -184,11 +184,15 @@ public class CardController {
             description = "Authorize a card payment using card payment credentials"
     )
     public ResponseEntity<ApiResponse<AuthorizeCardPaymentResult>> authorizeCardPayment(
+            @RequestHeader("X-Provider-Client-Id") String clientId,
+            @RequestHeader("X-Provider-Credential") String credential,
             @Valid @RequestBody AuthorizeCardPaymentRequest request
     ) {
         AuthorizeCardPaymentResult result =
                 authorizeCardPaymentUseCase.execute(
                         new AuthorizeCardPaymentCommand(
+                                clientId,
+                                credential,
                                 request.reference(),
                                 request.pan(),
                                 request.expiryMonth(),

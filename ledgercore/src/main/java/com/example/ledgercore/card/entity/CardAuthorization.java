@@ -52,6 +52,9 @@ public class CardAuthorization {
     @Column(name = "merchant_reference", length = 100)
     private String merchantReference;
 
+    @Column(name = "provider_id", nullable = false)
+    private UUID providerId;
+
     @Enumerated(EnumType.STRING)
     @Column(
             name = "authorization_method",

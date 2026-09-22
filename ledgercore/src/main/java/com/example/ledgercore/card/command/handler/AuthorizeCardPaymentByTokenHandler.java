@@ -93,6 +93,7 @@ public class AuthorizeCardPaymentByTokenHandler
                         .id(authorizationId)
                         .cardId(card.getId())
                         .reference(command.reference())
+                        .providerId(provider.providerId())
                         .merchantReference(
                                 command.merchantReference()
                         )
