@@ -53,7 +53,7 @@ public class SecurityConfig {
                                 ).permitAll()
 
                                 .requestMatchers(
-                                        "/test/webhook"
+                                        "/api/v1/providers"
                                 ).permitAll()
                                 
                                 .requestMatchers(
