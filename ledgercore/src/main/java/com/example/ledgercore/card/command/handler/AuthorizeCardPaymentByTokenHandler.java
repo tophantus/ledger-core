@@ -1,23 +1,16 @@
 package com.example.ledgercore.card.command.handler;
 
-import com.example.ledgercore.card.command.dto.AuthorizeCardPaymentCommand;
-import com.example.ledgercore.card.command.dto.AuthorizeCardPaymentResult;
-import com.example.ledgercore.card.command.port.inbound.AuthorizeCardPaymentUseCase;
-import com.example.ledgercore.card.command.port.outbound.AccountAuthorizationHoldPort;
-import com.example.ledgercore.card.command.port.outbound.CardAccountPort;
-import com.example.ledgercore.card.command.port.outbound.CardCreditFacilityPort;
-import com.example.ledgercore.card.command.port.outbound.CreditAuthorizationHoldPort;
+import com.example.ledgercore.card.command.dto.AuthorizeCardPaymentByTokenCommand;
+import com.example.ledgercore.card.command.dto.AuthorizeCardPaymentByTokenResult;
+import com.example.ledgercore.card.command.port.inbound.AuthorizeCardPaymentByTokenUseCase;
+import com.example.ledgercore.card.command.port.outbound.*;
 import com.example.ledgercore.card.command.port.outbound.dto.CardAccountInfo;
 import com.example.ledgercore.card.command.port.outbound.dto.CardCreditFacilityInfo;
 import com.example.ledgercore.card.command.repository.CardAuthorizationCommandRepository;
 import com.example.ledgercore.card.command.repository.CardCommandRepository;
-import com.example.ledgercore.card.command.repository.CardVaultSecretCommandRepository;
 import com.example.ledgercore.card.entity.Card;
 import com.example.ledgercore.card.entity.CardAuthorization;
-import com.example.ledgercore.card.entity.CardVaultSecret;
 import com.example.ledgercore.card.enums.*;
-import com.example.ledgercore.card.infrastructure.security.CardEncryptionService;
-import com.example.ledgercore.card.infrastructure.security.CardPanHashService;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.credit.enums.CreditFacilityStatus;
@@ -26,64 +19,58 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.time.YearMonth;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class AuthorizeCardPaymentHandler
-        implements AuthorizeCardPaymentUseCase {
+public class AuthorizeCardPaymentByTokenHandler
+        implements AuthorizeCardPaymentByTokenUseCase {
 
     private static final int AUTHORIZATION_EXPIRY_MINUTES = 7;
 
     private final CardCommandRepository cardCommandRepository;
     private final CardAuthorizationCommandRepository
             cardAuthorizationCommandRepository;
-    private final CardVaultSecretCommandRepository
-            cardVaultSecretCommandRepository;
 
+    private final ProviderAuthenticationPort providerAuthenticationPort;
+    private final CardTokenPort cardTokenPort;
     private final CardAccountPort cardAccountPort;
     private final CardCreditFacilityPort cardCreditFacilityPort;
-
-    private final AccountAuthorizationHoldPort
-            accountAuthorizationHoldPort;
-    private final CreditAuthorizationHoldPort
-            creditAuthorizationHoldPort;
-
-    private final CardPanHashService cardPanHashService;
-    private final CardEncryptionService cardEncryptionService;
+    private final AccountAuthorizationHoldPort accountAuthorizationHoldPort;
+    private final CreditAuthorizationHoldPort creditAuthorizationHoldPort;
 
     @Override
     @Transactional
-    public AuthorizeCardPaymentResult execute(
-            AuthorizeCardPaymentCommand command
+    public AuthorizeCardPaymentByTokenResult execute(
+            AuthorizeCardPaymentByTokenCommand command
     ) {
         validateCommand(command);
         validateReference(command.reference());
 
-        Card card = findCard(command.pan());
+        ProviderAuthenticationPort.ProviderAuthenticationResult provider =
+                providerAuthenticationPort.authenticate(
+                        command.providerClientId(),
+                        command.providerCredential()
+                );
+
+        CardTokenPort.CardTokenInfo cardToken =
+                cardTokenPort.resolve(
+                        provider.providerId(),
+                        command.token()
+                );
+
+        Card card = cardCommandRepository
+                .findById(cardToken.cardId())
+                .orElseThrow(() ->
+                        new BusinessException(
+                                ErrorCode.CARD_NOT_FOUND
+                        )
+                );
 
         validateCard(card);
 
-        CardVaultSecret vaultSecret =
-                cardVaultSecretCommandRepository
-                        .findByCardId(card.getId())
-                        .orElseThrow(() ->
-                                new BusinessException(
-                                        ErrorCode.CARD_VAULT_SECRET_NOT_FOUND
-                                )
-                        );
-
-        verifyCardCredentials(
-                command,
-                card,
-                vaultSecret
-        );
-
         Instant now = Instant.now();
-
         UUID authorizationId = UUID.randomUUID();
-
         Instant expiresAt =
                 now.plusSeconds(
                         AUTHORIZATION_EXPIRY_MINUTES * 60L
@@ -93,8 +80,7 @@ public class AuthorizeCardPaymentHandler
                 createHold(
                         card,
                         authorizationId,
-                        command,
-                        now
+                        command
                 );
 
         CardAuthorizationHoldType holdType =
@@ -111,7 +97,7 @@ public class AuthorizeCardPaymentHandler
                                 command.merchantReference()
                         )
                         .authorizationMethod(
-                                CardAuthorizationMethod.PAN
+                                CardAuthorizationMethod.TOKEN
                         )
                         .amount(command.amount())
                         .currency(command.currency())
@@ -135,21 +121,8 @@ public class AuthorizeCardPaymentHandler
         return toResult(savedAuthorization);
     }
 
-    private Card findCard(String pan) {
-        String panHash =
-                cardPanHashService.hash(pan);
-
-        return cardCommandRepository
-                .findByPanHash(panHash)
-                .orElseThrow(() ->
-                        new BusinessException(
-                                ErrorCode.CARD_NOT_FOUND
-                        )
-                );
-    }
-
     private void validateCommand(
-            AuthorizeCardPaymentCommand command
+            AuthorizeCardPaymentByTokenCommand command
     ) {
         if (command == null) {
             throw new BusinessException(
@@ -164,26 +137,24 @@ public class AuthorizeCardPaymentHandler
             );
         }
 
-        if (command.pan() == null
-                || command.pan().isBlank()) {
+        if (command.providerClientId() == null
+                || command.providerClientId().isBlank()) {
             throw new BusinessException(
-                    ErrorCode.CARD_AUTHORIZATION_PAN_REQUIRED
+                    ErrorCode.INVALID_REQUEST
             );
         }
 
-        if (command.cvv() == null
-                || command.cvv().isBlank()) {
+        if (command.providerCredential() == null
+                || command.providerCredential().isBlank()) {
             throw new BusinessException(
-                    ErrorCode.CARD_AUTHORIZATION_CVV_REQUIRED
+                    ErrorCode.INVALID_REQUEST
             );
         }
 
-        if (!isValidExpiry(
-                command.expiryMonth(),
-                command.expiryYear()
-        )) {
+        if (command.token() == null
+                || command.token().isBlank()) {
             throw new BusinessException(
-                    ErrorCode.CARD_AUTHORIZATION_EXPIRY_INVALID
+                    ErrorCode.CARD_TOKEN_REQUIRED
             );
         }
 
@@ -206,22 +177,10 @@ public class AuthorizeCardPaymentHandler
     ) {
         if (cardAuthorizationCommandRepository
                 .existsByReference(reference)) {
-
             throw new BusinessException(
                     ErrorCode.CARD_AUTHORIZATION_REFERENCE_ALREADY_EXISTS
             );
         }
-    }
-
-    private boolean isValidExpiry(
-            Short expiryMonth,
-            Short expiryYear
-    ) {
-        return expiryMonth != null
-                && expiryYear != null
-                && expiryMonth >= 1
-                && expiryMonth <= 12
-                && expiryYear >= 1;
     }
 
     private void validateCard(Card card) {
@@ -237,7 +196,6 @@ public class AuthorizeCardPaymentHandler
                         ErrorCode.CARD_ACCOUNT_ID_REQUIRED
                 );
             }
-
             return;
         }
 
@@ -247,7 +205,6 @@ public class AuthorizeCardPaymentHandler
                         ErrorCode.CARD_CREDIT_FACILITY_ID_REQUIRED
                 );
             }
-
             return;
         }
 
@@ -256,64 +213,10 @@ public class AuthorizeCardPaymentHandler
         );
     }
 
-    private void verifyCardCredentials(
-            AuthorizeCardPaymentCommand command,
-            Card card,
-            CardVaultSecret vaultSecret
-    ) {
-        String actualPan =
-                cardEncryptionService.decrypt(
-                        vaultSecret.getEncryptedPan(),
-                        vaultSecret.getEncryptionVersion()
-                );
-
-        if (!actualPan.equals(command.pan())) {
-            throw new BusinessException(
-                    ErrorCode.CARD_AUTHORIZATION_PAN_INVALID
-            );
-        }
-
-        String actualCvv =
-                cardEncryptionService.decrypt(
-                        vaultSecret.getEncryptedCvv(),
-                        vaultSecret.getEncryptionVersion()
-                );
-
-        if (!actualCvv.equals(command.cvv())) {
-            throw new BusinessException(
-                    ErrorCode.CARD_AUTHORIZATION_CVV_INVALID
-            );
-        }
-
-        int cardExpiryYear =
-                card.getExpiryYear() % 100;
-
-        if (!command.expiryMonth().equals(
-                card.getExpiryMonth()
-        ) || command.expiryYear() != cardExpiryYear) {
-            throw new BusinessException(
-                    ErrorCode.CARD_AUTHORIZATION_EXPIRY_INVALID
-            );
-        }
-
-        YearMonth cardExpiry =
-                YearMonth.of(
-                        card.getExpiryYear(),
-                        card.getExpiryMonth()
-                );
-
-        if (cardExpiry.isBefore(YearMonth.now())) {
-            throw new BusinessException(
-                    ErrorCode.CARD_AUTHORIZATION_CARD_EXPIRED
-            );
-        }
-    }
-
     private UUID createHold(
             Card card,
             UUID authorizationId,
-            AuthorizeCardPaymentCommand command,
-            Instant now
+            AuthorizeCardPaymentByTokenCommand command
     ) {
         if (card.getType() == CardType.DEBIT) {
             return createDebitHold(
@@ -339,7 +242,7 @@ public class AuthorizeCardPaymentHandler
     private UUID createDebitHold(
             Card card,
             UUID authorizationId,
-            AuthorizeCardPaymentCommand command
+            AuthorizeCardPaymentByTokenCommand command
     ) {
         CardAccountInfo account =
                 cardAccountPort.getOwnedAccount(
@@ -360,7 +263,6 @@ public class AuthorizeCardPaymentHandler
                     ErrorCode.CARD_AUTHORIZATION_CURRENCY_MISMATCH
             );
         }
-
 
         if (command.amount().compareTo(
                 account.availableBalance()
@@ -384,7 +286,7 @@ public class AuthorizeCardPaymentHandler
     private UUID createCreditHold(
             Card card,
             UUID authorizationId,
-            AuthorizeCardPaymentCommand command
+            AuthorizeCardPaymentByTokenCommand command
     ) {
         CardCreditFacilityInfo facility =
                 cardCreditFacilityPort.getOwnedCreditFacility(
@@ -433,10 +335,10 @@ public class AuthorizeCardPaymentHandler
         return hold.holdId();
     }
 
-    private AuthorizeCardPaymentResult toResult(
+    private AuthorizeCardPaymentByTokenResult toResult(
             CardAuthorization authorization
     ) {
-        return new AuthorizeCardPaymentResult(
+        return new AuthorizeCardPaymentByTokenResult(
                 authorization.getId(),
                 authorization.getCardId(),
                 authorization.getReference(),

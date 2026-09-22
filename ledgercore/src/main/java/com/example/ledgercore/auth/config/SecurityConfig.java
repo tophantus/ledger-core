@@ -6,6 +6,7 @@ import com.example.ledgercore.common.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -52,7 +53,7 @@ public class SecurityConfig {
                                         "/swagger-ui.html"
                                 ).permitAll()
 
-                                .requestMatchers(
+                                .requestMatchers(HttpMethod.POST,
                                         "/api/v1/providers"
                                 ).permitAll()
                                 
@@ -65,12 +66,17 @@ public class SecurityConfig {
                                         "/api/v1/auth/logout"
                                 ).permitAll()
 
-                                .requestMatchers(
+                                .requestMatchers(HttpMethod.POST,
                                         "/api/v1/withdrawals/execute"
                                 ).permitAll()
 
                                 .requestMatchers(
                                         "/api/v1/card-tokens/**"
+                                ).permitAll()
+
+                                .requestMatchers(HttpMethod.POST,
+                                        "/api/v1/cards/authorizations",
+                                        "/api/v1/cards/authorizations/token"
                                 ).permitAll()
 
                                 .requestMatchers("/api/v1/admin/**")
