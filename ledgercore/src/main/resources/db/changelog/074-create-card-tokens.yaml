@@ -1,0 +1,88 @@
+databaseChangeLog:
+  - changeSet:
+      id: 074-create-card-tokens
+      author: tophantus
+      changes:
+        - createTable:
+            tableName: card_tokens
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: token
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: card_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: provider_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: provider_customer_reference
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: status
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: activated_at
+                  type: TIMESTAMP WITH TIME ZONE
+
+              - column:
+                  name: suspended_at
+                  type: TIMESTAMP WITH TIME ZONE
+
+              - column:
+                  name: revoked_at
+                  type: TIMESTAMP WITH TIME ZONE
+
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+        - addUniqueConstraint:
+            tableName: card_tokens
+            columnNames: token
+            constraintName: uk_card_tokens_token
+
+        - createIndex:
+            tableName: card_tokens
+            indexName: idx_card_tokens_card_id
+            columns:
+              - column:
+                  name: card_id
+
+        - createIndex:
+            tableName: card_tokens
+            indexName: idx_card_tokens_provider_id
+            columns:
+              - column:
+                  name: provider_id
