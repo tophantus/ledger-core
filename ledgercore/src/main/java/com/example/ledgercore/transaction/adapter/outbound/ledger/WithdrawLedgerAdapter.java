@@ -1,9 +1,9 @@
 package com.example.ledgercore.transaction.adapter.outbound.ledger;
 
 import com.example.ledgercore.common.currency.Currency;
-import com.example.ledgercore.ledger.command.dto.RecordTransferCommand;
-import com.example.ledgercore.ledger.command.port.inbound.RecordTransferUseCase;
-import com.example.ledgercore.transaction.command.port.outbound.LedgerTransferPort;
+import com.example.ledgercore.ledger.command.dto.RecordWithdrawCommand;
+import com.example.ledgercore.ledger.command.port.inbound.RecordWithdrawUseCase;
+import com.example.ledgercore.transaction.command.port.outbound.WithdrawLedgerPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -13,25 +13,24 @@ import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
-public class LedgerTransferAdapter
-        implements LedgerTransferPort {
+public class WithdrawLedgerAdapter
+        implements WithdrawLedgerPort {
 
-    private final RecordTransferUseCase recordTransferUseCase;
+    private final RecordWithdrawUseCase
+            recordWithdrawUseCase;
 
     @Override
-    public void recordTransfer(
+    public void recordWithdraw(
             UUID transactionId,
             UUID sourceAccountId,
-            UUID destinationAccountId,
             BigDecimal amount,
             Currency currency,
             LocalDate businessDate
     ) {
-        recordTransferUseCase.execute(
-                new RecordTransferCommand(
+        recordWithdrawUseCase.execute(
+                new RecordWithdrawCommand(
                         transactionId,
                         sourceAccountId,
-                        destinationAccountId,
                         amount,
                         currency,
                         businessDate

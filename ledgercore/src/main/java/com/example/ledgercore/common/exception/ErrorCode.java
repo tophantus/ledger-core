@@ -18,6 +18,11 @@ public enum ErrorCode {
             HttpStatus.BAD_REQUEST
     ),
 
+    INVALID_AMOUNT(
+            "COMMON_003",
+            "Amount must be greater than zero",
+            HttpStatus.BAD_REQUEST
+    ),
     // User
 
     USER_NOT_FOUND(
@@ -396,6 +401,18 @@ public enum ErrorCode {
             "CREDIT_009",
             "Credit facility hold amount is insufficient",
             HttpStatus.CONFLICT
+    ),
+
+    CREDIT_LIMIT_EXCEEDED(
+            "CREDIT_010",
+            "Credit limit exceeded",
+            HttpStatus.BAD_REQUEST
+    ),
+
+    CREDIT_OUTSTANDING_BALANCE_INSUFFICIENT(
+            "CREDIT_011",
+            "Credit outstanding balance is insufficient",
+            HttpStatus.BAD_REQUEST
     ),
 
     // Hold

@@ -4,7 +4,7 @@ import com.example.ledgercore.account.command.dto.DepositAccountCommand;
 import com.example.ledgercore.account.command.port.inbound.DepositAccountBalanceUseCase;
 import com.example.ledgercore.account.query.dto.AccountDepositInfo;
 import com.example.ledgercore.account.query.port.inbound.GetDepositAccountInfoUseCase;
-import com.example.ledgercore.transaction.command.port.outbound.AccountDepositPort;
+import com.example.ledgercore.transaction.command.port.outbound.DepositUserAccountPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +14,7 @@ import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
-public class AccountDepositAdapter implements AccountDepositPort {
+public class DepositUserAccountAdapter implements DepositUserAccountPort {
 
     private final GetDepositAccountInfoUseCase
             getDepositAccountInfoUseCase;
@@ -23,7 +23,7 @@ public class AccountDepositAdapter implements AccountDepositPort {
             depositAccountBalanceUseCase;
 
     @Override
-    public AccountDepositPort.DepositAccountInfo getDepositInfo(
+    public DepositUserAccountPort.DepositAccountInfo getDepositInfo(
             UUID destinationAccountId
     ) {
         AccountDepositInfo info =
@@ -31,7 +31,7 @@ public class AccountDepositAdapter implements AccountDepositPort {
                         destinationAccountId
                 );
 
-        return new AccountDepositPort.DepositAccountInfo(
+        return new DepositUserAccountPort.DepositAccountInfo(
                 info.accountId(),
                 info.currency()
         );

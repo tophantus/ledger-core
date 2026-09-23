@@ -6,16 +6,11 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 
-public interface AccountTransferPort {
+public interface WithdrawUserAccountPort {
 
-    TransferAccountInfo getTransferInfo(
+    WithdrawAccountInfo getWithdrawInfo(
             UUID userId,
-            UUID sourceAccountId,
-            UUID destinationAccountId
-    );
-
-    UUID getAccountIdByAccountNo(
-            String accountNo
+            UUID sourceAccountId
     );
 
     void verifySourceAccountAccess(
@@ -23,18 +18,17 @@ public interface AccountTransferPort {
             UUID sourceAccountId
     );
 
-    void transfer(
+    void withdraw(
             UUID sourceAccountId,
-            UUID destinationAccountId,
             BigDecimal amount,
             LocalDate businessDate
     );
 
-    record TransferAccountInfo(
-            UUID sourceAccountId,
-            UUID destinationAccountId,
+    record WithdrawAccountInfo(
+            UUID accountId,
+            UUID userId,
             Currency currency,
-            BigDecimal sourceAvailableBalance
+            BigDecimal availableBalance
     ) {
     }
 }

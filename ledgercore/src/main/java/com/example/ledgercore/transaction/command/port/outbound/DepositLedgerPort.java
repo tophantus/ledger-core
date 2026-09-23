@@ -6,11 +6,10 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 
-public interface LedgerTransferPort {
+public interface DepositLedgerPort {
 
-    void recordTransfer(
+    void recordDeposit(
             UUID transactionId,
-            UUID sourceAccountId,
             UUID destinationAccountId,
             BigDecimal amount,
             Currency currency,

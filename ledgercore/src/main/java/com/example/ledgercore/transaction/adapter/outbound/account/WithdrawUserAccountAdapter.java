@@ -7,7 +7,7 @@ import com.example.ledgercore.account.query.port.inbound.GetWithdrawAccountInfoU
 import com.example.ledgercore.account.query.port.inbound.CheckUserAccountOwnershipUseCase;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
-import com.example.ledgercore.transaction.command.port.outbound.AccountWithdrawPort;
+import com.example.ledgercore.transaction.command.port.outbound.WithdrawUserAccountPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -17,8 +17,8 @@ import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
-public class AccountWithdrawAdapter
-        implements AccountWithdrawPort {
+public class WithdrawUserAccountAdapter
+        implements WithdrawUserAccountPort {
 
     private final GetWithdrawAccountInfoUseCase
             getWithdrawAccountInfoUseCase;
@@ -30,7 +30,7 @@ public class AccountWithdrawAdapter
             withdrawAccountBalanceUseCase;
 
     @Override
-    public AccountWithdrawPort.WithdrawAccountInfo getWithdrawInfo(
+    public WithdrawUserAccountPort.WithdrawAccountInfo getWithdrawInfo(
             UUID userId,
             UUID sourceAccountId
     ) {
@@ -39,7 +39,7 @@ public class AccountWithdrawAdapter
                         sourceAccountId
                 );
 
-        return new AccountWithdrawPort.WithdrawAccountInfo(
+        return new WithdrawUserAccountPort.WithdrawAccountInfo(
                 info.accountId(),
                 info.userId(),
                 info.currency(),

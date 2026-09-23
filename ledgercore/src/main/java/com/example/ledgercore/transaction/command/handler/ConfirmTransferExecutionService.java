@@ -4,9 +4,9 @@ import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.common.lock.DistributedLock;
 import com.example.ledgercore.common.lock.LockKeyPrefix;
-import com.example.ledgercore.transaction.command.port.outbound.AccountTransferPort;
-import com.example.ledgercore.transaction.command.port.outbound.BusinessDayPort;
-import com.example.ledgercore.transaction.command.port.outbound.LedgerTransferPort;
+import com.example.ledgercore.transaction.command.port.outbound.TransferUserAccountPort;
+import com.example.ledgercore.transaction.command.port.outbound.TransactionBusinessDayPort;
+import com.example.ledgercore.transaction.command.port.outbound.TransferLedgerPort;
 import com.example.ledgercore.transaction.command.port.outbound.TransactionEventPort;
 import com.example.ledgercore.transaction.command.repository.TransactionCommandRepository;
 import com.example.ledgercore.transaction.command.repository.TransferIntentCommandRepository;
@@ -35,13 +35,13 @@ public class ConfirmTransferExecutionService {
     private final TransferIntentCommandRepository
             transferIntentCommandRepository;
 
-    private final AccountTransferPort accountTransferPort;
+    private final TransferUserAccountPort transferUserAccountPort;
 
-    private final LedgerTransferPort ledgerTransferPort;
+    private final TransferLedgerPort transferLedgerPort;
 
     private final TransactionEventPort transactionEventPort;
 
-    private final BusinessDayPort businessDayPort;
+    private final TransactionBusinessDayPort transactionBusinessDayPort;
 
     private final Clock clock;
 
@@ -87,8 +87,8 @@ public class ConfirmTransferExecutionService {
                 now
         );
 
-        AccountTransferPort.TransferAccountInfo transferInfo =
-                accountTransferPort.getTransferInfo(
+        TransferUserAccountPort.TransferAccountInfo transferInfo =
+                transferUserAccountPort.getTransferInfo(
                         userId,
                         sourceAccountId,
                         destinationAccountId
@@ -100,7 +100,7 @@ public class ConfirmTransferExecutionService {
         );
 
         LocalDate businessDate =
-                businessDayPort.getCurrentBusinessDate();
+                transactionBusinessDayPort.getCurrentBusinessDate();
 
         MoneyTransaction transaction =
                 createTransaction(
@@ -111,14 +111,14 @@ public class ConfirmTransferExecutionService {
 
         transactionCommandRepository.save(transaction);
 
-        accountTransferPort.transfer(
+        transferUserAccountPort.transfer(
                 transferInfo.sourceAccountId(),
                 transferInfo.destinationAccountId(),
                 intent.getAmount(),
                 businessDate
         );
 
-        ledgerTransferPort.recordTransfer(
+        transferLedgerPort.recordTransfer(
                 transaction.getId(),
                 transferInfo.sourceAccountId(),
                 transferInfo.destinationAccountId(),
@@ -201,7 +201,7 @@ public class ConfirmTransferExecutionService {
 
     private void validateTransfer(
             TransferIntent intent,
-            AccountTransferPort.TransferAccountInfo transferInfo
+            TransferUserAccountPort.TransferAccountInfo transferInfo
     ) {
         if (transferInfo.currency() != intent.getCurrency()) {
 
@@ -221,7 +221,7 @@ public class ConfirmTransferExecutionService {
 
     private MoneyTransaction createTransaction(
             TransferIntent intent,
-            AccountTransferPort.TransferAccountInfo transferInfo,
+            TransferUserAccountPort.TransferAccountInfo transferInfo,
             LocalDate businessDate
     ) {
         return MoneyTransaction.builder()

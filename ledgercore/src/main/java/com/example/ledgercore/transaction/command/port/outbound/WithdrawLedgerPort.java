@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 
-public interface LedgerWithdrawPort {
+public interface WithdrawLedgerPort {
 
     void recordWithdraw(
             UUID transactionId,

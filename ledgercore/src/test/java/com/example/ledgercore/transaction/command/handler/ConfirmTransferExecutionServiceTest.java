@@ -3,9 +3,9 @@ package com.example.ledgercore.transaction.command.handler;
 import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
-import com.example.ledgercore.transaction.command.port.outbound.AccountTransferPort;
-import com.example.ledgercore.transaction.command.port.outbound.BusinessDayPort;
-import com.example.ledgercore.transaction.command.port.outbound.LedgerTransferPort;
+import com.example.ledgercore.transaction.command.port.outbound.TransferUserAccountPort;
+import com.example.ledgercore.transaction.command.port.outbound.TransactionBusinessDayPort;
+import com.example.ledgercore.transaction.command.port.outbound.TransferLedgerPort;
 import com.example.ledgercore.transaction.command.port.outbound.TransactionEventPort;
 import com.example.ledgercore.transaction.command.repository.TransactionCommandRepository;
 import com.example.ledgercore.transaction.command.repository.TransferIntentCommandRepository;
@@ -47,16 +47,16 @@ class ConfirmTransferExecutionServiceTest {
     private TransferIntentCommandRepository transferIntentCommandRepository;
 
     @Mock
-    private AccountTransferPort accountTransferPort;
+    private TransferUserAccountPort transferUserAccountPort;
 
     @Mock
-    private LedgerTransferPort ledgerTransferPort;
+    private TransferLedgerPort transferLedgerPort;
 
     @Mock
     private TransactionEventPort transactionEventPort;
 
     @Mock
-    private BusinessDayPort businessDayPort;
+    private TransactionBusinessDayPort transactionBusinessDayPort;
 
     private ConfirmTransferExecutionService service;
 
@@ -91,10 +91,10 @@ class ConfirmTransferExecutionServiceTest {
                 new ConfirmTransferExecutionService(
                         transactionCommandRepository,
                         transferIntentCommandRepository,
-                        accountTransferPort,
-                        ledgerTransferPort,
+                        transferUserAccountPort,
+                        transferLedgerPort,
                         transactionEventPort,
-                        businessDayPort,
+                        transactionBusinessDayPort,
                         clock
                 );
     }
@@ -107,7 +107,7 @@ class ConfirmTransferExecutionServiceTest {
                         now.plusSeconds(300)
                 );
 
-        AccountTransferPort.TransferAccountInfo transferInfo =
+        TransferUserAccountPort.TransferAccountInfo transferInfo =
                 createTransferInfo(
                         new BigDecimal("1000.00"),
                         Currency.VND
@@ -191,7 +191,7 @@ class ConfirmTransferExecutionServiceTest {
         verify(transactionCommandRepository)
                 .save(any(MoneyTransaction.class));
 
-        verify(accountTransferPort)
+        verify(transferUserAccountPort)
                 .transfer(
                         sourceAccountId,
                         destinationAccountId,
@@ -199,7 +199,7 @@ class ConfirmTransferExecutionServiceTest {
                         BUSINESS_DATE
                 );
 
-        verify(ledgerTransferPort)
+        verify(transferLedgerPort)
                 .recordTransfer(
                         eq(transactionId),
                         eq(sourceAccountId),
@@ -214,7 +214,7 @@ class ConfirmTransferExecutionServiceTest {
                         any(TransferCompletedEvent.class)
                 );
 
-        verify(businessDayPort)
+        verify(transactionBusinessDayPort)
                 .getCurrentBusinessDate();
     }
 
@@ -243,10 +243,10 @@ class ConfirmTransferExecutionServiceTest {
         );
 
         verifyNoInteractions(
-                accountTransferPort,
-                ledgerTransferPort,
+                transferUserAccountPort,
+                transferLedgerPort,
                 transactionEventPort,
-                businessDayPort
+                transactionBusinessDayPort
         );
 
         verify(
@@ -284,10 +284,10 @@ class ConfirmTransferExecutionServiceTest {
         );
 
         verifyNoInteractions(
-                accountTransferPort,
-                ledgerTransferPort,
+                transferUserAccountPort,
+                transferLedgerPort,
                 transactionEventPort,
-                businessDayPort
+                transactionBusinessDayPort
         );
 
         verify(
@@ -326,10 +326,10 @@ class ConfirmTransferExecutionServiceTest {
         );
 
         verifyNoInteractions(
-                accountTransferPort,
-                ledgerTransferPort,
+                transferUserAccountPort,
+                transferLedgerPort,
                 transactionEventPort,
-                businessDayPort
+                transactionBusinessDayPort
         );
 
         verify(
@@ -368,10 +368,10 @@ class ConfirmTransferExecutionServiceTest {
         );
 
         verifyNoInteractions(
-                accountTransferPort,
-                ledgerTransferPort,
+                transferUserAccountPort,
+                transferLedgerPort,
                 transactionEventPort,
-                businessDayPort
+                transactionBusinessDayPort
         );
 
         verify(
@@ -411,10 +411,10 @@ class ConfirmTransferExecutionServiceTest {
         );
 
         verifyNoInteractions(
-                accountTransferPort,
-                ledgerTransferPort,
+                transferUserAccountPort,
+                transferLedgerPort,
                 transactionEventPort,
-                businessDayPort
+                transactionBusinessDayPort
         );
 
         verify(
@@ -450,10 +450,10 @@ class ConfirmTransferExecutionServiceTest {
         );
 
         verifyNoInteractions(
-                accountTransferPort,
-                ledgerTransferPort,
+                transferUserAccountPort,
+                transferLedgerPort,
                 transactionEventPort,
-                businessDayPort
+                transactionBusinessDayPort
         );
 
         verify(
@@ -470,7 +470,7 @@ class ConfirmTransferExecutionServiceTest {
                         now.plusSeconds(300)
                 );
 
-        AccountTransferPort.TransferAccountInfo transferInfo =
+        TransferUserAccountPort.TransferAccountInfo transferInfo =
                 createTransferInfo(
                         new BigDecimal("1000.00"),
                         Currency.USD
@@ -501,7 +501,7 @@ class ConfirmTransferExecutionServiceTest {
         ).save(any());
 
         verify(
-                accountTransferPort,
+                transferUserAccountPort,
                 never()
         ).transfer(
                 any(),
@@ -511,9 +511,9 @@ class ConfirmTransferExecutionServiceTest {
         );
 
         verifyNoInteractions(
-                ledgerTransferPort,
+                transferLedgerPort,
                 transactionEventPort,
-                businessDayPort
+                transactionBusinessDayPort
         );
     }
 
@@ -525,7 +525,7 @@ class ConfirmTransferExecutionServiceTest {
                         now.plusSeconds(300)
                 );
 
-        AccountTransferPort.TransferAccountInfo transferInfo =
+        TransferUserAccountPort.TransferAccountInfo transferInfo =
                 createTransferInfo(
                         new BigDecimal("50.00"),
                         Currency.VND
@@ -556,7 +556,7 @@ class ConfirmTransferExecutionServiceTest {
         ).save(any());
 
         verify(
-                accountTransferPort,
+                transferUserAccountPort,
                 never()
         ).transfer(
                 any(),
@@ -566,9 +566,9 @@ class ConfirmTransferExecutionServiceTest {
         );
 
         verifyNoInteractions(
-                ledgerTransferPort,
+                transferLedgerPort,
                 transactionEventPort,
-                businessDayPort
+                transactionBusinessDayPort
         );
     }
 
@@ -580,7 +580,7 @@ class ConfirmTransferExecutionServiceTest {
                         now.plusSeconds(300)
                 );
 
-        AccountTransferPort.TransferAccountInfo transferInfo =
+        TransferUserAccountPort.TransferAccountInfo transferInfo =
                 createTransferInfo(
                         new BigDecimal("1000.00"),
                         Currency.VND
@@ -674,7 +674,7 @@ class ConfirmTransferExecutionServiceTest {
                         now.plusSeconds(300)
                 );
 
-        AccountTransferPort.TransferAccountInfo transferInfo =
+        TransferUserAccountPort.TransferAccountInfo transferInfo =
                 createTransferInfo(
                         new BigDecimal("1000.00"),
                         Currency.VND
@@ -694,11 +694,11 @@ class ConfirmTransferExecutionServiceTest {
 
         InOrder inOrder =
                 inOrder(
-                        businessDayPort,
+                        transactionBusinessDayPort,
                         transactionCommandRepository
                 );
 
-        inOrder.verify(businessDayPort)
+        inOrder.verify(transactionBusinessDayPort)
                 .getCurrentBusinessDate();
 
         inOrder.verify(transactionCommandRepository)
@@ -713,7 +713,7 @@ class ConfirmTransferExecutionServiceTest {
                         now.plusSeconds(300)
                 );
 
-        AccountTransferPort.TransferAccountInfo transferInfo =
+        TransferUserAccountPort.TransferAccountInfo transferInfo =
                 createTransferInfo(
                         new BigDecimal("1000.00"),
                         Currency.VND
@@ -733,11 +733,11 @@ class ConfirmTransferExecutionServiceTest {
 
         InOrder inOrder =
                 inOrder(
-                        accountTransferPort,
-                        ledgerTransferPort
+                        transferUserAccountPort,
+                        transferLedgerPort
                 );
 
-        inOrder.verify(accountTransferPort)
+        inOrder.verify(transferUserAccountPort)
                 .transfer(
                         sourceAccountId,
                         destinationAccountId,
@@ -745,7 +745,7 @@ class ConfirmTransferExecutionServiceTest {
                         BUSINESS_DATE
                 );
 
-        inOrder.verify(ledgerTransferPort)
+        inOrder.verify(transferLedgerPort)
                 .recordTransfer(
                         transactionId,
                         sourceAccountId,
@@ -764,7 +764,7 @@ class ConfirmTransferExecutionServiceTest {
                         now.plusSeconds(300)
                 );
 
-        AccountTransferPort.TransferAccountInfo transferInfo =
+        TransferUserAccountPort.TransferAccountInfo transferInfo =
                 createTransferInfo(
                         new BigDecimal("1000.00"),
                         Currency.VND
@@ -842,7 +842,7 @@ class ConfirmTransferExecutionServiceTest {
                         now.plusSeconds(300)
                 );
 
-        AccountTransferPort.TransferAccountInfo transferInfo =
+        TransferUserAccountPort.TransferAccountInfo transferInfo =
                 createTransferInfo(
                         new BigDecimal("1000.00"),
                         Currency.VND
@@ -888,7 +888,7 @@ class ConfirmTransferExecutionServiceTest {
                         now.plusSeconds(300)
                 );
 
-        AccountTransferPort.TransferAccountInfo transferInfo =
+        TransferUserAccountPort.TransferAccountInfo transferInfo =
                 createTransferInfo(
                         new BigDecimal("99.99"),
                         Currency.VND
@@ -919,7 +919,7 @@ class ConfirmTransferExecutionServiceTest {
         ).save(any());
 
         verify(
-                accountTransferPort,
+                transferUserAccountPort,
                 never()
         ).transfer(
                 any(),
@@ -929,9 +929,9 @@ class ConfirmTransferExecutionServiceTest {
         );
 
         verifyNoInteractions(
-                ledgerTransferPort,
+                transferLedgerPort,
                 transactionEventPort,
-                businessDayPort
+                transactionBusinessDayPort
         );
     }
 
@@ -943,7 +943,7 @@ class ConfirmTransferExecutionServiceTest {
                         now.plusSeconds(300)
                 );
 
-        AccountTransferPort.TransferAccountInfo transferInfo =
+        TransferUserAccountPort.TransferAccountInfo transferInfo =
                 createTransferInfo(
                         new BigDecimal("1000.00"),
                         Currency.VND
@@ -956,7 +956,7 @@ class ConfirmTransferExecutionServiceTest {
 
         doThrow(
                 new RuntimeException("Transfer failed")
-        ).when(accountTransferPort)
+        ).when(transferUserAccountPort)
                 .transfer(
                         sourceAccountId,
                         destinationAccountId,
@@ -975,7 +975,7 @@ class ConfirmTransferExecutionServiceTest {
         );
 
         verify(
-                ledgerTransferPort,
+                transferLedgerPort,
                 never()
         ).recordTransfer(
                 any(),
@@ -1000,7 +1000,7 @@ class ConfirmTransferExecutionServiceTest {
                         now.plusSeconds(300)
                 );
 
-        AccountTransferPort.TransferAccountInfo transferInfo =
+        TransferUserAccountPort.TransferAccountInfo transferInfo =
                 createTransferInfo(
                         new BigDecimal("1000.00"),
                         Currency.VND
@@ -1015,7 +1015,7 @@ class ConfirmTransferExecutionServiceTest {
                 new RuntimeException(
                         "Ledger recording failed"
                 )
-        ).when(ledgerTransferPort)
+        ).when(transferLedgerPort)
                 .recordTransfer(
                         transactionId,
                         sourceAccountId,
@@ -1035,7 +1035,7 @@ class ConfirmTransferExecutionServiceTest {
                 )
         );
 
-        verify(accountTransferPort)
+        verify(transferUserAccountPort)
                 .transfer(
                         sourceAccountId,
                         destinationAccountId,
@@ -1062,7 +1062,7 @@ class ConfirmTransferExecutionServiceTest {
                         now.plusSeconds(300)
                 );
 
-        AccountTransferPort.TransferAccountInfo transferInfo =
+        TransferUserAccountPort.TransferAccountInfo transferInfo =
                 createTransferInfo(
                         new BigDecimal("1000.00"),
                         Currency.VND
@@ -1082,12 +1082,12 @@ class ConfirmTransferExecutionServiceTest {
 
         InOrder inOrder =
                 inOrder(
-                        accountTransferPort,
-                        ledgerTransferPort,
+                        transferUserAccountPort,
+                        transferLedgerPort,
                         transactionEventPort
                 );
 
-        inOrder.verify(accountTransferPort)
+        inOrder.verify(transferUserAccountPort)
                 .transfer(
                         sourceAccountId,
                         destinationAccountId,
@@ -1095,7 +1095,7 @@ class ConfirmTransferExecutionServiceTest {
                         BUSINESS_DATE
                 );
 
-        inOrder.verify(ledgerTransferPort)
+        inOrder.verify(transferLedgerPort)
                 .recordTransfer(
                         transactionId,
                         sourceAccountId,
@@ -1129,7 +1129,7 @@ class ConfirmTransferExecutionServiceTest {
                         now.plusSeconds(300)
                 );
 
-        AccountTransferPort.TransferAccountInfo transferInfo =
+        TransferUserAccountPort.TransferAccountInfo transferInfo =
                 createTransferInfo(
                         new BigDecimal("1000.00"),
                         Currency.VND
@@ -1147,7 +1147,7 @@ class ConfirmTransferExecutionServiceTest {
                 destinationAccountId
         );
 
-        verify(accountTransferPort)
+        verify(transferUserAccountPort)
                 .getTransferInfo(
                         userId,
                         sourceAccountId,
@@ -1186,10 +1186,10 @@ class ConfirmTransferExecutionServiceTest {
         );
 
         verifyNoInteractions(
-                accountTransferPort,
-                ledgerTransferPort,
+                transferUserAccountPort,
+                transferLedgerPort,
                 transactionEventPort,
-                businessDayPort
+                transactionBusinessDayPort
         );
 
         verify(
@@ -1210,10 +1210,10 @@ class ConfirmTransferExecutionServiceTest {
     }
 
     private void mockTransferInfo(
-            AccountTransferPort.TransferAccountInfo transferInfo
+            TransferUserAccountPort.TransferAccountInfo transferInfo
     ) {
         when(
-                accountTransferPort.getTransferInfo(
+                transferUserAccountPort.getTransferInfo(
                         userId,
                         sourceAccountId,
                         destinationAccountId
@@ -1225,7 +1225,7 @@ class ConfirmTransferExecutionServiceTest {
 
     private void mockBusinessDate() {
         when(
-                businessDayPort.getCurrentBusinessDate()
+                transactionBusinessDayPort.getCurrentBusinessDate()
         ).thenReturn(
                 BUSINESS_DATE
         );
@@ -1263,12 +1263,12 @@ class ConfirmTransferExecutionServiceTest {
                 .build();
     }
 
-    private AccountTransferPort.TransferAccountInfo
+    private TransferUserAccountPort.TransferAccountInfo
     createTransferInfo(
             BigDecimal sourceBalance,
             Currency currency
     ) {
-        return new AccountTransferPort.TransferAccountInfo(
+        return new TransferUserAccountPort.TransferAccountInfo(
                 sourceAccountId,
                 destinationAccountId,
                 currency,

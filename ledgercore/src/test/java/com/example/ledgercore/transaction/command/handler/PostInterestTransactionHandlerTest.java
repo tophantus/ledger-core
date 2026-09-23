@@ -4,7 +4,7 @@ import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.transaction.command.dto.PostInterestTransactionCommand;
-import com.example.ledgercore.transaction.command.port.outbound.AccountDepositPort;
+import com.example.ledgercore.transaction.command.port.outbound.DepositUserAccountPort;
 import com.example.ledgercore.transaction.command.port.outbound.InterestLedgerPort;
 import com.example.ledgercore.transaction.command.repository.TransactionCommandRepository;
 import com.example.ledgercore.transaction.entity.MoneyTransaction;
@@ -34,8 +34,8 @@ class PostInterestTransactionHandlerTest {
             transactionCommandRepository;
 
     @Mock
-    private AccountDepositPort
-            accountDepositPort;
+    private DepositUserAccountPort
+            depositUserAccountPort;
 
     @Mock
     private InterestLedgerPort
@@ -53,7 +53,7 @@ class PostInterestTransactionHandlerTest {
     void setUp() {
         handler = new PostInterestTransactionHandler(
                 transactionCommandRepository,
-                accountDepositPort,
+                depositUserAccountPort,
                 interestLedgerPort
         );
 
@@ -177,7 +177,7 @@ class PostInterestTransactionHandlerTest {
                 transaction.getDescription()
         );
 
-        verify(accountDepositPort)
+        verify(depositUserAccountPort)
                 .deposit(
                         accountId,
                         new BigDecimal("100"),
@@ -257,7 +257,7 @@ class PostInterestTransactionHandlerTest {
         verify(transactionCommandRepository)
                 .save(any(MoneyTransaction.class));
 
-        verify(accountDepositPort)
+        verify(depositUserAccountPort)
                 .deposit(
                         accountId,
                         new BigDecimal("100"),
@@ -318,7 +318,7 @@ class PostInterestTransactionHandlerTest {
 
         verifyNoInteractions(
                 transactionCommandRepository,
-                accountDepositPort,
+                depositUserAccountPort,
                 interestLedgerPort
         );
     }
@@ -347,7 +347,7 @@ class PostInterestTransactionHandlerTest {
 
         verifyNoInteractions(
                 transactionCommandRepository,
-                accountDepositPort,
+                depositUserAccountPort,
                 interestLedgerPort
         );
     }
@@ -374,7 +374,7 @@ class PostInterestTransactionHandlerTest {
 
         verifyNoInteractions(
                 transactionCommandRepository,
-                accountDepositPort,
+                depositUserAccountPort,
                 interestLedgerPort
         );
     }
@@ -403,7 +403,7 @@ class PostInterestTransactionHandlerTest {
 
         verifyNoInteractions(
                 transactionCommandRepository,
-                accountDepositPort,
+                depositUserAccountPort,
                 interestLedgerPort
         );
     }
@@ -432,7 +432,7 @@ class PostInterestTransactionHandlerTest {
 
         verifyNoInteractions(
                 transactionCommandRepository,
-                accountDepositPort,
+                depositUserAccountPort,
                 interestLedgerPort
         );
     }
@@ -461,7 +461,7 @@ class PostInterestTransactionHandlerTest {
 
         verifyNoInteractions(
                 transactionCommandRepository,
-                accountDepositPort,
+                depositUserAccountPort,
                 interestLedgerPort
         );
     }
@@ -488,7 +488,7 @@ class PostInterestTransactionHandlerTest {
 
         verifyNoInteractions(
                 transactionCommandRepository,
-                accountDepositPort,
+                depositUserAccountPort,
                 interestLedgerPort
         );
     }
@@ -515,7 +515,7 @@ class PostInterestTransactionHandlerTest {
 
         verifyNoInteractions(
                 transactionCommandRepository,
-                accountDepositPort,
+                depositUserAccountPort,
                 interestLedgerPort
         );
     }
@@ -542,13 +542,13 @@ class PostInterestTransactionHandlerTest {
                 exception.getErrorCode()
         );
 
-        verify(accountDepositPort)
+        verify(depositUserAccountPort)
                 .getDepositInfo(accountId);
 
         verify(transactionCommandRepository, never())
                 .save(any());
 
-        verify(accountDepositPort, never())
+        verify(depositUserAccountPort, never())
                 .deposit(any(), any(), any());
 
         verifyNoInteractions(
@@ -572,13 +572,13 @@ class PostInterestTransactionHandlerTest {
                 () -> handler.execute(command)
         );
 
-        verify(accountDepositPort)
+        verify(depositUserAccountPort)
                 .getDepositInfo(accountId);
 
         verify(transactionCommandRepository, never())
                 .save(any());
 
-        verify(accountDepositPort, never())
+        verify(depositUserAccountPort, never())
                 .deposit(any(), any(), any());
 
         verifyNoInteractions(
@@ -600,7 +600,7 @@ class PostInterestTransactionHandlerTest {
 
         var inOrder = inOrder(
                 transactionCommandRepository,
-                accountDepositPort,
+                depositUserAccountPort,
                 interestLedgerPort
         );
 
@@ -609,7 +609,7 @@ class PostInterestTransactionHandlerTest {
         inOrder.verify(transactionCommandRepository)
                 .save(any(MoneyTransaction.class));
 
-        inOrder.verify(accountDepositPort)
+        inOrder.verify(depositUserAccountPort)
                 .deposit(
                         accountId,
                         new BigDecimal("100"),
@@ -629,10 +629,10 @@ class PostInterestTransactionHandlerTest {
     private void mockDepositInfo(
             Currency currency
     ) {
-        when(accountDepositPort.getDepositInfo(
+        when(depositUserAccountPort.getDepositInfo(
                 accountId
         )).thenReturn(
-                new AccountDepositPort.DepositAccountInfo(
+                new DepositUserAccountPort.DepositAccountInfo(
                         accountId,
                         currency
                 )

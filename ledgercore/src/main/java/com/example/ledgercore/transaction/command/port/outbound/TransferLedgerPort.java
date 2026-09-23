@@ -6,21 +6,14 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 
-public interface AccountDepositPort {
+public interface TransferLedgerPort {
 
-    DepositAccountInfo getDepositInfo(
-            UUID destinationAccountId
-    );
-
-    void deposit(
+    void recordTransfer(
+            UUID transactionId,
+            UUID sourceAccountId,
             UUID destinationAccountId,
             BigDecimal amount,
+            Currency currency,
             LocalDate businessDate
     );
-
-    record DepositAccountInfo(
-            UUID accountId,
-            Currency currency
-    ) {
-    }
 }

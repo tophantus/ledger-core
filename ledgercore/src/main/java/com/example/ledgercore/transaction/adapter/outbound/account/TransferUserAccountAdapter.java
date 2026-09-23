@@ -8,7 +8,7 @@ import com.example.ledgercore.account.query.port.inbound.GetTransferAccountInfoU
 import com.example.ledgercore.account.query.port.inbound.CheckUserAccountOwnershipUseCase;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
-import com.example.ledgercore.transaction.command.port.outbound.AccountTransferPort;
+import com.example.ledgercore.transaction.command.port.outbound.TransferUserAccountPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -18,8 +18,8 @@ import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
-public class AccountTransferAdapter
-        implements AccountTransferPort {
+public class TransferUserAccountAdapter
+        implements TransferUserAccountPort {
 
     private final GetTransferAccountInfoUseCase
             getTransferAccountInfoUseCase;
@@ -34,7 +34,7 @@ public class AccountTransferAdapter
             transferAccountBalanceUseCase;
 
     @Override
-    public AccountTransferPort.TransferAccountInfo getTransferInfo(
+    public TransferUserAccountPort.TransferAccountInfo getTransferInfo(
             UUID userId,
             UUID sourceAccountId,
             UUID destinationAccountId
@@ -46,7 +46,7 @@ public class AccountTransferAdapter
                         destinationAccountId
                 );
 
-        return new AccountTransferPort.TransferAccountInfo(
+        return new TransferUserAccountPort.TransferAccountInfo(
                 info.sourceAccountId(),
                 info.destinationAccountId(),
                 info.currency(),

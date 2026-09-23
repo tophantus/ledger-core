@@ -60,4 +60,10 @@ public class CreditDailyBalance {
 
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
+
+    public void updateClosingBalance(
+            BigDecimal closingBalance
+    ) {
+        this.closingBalance = closingBalance;
+    }
 }

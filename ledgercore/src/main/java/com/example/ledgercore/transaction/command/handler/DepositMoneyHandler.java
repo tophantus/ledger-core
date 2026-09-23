@@ -7,9 +7,9 @@ import com.example.ledgercore.common.lock.DistributedLock;
 import com.example.ledgercore.common.lock.LockKeyPrefix;
 import com.example.ledgercore.transaction.command.dto.DepositMoneyCommand;
 import com.example.ledgercore.transaction.command.port.inbound.DepositMoneyUseCase;
-import com.example.ledgercore.transaction.command.port.outbound.AccountDepositPort;
-import com.example.ledgercore.transaction.command.port.outbound.BusinessDayPort;
-import com.example.ledgercore.transaction.command.port.outbound.LedgerDepositPort;
+import com.example.ledgercore.transaction.command.port.outbound.DepositUserAccountPort;
+import com.example.ledgercore.transaction.command.port.outbound.TransactionBusinessDayPort;
+import com.example.ledgercore.transaction.command.port.outbound.DepositLedgerPort;
 import com.example.ledgercore.transaction.command.port.outbound.TransactionEventPort;
 import com.example.ledgercore.transaction.command.repository.TransactionCommandRepository;
 import com.example.ledgercore.transaction.entity.MoneyTransaction;
@@ -30,10 +30,10 @@ import java.util.UUID;
 public class DepositMoneyHandler implements DepositMoneyUseCase {
 
     private final TransactionCommandRepository transactionCommandRepository;
-    private final AccountDepositPort accountDepositPort;
-    private final LedgerDepositPort ledgerDepositPort;
+    private final DepositUserAccountPort depositUserAccountPort;
+    private final DepositLedgerPort depositLedgerPort;
     private final TransactionEventPort transactionEventPort;
-    private final BusinessDayPort businessDayPort;
+    private final TransactionBusinessDayPort transactionBusinessDayPort;
 
     @Override
     @DistributedLock(
@@ -58,8 +58,8 @@ public class DepositMoneyHandler implements DepositMoneyUseCase {
             );
         }
 
-        AccountDepositPort.DepositAccountInfo depositInfo =
-                accountDepositPort.getDepositInfo(
+        DepositUserAccountPort.DepositAccountInfo depositInfo =
+                depositUserAccountPort.getDepositInfo(
                         command.destinationAccountId()
                 );
 
@@ -69,7 +69,7 @@ public class DepositMoneyHandler implements DepositMoneyUseCase {
         );
 
         LocalDate businessDate =
-                businessDayPort.getCurrentBusinessDate();
+                transactionBusinessDayPort.getCurrentBusinessDate();
 
         MoneyTransaction transaction =
                 createTransaction(
@@ -79,13 +79,13 @@ public class DepositMoneyHandler implements DepositMoneyUseCase {
 
         transactionCommandRepository.save(transaction);
 
-        accountDepositPort.deposit(
+        depositUserAccountPort.deposit(
                 command.destinationAccountId(),
                 command.amount(),
                 businessDate
         );
 
-        ledgerDepositPort.recordDeposit(
+        depositLedgerPort.recordDeposit(
                 transaction.getId(),
                 command.destinationAccountId(),
                 command.amount(),
@@ -126,7 +126,7 @@ public class DepositMoneyHandler implements DepositMoneyUseCase {
 
     private void validateDeposit(
             DepositMoneyCommand command,
-            AccountDepositPort.DepositAccountInfo depositInfo
+            DepositUserAccountPort.DepositAccountInfo depositInfo
     ) {
         if (depositInfo.currency() != command.currency()) {
             throw new BusinessException(
