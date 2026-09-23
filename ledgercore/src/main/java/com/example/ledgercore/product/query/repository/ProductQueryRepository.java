@@ -18,4 +18,9 @@ public interface ProductQueryRepository
             ProductType type,
             ProductStatus status
     );
+
+    Optional<Product> findByCodeAndStatus(
+            String code,
+            ProductStatus status
+    );
 }

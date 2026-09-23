@@ -2,7 +2,7 @@ package com.example.ledgercore.account.command.port.outbound;
 
 import java.util.UUID;
 
-public interface UserAccountPort {
+public interface AccountProviderPort {
 
-    boolean existsById(UUID userId);
+    boolean existsById(UUID providerId);
 }

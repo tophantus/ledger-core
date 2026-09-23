@@ -1,6 +1,6 @@
-package com.example.ledgercore.account.adapter.outbound;
+package com.example.ledgercore.account.adapter.outbound.ledger;
 
-import com.example.ledgercore.account.command.port.outbound.LedgerAccountPort;
+import com.example.ledgercore.account.command.port.outbound.AccountLedgerPort;
 import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.ledger.command.dto.CreateLedgerAccountCommand;
 import com.example.ledgercore.ledger.command.port.inbound.CreateLedgerAccountUseCase;
@@ -11,12 +11,12 @@ import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
-public class LedgerAccountAdapter implements LedgerAccountPort {
+public class AccountLedgerAdapter implements AccountLedgerPort {
 
     private final CreateLedgerAccountUseCase createLedgerAccountUseCase;
 
     @Override
-    public UUID createCustomerAccount(
+    public UUID createLedgerAccount(
             String accountNo,
             Currency currency
     ) {

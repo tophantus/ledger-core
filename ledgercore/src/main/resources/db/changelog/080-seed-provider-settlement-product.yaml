@@ -1,0 +1,113 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 080-update-products-type-check
+      author: tophantus
+
+      changes:
+        - sql:
+            sql: |
+              ALTER TABLE products
+              DROP CONSTRAINT IF EXISTS chk_products_type;
+
+        - sql:
+            sql: |
+              ALTER TABLE products
+              ADD CONSTRAINT chk_products_type
+              CHECK (type IN ('DEPOSIT', 'CREDIT', 'PROVIDER'));
+
+  - changeSet:
+      id: 081-seed-provider-settlement-product
+      author: tophantus
+
+      changes:
+        - insert:
+            tableName: products
+            columns:
+              - column:
+                  name: id
+                  value: "01990a00-0000-7000-8000-000000000006"
+              - column:
+                  name: code
+                  value: "PROVIDER_SETTLEMENT"
+              - column:
+                  name: name
+                  value: "Provider Settlement Account"
+              - column:
+                  name: type
+                  value: "PROVIDER"
+              - column:
+                  name: status
+                  value: "ACTIVE"
+              - column:
+                  name: created_at
+                  valueDate: "now()"
+              - column:
+                  name: updated_at
+                  valueDate: "now()"
+
+  - changeSet:
+      id: 081-seed-provider-settlement-interest-vnd
+      author: tophantu
+
+      changes:
+        - insert:
+            tableName: interest_configs
+            columns:
+              - column:
+                  name: id
+                  value: "01990a00-0000-7000-8000-000000000106"
+              - column:
+                  name: product_id
+                  value: "01990a00-0000-7000-8000-000000000006"
+              - column:
+                  name: currency
+                  value: "VND"
+              - column:
+                  name: interest_rate
+                  valueNumeric: 0
+              - column:
+                  name: day_count_convention
+                  value: "ACTUAL_365"
+              - column:
+                  name: effective_from
+                  valueDate: "2026-01-01"
+              - column:
+                  name: created_at
+                  valueDate: "now()"
+              - column:
+                  name: updated_at
+                  valueDate: "now()"
+
+  - changeSet:
+      id: 081-seed-provider-settlement-interest-usd
+      author: tophantu
+
+      changes:
+        - insert:
+            tableName: interest_configs
+            columns:
+              - column:
+                  name: id
+                  value: "01990a00-0000-7000-8000-000000000107"
+              - column:
+                  name: product_id
+                  value: "01990a00-0000-7000-8000-000000000006"
+              - column:
+                  name: currency
+                  value: "USD"
+              - column:
+                  name: interest_rate
+                  valueNumeric: 0
+              - column:
+                  name: day_count_convention
+                  value: "ACTUAL_365"
+              - column:
+                  name: effective_from
+                  valueDate: "2026-01-01"
+              - column:
+                  name: created_at
+                  valueDate: "now()"
+              - column:
+                  name: updated_at
+                  valueDate: "now()"

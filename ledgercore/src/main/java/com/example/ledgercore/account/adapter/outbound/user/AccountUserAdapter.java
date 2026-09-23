@@ -1,6 +1,6 @@
-package com.example.ledgercore.account.adapter.outbound;
+package com.example.ledgercore.account.adapter.outbound.user;
 
-import com.example.ledgercore.account.command.port.outbound.UserAccountPort;
+import com.example.ledgercore.account.command.port.outbound.AccountUserPort;
 import com.example.ledgercore.user.query.port.inbound.CheckUserExistsUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -9,7 +9,7 @@ import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
-public class UserAccountAdapter implements UserAccountPort {
+public class AccountUserAdapter implements AccountUserPort {
 
     private final CheckUserExistsUseCase checkUserExistsUseCase;
 

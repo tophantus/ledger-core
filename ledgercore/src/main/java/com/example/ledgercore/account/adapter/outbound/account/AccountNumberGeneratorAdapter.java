@@ -1,4 +1,4 @@
-package com.example.ledgercore.account.adapter.outbound;
+package com.example.ledgercore.account.adapter.outbound.account;
 
 import com.example.ledgercore.account.command.port.outbound.AccountNumberGeneratorPort;
 import org.springframework.stereotype.Component;

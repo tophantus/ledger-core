@@ -4,7 +4,9 @@ import com.example.ledgercore.account.port.outbound.dto.ProductAccountInfo;
 
 import java.util.UUID;
 
-public interface ProductAccountPort {
+public interface AccountProductPort {
 
     ProductAccountInfo getActiveProduct(UUID productId);
+
+    ProductAccountInfo getActiveProviderProduct();
 }

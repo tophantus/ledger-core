@@ -532,6 +532,12 @@ public enum ErrorCode {
             HttpStatus.FORBIDDEN
     ),
 
+    PROVIDER_NOT_FOUND(
+            "PROVIDER_009",
+            "Payment provider not found",
+            HttpStatus.NOT_FOUND
+    ),
+
     // Interest
 
     INTEREST_CONFIG_NOT_FOUND(

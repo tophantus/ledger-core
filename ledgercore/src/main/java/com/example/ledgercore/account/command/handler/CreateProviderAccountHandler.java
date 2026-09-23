@@ -1,15 +1,17 @@
 package com.example.ledgercore.account.command.handler;
 
-import com.example.ledgercore.account.command.dto.CreatUserAccountCommand;
-import com.example.ledgercore.account.command.port.inbound.CreateUserAccountUseCase;
-import com.example.ledgercore.account.command.port.outbound.*;
+import com.example.ledgercore.account.command.dto.CreateProviderAccountCommand;
+import com.example.ledgercore.account.command.port.inbound.CreateProviderAccountUseCase;
+import com.example.ledgercore.account.command.port.outbound.AccountNumberGeneratorPort;
+import com.example.ledgercore.account.command.port.outbound.AccountLedgerPort;
+import com.example.ledgercore.account.command.port.outbound.AccountProviderPort;
 import com.example.ledgercore.account.command.repository.AccountCommandRepository;
-import com.example.ledgercore.account.command.repository.UserAccountCommandRepository;
+import com.example.ledgercore.account.command.repository.ProviderAccountCommandRepository;
 import com.example.ledgercore.account.entity.Account;
-import com.example.ledgercore.account.entity.UserAccount;
+import com.example.ledgercore.account.entity.ProviderAccount;
 import com.example.ledgercore.account.mapper.AccountMapper;
-import com.example.ledgercore.account.port.outbound.dto.ProductAccountInfo;
 import com.example.ledgercore.account.port.outbound.AccountProductPort;
+import com.example.ledgercore.account.port.outbound.dto.ProductAccountInfo;
 import com.example.ledgercore.account.query.dto.AccountResponse;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
@@ -22,40 +24,36 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class CreateUserAccountHandler
-        implements CreateUserAccountUseCase {
+public class CreateProviderAccountHandler
+        implements CreateProviderAccountUseCase {
 
     private final AccountCommandRepository accountCommandRepository;
-    private final UserAccountCommandRepository userAccountCommandRepository;
-    private final AccountNumberGeneratorPort accountNumberGeneratorPort;
+    private final ProviderAccountCommandRepository providerAccountCommandRepository;
 
-    private final AccountUserPort accountUserPort;
-
-    private final AccountLedgerPort accountLedgerPort;
-
+    private final AccountProviderPort accountProviderPort;
     private final AccountProductPort accountProductPort;
+    private final AccountNumberGeneratorPort accountNumberGeneratorPort;
+    private final AccountLedgerPort accountLedgerPort;
 
     @Override
     @Transactional
     public AccountResponse execute(
-            CreatUserAccountCommand command
+            CreateProviderAccountCommand command
     ) {
         validateCommand(command);
 
-        UUID userId = command.userId();
+        UUID providerId = command.providerId();
 
-        if (!accountUserPort.existsById(userId)) {
+        if (!accountProviderPort.existsById(providerId)) {
             throw new BusinessException(
-                    ErrorCode.USER_NOT_FOUND
+                    ErrorCode.PROVIDER_NOT_FOUND
             );
         }
 
         ProductAccountInfo product =
-                accountProductPort.getActiveProduct(
-                        command.productId()
-                );
+                accountProductPort.getActiveProviderProduct();
 
-        if (product.type() != ProductType.DEPOSIT) {
+        if (product.type() != ProductType.PROVIDER) {
             throw new BusinessException(
                     ErrorCode.ACCOUNT_PRODUCT_TYPE_INVALID
             );
@@ -81,13 +79,13 @@ public class CreateUserAccountHandler
         Account savedAccount =
                 accountCommandRepository.save(account);
 
-        UserAccount userAccount =
-                UserAccount.builder()
-                        .userId(userId)
+        ProviderAccount providerAccount =
+                ProviderAccount.builder()
+                        .providerId(providerId)
                         .accountId(savedAccount.getId())
                         .build();
 
-        userAccountCommandRepository.save(userAccount);
+        providerAccountCommandRepository.save(providerAccount);
 
         return AccountMapper.toResponse(
                 savedAccount
@@ -95,7 +93,7 @@ public class CreateUserAccountHandler
     }
 
     private void validateCommand(
-            CreatUserAccountCommand command
+            CreateProviderAccountCommand command
     ) {
         if (command == null) {
             throw new BusinessException(
@@ -103,13 +101,7 @@ public class CreateUserAccountHandler
             );
         }
 
-        if (command.userId() == null) {
-            throw new BusinessException(
-                    ErrorCode.INVALID_REQUEST
-            );
-        }
-
-        if (command.productId() == null) {
+        if (command.providerId() == null) {
             throw new BusinessException(
                     ErrorCode.INVALID_REQUEST
             );

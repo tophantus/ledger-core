@@ -2,14 +2,14 @@ package com.example.ledgercore.account.command.handler;
 
 import com.example.ledgercore.account.command.dto.CreatUserAccountCommand;
 import com.example.ledgercore.account.command.port.outbound.AccountNumberGeneratorPort;
-import com.example.ledgercore.account.command.port.outbound.LedgerAccountPort;
-import com.example.ledgercore.account.command.port.outbound.UserAccountPort;
+import com.example.ledgercore.account.command.port.outbound.AccountLedgerPort;
+import com.example.ledgercore.account.command.port.outbound.AccountUserPort;
 import com.example.ledgercore.account.command.repository.AccountCommandRepository;
 import com.example.ledgercore.account.command.repository.UserAccountCommandRepository;
 import com.example.ledgercore.account.entity.Account;
 import com.example.ledgercore.account.entity.UserAccount;
 import com.example.ledgercore.account.enums.AccountStatus;
-import com.example.ledgercore.account.port.outbound.ProductAccountPort;
+import com.example.ledgercore.account.port.outbound.AccountProductPort;
 import com.example.ledgercore.account.port.outbound.dto.ProductAccountInfo;
 import com.example.ledgercore.account.query.dto.AccountResponse;
 import com.example.ledgercore.common.currency.Currency;
@@ -48,13 +48,13 @@ class CreateUserAccountHandlerTest {
     private AccountNumberGeneratorPort accountNumberGeneratorPort;
 
     @Mock
-    private UserAccountPort userAccountPort;
+    private AccountUserPort accountUserPort;
 
     @Mock
-    private LedgerAccountPort ledgerAccountPort;
+    private AccountLedgerPort accountLedgerPort;
 
     @Mock
-    private ProductAccountPort productAccountPort;
+    private AccountProductPort accountProductPort;
 
     private CreateUserAccountHandler handler;
 
@@ -72,9 +72,9 @@ class CreateUserAccountHandlerTest {
                 accountCommandRepository,
                 userAccountCommandRepository,
                 accountNumberGeneratorPort,
-                userAccountPort,
-                ledgerAccountPort,
-                productAccountPort
+                accountUserPort,
+                accountLedgerPort,
+                accountProductPort
         );
 
         userId = UUID.randomUUID();
@@ -157,17 +157,17 @@ class CreateUserAccountHandlerTest {
                 )
         );
 
-        verify(userAccountPort)
+        verify(accountUserPort)
                 .existsById(userId);
 
-        verify(productAccountPort)
+        verify(accountProductPort)
                 .getActiveProduct(productId);
 
         verify(accountNumberGeneratorPort)
                 .generate();
 
-        verify(ledgerAccountPort)
-                .createCustomerAccount(
+        verify(accountLedgerPort)
+                .createLedgerAccount(
                         accountNo,
                         currency
                 );
@@ -308,8 +308,8 @@ class CreateUserAccountHandlerTest {
         verify(accountNumberGeneratorPort)
                 .generate();
 
-        verify(ledgerAccountPort)
-                .createCustomerAccount(
+        verify(accountLedgerPort)
+                .createLedgerAccount(
                         accountNo,
                         currency
                 );
@@ -320,7 +320,7 @@ class CreateUserAccountHandlerTest {
         CreatUserAccountCommand command =
                 validCommand();
 
-        when(userAccountPort.existsById(userId))
+        when(accountUserPort.existsById(userId))
                 .thenReturn(false);
 
         BusinessException exception =
@@ -334,13 +334,13 @@ class CreateUserAccountHandlerTest {
                 exception.getErrorCode()
         );
 
-        verify(userAccountPort)
+        verify(accountUserPort)
                 .existsById(userId);
 
         verifyNoInteractions(
-                productAccountPort,
+                accountProductPort,
                 accountNumberGeneratorPort,
-                ledgerAccountPort,
+                accountLedgerPort,
                 accountCommandRepository,
                 userAccountCommandRepository
         );
@@ -353,7 +353,7 @@ class CreateUserAccountHandlerTest {
 
         givenUserExists();
 
-        when(productAccountPort.getActiveProduct(productId))
+        when(accountProductPort.getActiveProduct(productId))
                 .thenThrow(
                         new BusinessException(
                                 ErrorCode.PRODUCT_NOT_FOUND
@@ -371,15 +371,15 @@ class CreateUserAccountHandlerTest {
                 exception.getErrorCode()
         );
 
-        verify(userAccountPort)
+        verify(accountUserPort)
                 .existsById(userId);
 
-        verify(productAccountPort)
+        verify(accountProductPort)
                 .getActiveProduct(productId);
 
         verifyNoInteractions(
                 accountNumberGeneratorPort,
-                ledgerAccountPort,
+                accountLedgerPort,
                 accountCommandRepository,
                 userAccountCommandRepository
         );
@@ -392,7 +392,7 @@ class CreateUserAccountHandlerTest {
 
         givenUserExists();
 
-        when(productAccountPort.getActiveProduct(productId))
+        when(accountProductPort.getActiveProduct(productId))
                 .thenThrow(
                         new BusinessException(
                                 ErrorCode.PRODUCT_NOT_ACTIVE
@@ -410,15 +410,15 @@ class CreateUserAccountHandlerTest {
                 exception.getErrorCode()
         );
 
-        verify(userAccountPort)
+        verify(accountUserPort)
                 .existsById(userId);
 
-        verify(productAccountPort)
+        verify(accountProductPort)
                 .getActiveProduct(productId);
 
         verifyNoInteractions(
                 accountNumberGeneratorPort,
-                ledgerAccountPort,
+                accountLedgerPort,
                 accountCommandRepository,
                 userAccountCommandRepository
         );
@@ -438,7 +438,7 @@ class CreateUserAccountHandlerTest {
 
         givenUserExists();
 
-        when(productAccountPort.getActiveProduct(productId))
+        when(accountProductPort.getActiveProduct(productId))
                 .thenReturn(product);
 
         BusinessException exception =
@@ -452,15 +452,15 @@ class CreateUserAccountHandlerTest {
                 exception.getErrorCode()
         );
 
-        verify(userAccountPort)
+        verify(accountUserPort)
                 .existsById(userId);
 
-        verify(productAccountPort)
+        verify(accountProductPort)
                 .getActiveProduct(productId);
 
         verifyNoInteractions(
                 accountNumberGeneratorPort,
-                ledgerAccountPort,
+                accountLedgerPort,
                 accountCommandRepository,
                 userAccountCommandRepository
         );
@@ -480,10 +480,10 @@ class CreateUserAccountHandlerTest {
         );
 
         verifyNoInteractions(
-                userAccountPort,
-                productAccountPort,
+                accountUserPort,
+                accountProductPort,
                 accountNumberGeneratorPort,
-                ledgerAccountPort,
+                accountLedgerPort,
                 accountCommandRepository,
                 userAccountCommandRepository
         );
@@ -542,7 +542,7 @@ class CreateUserAccountHandlerTest {
     }
 
     private void givenUserExists() {
-        when(userAccountPort.existsById(userId))
+        when(accountUserPort.existsById(userId))
                 .thenReturn(true);
     }
 
@@ -550,13 +550,13 @@ class CreateUserAccountHandlerTest {
             ProductAccountInfo product,
             Account savedAccount
     ) {
-        when(productAccountPort.getActiveProduct(productId))
+        when(accountProductPort.getActiveProduct(productId))
                 .thenReturn(product);
 
         when(accountNumberGeneratorPort.generate())
                 .thenReturn(accountNo);
 
-        when(ledgerAccountPort.createCustomerAccount(
+        when(accountLedgerPort.createLedgerAccount(
                 accountNo,
                 currency
         )).thenReturn(ledgerAccountId);
@@ -612,10 +612,10 @@ class CreateUserAccountHandlerTest {
         );
 
         verifyNoInteractions(
-                userAccountPort,
-                productAccountPort,
+                accountUserPort,
+                accountProductPort,
                 accountNumberGeneratorPort,
-                ledgerAccountPort,
+                accountLedgerPort,
                 accountCommandRepository,
                 userAccountCommandRepository
         );

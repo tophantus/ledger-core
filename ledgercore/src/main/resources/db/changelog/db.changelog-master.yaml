@@ -157,3 +157,5 @@ databaseChangeLog:
       file: db/changelog/078-refactor-account-user-ownership.yaml
   - include:
       file: db/changelog/079-create-provider-accounts.yaml
+  - include:
+      file: db/changelog/080-seed-provider-settlement-product.yaml

@@ -4,9 +4,9 @@ import com.example.ledgercore.common.currency.Currency;
 
 import java.util.UUID;
 
-public interface LedgerAccountPort {
+public interface AccountLedgerPort {
 
-    UUID createCustomerAccount(
+    UUID createLedgerAccount(
             String accountCode,
             Currency currency
     );
