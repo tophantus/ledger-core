@@ -1,0 +1,38 @@
+package com.example.ledgercore.transaction.adapter.outbound.ledger;
+
+import com.example.ledgercore.common.currency.Currency;
+import com.example.ledgercore.ledger.command.dto.RecordDepositCommand;
+import com.example.ledgercore.ledger.command.port.inbound.RecordDepositUseCase;
+import com.example.ledgercore.transaction.command.port.outbound.DepositLedgerPort;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.UUID;
+
+@Component
+@RequiredArgsConstructor
+public class DepositLedgerAdapter implements DepositLedgerPort {
+
+    private final RecordDepositUseCase recordDepositUseCase;
+
+    @Override
+    public void recordDeposit(
+            UUID transactionId,
+            UUID destinationAccountId,
+            BigDecimal amount,
+            Currency currency,
+            LocalDate businessDate
+    ) {
+        recordDepositUseCase.execute(
+                new RecordDepositCommand(
+                        transactionId,
+                        destinationAccountId,
+                        amount,
+                        currency,
+                        businessDate
+                )
+        );
+    }
+}

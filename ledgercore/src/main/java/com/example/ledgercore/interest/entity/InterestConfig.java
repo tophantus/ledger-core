@@ -17,7 +17,7 @@ import java.util.UUID;
                 @UniqueConstraint(
                         name = "uk_interest_configs_product_currency_effective_from",
                         columnNames = {
-                                "product_code",
+                                "product_id",
                                 "currency",
                                 "effective_from"
                         }
@@ -26,7 +26,7 @@ import java.util.UUID;
         indexes = {
                 @Index(
                         name = "idx_interest_configs_lookup",
-                        columnList = "product_code, currency, effective_from"
+                        columnList = "product_id, currency, effective_from"
                 )
         }
 )

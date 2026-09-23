@@ -507,7 +507,6 @@ class TransferAccountHandlerTest {
     ) {
         return Account.builder()
                 .id(id)
-                .userId(UUID.randomUUID())
                 .accountNo("ACC-" + id)
                 .currency(currency)
                 .balance(new BigDecimal(balance))

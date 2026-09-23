@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: 077-add-source-credit-facility-id-to-transactions
+      author: tophantus
+      changes:
+        - addColumn:
+            tableName: transactions
+            columns:
+              - column:
+                  name: source_credit_facility_id
+                  type: uuid

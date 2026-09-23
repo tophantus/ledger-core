@@ -1,0 +1,10 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 081-drop-opening-balance-from-credit-daily-balances
+      author: tophantus
+
+      changes:
+        - dropColumn:
+            tableName: credit_daily_balances
+            columnName: opening_balance

@@ -7,7 +7,7 @@ import com.example.ledgercore.common.lock.DistributedLock;
 import com.example.ledgercore.common.lock.LockKeyPrefix;
 import com.example.ledgercore.transaction.command.dto.PostInterestTransactionCommand;
 import com.example.ledgercore.transaction.command.port.inbound.PostInterestTransactionUseCase;
-import com.example.ledgercore.transaction.command.port.outbound.AccountDepositPort;
+import com.example.ledgercore.transaction.command.port.outbound.DepositUserAccountPort;
 import com.example.ledgercore.transaction.command.port.outbound.InterestLedgerPort;
 import com.example.ledgercore.transaction.command.repository.TransactionCommandRepository;
 import com.example.ledgercore.transaction.entity.MoneyTransaction;
@@ -26,7 +26,7 @@ public class PostInterestTransactionHandler
         implements PostInterestTransactionUseCase {
 
     private final TransactionCommandRepository transactionCommandRepository;
-    private final AccountDepositPort accountDepositPort;
+    private final DepositUserAccountPort depositUserAccountPort;
     private final InterestLedgerPort interestLedgerPort;
 
     @Override
@@ -40,8 +40,8 @@ public class PostInterestTransactionHandler
     ) {
         validateCommand(command);
 
-        AccountDepositPort.DepositAccountInfo depositInfo =
-                accountDepositPort.getDepositInfo(
+        DepositUserAccountPort.DepositAccountInfo depositInfo =
+                depositUserAccountPort.getDepositInfo(
                         command.accountId()
                 );
 
@@ -69,7 +69,7 @@ public class PostInterestTransactionHandler
 
         transactionCommandRepository.save(transaction);
 
-        accountDepositPort.deposit(
+        depositUserAccountPort.deposit(
                 command.accountId(),
                 command.amount(),
                 command.businessDate()
@@ -117,7 +117,7 @@ public class PostInterestTransactionHandler
 
     private void validateCurrency(
             PostInterestTransactionCommand command,
-            AccountDepositPort.DepositAccountInfo depositInfo
+            DepositUserAccountPort.DepositAccountInfo depositInfo
     ) {
         if (!depositInfo.currency()
                 .equals(command.currency())) {

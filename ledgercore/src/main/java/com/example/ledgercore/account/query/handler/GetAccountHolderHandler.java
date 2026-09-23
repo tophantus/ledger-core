@@ -1,12 +1,14 @@
 package com.example.ledgercore.account.query.handler;
 
 import com.example.ledgercore.account.entity.Account;
+import com.example.ledgercore.account.entity.UserAccount;
 import com.example.ledgercore.account.enums.AccountStatus;
 import com.example.ledgercore.account.query.dto.AccountHolderResponse;
 import com.example.ledgercore.account.query.dto.GetAccountHolderQuery;
 import com.example.ledgercore.account.query.port.inbound.GetAccountHolderUseCase;
 import com.example.ledgercore.account.query.port.outbound.AccountHolderProfilePort;
 import com.example.ledgercore.account.query.repository.AccountQueryRepository;
+import com.example.ledgercore.account.query.repository.UserAccountQueryRepository;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,7 @@ public class GetAccountHolderHandler
         implements GetAccountHolderUseCase {
 
     private final AccountQueryRepository accountQueryRepository;
+    private final UserAccountQueryRepository userAccountQueryRepository;
     private final AccountHolderProfilePort accountHolderProfilePort;
 
     @Override
@@ -37,6 +40,11 @@ public class GetAccountHolderHandler
                                 )
                         );
 
+        UserAccount userAccount = userAccountQueryRepository.findByAccountId(account.getId())
+                .orElseThrow(() ->
+                        new BusinessException(ErrorCode.ACCOUNT_NOT_FOUND)
+                );
+
         if (account.getStatus() != AccountStatus.ACTIVE) {
             throw new BusinessException(
                     ErrorCode.ACCOUNT_NOT_ACTIVE
@@ -45,7 +53,7 @@ public class GetAccountHolderHandler
 
         String fullName =
                 accountHolderProfilePort.getFullName(
-                        account.getUserId()
+                        userAccount.getUserId()
                 );
 
         return new AccountHolderResponse(

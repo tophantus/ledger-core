@@ -1,10 +1,12 @@
 package com.example.ledgercore.provider.command.handler;
 
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.provider.command.dto.RegisterPaymentProviderCommand;
 import com.example.ledgercore.provider.command.dto.RegisterPaymentProviderResult;
 import com.example.ledgercore.provider.command.port.inbound.RegisterPaymentProviderUseCase;
+import com.example.ledgercore.provider.command.port.outbound.ProviderAccountPort;
 import com.example.ledgercore.provider.command.repository.PaymentProviderCommandRepository;
 import com.example.ledgercore.provider.entity.PaymentProvider;
 import com.example.ledgercore.provider.enums.ProviderStatus;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +36,8 @@ public class RegisterPaymentProviderHandler
 
     private final PaymentProviderCredentialHashService
             credentialHashService;
+
+    private final ProviderAccountPort providerAccountPort;
 
     @Override
     @Transactional
@@ -68,6 +73,8 @@ public class RegisterPaymentProviderHandler
 
         PaymentProvider savedProvider =
                 paymentProviderCommandRepository.save(provider);
+
+        createSettlementAccounts(savedProvider.getId());
 
         return new RegisterPaymentProviderResult(
                 savedProvider.getId(),
@@ -133,5 +140,16 @@ public class RegisterPaymentProviderHandler
         );
 
         return clientId;
+    }
+
+    private void createSettlementAccounts(
+            UUID providerId
+    ) {
+        for (Currency currency : Currency.values()) {
+            providerAccountPort.createProviderAccount(
+                    providerId,
+                    currency
+            );
+        }
     }
 }

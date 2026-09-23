@@ -1,0 +1,20 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 082-add-ledger-account-id-to-credit-facilities
+      author: tophantus
+
+      changes:
+        - addColumn:
+            tableName: credit_facilities
+            columns:
+              - column:
+                  name: ledger_account_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+        - addUniqueConstraint:
+            tableName: credit_facilities
+            columnNames: ledger_account_id
+            constraintName: uk_credit_facilities_ledger_account_id

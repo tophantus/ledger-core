@@ -158,7 +158,6 @@ class DepositAccountBalanceHandlerTest {
     ) {
         return Account.builder()
                 .id(id)
-                .userId(UUID.randomUUID())
                 .accountNo("ACC-001")
                 .currency(Currency.VND)
                 .balance(new BigDecimal(balance))

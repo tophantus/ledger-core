@@ -4,9 +4,9 @@ import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.transaction.command.dto.WithdrawMoneyCommand;
-import com.example.ledgercore.transaction.command.port.outbound.AccountWithdrawPort;
-import com.example.ledgercore.transaction.command.port.outbound.BusinessDayPort;
-import com.example.ledgercore.transaction.command.port.outbound.LedgerWithdrawPort;
+import com.example.ledgercore.transaction.command.port.outbound.WithdrawUserAccountPort;
+import com.example.ledgercore.transaction.command.port.outbound.TransactionBusinessDayPort;
+import com.example.ledgercore.transaction.command.port.outbound.WithdrawLedgerPort;
 import com.example.ledgercore.transaction.command.port.outbound.TransactionEventPort;
 import com.example.ledgercore.transaction.command.repository.TransactionCommandRepository;
 import com.example.ledgercore.transaction.entity.MoneyTransaction;
@@ -37,20 +37,20 @@ class WithdrawMoneyHandlerTest {
             transactionCommandRepository;
 
     @Mock
-    private AccountWithdrawPort
-            accountWithdrawPort;
+    private WithdrawUserAccountPort
+            withdrawUserAccountPort;
 
     @Mock
-    private LedgerWithdrawPort
-            ledgerWithdrawPort;
+    private WithdrawLedgerPort
+            withdrawLedgerPort;
 
     @Mock
     private TransactionEventPort
             transactionEventPort;
 
     @Mock
-    private BusinessDayPort
-            businessDayPort;
+    private TransactionBusinessDayPort
+            transactionBusinessDayPort;
 
     private WithdrawMoneyHandler handler;
 
@@ -64,10 +64,10 @@ class WithdrawMoneyHandlerTest {
     void setUp() {
         handler = new WithdrawMoneyHandler(
                 transactionCommandRepository,
-                accountWithdrawPort,
-                ledgerWithdrawPort,
+                withdrawUserAccountPort,
+                withdrawLedgerPort,
                 transactionEventPort,
-                businessDayPort
+                transactionBusinessDayPort
         );
 
         accountId = UUID.randomUUID();
@@ -85,7 +85,7 @@ class WithdrawMoneyHandlerTest {
                         "Cash withdrawal"
                 );
 
-        when(businessDayPort.getCurrentBusinessDate())
+        when(transactionBusinessDayPort.getCurrentBusinessDate())
                 .thenReturn(BUSINESS_DATE);
 
         mockSaveTransaction();
@@ -190,14 +190,14 @@ class WithdrawMoneyHandlerTest {
                 transaction.getDescription()
         );
 
-        verify(accountWithdrawPort)
+        verify(withdrawUserAccountPort)
                 .withdraw(
                         accountId,
                         new BigDecimal("100"),
                         BUSINESS_DATE
                 );
 
-        verify(ledgerWithdrawPort)
+        verify(withdrawLedgerPort)
                 .recordWithdraw(
                         transactionId,
                         accountId,
@@ -211,7 +211,7 @@ class WithdrawMoneyHandlerTest {
                         any(WithdrawCompletedEvent.class)
                 );
 
-        verify(businessDayPort)
+        verify(transactionBusinessDayPort)
                 .getCurrentBusinessDate();
     }
 
@@ -226,7 +226,7 @@ class WithdrawMoneyHandlerTest {
                         null
                 );
 
-        when(businessDayPort.getCurrentBusinessDate())
+        when(transactionBusinessDayPort.getCurrentBusinessDate())
                 .thenReturn(BUSINESS_DATE);
 
         doAnswer(invocation -> {
@@ -281,14 +281,14 @@ class WithdrawMoneyHandlerTest {
         verify(transactionCommandRepository)
                 .save(any(MoneyTransaction.class));
 
-        verify(accountWithdrawPort)
+        verify(withdrawUserAccountPort)
                 .withdraw(
                         accountId,
                         new BigDecimal("100"),
                         BUSINESS_DATE
                 );
 
-        verify(ledgerWithdrawPort)
+        verify(withdrawLedgerPort)
                 .recordWithdraw(
                         transactionId,
                         accountId,
@@ -309,7 +309,7 @@ class WithdrawMoneyHandlerTest {
                         "withdraw"
                 );
 
-        when(businessDayPort.getCurrentBusinessDate())
+        when(transactionBusinessDayPort.getCurrentBusinessDate())
                 .thenReturn(BUSINESS_DATE);
 
         mockSaveTransaction();
@@ -332,10 +332,10 @@ class WithdrawMoneyHandlerTest {
                 transaction.getBusinessDate()
         );
 
-        verify(businessDayPort)
+        verify(transactionBusinessDayPort)
                 .getCurrentBusinessDate();
 
-        verify(ledgerWithdrawPort)
+        verify(withdrawLedgerPort)
                 .recordWithdraw(
                         transactionId,
                         accountId,
@@ -356,7 +356,7 @@ class WithdrawMoneyHandlerTest {
                         "withdraw"
                 );
 
-        when(businessDayPort.getCurrentBusinessDate())
+        when(transactionBusinessDayPort.getCurrentBusinessDate())
                 .thenReturn(BUSINESS_DATE);
 
         mockSaveTransaction();
@@ -430,10 +430,10 @@ class WithdrawMoneyHandlerTest {
 
         verifyNoInteractions(
                 transactionCommandRepository,
-                accountWithdrawPort,
-                ledgerWithdrawPort,
+                withdrawUserAccountPort,
+                withdrawLedgerPort,
                 transactionEventPort,
-                businessDayPort
+                transactionBusinessDayPort
         );
     }
 
@@ -461,10 +461,10 @@ class WithdrawMoneyHandlerTest {
 
         verifyNoInteractions(
                 transactionCommandRepository,
-                accountWithdrawPort,
-                ledgerWithdrawPort,
+                withdrawUserAccountPort,
+                withdrawLedgerPort,
                 transactionEventPort,
-                businessDayPort
+                transactionBusinessDayPort
         );
     }
 
@@ -492,10 +492,10 @@ class WithdrawMoneyHandlerTest {
 
         verifyNoInteractions(
                 transactionCommandRepository,
-                accountWithdrawPort,
-                ledgerWithdrawPort,
+                withdrawUserAccountPort,
+                withdrawLedgerPort,
                 transactionEventPort,
-                businessDayPort
+                transactionBusinessDayPort
         );
     }
 
@@ -510,7 +510,7 @@ class WithdrawMoneyHandlerTest {
                         "withdraw"
                 );
 
-        when(businessDayPort.getCurrentBusinessDate())
+        when(transactionBusinessDayPort.getCurrentBusinessDate())
                 .thenReturn(BUSINESS_DATE);
 
         mockSaveTransaction();
@@ -518,27 +518,27 @@ class WithdrawMoneyHandlerTest {
         handler.execute(command);
 
         var inOrder = inOrder(
-                businessDayPort,
+                transactionBusinessDayPort,
                 transactionCommandRepository,
-                accountWithdrawPort,
-                ledgerWithdrawPort,
+                withdrawUserAccountPort,
+                withdrawLedgerPort,
                 transactionEventPort
         );
 
-        inOrder.verify(businessDayPort)
+        inOrder.verify(transactionBusinessDayPort)
                 .getCurrentBusinessDate();
 
         inOrder.verify(transactionCommandRepository)
                 .save(any(MoneyTransaction.class));
 
-        inOrder.verify(accountWithdrawPort)
+        inOrder.verify(withdrawUserAccountPort)
                 .withdraw(
                         accountId,
                         new BigDecimal("100"),
                         BUSINESS_DATE
                 );
 
-        inOrder.verify(ledgerWithdrawPort)
+        inOrder.verify(withdrawLedgerPort)
                 .recordWithdraw(
                         transactionId,
                         accountId,
@@ -571,10 +571,10 @@ class WithdrawMoneyHandlerTest {
 
         verifyNoInteractions(
                 transactionCommandRepository,
-                accountWithdrawPort,
-                ledgerWithdrawPort,
+                withdrawUserAccountPort,
+                withdrawLedgerPort,
                 transactionEventPort,
-                businessDayPort
+                transactionBusinessDayPort
         );
     }
 

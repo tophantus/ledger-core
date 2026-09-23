@@ -7,7 +7,7 @@ import com.example.ledgercore.otp.enums.OtpPurpose;
 import com.example.ledgercore.transaction.command.dto.CreateTransferIntentCommand;
 import com.example.ledgercore.transaction.command.dto.CreateTransferIntentResult;
 import com.example.ledgercore.transaction.command.port.inbound.CreateTransferIntentUseCase;
-import com.example.ledgercore.transaction.command.port.outbound.AccountTransferPort;
+import com.example.ledgercore.transaction.command.port.outbound.TransferUserAccountPort;
 import com.example.ledgercore.transaction.command.port.outbound.TransferOtpPort;
 import com.example.ledgercore.transaction.command.repository.TransferIntentCommandRepository;
 import com.example.ledgercore.transaction.entity.TransferIntent;
@@ -25,7 +25,7 @@ import java.util.UUID;
 public class CreateTransferIntentHandler
         implements CreateTransferIntentUseCase {
 
-    private final AccountTransferPort accountTransferPort;
+    private final TransferUserAccountPort transferUserAccountPort;
     private final TransferIntentCommandRepository
             transferIntentCommandRepository;
     private final TransferOtpPort transferOtpPort;
@@ -51,7 +51,7 @@ public class CreateTransferIntentHandler
         validateAmount(command);
 
         UUID destinationAccountId =
-                accountTransferPort.getAccountIdByAccountNo(
+                transferUserAccountPort.getAccountIdByAccountNo(
                         command.destinationAccountNo()
                 );
 
@@ -63,8 +63,8 @@ public class CreateTransferIntentHandler
             );
         }
 
-        AccountTransferPort.TransferAccountInfo transferInfo =
-                accountTransferPort.getTransferInfo(
+        TransferUserAccountPort.TransferAccountInfo transferInfo =
+                transferUserAccountPort.getTransferInfo(
                         userId,
                         command.sourceAccountId(),
                         destinationAccountId
@@ -144,7 +144,7 @@ public class CreateTransferIntentHandler
 
     private void validateTransfer(
             CreateTransferIntentCommand command,
-            AccountTransferPort.TransferAccountInfo transferInfo
+            TransferUserAccountPort.TransferAccountInfo transferInfo
     ) {
         if (transferInfo.currency() != command.currency()) {
 

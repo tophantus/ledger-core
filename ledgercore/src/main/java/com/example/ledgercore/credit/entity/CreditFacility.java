@@ -31,7 +31,6 @@ import java.util.UUID;
 public class CreditFacility {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Column(name = "customer_id", nullable = false)
@@ -39,6 +38,9 @@ public class CreditFacility {
 
     @Column(name = "product_id", nullable = false)
     private UUID productId;
+
+    @Column(name = "ledger_account_id", nullable = false)
+    private UUID ledgerAccountId;
 
     @Column(
             name = "credit_limit",

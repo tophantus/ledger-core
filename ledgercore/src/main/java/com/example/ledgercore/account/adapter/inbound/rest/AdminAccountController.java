@@ -1,11 +1,11 @@
 package com.example.ledgercore.account.adapter.inbound.rest;
 
 import com.example.ledgercore.account.adapter.inbound.rest.dto.AdminAccountFilterRequest;
-import com.example.ledgercore.account.query.dto.AdminAccountDetailResponse;
-import com.example.ledgercore.account.query.dto.AdminAccountFilter;
-import com.example.ledgercore.account.query.dto.AdminAccountResponse;
+import com.example.ledgercore.account.query.dto.AdminUserAccountDetailResponse;
+import com.example.ledgercore.account.query.dto.AdminUserAccountFilter;
+import com.example.ledgercore.account.query.dto.AdminUserAccountResponse;
 import com.example.ledgercore.account.query.port.inbound.GetAdminAccountDetailUseCase;
-import com.example.ledgercore.account.query.port.inbound.GetAdminAccountsUseCase;
+import com.example.ledgercore.account.query.port.inbound.GetAdminUserAccountsUseCase;
 import com.example.ledgercore.common.dto.PageResponse;
 import com.example.ledgercore.common.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,8 +25,8 @@ import java.util.UUID;
 )
 public class AdminAccountController {
 
-    private final GetAdminAccountsUseCase
-            getAdminAccountsUseCase;
+    private final GetAdminUserAccountsUseCase
+            getAdminUserAccountsUseCase;
 
     private final GetAdminAccountDetailUseCase
             getAdminAccountDetailUseCase;
@@ -37,14 +37,14 @@ public class AdminAccountController {
             description = "Get paginated bank accounts with optional filters"
     )
     public ResponseEntity<
-            ApiResponse<PageResponse<AdminAccountResponse>>
+            ApiResponse<PageResponse<AdminUserAccountResponse>>
             > getAccounts(
             @ModelAttribute AdminAccountFilterRequest request
     ) {
 
-        PageResponse<AdminAccountResponse> response =
-                getAdminAccountsUseCase.execute(
-                        new AdminAccountFilter(
+        PageResponse<AdminUserAccountResponse> response =
+                getAdminUserAccountsUseCase.execute(
+                        new AdminUserAccountFilter(
                                 request.getAccountNo(),
                                 request.getStatus(),
                                 request.getCurrency(),
@@ -68,12 +68,12 @@ public class AdminAccountController {
             description = "Get account details including account owner information"
     )
     public ResponseEntity<
-            ApiResponse<AdminAccountDetailResponse>
+            ApiResponse<AdminUserAccountDetailResponse>
             > getAccount(
             @PathVariable UUID accountId
     ) {
 
-        AdminAccountDetailResponse response =
+        AdminUserAccountDetailResponse response =
                 getAdminAccountDetailUseCase.execute(
                         accountId
                 );

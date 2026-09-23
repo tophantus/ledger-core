@@ -1,6 +1,8 @@
 package com.example.ledgercore.hold.adapter.outbound.credit;
 
 import com.example.ledgercore.common.currency.Currency;
+import com.example.ledgercore.credit.command.dto.DecreaseCreditFacilityHoldCommand;
+import com.example.ledgercore.credit.command.dto.IncreaseCreditFacilityHoldCommand;
 import com.example.ledgercore.credit.command.port.inbound.DecreaseCreditFacilityHoldUseCase;
 import com.example.ledgercore.credit.command.port.inbound.IncreaseCreditFacilityHoldUseCase;
 import com.example.ledgercore.hold.command.port.outbound.CreditHoldPort;
@@ -28,9 +30,11 @@ public class CreditHoldAdapter
             Currency currency
     ) {
         increaseCreditFacilityHoldUseCase.execute(
-                creditFacilityId,
-                amount,
-                currency
+                new IncreaseCreditFacilityHoldCommand(
+                        creditFacilityId,
+                        amount,
+                        currency
+                )
         );
     }
 
@@ -41,9 +45,11 @@ public class CreditHoldAdapter
             Currency currency
     ) {
         decreaseCreditFacilityHoldUseCase.execute(
-                creditFacilityId,
-                amount,
-                currency
+                new DecreaseCreditFacilityHoldCommand(
+                        creditFacilityId,
+                        amount,
+                        currency
+                )
         );
     }
 }

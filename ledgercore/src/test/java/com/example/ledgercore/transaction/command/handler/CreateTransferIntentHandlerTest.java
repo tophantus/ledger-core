@@ -6,7 +6,7 @@ import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.otp.enums.OtpPurpose;
 import com.example.ledgercore.transaction.command.dto.CreateTransferIntentCommand;
 import com.example.ledgercore.transaction.command.dto.CreateTransferIntentResult;
-import com.example.ledgercore.transaction.command.port.outbound.AccountTransferPort;
+import com.example.ledgercore.transaction.command.port.outbound.TransferUserAccountPort;
 import com.example.ledgercore.transaction.command.port.outbound.TransferOtpPort;
 import com.example.ledgercore.transaction.command.repository.TransferIntentCommandRepository;
 import com.example.ledgercore.transaction.entity.TransferIntent;
@@ -32,7 +32,7 @@ import static org.mockito.Mockito.*;
 class CreateTransferIntentHandlerTest {
 
     @Mock
-    private AccountTransferPort accountTransferPort;
+    private TransferUserAccountPort transferUserAccountPort;
 
     @Mock
     private TransferIntentCommandRepository
@@ -61,7 +61,7 @@ class CreateTransferIntentHandlerTest {
         );
 
         handler = new CreateTransferIntentHandler(
-                accountTransferPort,
+                transferUserAccountPort,
                 transferIntentCommandRepository,
                 transferOtpPort,
                 clock
@@ -78,8 +78,8 @@ class CreateTransferIntentHandlerTest {
         CreateTransferIntentCommand command =
                 createCommand();
 
-        AccountTransferPort.TransferAccountInfo transferInfo =
-                new AccountTransferPort.TransferAccountInfo(
+        TransferUserAccountPort.TransferAccountInfo transferInfo =
+                new TransferUserAccountPort.TransferAccountInfo(
                         sourceAccountId,
                         destinationAccountId,
                         Currency.VND,
@@ -112,13 +112,13 @@ class CreateTransferIntentHandlerTest {
         ).thenReturn(Optional.empty());
 
         when(
-                accountTransferPort.getAccountIdByAccountNo(
+                transferUserAccountPort.getAccountIdByAccountNo(
                         "0987654321"
                 )
         ).thenReturn(destinationAccountId);
 
         when(
-                accountTransferPort.getTransferInfo(
+                transferUserAccountPort.getTransferInfo(
                         userId,
                         sourceAccountId,
                         destinationAccountId
@@ -195,8 +195,8 @@ class CreateTransferIntentHandlerTest {
         CreateTransferIntentCommand command =
                 createCommand();
 
-        AccountTransferPort.TransferAccountInfo transferInfo =
-                new AccountTransferPort.TransferAccountInfo(
+        TransferUserAccountPort.TransferAccountInfo transferInfo =
+                new TransferUserAccountPort.TransferAccountInfo(
                         sourceAccountId,
                         destinationAccountId,
                         Currency.VND,
@@ -209,13 +209,13 @@ class CreateTransferIntentHandlerTest {
         ).thenReturn(Optional.empty());
 
         when(
-                accountTransferPort.getAccountIdByAccountNo(
+                transferUserAccountPort.getAccountIdByAccountNo(
                         "0987654321"
                 )
         ).thenReturn(destinationAccountId);
 
         when(
-                accountTransferPort.getTransferInfo(
+                transferUserAccountPort.getTransferInfo(
                         userId,
                         sourceAccountId,
                         destinationAccountId
@@ -345,12 +345,12 @@ class CreateTransferIntentHandlerTest {
         );
 
         verify(
-                accountTransferPort,
+                transferUserAccountPort,
                 never()
         ).getAccountIdByAccountNo(any());
 
         verify(
-                accountTransferPort,
+                transferUserAccountPort,
                 never()
         ).getTransferInfo(
                 any(),
@@ -391,7 +391,7 @@ class CreateTransferIntentHandlerTest {
         );
 
         verifyNoInteractions(
-                accountTransferPort,
+                transferUserAccountPort,
                 transferOtpPort
         );
 
@@ -450,7 +450,7 @@ class CreateTransferIntentHandlerTest {
         ).save(any());
 
         verifyNoInteractions(
-                accountTransferPort,
+                transferUserAccountPort,
                 transferOtpPort
         );
     }
@@ -487,7 +487,7 @@ class CreateTransferIntentHandlerTest {
         );
 
         verifyNoInteractions(
-                accountTransferPort,
+                transferUserAccountPort,
                 transferOtpPort
         );
 
@@ -529,7 +529,7 @@ class CreateTransferIntentHandlerTest {
         );
 
         verifyNoInteractions(
-                accountTransferPort,
+                transferUserAccountPort,
                 transferOtpPort
         );
     }
@@ -545,7 +545,7 @@ class CreateTransferIntentHandlerTest {
         ).thenReturn(Optional.empty());
 
         when(
-                accountTransferPort.getAccountIdByAccountNo(
+                transferUserAccountPort.getAccountIdByAccountNo(
                         "0987654321"
                 )
         ).thenReturn(sourceAccountId);
@@ -565,13 +565,13 @@ class CreateTransferIntentHandlerTest {
         );
 
         verify(
-                accountTransferPort
+                transferUserAccountPort
         ).getAccountIdByAccountNo(
                 "0987654321"
         );
 
         verify(
-                accountTransferPort,
+                transferUserAccountPort,
                 never()
         ).getTransferInfo(
                 any(),
@@ -594,8 +594,8 @@ class CreateTransferIntentHandlerTest {
         CreateTransferIntentCommand command =
                 createCommand();
 
-        AccountTransferPort.TransferAccountInfo transferInfo =
-                new AccountTransferPort.TransferAccountInfo(
+        TransferUserAccountPort.TransferAccountInfo transferInfo =
+                new TransferUserAccountPort.TransferAccountInfo(
                         sourceAccountId,
                         destinationAccountId,
                         Currency.USD,
@@ -608,13 +608,13 @@ class CreateTransferIntentHandlerTest {
         ).thenReturn(Optional.empty());
 
         when(
-                accountTransferPort.getAccountIdByAccountNo(
+                transferUserAccountPort.getAccountIdByAccountNo(
                         "0987654321"
                 )
         ).thenReturn(destinationAccountId);
 
         when(
-                accountTransferPort.getTransferInfo(
+                transferUserAccountPort.getTransferInfo(
                         userId,
                         sourceAccountId,
                         destinationAccountId
@@ -650,8 +650,8 @@ class CreateTransferIntentHandlerTest {
         CreateTransferIntentCommand command =
                 createCommand();
 
-        AccountTransferPort.TransferAccountInfo transferInfo =
-                new AccountTransferPort.TransferAccountInfo(
+        TransferUserAccountPort.TransferAccountInfo transferInfo =
+                new TransferUserAccountPort.TransferAccountInfo(
                         sourceAccountId,
                         destinationAccountId,
                         Currency.VND,
@@ -664,13 +664,13 @@ class CreateTransferIntentHandlerTest {
         ).thenReturn(Optional.empty());
 
         when(
-                accountTransferPort.getAccountIdByAccountNo(
+                transferUserAccountPort.getAccountIdByAccountNo(
                         "0987654321"
                 )
         ).thenReturn(destinationAccountId);
 
         when(
-                accountTransferPort.getTransferInfo(
+                transferUserAccountPort.getTransferInfo(
                         userId,
                         sourceAccountId,
                         destinationAccountId
@@ -706,8 +706,8 @@ class CreateTransferIntentHandlerTest {
         CreateTransferIntentCommand command =
                 createCommand();
 
-        AccountTransferPort.TransferAccountInfo transferInfo =
-                new AccountTransferPort.TransferAccountInfo(
+        TransferUserAccountPort.TransferAccountInfo transferInfo =
+                new TransferUserAccountPort.TransferAccountInfo(
                         sourceAccountId,
                         destinationAccountId,
                         Currency.VND,
@@ -720,13 +720,13 @@ class CreateTransferIntentHandlerTest {
         ).thenReturn(Optional.empty());
 
         when(
-                accountTransferPort.getAccountIdByAccountNo(
+                transferUserAccountPort.getAccountIdByAccountNo(
                         "0987654321"
                 )
         ).thenReturn(destinationAccountId);
 
         when(
-                accountTransferPort.getTransferInfo(
+                transferUserAccountPort.getTransferInfo(
                         userId,
                         sourceAccountId,
                         destinationAccountId

@@ -8,7 +8,6 @@ import java.util.UUID;
 
 public record AccountResponse(
         UUID id,
-        UUID userId,
         String accountNo,
         UUID productId,
         Currency currency,

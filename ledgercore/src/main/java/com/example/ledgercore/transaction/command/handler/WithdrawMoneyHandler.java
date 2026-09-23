@@ -5,9 +5,9 @@ import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.transaction.command.dto.WithdrawMoneyCommand;
 import com.example.ledgercore.transaction.command.port.inbound.WithdrawMoneyUseCase;
-import com.example.ledgercore.transaction.command.port.outbound.AccountWithdrawPort;
-import com.example.ledgercore.transaction.command.port.outbound.BusinessDayPort;
-import com.example.ledgercore.transaction.command.port.outbound.LedgerWithdrawPort;
+import com.example.ledgercore.transaction.command.port.outbound.WithdrawUserAccountPort;
+import com.example.ledgercore.transaction.command.port.outbound.TransactionBusinessDayPort;
+import com.example.ledgercore.transaction.command.port.outbound.WithdrawLedgerPort;
 import com.example.ledgercore.transaction.command.port.outbound.TransactionEventPort;
 import com.example.ledgercore.transaction.command.repository.TransactionCommandRepository;
 import com.example.ledgercore.transaction.entity.MoneyTransaction;
@@ -28,10 +28,10 @@ public class WithdrawMoneyHandler
         implements WithdrawMoneyUseCase {
 
     private final TransactionCommandRepository transactionCommandRepository;
-    private final AccountWithdrawPort accountWithdrawPort;
-    private final LedgerWithdrawPort ledgerWithdrawPort;
+    private final WithdrawUserAccountPort withdrawUserAccountPort;
+    private final WithdrawLedgerPort withdrawLedgerPort;
     private final TransactionEventPort transactionEventPort;
-    private final BusinessDayPort businessDayPort;
+    private final TransactionBusinessDayPort transactionBusinessDayPort;
 
     @Override
     @Transactional
@@ -41,7 +41,7 @@ public class WithdrawMoneyHandler
         validateAmount(command);
 
         LocalDate businessDate =
-                businessDayPort.getCurrentBusinessDate();
+                transactionBusinessDayPort.getCurrentBusinessDate();
 
         MoneyTransaction transaction =
                 createTransaction(
@@ -51,13 +51,13 @@ public class WithdrawMoneyHandler
 
         transactionCommandRepository.save(transaction);
 
-        accountWithdrawPort.withdraw(
+        withdrawUserAccountPort.withdraw(
                 command.sourceAccountId(),
                 command.amount(),
                 businessDate
         );
 
-        ledgerWithdrawPort.recordWithdraw(
+        withdrawLedgerPort.recordWithdraw(
                 transaction.getId(),
                 command.sourceAccountId(),
                 command.amount(),

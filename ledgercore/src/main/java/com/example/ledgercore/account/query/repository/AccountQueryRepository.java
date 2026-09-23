@@ -18,31 +18,6 @@ public interface AccountQueryRepository
     Optional<Account> findByAccountNo(String accountNo);
 
     @Query("""
-            SELECT a.id
-            FROM Account a
-            WHERE a.userId = :userId
-            ORDER BY a.id ASC
-            """)
-    List<UUID> findIdsByUserId(
-            @Param("userId") UUID userId
-    );
-
-    List<Account> findAllByUserIdAndStatusNot(
-            UUID userId,
-            AccountStatus status
-    );
-
-    Optional<Account> findByIdAndUserId(
-            UUID id,
-            UUID userId
-    );
-
-    boolean existsByIdAndUserId(
-            UUID id,
-            UUID userId
-    );
-
-    @Query("""
             SELECT a
             FROM Account a
             WHERE a.status = :status

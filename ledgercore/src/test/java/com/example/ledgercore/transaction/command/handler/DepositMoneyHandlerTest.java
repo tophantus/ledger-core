@@ -4,9 +4,9 @@ import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.transaction.command.dto.DepositMoneyCommand;
-import com.example.ledgercore.transaction.command.port.outbound.AccountDepositPort;
-import com.example.ledgercore.transaction.command.port.outbound.BusinessDayPort;
-import com.example.ledgercore.transaction.command.port.outbound.LedgerDepositPort;
+import com.example.ledgercore.transaction.command.port.outbound.DepositUserAccountPort;
+import com.example.ledgercore.transaction.command.port.outbound.TransactionBusinessDayPort;
+import com.example.ledgercore.transaction.command.port.outbound.DepositLedgerPort;
 import com.example.ledgercore.transaction.command.port.outbound.TransactionEventPort;
 import com.example.ledgercore.transaction.command.repository.TransactionCommandRepository;
 import com.example.ledgercore.transaction.entity.MoneyTransaction;
@@ -37,16 +37,16 @@ class DepositMoneyHandlerTest {
     private TransactionCommandRepository transactionCommandRepository;
 
     @Mock
-    private AccountDepositPort accountDepositPort;
+    private DepositUserAccountPort depositUserAccountPort;
 
     @Mock
-    private LedgerDepositPort ledgerDepositPort;
+    private DepositLedgerPort depositLedgerPort;
 
     @Mock
     private TransactionEventPort transactionEventPort;
 
     @Mock
-    private BusinessDayPort businessDayPort;
+    private TransactionBusinessDayPort transactionBusinessDayPort;
 
     private DepositMoneyHandler handler;
 
@@ -61,10 +61,10 @@ class DepositMoneyHandlerTest {
     void setUp() {
         handler = new DepositMoneyHandler(
                 transactionCommandRepository,
-                accountDepositPort,
-                ledgerDepositPort,
+                depositUserAccountPort,
+                depositLedgerPort,
                 transactionEventPort,
-                businessDayPort
+                transactionBusinessDayPort
         );
 
         adminUserId = UUID.randomUUID();
@@ -84,8 +84,8 @@ class DepositMoneyHandlerTest {
                         "Cash deposit"
                 );
 
-        AccountDepositPort.DepositAccountInfo depositInfo =
-                new AccountDepositPort.DepositAccountInfo(
+        DepositUserAccountPort.DepositAccountInfo depositInfo =
+                new DepositUserAccountPort.DepositAccountInfo(
                         destinationAccountId,
                         Currency.VND
                 );
@@ -94,11 +94,11 @@ class DepositMoneyHandlerTest {
                 "DEP-001"
         )).thenReturn(Optional.empty());
 
-        when(accountDepositPort.getDepositInfo(
+        when(depositUserAccountPort.getDepositInfo(
                 destinationAccountId
         )).thenReturn(depositInfo);
 
-        when(businessDayPort.getCurrentBusinessDate())
+        when(transactionBusinessDayPort.getCurrentBusinessDate())
                 .thenReturn(BUSINESS_DATE);
 
         mockSaveTransaction();
@@ -166,14 +166,14 @@ class DepositMoneyHandlerTest {
                 transaction.getStatus()
         );
 
-        verify(accountDepositPort)
+        verify(depositUserAccountPort)
                 .deposit(
                         destinationAccountId,
                         new BigDecimal("100"),
                         BUSINESS_DATE
                 );
 
-        verify(ledgerDepositPort)
+        verify(depositLedgerPort)
                 .recordDeposit(
                         transactionId,
                         destinationAccountId,
@@ -187,7 +187,7 @@ class DepositMoneyHandlerTest {
                         any(DepositCompletedEvent.class)
                 );
 
-        verify(businessDayPort)
+        verify(transactionBusinessDayPort)
                 .getCurrentBusinessDate();
     }
 
@@ -207,16 +207,16 @@ class DepositMoneyHandlerTest {
                 "DEP-002"
         )).thenReturn(Optional.empty());
 
-        when(accountDepositPort.getDepositInfo(
+        when(depositUserAccountPort.getDepositInfo(
                 destinationAccountId
         )).thenReturn(
-                new AccountDepositPort.DepositAccountInfo(
+                new DepositUserAccountPort.DepositAccountInfo(
                         destinationAccountId,
                         Currency.VND
                 )
         );
 
-        when(businessDayPort.getCurrentBusinessDate())
+        when(transactionBusinessDayPort.getCurrentBusinessDate())
                 .thenReturn(BUSINESS_DATE);
 
         doAnswer(invocation -> {
@@ -322,13 +322,13 @@ class DepositMoneyHandlerTest {
                 response.status()
         );
 
-        verify(accountDepositPort, never())
+        verify(depositUserAccountPort, never())
                 .getDepositInfo(any());
 
-        verify(accountDepositPort, never())
+        verify(depositUserAccountPort, never())
                 .deposit(any(), any(), any());
 
-        verify(ledgerDepositPort, never())
+        verify(depositLedgerPort, never())
                 .recordDeposit(
                         any(),
                         any(),
@@ -341,7 +341,7 @@ class DepositMoneyHandlerTest {
                 .save(any());
 
         verifyNoInteractions(
-                businessDayPort,
+                transactionBusinessDayPort,
                 transactionEventPort
         );
     }
@@ -384,13 +384,13 @@ class DepositMoneyHandlerTest {
                 exception.getErrorCode()
         );
 
-        verify(accountDepositPort, never())
+        verify(depositUserAccountPort, never())
                 .getDepositInfo(any());
 
-        verify(accountDepositPort, never())
+        verify(depositUserAccountPort, never())
                 .deposit(any(), any(), any());
 
-        verify(ledgerDepositPort, never())
+        verify(depositLedgerPort, never())
                 .recordDeposit(
                         any(),
                         any(),
@@ -400,7 +400,7 @@ class DepositMoneyHandlerTest {
                 );
 
         verifyNoInteractions(
-                businessDayPort,
+                transactionBusinessDayPort,
                 transactionEventPort
         );
     }
@@ -433,10 +433,10 @@ class DepositMoneyHandlerTest {
 
         verifyNoInteractions(
                 transactionCommandRepository,
-                accountDepositPort,
-                ledgerDepositPort,
+                depositUserAccountPort,
+                depositLedgerPort,
                 transactionEventPort,
-                businessDayPort
+                transactionBusinessDayPort
         );
     }
 
@@ -468,10 +468,10 @@ class DepositMoneyHandlerTest {
 
         verifyNoInteractions(
                 transactionCommandRepository,
-                accountDepositPort,
-                ledgerDepositPort,
+                depositUserAccountPort,
+                depositLedgerPort,
                 transactionEventPort,
-                businessDayPort
+                transactionBusinessDayPort
         );
     }
 
@@ -491,10 +491,10 @@ class DepositMoneyHandlerTest {
                 "DEP-006"
         )).thenReturn(Optional.empty());
 
-        when(accountDepositPort.getDepositInfo(
+        when(depositUserAccountPort.getDepositInfo(
                 destinationAccountId
         )).thenReturn(
-                new AccountDepositPort.DepositAccountInfo(
+                new DepositUserAccountPort.DepositAccountInfo(
                         destinationAccountId,
                         Currency.VND
                 )
@@ -517,13 +517,13 @@ class DepositMoneyHandlerTest {
         verify(transactionCommandRepository, never())
                 .save(any());
 
-        verify(accountDepositPort, never())
+        verify(depositUserAccountPort, never())
                 .deposit(any(), any(), any());
 
         verifyNoInteractions(
-                ledgerDepositPort,
+                depositLedgerPort,
                 transactionEventPort,
-                businessDayPort
+                transactionBusinessDayPort
         );
     }
 
@@ -543,16 +543,16 @@ class DepositMoneyHandlerTest {
                 "DEP-007"
         )).thenReturn(Optional.empty());
 
-        when(accountDepositPort.getDepositInfo(
+        when(depositUserAccountPort.getDepositInfo(
                 destinationAccountId
         )).thenReturn(
-                new AccountDepositPort.DepositAccountInfo(
+                new DepositUserAccountPort.DepositAccountInfo(
                         destinationAccountId,
                         Currency.VND
                 )
         );
 
-        when(businessDayPort.getCurrentBusinessDate())
+        when(transactionBusinessDayPort.getCurrentBusinessDate())
                 .thenReturn(BUSINESS_DATE);
 
         mockSaveTransaction();
@@ -575,7 +575,7 @@ class DepositMoneyHandlerTest {
                 captor.getValue().getBusinessDate()
         );
 
-        verify(ledgerDepositPort)
+        verify(depositLedgerPort)
                 .recordDeposit(
                         transactionId,
                         destinationAccountId,
@@ -613,10 +613,10 @@ class DepositMoneyHandlerTest {
 
         verifyNoInteractions(
                 transactionCommandRepository,
-                accountDepositPort,
-                ledgerDepositPort,
+                depositUserAccountPort,
+                depositLedgerPort,
                 transactionEventPort,
-                businessDayPort
+                transactionBusinessDayPort
         );
     }
 
@@ -636,16 +636,16 @@ class DepositMoneyHandlerTest {
                 "DEP-008"
         )).thenReturn(Optional.empty());
 
-        when(accountDepositPort.getDepositInfo(
+        when(depositUserAccountPort.getDepositInfo(
                 destinationAccountId
         )).thenReturn(
-                new AccountDepositPort.DepositAccountInfo(
+                new DepositUserAccountPort.DepositAccountInfo(
                         destinationAccountId,
                         Currency.VND
                 )
         );
 
-        when(businessDayPort.getCurrentBusinessDate())
+        when(transactionBusinessDayPort.getCurrentBusinessDate())
                 .thenReturn(BUSINESS_DATE);
 
         mockSaveTransaction();

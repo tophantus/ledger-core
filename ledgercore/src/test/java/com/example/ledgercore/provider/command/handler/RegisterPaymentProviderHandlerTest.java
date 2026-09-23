@@ -1,9 +1,11 @@
 package com.example.ledgercore.provider.command.handler;
 
+import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.provider.command.dto.RegisterPaymentProviderCommand;
 import com.example.ledgercore.provider.command.dto.RegisterPaymentProviderResult;
+import com.example.ledgercore.provider.command.port.outbound.ProviderAccountPort;
 import com.example.ledgercore.provider.command.repository.PaymentProviderCommandRepository;
 import com.example.ledgercore.provider.command.service.PaymentProviderClientIdGenerator;
 import com.example.ledgercore.provider.command.service.PaymentProviderCredentialGenerator;
@@ -30,16 +32,23 @@ import static org.mockito.Mockito.*;
 class RegisterPaymentProviderHandlerTest {
 
     @Mock
-    private PaymentProviderCommandRepository paymentProviderCommandRepository;
+    private PaymentProviderCommandRepository
+            paymentProviderCommandRepository;
 
     @Mock
-    private PaymentProviderClientIdGenerator clientIdGenerator;
+    private PaymentProviderClientIdGenerator
+            clientIdGenerator;
 
     @Mock
-    private PaymentProviderCredentialGenerator credentialGenerator;
+    private PaymentProviderCredentialGenerator
+            credentialGenerator;
 
     @Mock
-    private PaymentProviderCredentialHashService credentialHashService;
+    private PaymentProviderCredentialHashService
+            credentialHashService;
+
+    @Mock
+    private ProviderAccountPort providerAccountPort;
 
     @InjectMocks
     private RegisterPaymentProviderHandler handler;
@@ -60,18 +69,28 @@ class RegisterPaymentProviderHandlerTest {
 
         when(paymentProviderCommandRepository.existsByCode("PAY-1001"))
                 .thenReturn(false);
+
         when(clientIdGenerator.generate())
                 .thenReturn(generatedClientId);
-        when(paymentProviderCommandRepository.existsByClientId(generatedClientId))
+
+        when(paymentProviderCommandRepository
+                .existsByClientId(generatedClientId))
                 .thenReturn(false);
+
         when(credentialGenerator.generate())
                 .thenReturn(generatedCredential);
+
         when(credentialHashService.hash(generatedCredential))
                 .thenReturn(hashedCredential);
-        when(paymentProviderCommandRepository.save(any(PaymentProvider.class)))
+
+        when(paymentProviderCommandRepository
+                .save(any(PaymentProvider.class)))
                 .thenAnswer(invocation -> {
-                    PaymentProvider provider = invocation.getArgument(0);
+                    PaymentProvider provider =
+                            invocation.getArgument(0);
+
                     provider.setId(providerId);
+
                     return provider;
                 });
 
@@ -79,13 +98,20 @@ class RegisterPaymentProviderHandlerTest {
                 handler.execute(command);
 
         assertThat(result).isNotNull();
-        assertThat(result.providerId()).isEqualTo(providerId);
-        assertThat(result.code()).isEqualTo("PAY-1001");
-        assertThat(result.name()).isEqualTo("Acme Payments");
-        assertThat(result.type()).isEqualTo(ProviderType.PSP);
-        assertThat(result.status()).isEqualTo(ProviderStatus.ACTIVE);
-        assertThat(result.clientId()).isEqualTo(generatedClientId);
-        assertThat(result.credential()).isEqualTo(generatedCredential);
+        assertThat(result.providerId())
+                .isEqualTo(providerId);
+        assertThat(result.code())
+                .isEqualTo("PAY-1001");
+        assertThat(result.name())
+                .isEqualTo("Acme Payments");
+        assertThat(result.type())
+                .isEqualTo(ProviderType.PSP);
+        assertThat(result.status())
+                .isEqualTo(ProviderStatus.ACTIVE);
+        assertThat(result.clientId())
+                .isEqualTo(generatedClientId);
+        assertThat(result.credential())
+                .isEqualTo(generatedCredential);
 
         ArgumentCaptor<PaymentProvider> captor =
                 ArgumentCaptor.forClass(PaymentProvider.class);
@@ -93,23 +119,58 @@ class RegisterPaymentProviderHandlerTest {
         verify(paymentProviderCommandRepository)
                 .save(captor.capture());
 
-        PaymentProvider savedProvider = captor.getValue();
-        assertThat(savedProvider.getCode()).isEqualTo("PAY-1001");
-        assertThat(savedProvider.getName()).isEqualTo("Acme Payments");
-        assertThat(savedProvider.getType()).isEqualTo(ProviderType.PSP);
-        assertThat(savedProvider.getStatus()).isEqualTo(ProviderStatus.ACTIVE);
-        assertThat(savedProvider.getClientId()).isEqualTo(generatedClientId);
-        assertThat(savedProvider.getCredentialHash()).isEqualTo(hashedCredential);
-        assertThat(savedProvider.getCreatedAt()).isNotNull();
-        assertThat(savedProvider.getUpdatedAt()).isNotNull();
+        PaymentProvider savedProvider =
+                captor.getValue();
+
+        assertThat(savedProvider.getCode())
+                .isEqualTo("PAY-1001");
+        assertThat(savedProvider.getName())
+                .isEqualTo("Acme Payments");
+        assertThat(savedProvider.getType())
+                .isEqualTo(ProviderType.PSP);
+        assertThat(savedProvider.getStatus())
+                .isEqualTo(ProviderStatus.ACTIVE);
+        assertThat(savedProvider.getClientId())
+                .isEqualTo(generatedClientId);
+        assertThat(savedProvider.getCredentialHash())
+                .isEqualTo(hashedCredential);
+        assertThat(savedProvider.getCreatedAt())
+                .isNotNull();
+        assertThat(savedProvider.getUpdatedAt())
+                .isNotNull();
 
         verify(paymentProviderCommandRepository)
                 .existsByCode("PAY-1001");
-        verify(clientIdGenerator).generate();
+
+        verify(clientIdGenerator)
+                .generate();
+
         verify(paymentProviderCommandRepository)
                 .existsByClientId(generatedClientId);
-        verify(credentialGenerator).generate();
-        verify(credentialHashService).hash(generatedCredential);
+
+        verify(credentialGenerator)
+                .generate();
+
+        verify(credentialHashService)
+                .hash(generatedCredential);
+
+        verify(providerAccountPort)
+                .createProviderAccount(
+                        providerId,
+                        Currency.VND
+                );
+
+        verify(providerAccountPort)
+                .createProviderAccount(
+                        providerId,
+                        Currency.USD
+                );
+
+        verify(providerAccountPort, times(Currency.values().length))
+                .createProviderAccount(
+                        eq(providerId),
+                        any(Currency.class)
+                );
     }
 
     @Test
@@ -121,33 +182,66 @@ class RegisterPaymentProviderHandlerTest {
                         ProviderType.ACQUIRER
                 );
 
+        UUID providerId = UUID.randomUUID();
+
         when(paymentProviderCommandRepository.existsByCode("PAY-2002"))
                 .thenReturn(false);
+
         when(clientIdGenerator.generate())
-                .thenReturn("duplicate-client-id", "unique-client-id");
-        when(paymentProviderCommandRepository.existsByClientId("duplicate-client-id"))
+                .thenReturn(
+                        "duplicate-client-id",
+                        "unique-client-id"
+                );
+
+        when(paymentProviderCommandRepository
+                .existsByClientId("duplicate-client-id"))
                 .thenReturn(true);
-        when(paymentProviderCommandRepository.existsByClientId("unique-client-id"))
+
+        when(paymentProviderCommandRepository
+                .existsByClientId("unique-client-id"))
                 .thenReturn(false);
+
         when(credentialGenerator.generate())
                 .thenReturn("credential-456");
+
         when(credentialHashService.hash("credential-456"))
                 .thenReturn("hashed-456");
-        when(paymentProviderCommandRepository.save(any(PaymentProvider.class)))
-                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        when(paymentProviderCommandRepository
+                .save(any(PaymentProvider.class)))
+                .thenAnswer(invocation -> {
+                    PaymentProvider provider =
+                            invocation.getArgument(0);
+
+                    provider.setId(providerId);
+
+                    return provider;
+                });
 
         RegisterPaymentProviderResult result =
                 handler.execute(command);
 
-        assertThat(result.clientId()).isEqualTo("unique-client-id");
+        assertThat(result.clientId())
+                .isEqualTo("unique-client-id");
+
         verify(paymentProviderCommandRepository, times(2))
                 .existsByClientId(anyString());
-        verify(clientIdGenerator, times(2)).generate();
+
+        verify(clientIdGenerator, times(2))
+                .generate();
+
+        verify(providerAccountPort, times(Currency.values().length))
+                .createProviderAccount(
+                        eq(providerId),
+                        any(Currency.class)
+                );
     }
 
     @Test
     void shouldRejectNullCommand() {
-        assertThatThrownBy(() -> handler.execute(null))
+        assertThatThrownBy(
+                () -> handler.execute(null)
+        )
                 .isInstanceOf(BusinessException.class)
                 .extracting("errorCode")
                 .isEqualTo(ErrorCode.INVALID_REQUEST);
@@ -156,7 +250,8 @@ class RegisterPaymentProviderHandlerTest {
                 paymentProviderCommandRepository,
                 clientIdGenerator,
                 credentialGenerator,
-                credentialHashService
+                credentialHashService,
+                providerAccountPort
         );
     }
 
@@ -169,7 +264,9 @@ class RegisterPaymentProviderHandlerTest {
                         ProviderType.PSP
                 );
 
-        assertThatThrownBy(() -> handler.execute(command))
+        assertThatThrownBy(
+                () -> handler.execute(command)
+        )
                 .isInstanceOf(BusinessException.class)
                 .extracting("errorCode")
                 .isEqualTo(ErrorCode.PROVIDER_CODE_REQUIRED);
@@ -178,7 +275,8 @@ class RegisterPaymentProviderHandlerTest {
                 paymentProviderCommandRepository,
                 clientIdGenerator,
                 credentialGenerator,
-                credentialHashService
+                credentialHashService,
+                providerAccountPort
         );
     }
 
@@ -191,7 +289,9 @@ class RegisterPaymentProviderHandlerTest {
                         ProviderType.PSP
                 );
 
-        assertThatThrownBy(() -> handler.execute(command))
+        assertThatThrownBy(
+                () -> handler.execute(command)
+        )
                 .isInstanceOf(BusinessException.class)
                 .extracting("errorCode")
                 .isEqualTo(ErrorCode.PROVIDER_NAME_REQUIRED);
@@ -200,7 +300,8 @@ class RegisterPaymentProviderHandlerTest {
                 paymentProviderCommandRepository,
                 clientIdGenerator,
                 credentialGenerator,
-                credentialHashService
+                credentialHashService,
+                providerAccountPort
         );
     }
 
@@ -213,7 +314,9 @@ class RegisterPaymentProviderHandlerTest {
                         null
                 );
 
-        assertThatThrownBy(() -> handler.execute(command))
+        assertThatThrownBy(
+                () -> handler.execute(command)
+        )
                 .isInstanceOf(BusinessException.class)
                 .extracting("errorCode")
                 .isEqualTo(ErrorCode.PROVIDER_TYPE_REQUIRED);
@@ -222,7 +325,8 @@ class RegisterPaymentProviderHandlerTest {
                 paymentProviderCommandRepository,
                 clientIdGenerator,
                 credentialGenerator,
-                credentialHashService
+                credentialHashService,
+                providerAccountPort
         );
     }
 
@@ -235,17 +339,30 @@ class RegisterPaymentProviderHandlerTest {
                         ProviderType.PSP
                 );
 
-        when(paymentProviderCommandRepository.existsByCode("PAY-4001"))
+        when(paymentProviderCommandRepository
+                .existsByCode("PAY-4001"))
                 .thenReturn(true);
 
-        assertThatThrownBy(() -> handler.execute(command))
+        assertThatThrownBy(
+                () -> handler.execute(command)
+        )
                 .isInstanceOf(BusinessException.class)
                 .extracting("errorCode")
-                .isEqualTo(ErrorCode.PROVIDER_CODE_ALREADY_EXISTS);
+                .isEqualTo(
+                        ErrorCode.PROVIDER_CODE_ALREADY_EXISTS
+                );
 
         verify(paymentProviderCommandRepository)
                 .existsByCode("PAY-4001");
-        verifyNoInteractions(clientIdGenerator, credentialGenerator, credentialHashService);
-        verify(paymentProviderCommandRepository, never()).save(any(PaymentProvider.class));
+
+        verifyNoInteractions(
+                clientIdGenerator,
+                credentialGenerator,
+                credentialHashService,
+                providerAccountPort
+        );
+
+        verify(paymentProviderCommandRepository, never())
+                .save(any(PaymentProvider.class));
     }
 }
