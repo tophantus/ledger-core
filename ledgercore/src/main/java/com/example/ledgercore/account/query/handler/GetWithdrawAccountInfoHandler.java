@@ -1,17 +1,17 @@
 package com.example.ledgercore.account.query.handler;
 
-import com.example.ledgercore.account.entity.Account;
 import com.example.ledgercore.account.enums.AccountStatus;
 import com.example.ledgercore.account.query.dto.AccountWithdrawInfo;
+import com.example.ledgercore.account.query.service.dto.GetUserAccountQuery;
+import com.example.ledgercore.account.query.service.dto.GetUserAccountResult;
+import com.example.ledgercore.account.query.service.GetUserAccountService;
 import com.example.ledgercore.account.query.port.inbound.GetWithdrawAccountInfoUseCase;
-import com.example.ledgercore.account.query.repository.AccountQueryRepository;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.UUID;
 
 @Service
@@ -19,38 +19,29 @@ import java.util.UUID;
 public class GetWithdrawAccountInfoHandler
         implements GetWithdrawAccountInfoUseCase {
 
-    private final AccountQueryRepository accountQueryRepository;
+    private final GetUserAccountService getUserAccountService;
     
     @Override
     @Transactional(readOnly = true)
     public AccountWithdrawInfo execute(
             UUID accountId
     ) {
-        Account account =
-                accountQueryRepository
-                        .findById(accountId)
-                        .orElseThrow(() ->
-                                new BusinessException(
-                                        ErrorCode.ACCOUNT_NOT_FOUND
-                                )
-                        );
+        GetUserAccountResult account = getUserAccountService.execute(
+                new GetUserAccountQuery(accountId)
+        );
 
-        if (account.getStatus()
+        if (account.status()
                 != AccountStatus.ACTIVE) {
             throw new BusinessException(
                     ErrorCode.ACCOUNT_NOT_ACTIVE
             );
         }
 
-        BigDecimal availableBalance =
-                account.getBalance()
-                        .subtract(account.getHoldAmount());
-
         return new AccountWithdrawInfo(
-                account.getId(),
-                account.getUserId(),
-                account.getCurrency(),
-                availableBalance
+                account.accountId(),
+                account.userId(),
+                account.currency(),
+                account.getAvailableBalance()
         );
     }
 }

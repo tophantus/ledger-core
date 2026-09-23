@@ -4,7 +4,7 @@ import com.example.ledgercore.account.command.dto.WithdrawAccountCommand;
 import com.example.ledgercore.account.command.port.inbound.WithdrawAccountBalanceUseCase;
 import com.example.ledgercore.account.query.dto.AccountWithdrawInfo;
 import com.example.ledgercore.account.query.port.inbound.GetWithdrawAccountInfoUseCase;
-import com.example.ledgercore.account.query.port.inbound.CheckAccountOwnershipUseCase;
+import com.example.ledgercore.account.query.port.inbound.CheckUserAccountOwnershipUseCase;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.transaction.command.port.outbound.AccountWithdrawPort;
@@ -23,8 +23,8 @@ public class AccountWithdrawAdapter
     private final GetWithdrawAccountInfoUseCase
             getWithdrawAccountInfoUseCase;
 
-    private final CheckAccountOwnershipUseCase
-            checkAccountOwnershipUseCase;
+    private final CheckUserAccountOwnershipUseCase
+            checkUserAccountOwnershipUseCase;
 
     private final WithdrawAccountBalanceUseCase
             withdrawAccountBalanceUseCase;
@@ -52,7 +52,7 @@ public class AccountWithdrawAdapter
             UUID userId,
             UUID sourceAccountId
     ) {
-        boolean isOwner = checkAccountOwnershipUseCase.execute(
+        boolean isOwner = checkUserAccountOwnershipUseCase.execute(
                 userId,
                 sourceAccountId
         );

@@ -1,6 +1,6 @@
 package com.example.ledgercore.webhook.adapter.outbound.account;
 
-import com.example.ledgercore.account.query.port.inbound.CheckAccountOwnershipUseCase;
+import com.example.ledgercore.account.query.port.inbound.CheckUserAccountOwnershipUseCase;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.webhook.port.outbound.WebhookAccountOwnerPort;
@@ -14,15 +14,15 @@ import java.util.UUID;
 public class WebhookAccountOwnerAdapter
         implements WebhookAccountOwnerPort {
 
-    private final CheckAccountOwnershipUseCase
-            checkAccountOwnershipUseCase;
+    private final CheckUserAccountOwnershipUseCase
+            checkUserAccountOwnershipUseCase;
 
     @Override
     public void verifyOwnership(
             UUID userId,
             UUID accountId
     ) {
-        boolean isOwner = checkAccountOwnershipUseCase.execute(
+        boolean isOwner = checkUserAccountOwnershipUseCase.execute(
                 userId,
                 accountId
         );

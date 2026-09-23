@@ -1,6 +1,6 @@
 package com.example.ledgercore.account.adapter.outbound.user;
 
-import com.example.ledgercore.account.query.dto.AdminAccountDetailResponse;
+import com.example.ledgercore.account.query.dto.AdminUserAccountDetailResponse;
 import com.example.ledgercore.account.query.port.outbound.AdminUserQueryPort;
 import com.example.ledgercore.user.query.dto.UserAdminInfoResponse;
 import com.example.ledgercore.user.query.port.inbound.GetAdminUserInfoUseCase;
@@ -18,12 +18,12 @@ public class AdminUserQueryAdapter
             getAdminUserInfoUseCase;
 
     @Override
-    public AdminAccountDetailResponse.UserInfo getUserAccountInfo(UUID userId) {
+    public AdminUserAccountDetailResponse.UserInfo getUserAccountInfo(UUID userId) {
 
         UserAdminInfoResponse response =
                 getAdminUserInfoUseCase.execute(userId);
 
-        return new AdminAccountDetailResponse.UserInfo(
+        return new AdminUserAccountDetailResponse.UserInfo(
                 response.id(),
                 response.email(),
                 response.fullName(),

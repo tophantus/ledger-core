@@ -1,0 +1,65 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 079-create-provider-accounts
+      author: tu
+
+      changes:
+
+        - createTable:
+            tableName: provider_accounts
+            columns:
+
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_provider_accounts
+                    nullable: false
+
+              - column:
+                  name: provider_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: account_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: provider_accounts
+            baseColumnNames: provider_id
+            referencedTableName: payment_providers
+            referencedColumnNames: id
+            constraintName: fk_provider_accounts_provider
+            onDelete: RESTRICT
+
+        - addForeignKeyConstraint:
+            baseTableName: provider_accounts
+            baseColumnNames: account_id
+            referencedTableName: accounts
+            referencedColumnNames: id
+            constraintName: fk_provider_accounts_account
+            onDelete: CASCADE
+
+        - addUniqueConstraint:
+            tableName: provider_accounts
+            columnNames: account_id
+            constraintName: uk_provider_accounts_account_id
+
+        - createIndex:
+            tableName: provider_accounts
+            indexName: idx_provider_accounts_provider_id
+            columns:
+              - column:
+                  name: provider_id

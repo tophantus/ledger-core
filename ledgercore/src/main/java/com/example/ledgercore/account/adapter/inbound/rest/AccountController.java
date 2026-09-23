@@ -1,17 +1,16 @@
 package com.example.ledgercore.account.adapter.inbound.rest;
 
-import com.example.ledgercore.account.command.dto.ActivateAccountCommand;
-import com.example.ledgercore.account.command.dto.BlockAccountCommand;
-import com.example.ledgercore.account.command.dto.CloseAccountCommand;
-import com.example.ledgercore.account.command.dto.CreateAccountCommand;
-import com.example.ledgercore.account.command.port.inbound.ActivateAccountUseCase;
-import com.example.ledgercore.account.command.port.inbound.BlockAccountUseCase;
-import com.example.ledgercore.account.command.port.inbound.CloseAccountUseCase;
-import com.example.ledgercore.account.command.port.inbound.CreateAccountUseCase;
+import com.example.ledgercore.account.command.dto.ActivateUserAccountCommand;
+import com.example.ledgercore.account.command.dto.BlockUserAccountCommand;
+import com.example.ledgercore.account.command.dto.CloseUserAccountCommand;
+import com.example.ledgercore.account.command.dto.CreatUserAccountCommand;
+import com.example.ledgercore.account.command.port.inbound.ActivateUserAccountUseCase;
+import com.example.ledgercore.account.command.port.inbound.BlockUserAccountUseCase;
+import com.example.ledgercore.account.command.port.inbound.CloseUserAccountUseCase;
+import com.example.ledgercore.account.command.port.inbound.CreateUserAccountUseCase;
 import com.example.ledgercore.account.query.dto.*;
-import com.example.ledgercore.account.query.port.inbound.GetAccountByAccountNoUseCase;
 import com.example.ledgercore.account.query.port.inbound.GetAccountHolderUseCase;
-import com.example.ledgercore.account.query.port.inbound.GetAccountUseCase;
+import com.example.ledgercore.account.query.port.inbound.GetUserAccountUseCase;
 import com.example.ledgercore.account.query.port.inbound.GetUserActiveAccountsUseCase;
 import com.example.ledgercore.common.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,13 +34,12 @@ import java.util.UUID;
 )
 public class AccountController {
 
-    private final CreateAccountUseCase createAccountUseCase;
-    private final BlockAccountUseCase blockAccountUseCase;
-    private final ActivateAccountUseCase activateAccountUseCase;
-    private final CloseAccountUseCase closeAccountUseCase;
+    private final CreateUserAccountUseCase createUserAccountUseCase;
+    private final BlockUserAccountUseCase blockUserAccountUseCase;
+    private final ActivateUserAccountUseCase activateUserAccountUseCase;
+    private final CloseUserAccountUseCase closeUserAccountUseCase;
 
-    private final GetAccountUseCase getAccountUseCase;
-    private final GetAccountByAccountNoUseCase getAccountByAccountNoUseCase;
+    private final GetUserAccountUseCase getUserAccountUseCase;
     private final GetUserActiveAccountsUseCase getUserActiveAccountsUseCase;
     private final GetAccountHolderUseCase getAccountHolderUseCase;
 
@@ -52,17 +50,17 @@ public class AccountController {
     )
     public ResponseEntity<ApiResponse<AccountResponse>> createAccount(
             @AuthenticationPrincipal AuthPrincipal principal,
-            @Valid @RequestBody CreateAccountCommand command
+            @Valid @RequestBody CreatUserAccountCommand command
     ) {
-        CreateAccountCommand actualCommand =
-                new CreateAccountCommand(
+        CreatUserAccountCommand actualCommand =
+                new CreatUserAccountCommand(
                         principal.getUserId(),
                         command.productId(),
                         command.currency()
                 );
 
         AccountResponse response =
-                createAccountUseCase.execute(
+                createUserAccountUseCase.execute(
                         actualCommand
                 );
 
@@ -84,35 +82,10 @@ public class AccountController {
             @PathVariable UUID accountId
     ) {
         AccountResponse response =
-                getAccountUseCase.execute(
-                        new GetAccountQuery(
+                getUserAccountUseCase.execute(
+                        new GetUserAccountQuery(
                                 principal.getUserId(),
                                 accountId
-                        )
-                );
-
-        return ResponseEntity.ok(
-                ApiResponse.success(
-                        response,
-                        "Account retrieved successfully"
-                )
-        );
-    }
-
-    @GetMapping("/number/{accountNo}")
-    @Operation(
-            summary = "Get account by account number",
-            description = "Get an account by its account number"
-    )
-    public ResponseEntity<ApiResponse<AccountResponse>> getAccountByAccountNo(
-            @AuthenticationPrincipal AuthPrincipal principal,
-            @PathVariable String accountNo
-    ) {
-        AccountResponse response =
-                getAccountByAccountNoUseCase.execute(
-                        new GetAccountByAccountNoQuery(
-                                principal.getUserId(),
-                                accountNo
                         )
                 );
 
@@ -179,8 +152,8 @@ public class AccountController {
             @AuthenticationPrincipal AuthPrincipal principal,
             @PathVariable UUID accountId
     ) {
-        blockAccountUseCase.execute(
-                new BlockAccountCommand(
+        blockUserAccountUseCase.execute(
+                new BlockUserAccountCommand(
                         principal.getUserId(),
                         accountId
                 )
@@ -203,8 +176,8 @@ public class AccountController {
             @AuthenticationPrincipal AuthPrincipal principal,
             @PathVariable UUID accountId
     ) {
-        activateAccountUseCase.execute(
-                new ActivateAccountCommand(
+        activateUserAccountUseCase.execute(
+                new ActivateUserAccountCommand(
                         principal.getUserId(),
                         accountId
                 )
@@ -227,8 +200,8 @@ public class AccountController {
             @AuthenticationPrincipal AuthPrincipal principal,
             @PathVariable UUID accountId
     ) {
-        closeAccountUseCase.execute(
-                new CloseAccountCommand(
+        closeUserAccountUseCase.execute(
+                new CloseUserAccountCommand(
                         principal.getUserId(),
                         accountId
                 )

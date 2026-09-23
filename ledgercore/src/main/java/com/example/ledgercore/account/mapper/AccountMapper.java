@@ -3,6 +3,8 @@ package com.example.ledgercore.account.mapper;
 import com.example.ledgercore.account.entity.Account;
 import com.example.ledgercore.account.query.dto.AccountResponse;
 import com.example.ledgercore.account.query.dto.AccountSummaryResponse;
+import com.example.ledgercore.account.query.service.dto.GetUserAccountResult;
+import com.example.ledgercore.account.query.projection.UserAccountProjection;
 
 public final class AccountMapper {
 
@@ -12,7 +14,6 @@ public final class AccountMapper {
     public static AccountResponse toResponse(Account account) {
         return new AccountResponse(
                 account.getId(),
-                account.getUserId(),
                 account.getAccountNo(),
                 account.getProductId(),
                 account.getCurrency(),
@@ -27,20 +28,37 @@ public final class AccountMapper {
         );
     }
 
+    public static AccountResponse toResponse(
+            GetUserAccountResult result
+    ) {
+        return new AccountResponse(
+                result.accountId(),
+                result.accountNo(),
+                result.productId(),
+                result.currency(),
+                result.balance().toPlainString(),
+                result.holdAmount().toPlainString(),
+                result.getAvailableBalance().toPlainString(),
+                result.status(),
+                result.createdAt(),
+                result.updatedAt()
+        );
+    }
+
     public static AccountSummaryResponse toSummaryResponse(
-            Account account
+            UserAccountProjection projection
     ) {
         return new AccountSummaryResponse(
-                account.getId(),
-                account.getAccountNo(),
-                account.getProductId(),
-                account.getCurrency(),
-                account.getBalance().toPlainString(),
-                account.getHoldAmount().toPlainString(),
-                account.getBalance()
-                        .subtract(account.getHoldAmount())
+                projection.getAccountId(),
+                projection.getAccountNo(),
+                projection.getProductId(),
+                projection.getCurrency(),
+                projection.getBalance().toPlainString(),
+                projection.getHoldAmount().toPlainString(),
+                projection.getBalance()
+                        .subtract(projection.getHoldAmount())
                         .toPlainString(),
-                account.getStatus()
+                projection.getStatus()
         );
     }
 }

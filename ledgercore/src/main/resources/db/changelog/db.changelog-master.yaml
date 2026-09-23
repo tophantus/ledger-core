@@ -151,3 +151,9 @@ databaseChangeLog:
       file: db/changelog/075-add-authorization-method-to-card-authorizations.yaml
   - include:
       file: db/changelog/076-add-provider-id-to-card-authorizations.yaml
+  - include:
+      file: db/changelog/077-add-credit-facility-source-to-transactions.yaml
+  - include:
+      file: db/changelog/078-refactor-account-user-ownership.yaml
+  - include:
+      file: db/changelog/079-create-provider-accounts.yaml

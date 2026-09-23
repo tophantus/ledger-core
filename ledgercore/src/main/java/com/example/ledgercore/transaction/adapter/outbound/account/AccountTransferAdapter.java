@@ -5,7 +5,7 @@ import com.example.ledgercore.account.command.port.inbound.TransferAccountBalanc
 import com.example.ledgercore.account.query.dto.AccountTransferInfo;
 import com.example.ledgercore.account.query.port.inbound.GetAccountIdByAccountNoUseCase;
 import com.example.ledgercore.account.query.port.inbound.GetTransferAccountInfoUseCase;
-import com.example.ledgercore.account.query.port.inbound.CheckAccountOwnershipUseCase;
+import com.example.ledgercore.account.query.port.inbound.CheckUserAccountOwnershipUseCase;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.transaction.command.port.outbound.AccountTransferPort;
@@ -27,8 +27,8 @@ public class AccountTransferAdapter
     private final GetAccountIdByAccountNoUseCase
             getAccountIdByAccountNoUseCase;
 
-    private final CheckAccountOwnershipUseCase
-            checkAccountOwnershipUseCase;
+    private final CheckUserAccountOwnershipUseCase
+            checkUserAccountOwnershipUseCase;
 
     private final TransferAccountBalanceUseCase
             transferAccountBalanceUseCase;
@@ -64,7 +64,7 @@ public class AccountTransferAdapter
             UUID userId,
             UUID sourceAccountId
     ) {
-        boolean isOwner = checkAccountOwnershipUseCase.execute(
+        boolean isOwner = checkUserAccountOwnershipUseCase.execute(
                 userId,
                 sourceAccountId
         );

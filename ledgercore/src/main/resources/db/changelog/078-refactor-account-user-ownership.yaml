@@ -1,0 +1,88 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 078-create-user-accounts
+      author: tu
+
+      changes:
+
+        - createTable:
+            tableName: user_accounts
+            columns:
+
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_user_accounts
+                    nullable: false
+
+              - column:
+                  name: user_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: account_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: user_accounts
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_user_accounts_user
+            onDelete: RESTRICT
+
+        - addForeignKeyConstraint:
+            baseTableName: user_accounts
+            baseColumnNames: account_id
+            referencedTableName: accounts
+            referencedColumnNames: id
+            constraintName: fk_user_accounts_account
+            onDelete: CASCADE
+
+        - addUniqueConstraint:
+            tableName: user_accounts
+            columnNames: account_id
+            constraintName: uk_user_accounts_account_id
+
+        - createIndex:
+            tableName: user_accounts
+            indexName: idx_user_accounts_user_id
+            columns:
+              - column:
+                  name: user_id
+
+        - sql:
+            sql: >
+              INSERT INTO user_accounts (
+                  id,
+                  user_id,
+                  account_id,
+                  created_at
+              )
+              SELECT
+                  gen_random_uuid(),
+                  user_id,
+                  id,
+                  created_at
+              FROM accounts;
+
+        - dropForeignKeyConstraint:
+            baseTableName: accounts
+            constraintName: fk_accounts_user
+
+        - dropColumn:
+            tableName: accounts
+            columnName: user_id

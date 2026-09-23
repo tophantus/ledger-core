@@ -1,6 +1,6 @@
 package com.example.ledgercore.transaction.adapter.outbound.account;
 
-import com.example.ledgercore.account.query.port.inbound.CheckAccountOwnershipUseCase;
+import com.example.ledgercore.account.query.port.inbound.CheckUserAccountOwnershipUseCase;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.transaction.query.port.outbound.TransactionAccessPort;
@@ -14,15 +14,15 @@ import java.util.UUID;
 public class TransactionAccessAdapter
         implements TransactionAccessPort {
 
-    private final CheckAccountOwnershipUseCase
-            checkAccountOwnershipUseCase;
+    private final CheckUserAccountOwnershipUseCase
+            checkUserAccountOwnershipUseCase;
 
     @Override
     public void verifyAccess(
             UUID userId,
             UUID accountId
     ) {
-        boolean isOwner = checkAccountOwnershipUseCase.execute(
+        boolean isOwner = checkUserAccountOwnershipUseCase.execute(
                 userId,
                 accountId
         );
@@ -39,14 +39,14 @@ public class TransactionAccessAdapter
             UUID destinationAccountId
     ) {
         if (sourceAccountId != null
-                && checkAccountOwnershipUseCase.execute(
+                && checkUserAccountOwnershipUseCase.execute(
                     userId,
                     sourceAccountId)) {
             return;
         }
 
         if (destinationAccountId != null
-                && checkAccountOwnershipUseCase.execute(
+                && checkUserAccountOwnershipUseCase.execute(
                     userId,
                     destinationAccountId)) {
             return;
