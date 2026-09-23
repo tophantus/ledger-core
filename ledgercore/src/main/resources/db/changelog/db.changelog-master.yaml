@@ -159,3 +159,5 @@ databaseChangeLog:
       file: db/changelog/079-create-provider-accounts.yaml
   - include:
       file: db/changelog/080-seed-provider-settlement-product.yaml
+  - include:
+      file: db/changelog/081-drop-opening-balance-from-credit-daily-balances.yaml

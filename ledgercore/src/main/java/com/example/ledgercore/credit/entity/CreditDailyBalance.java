@@ -51,14 +51,6 @@ public class CreditDailyBalance {
     private LocalDate businessDate;
 
     @Column(
-            name = "opening_balance",
-            nullable = false,
-            precision = 19,
-            scale = 2
-    )
-    private BigDecimal openingBalance;
-
-    @Column(
             name = "closing_balance",
             nullable = false,
             precision = 19,
