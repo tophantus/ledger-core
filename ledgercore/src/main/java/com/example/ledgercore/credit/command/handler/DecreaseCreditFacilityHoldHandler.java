@@ -3,6 +3,7 @@ package com.example.ledgercore.credit.command.handler;
 import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
+import com.example.ledgercore.credit.command.dto.DecreaseCreditFacilityHoldCommand;
 import com.example.ledgercore.credit.command.port.inbound.DecreaseCreditFacilityHoldUseCase;
 import com.example.ledgercore.credit.command.repository.CreditFacilityCommandRepository;
 import com.example.ledgercore.credit.entity.CreditFacility;
@@ -25,19 +26,23 @@ public class DecreaseCreditFacilityHoldHandler
     @Override
     @Transactional
     public void execute(
-            UUID creditFacilityId,
-            BigDecimal amount,
-            Currency currency
+            DecreaseCreditFacilityHoldCommand command
     ) {
+        if (command == null) {
+            throw new BusinessException(
+                    ErrorCode.INVALID_REQUEST
+            );
+        }
+
         validateInput(
-                creditFacilityId,
-                amount,
-                currency
+                command.creditFacilityId(),
+                command.amount(),
+                command.currency()
         );
 
         CreditFacility facility =
                 creditFacilityCommandRepository
-                        .findById(creditFacilityId)
+                        .findById(command.creditFacilityId())
                         .orElseThrow(() ->
                                 new BusinessException(
                                         ErrorCode.CREDIT_FACILITY_NOT_FOUND
@@ -50,20 +55,20 @@ public class DecreaseCreditFacilityHoldHandler
             );
         }
 
-        if (facility.getCurrency() != currency) {
+        if (facility.getCurrency() != command.currency()) {
             throw new BusinessException(
                     ErrorCode.CREDIT_FACILITY_CURRENCY_MISMATCH
             );
         }
 
-        if (facility.getHoldAmount().compareTo(amount) < 0) {
+        if (facility.getHoldAmount().compareTo(command.amount()) < 0) {
             throw new BusinessException(
                     ErrorCode.CREDIT_HOLD_AMOUNT_INSUFFICIENT
             );
         }
 
         facility.setHoldAmount(
-                facility.getHoldAmount().subtract(amount)
+                facility.getHoldAmount().subtract(command.amount())
         );
     }
 

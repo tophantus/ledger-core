@@ -1,15 +1,10 @@
 package com.example.ledgercore.credit.command.port.inbound;
 
-import com.example.ledgercore.common.currency.Currency;
-
-import java.math.BigDecimal;
-import java.util.UUID;
+import com.example.ledgercore.credit.command.dto.IncreaseCreditFacilityHoldCommand;
 
 public interface IncreaseCreditFacilityHoldUseCase {
 
     void execute(
-            UUID creditFacilityId,
-            BigDecimal amount,
-            Currency currency
+            IncreaseCreditFacilityHoldCommand command
     );
 }

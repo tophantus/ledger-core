@@ -1,4 +1,4 @@
-package com.example.ledgercore.ledger.adapter.outbound;
+package com.example.ledgercore.ledger.adapter.outbound.account;
 
 import com.example.ledgercore.account.query.port.inbound.GetAccountLedgerAccountIdUseCase;
 import com.example.ledgercore.ledger.command.port.outbound.AccountLedgerMappingPort;
