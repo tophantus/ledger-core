@@ -5,6 +5,7 @@ import com.example.ledgercore.card.adapter.inbound.rest.dto.*;
 import com.example.ledgercore.card.command.dto.*;
 import com.example.ledgercore.card.command.port.inbound.AuthorizeCardPaymentByTokenUseCase;
 import com.example.ledgercore.card.command.port.inbound.AuthorizeCardPaymentUseCase;
+import com.example.ledgercore.card.command.port.inbound.CaptureCardPaymentUseCase;
 import com.example.ledgercore.card.command.port.inbound.CreateCreditCardUseCase;
 import com.example.ledgercore.card.command.port.inbound.CreateDebitCardUseCase;
 import com.example.ledgercore.card.query.dto.*;
@@ -42,6 +43,7 @@ public class CardController {
     private final AuthorizeCardPaymentUseCase authorizeCardPaymentUseCase;
     private final AuthorizeCardPaymentByTokenUseCase
             authorizeCardPaymentByTokenUseCase;
+    private final CaptureCardPaymentUseCase captureCardPaymentUseCase;
 
     @PostMapping("/debit")
     @Operation(
@@ -239,6 +241,35 @@ public class CardController {
                 ApiResponse.success(
                         result,
                         "Card payment authorized successfully"
+                )
+        );
+    }
+
+    @PostMapping("/captures")
+    @Operation(
+            summary = "Capture card authorization",
+            description = "Capture an authorized card payment"
+    )
+    public ResponseEntity<ApiResponse<CaptureCardPaymentResult>> captureCardPayment(
+            @RequestHeader("X-Provider-Client-Id") String clientId,
+            @RequestHeader("X-Provider-Credential") String credential,
+            @Valid @RequestBody CaptureCardPaymentRequest request
+    ) {
+        CaptureCardPaymentResult result =
+                captureCardPaymentUseCase.execute(
+                        new CaptureCardPaymentCommand(
+                                clientId,
+                                credential,
+                                request.authorizationId(),
+                                request.reference(),
+                                request.description()
+                        )
+                );
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        result,
+                        "Card payment captured successfully"
                 )
         );
     }

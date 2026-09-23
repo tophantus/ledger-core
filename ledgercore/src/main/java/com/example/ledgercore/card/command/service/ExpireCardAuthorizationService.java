@@ -1,6 +1,6 @@
 package com.example.ledgercore.card.command.service;
 
-import com.example.ledgercore.card.command.port.outbound.CardAuthorizationHoldPort;
+import com.example.ledgercore.card.command.port.outbound.CardReleaseHoldPort;
 import com.example.ledgercore.card.command.repository.CardAuthorizationCommandRepository;
 import com.example.ledgercore.card.entity.CardAuthorization;
 import lombok.RequiredArgsConstructor;
@@ -18,8 +18,8 @@ public class ExpireCardAuthorizationService {
     private final CardAuthorizationCommandRepository
             cardAuthorizationCommandRepository;
 
-    private final CardAuthorizationHoldPort
-            cardAuthorizationHoldPort;
+    private final CardReleaseHoldPort
+            cardReleaseHoldPort;
 
     private final Clock clock;
 
@@ -45,7 +45,7 @@ public class ExpireCardAuthorizationService {
             return;
         }
 
-        cardAuthorizationHoldPort.releaseHold(
+        cardReleaseHoldPort.releaseHold(
                 authorization.getHoldType(),
                 authorization.getHoldId()
         );
