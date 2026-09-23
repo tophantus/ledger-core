@@ -2,6 +2,7 @@ package com.example.ledgercore.credit.command.service.impl;
 
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
+import com.example.ledgercore.credit.command.port.outbound.CreditLedgerAccountPort;
 import com.example.ledgercore.credit.command.service.CreateCreditFacilityService;
 import com.example.ledgercore.credit.command.service.dto.CreateCreditFacilityCommand;
 import com.example.ledgercore.credit.command.service.dto.CreateCreditFacilityResult;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +28,8 @@ public class CreateCreditFacilityServiceImpl
     private final ActiveCreditProductPort activeCreditProductPort;
     private final CreditFacilityCommandRepository
             creditFacilityCommandRepository;
+
+    private final CreditLedgerAccountPort creditLedgerAccountPort;
 
     @Override
     @Transactional
@@ -42,8 +46,10 @@ public class CreateCreditFacilityServiceImpl
         validateCreditProduct(product);
 
         Instant now = Instant.now();
+        UUID creditFacilityId = UUID.randomUUID();
 
         CreditFacility facility = CreditFacility.builder()
+                .id(creditFacilityId)
                 .customerId(command.customerId())
                 .productId(product.id())
                 .creditLimit(command.creditLimit())
@@ -55,8 +61,15 @@ public class CreateCreditFacilityServiceImpl
                 .updatedAt(now)
                 .build();
 
-        CreditFacility saved =
-                creditFacilityCommandRepository.save(facility);
+        UUID ledgerAccountId =
+                creditLedgerAccountPort.createCreditLedgerAccount(
+                        facility.getId(),
+                        facility.getCurrency()
+                );
+
+        facility.setLedgerAccountId(ledgerAccountId);
+
+        CreditFacility saved = creditFacilityCommandRepository.save(facility);
 
         return new CreateCreditFacilityResult(
                 saved.getId(),
