@@ -4,9 +4,7 @@ import com.example.ledgercore.outbox.command.port.inbound.SaveOutboxEventUseCase
 import com.example.ledgercore.outbox.event.OutboxAggregateType;
 import com.example.ledgercore.outbox.event.OutboxEventType;
 import com.example.ledgercore.transaction.command.port.outbound.TransactionEventPort;
-import com.example.ledgercore.transaction.event.DepositCompletedEvent;
-import com.example.ledgercore.transaction.event.TransferCompletedEvent;
-import com.example.ledgercore.transaction.event.WithdrawCompletedEvent;
+import com.example.ledgercore.transaction.event.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -17,37 +15,25 @@ public class TransactionEventAdapter implements TransactionEventPort {
     private final SaveOutboxEventUseCase saveOutboxEventUseCase;
 
     @Override
-    public void publishTransferCompleted(
-            TransferCompletedEvent event
+    public void publishAccountBalanceChanged(
+            AccountBalanceChangedEvent event
     ) {
         saveOutboxEventUseCase.execute(
                 OutboxAggregateType.TRANSACTION.getValue(),
                 event.transactionId(),
-                OutboxEventType.TRANSFER_COMPLETED.getValue(),
+                OutboxEventType.ACCOUNT_BALANCE_CHANGED.getValue(),
                 event
         );
     }
 
     @Override
-    public void publishDepositCompleted(
-            DepositCompletedEvent event
+    public void publishCreditFacilityBalanceChanged(
+            CreditFacilityBalanceChangedEvent event
     ) {
         saveOutboxEventUseCase.execute(
                 OutboxAggregateType.TRANSACTION.getValue(),
                 event.transactionId(),
-                OutboxEventType.DEPOSIT_COMPLETED.getValue(),
-                event
-        );
-    }
-
-    @Override
-    public void publishWithdrawCompleted(
-            WithdrawCompletedEvent event
-    ) {
-        saveOutboxEventUseCase.execute(
-                OutboxAggregateType.TRANSACTION.getValue(),
-                event.transactionId(),
-                OutboxEventType.WITHDRAW_COMPLETED.getValue(),
+                OutboxEventType.CREDIT_FACILITY_BALANCE_CHANGED.getValue(),
                 event
         );
     }

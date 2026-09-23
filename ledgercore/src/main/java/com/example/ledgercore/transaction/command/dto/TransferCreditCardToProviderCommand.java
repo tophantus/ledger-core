@@ -5,7 +5,7 @@ import com.example.ledgercore.common.currency.Currency;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-public record TransferCreditFacilityToProviderCommand(
+public record TransferCreditCardToProviderCommand(
         UUID creditFacilityId,
         UUID providerAccountId,
         BigDecimal amount,
