@@ -17,7 +17,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/transactions")
+@RequestMapping("/api/v1/transfers")
 @RequiredArgsConstructor
 @Tag(
         name = "Transfers",
@@ -31,7 +31,7 @@ public class TransferController {
     private final ConfirmTransferUseCase
             confirmTransferUseCase;
 
-    @PostMapping("/transfer-intents")
+    @PostMapping("/intents")
     @Operation(
             summary = "Create transfer intent",
             description = """
@@ -59,7 +59,7 @@ public class TransferController {
         );
     }
 
-    @PostMapping("/transfer-intents/confirm")
+    @PostMapping("/intents/confirm")
     @Operation(
             summary = "Confirm transfer intent",
             description = """

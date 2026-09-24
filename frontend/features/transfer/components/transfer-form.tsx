@@ -19,7 +19,7 @@ import type {
 import type {
     TransferDestinationForm,
     TransferDetailsForm,
-} from "@/features/transaction/schemas/transfer-schema";
+} from "@/features/transfer/schemas/transfer-schema";
 
 import {isAmountGreaterThanZero} from "@/lib/utils/money";
 import {AccountSelect} from "@/features/account/components/account-select";
@@ -65,7 +65,7 @@ export function TransferForm({
                                  onCreateIntent,
                              }: TransferFormProps) {
     const t =
-        useTranslations("transaction");
+        useTranslations("transfer");
 
     const handleFindHolder = () => {
         const destination =
@@ -82,7 +82,7 @@ export function TransferForm({
                 {
                     type: "manual",
                     message: t(
-                        "transfer.sameSourceDestination",
+                        "sameSourceDestination",
                     ),
                 },
             );
@@ -126,7 +126,7 @@ export function TransferForm({
                     "
                 >
                     {t(
-                        "transfer.sourceAccount",
+                        "sourceAccount",
                     )}
                 </label>
 
@@ -138,7 +138,7 @@ export function TransferForm({
                     <div className="rounded-md border border-border bg-background-subtle p-3">
                         <p className="text-sm text-muted">
                             {t(
-                                "transfer.noAccounts",
+                                "noAccounts",
                             )}
                         </p>
                     </div>
@@ -185,7 +185,7 @@ export function TransferForm({
                         "
                     >
                         {t(
-                            "transfer.destinationAccount",
+                            "destinationAccount",
                         )}
                     </label>
 
@@ -210,7 +210,7 @@ export function TransferForm({
                                 outline-none
                             "
                             placeholder={t(
-                                "transfer.destinationPlaceholder",
+                                "destinationPlaceholder",
                             )}
                         />
 
@@ -220,7 +220,7 @@ export function TransferForm({
                                 variant="outline"
                                 onClick={handleChangeDestination}
                             >
-                                {t("transfer.change")}
+                                {t("change")}
                             </Button>
                         ) : (
                             <Button
@@ -228,7 +228,7 @@ export function TransferForm({
                                 variant="outline"
                                 loading={isHolderLoading}
                             >
-                                {t("transfer.check")}
+                                {t("check")}
                             </Button>
                         )}
                     </div>
@@ -264,7 +264,7 @@ export function TransferForm({
                 >
                     <p className="text-xs text-muted">
                         {t(
-                            "transfer.recipient",
+                            "recipient",
                         )}
                     </p>
 
@@ -306,7 +306,7 @@ export function TransferForm({
                                 "
                             >
                                 {t(
-                                    "transfer.amount",
+                                    "amount",
                                 )}
                             </label>
 
@@ -360,7 +360,7 @@ export function TransferForm({
                                 "
                             >
                                 {t(
-                                    "transfer.descriptionField",
+                                    "descriptionField",
                                 )}
                             </label>
 
@@ -384,7 +384,7 @@ export function TransferForm({
                                     outline-none
                                 "
                                 placeholder={t(
-                                    "transfer.descriptionPlaceholder",
+                                    "descriptionPlaceholder",
                                 )}
                             />
 
@@ -416,7 +416,7 @@ export function TransferForm({
                             }
                         >
                             {t(
-                                "transfer.continue",
+                                "continue",
                             )}
                         </Button>
                     </div>

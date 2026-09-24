@@ -37,6 +37,10 @@ export const API_ENDPOINTS = {
         CONFIRM_TRANSFER:
             "/api/v1/transactions/transfer-intents/confirm"
     },
+    TRANSFER: {
+        CREATE_INTENT: "/api/v1/transfers/intents",
+        CONFIRM_INTENT: "/api/v1/transfers/intents/confirm",
+    },
     WITHDRAWAL: {
         REQUESTS: "/api/v1/withdrawals/requests",
         CONFIRM: (requestId: string) =>

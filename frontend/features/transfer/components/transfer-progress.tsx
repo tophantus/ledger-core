@@ -15,7 +15,7 @@ export function TransferProgress({
                                      step,
                                  }: TransferProgressProps) {
     const t =
-        useTranslations("transaction");
+        useTranslations("transfer");
 
     const steps: Array<{
         key: TransferStep;
@@ -24,13 +24,13 @@ export function TransferProgress({
         {
             key: "TRANSFER",
             label: t(
-                "transfer.steps.transfer",
+                "steps.transfer",
             ),
         },
         {
             key: "OTP",
             label: t(
-                "transfer.steps.confirm",
+                "steps.confirm",
             ),
         },
     ];
