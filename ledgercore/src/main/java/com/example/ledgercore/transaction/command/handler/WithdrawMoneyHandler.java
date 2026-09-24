@@ -13,7 +13,7 @@ import com.example.ledgercore.transaction.command.repository.TransactionCommandR
 import com.example.ledgercore.transaction.entity.MoneyTransaction;
 import com.example.ledgercore.transaction.enums.TransactionStatus;
 import com.example.ledgercore.transaction.enums.TransactionType;
-import com.example.ledgercore.transaction.event.WithdrawCompletedEvent;
+import com.example.ledgercore.transaction.event.AccountBalanceChangedEvent;
 import com.example.ledgercore.transaction.query.dto.TransactionResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -67,14 +67,13 @@ public class WithdrawMoneyHandler
 
         completeTransaction(transaction);
 
-        transactionEventPort.publishWithdrawCompleted(
-                new WithdrawCompletedEvent(
+        transactionEventPort.publishAccountBalanceChanged(
+                new AccountBalanceChangedEvent(
                         transaction.getId(),
-                        transaction.getReference(),
                         transaction.getSourceAccountId(),
                         transaction.getAmount(),
                         transaction.getCurrency(),
-                        transaction.getCompletedAt()
+                        Instant.now()
                 )
         );
 

@@ -114,4 +114,10 @@ public class CardAuthorization {
         this.status = CardAuthorizationStatus.EXPIRED;
         this.updatedAt = now;
     }
+
+    public void capture(Instant now) {
+        this.status = CardAuthorizationStatus.CAPTURED;
+        this.capturedAt = now;
+        this.updatedAt = now;
+    }
 }

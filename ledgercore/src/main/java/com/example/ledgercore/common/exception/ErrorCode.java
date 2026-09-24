@@ -315,6 +315,24 @@ public enum ErrorCode {
             HttpStatus.BAD_REQUEST
     ),
 
+    CARD_CAPTURE_PROVIDER_MISMATCH(
+            "CARD_031",
+            "Authorization provider does not match authenticated provider",
+            HttpStatus.FORBIDDEN
+    ),
+
+    CARD_CAPTURE_NOT_ALLOWED(
+            "CARD_032",
+            "Authorization cannot be captured",
+            HttpStatus.CONFLICT
+    ),
+
+    CARD_CAPTURE_INVALID_FUNDING_SOURCE(
+            "CARD_033",
+            "Card funding source is invalid",
+            HttpStatus.BAD_REQUEST
+    ),
+
     // Card Token
 
     CARD_TOKEN_INVALID_STATUS(

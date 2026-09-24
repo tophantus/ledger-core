@@ -10,14 +10,11 @@ public class TransactionRabbitConfig {
     public static final String TRANSACTION_EXCHANGE =
             "transaction.exchange";
 
-    public static final String TRANSFER_COMPLETED_ROUTING_KEY =
-            "transaction.transfer.completed";
+    public static final String ACCOUNT_BALANCE_CHANGED_ROUTING_KEY =
+            "transaction.account-balance.changed";
 
-    public static final String DEPOSIT_COMPLETED_ROUTING_KEY =
-            "transaction.deposit.completed";
-
-    public static final String WITHDRAW_COMPLETED_ROUTING_KEY =
-            "transaction.withdraw.completed";
+    public static final String CREDIT_FACILITY_BALANCE_CHANGED_ROUTING_KEY =
+            "transaction.credit-facility-balance.changed";
 
     @Bean
     public TopicExchange transactionExchange() {

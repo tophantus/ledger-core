@@ -4,7 +4,7 @@ import com.example.ledgercore.card.enums.CardAuthorizationHoldType;
 
 import java.util.UUID;
 
-public interface CardAuthorizationHoldPort {
+public interface CardReleaseHoldPort {
 
     void releaseHold(
             CardAuthorizationHoldType holdType,

@@ -5,9 +5,7 @@ import com.example.ledgercore.businessday.event.BusinessDayClosedEvent;
 import com.example.ledgercore.otp.config.OtpRabbitConfig;
 import com.example.ledgercore.otp.event.OtpNotificationEvent;
 import com.example.ledgercore.transaction.config.TransactionRabbitConfig;
-import com.example.ledgercore.transaction.event.DepositCompletedEvent;
-import com.example.ledgercore.transaction.event.TransferCompletedEvent;
-import com.example.ledgercore.transaction.event.WithdrawCompletedEvent;
+import com.example.ledgercore.transaction.event.*;
 import com.example.ledgercore.withdrawal.config.WithdrawalRabbitConfig;
 import com.example.ledgercore.withdrawal.event.WithdrawalNotificationEvent;
 import lombok.Getter;
@@ -44,28 +42,21 @@ public enum OutboxEventType {
     // TRANSACTION
     // =========================
 
-    TRANSFER_COMPLETED(
-            "TRANSFER_COMPLETED",
+    ACCOUNT_BALANCE_CHANGED(
+            "ACCOUNT_BALANCE_CHANGED",
             OutboxAggregateType.TRANSACTION,
-            TransferCompletedEvent.class,
+            AccountBalanceChangedEvent.class,
             TransactionRabbitConfig.TRANSACTION_EXCHANGE,
-            TransactionRabbitConfig.TRANSFER_COMPLETED_ROUTING_KEY
+            TransactionRabbitConfig.ACCOUNT_BALANCE_CHANGED_ROUTING_KEY
     ),
 
-    DEPOSIT_COMPLETED(
-            "DEPOSIT_COMPLETED",
+    CREDIT_FACILITY_BALANCE_CHANGED(
+            "CREDIT_FACILITY_BALANCE_CHANGED",
             OutboxAggregateType.TRANSACTION,
-            DepositCompletedEvent.class,
+            CreditFacilityBalanceChangedEvent.class,
             TransactionRabbitConfig.TRANSACTION_EXCHANGE,
-            TransactionRabbitConfig.DEPOSIT_COMPLETED_ROUTING_KEY
-    ),
-
-    WITHDRAW_COMPLETED(
-            "WITHDRAW_COMPLETED",
-            OutboxAggregateType.TRANSACTION,
-            WithdrawCompletedEvent.class,
-            TransactionRabbitConfig.TRANSACTION_EXCHANGE,
-            TransactionRabbitConfig.WITHDRAW_COMPLETED_ROUTING_KEY
+            TransactionRabbitConfig
+                    .CREDIT_FACILITY_BALANCE_CHANGED_ROUTING_KEY
     ),
 
     // =========================

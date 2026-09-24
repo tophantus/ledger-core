@@ -6,12 +6,11 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 
-public record WithdrawCompletedEvent(
+public record AccountBalanceChangedEvent(
         UUID transactionId,
-        String reference,
         UUID accountId,
-        BigDecimal amount,
+        BigDecimal balanceDelta,
         Currency currency,
-        Instant completedAt
+        Instant changedAt
 ) {
 }

@@ -15,7 +15,7 @@ import com.example.ledgercore.transaction.command.repository.TransactionCommandR
 import com.example.ledgercore.transaction.entity.MoneyTransaction;
 import com.example.ledgercore.transaction.enums.TransactionStatus;
 import com.example.ledgercore.transaction.enums.TransactionType;
-import com.example.ledgercore.transaction.event.DepositCompletedEvent;
+import com.example.ledgercore.transaction.event.AccountBalanceChangedEvent;
 import com.example.ledgercore.transaction.query.dto.TransactionResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -95,14 +95,13 @@ public class DepositMoneyHandler implements DepositMoneyUseCase {
 
         completeTransaction(transaction);
 
-        transactionEventPort.publishDepositCompleted(
-                new DepositCompletedEvent(
+        transactionEventPort.publishAccountBalanceChanged(
+                new AccountBalanceChangedEvent(
                         transaction.getId(),
-                        transaction.getReference(),
-                        transaction.getDestinationAccountId(),
-                        transaction.getAmount(),
-                        transaction.getCurrency(),
-                        transaction.getCompletedAt()
+                        command.destinationAccountId(),
+                        command.amount(),
+                        command.currency(),
+                        Instant.now()
                 )
         );
 

@@ -1,0 +1,57 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 083-create-card-captures
+      author: tophantus
+
+      changes:
+        - createTable:
+            tableName: card_captures
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_card_captures
+                    nullable: false
+
+              - column:
+                  name: authorization_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: transaction_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: amount
+                  type: NUMERIC(19,2)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: captured_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+        - addUniqueConstraint:
+            tableName: card_captures
+            columnNames: authorization_id
+            constraintName: uk_card_captures_authorization_id
+
+        - addUniqueConstraint:
+            tableName: card_captures
+            columnNames: transaction_id
+            constraintName: uk_card_captures_transaction_id

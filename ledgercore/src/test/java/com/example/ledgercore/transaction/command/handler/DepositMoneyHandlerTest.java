@@ -4,20 +4,21 @@ import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.transaction.command.dto.DepositMoneyCommand;
+import com.example.ledgercore.transaction.command.port.outbound.DepositLedgerPort;
 import com.example.ledgercore.transaction.command.port.outbound.DepositUserAccountPort;
 import com.example.ledgercore.transaction.command.port.outbound.TransactionBusinessDayPort;
-import com.example.ledgercore.transaction.command.port.outbound.DepositLedgerPort;
 import com.example.ledgercore.transaction.command.port.outbound.TransactionEventPort;
 import com.example.ledgercore.transaction.command.repository.TransactionCommandRepository;
 import com.example.ledgercore.transaction.entity.MoneyTransaction;
 import com.example.ledgercore.transaction.enums.TransactionStatus;
 import com.example.ledgercore.transaction.enums.TransactionType;
-import com.example.ledgercore.transaction.event.DepositCompletedEvent;
+import com.example.ledgercore.transaction.event.AccountBalanceChangedEvent;
 import com.example.ledgercore.transaction.query.dto.TransactionResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -84,23 +85,7 @@ class DepositMoneyHandlerTest {
                         "Cash deposit"
                 );
 
-        DepositUserAccountPort.DepositAccountInfo depositInfo =
-                new DepositUserAccountPort.DepositAccountInfo(
-                        destinationAccountId,
-                        Currency.VND
-                );
-
-        when(transactionCommandRepository.findByReference(
-                "DEP-001"
-        )).thenReturn(Optional.empty());
-
-        when(depositUserAccountPort.getDepositInfo(
-                destinationAccountId
-        )).thenReturn(depositInfo);
-
-        when(transactionBusinessDayPort.getCurrentBusinessDate())
-                .thenReturn(BUSINESS_DATE);
-
+        mockValidDeposit(command);
         mockSaveTransaction();
 
         TransactionResponse response =
@@ -115,56 +100,46 @@ class DepositMoneyHandlerTest {
                 transactionId,
                 response.id()
         );
+
         assertEquals(
                 "DEP-001",
                 response.reference()
         );
+
         assertEquals(
                 TransactionType.DEPOSIT,
                 response.type()
         );
+
         assertEquals(
                 TransactionStatus.COMPLETED,
                 response.status()
         );
+
         assertEquals(
                 destinationAccountId,
                 response.destinationAccountId()
         );
+
         assertEquals(
                 new BigDecimal("100"),
                 response.amount()
         );
+
         assertEquals(
                 Currency.VND,
                 response.currency()
         );
+
         assertEquals(
                 "Cash deposit",
                 response.description()
         );
+
         assertNotNull(response.completedAt());
 
-        ArgumentCaptor<MoneyTransaction> captor =
-                ArgumentCaptor.forClass(
-                        MoneyTransaction.class
-                );
-
         verify(transactionCommandRepository)
-                .save(captor.capture());
-
-        MoneyTransaction transaction =
-                captor.getValue();
-
-        assertEquals(
-                BUSINESS_DATE,
-                transaction.getBusinessDate()
-        );
-
-        assertEquals(
-                TransactionStatus.COMPLETED,
-                transaction.getStatus()
-        );
+                .save(any(MoneyTransaction.class));
 
         verify(depositUserAccountPort)
                 .deposit(
@@ -183,8 +158,8 @@ class DepositMoneyHandlerTest {
                 );
 
         verify(transactionEventPort)
-                .publishDepositCompleted(
-                        any(DepositCompletedEvent.class)
+                .publishAccountBalanceChanged(
+                        any(AccountBalanceChangedEvent.class)
                 );
 
         verify(transactionBusinessDayPort)
@@ -250,6 +225,15 @@ class DepositMoneyHandlerTest {
             );
 
             assertEquals(
+                    Currency.VND,
+                    transaction.getCurrency()
+            );
+
+            assertNull(
+                    transaction.getDescription()
+            );
+
+            assertEquals(
                     BUSINESS_DATE,
                     transaction.getBusinessDate()
             );
@@ -307,9 +291,16 @@ class DepositMoneyHandlerTest {
                         command
                 );
 
+        assertNotNull(response);
+
         assertEquals(
                 transactionId,
                 response.id()
+        );
+
+        assertEquals(
+                "DEP-003",
+                response.reference()
         );
 
         assertEquals(
@@ -321,6 +312,12 @@ class DepositMoneyHandlerTest {
                 TransactionStatus.COMPLETED,
                 response.status()
         );
+
+        verify(transactionCommandRepository)
+                .findByReference("DEP-003");
+
+        verify(transactionCommandRepository, never())
+                .save(any());
 
         verify(depositUserAccountPort, never())
                 .getDepositInfo(any());
@@ -336,9 +333,6 @@ class DepositMoneyHandlerTest {
                         any(),
                         any()
                 );
-
-        verify(transactionCommandRepository, never())
-                .save(any());
 
         verifyNoInteractions(
                 transactionBusinessDayPort,
@@ -384,22 +378,15 @@ class DepositMoneyHandlerTest {
                 exception.getErrorCode()
         );
 
-        verify(depositUserAccountPort, never())
-                .getDepositInfo(any());
+        verify(transactionCommandRepository)
+                .findByReference("REF-001");
 
-        verify(depositUserAccountPort, never())
-                .deposit(any(), any(), any());
-
-        verify(depositLedgerPort, never())
-                .recordDeposit(
-                        any(),
-                        any(),
-                        any(),
-                        any(),
-                        any()
-                );
+        verify(transactionCommandRepository, never())
+                .save(any());
 
         verifyNoInteractions(
+                depositUserAccountPort,
+                depositLedgerPort,
                 transactionBusinessDayPort,
                 transactionEventPort
         );
@@ -476,124 +463,14 @@ class DepositMoneyHandlerTest {
     }
 
     @Test
-    void shouldThrowWhenCurrencyDoesNotMatchAccount() {
-
-        DepositMoneyCommand command =
-                command(
-                        destinationAccountId,
-                        "100",
-                        Currency.USD,
-                        "DEP-006",
-                        null
-                );
-
-        when(transactionCommandRepository.findByReference(
-                "DEP-006"
-        )).thenReturn(Optional.empty());
-
-        when(depositUserAccountPort.getDepositInfo(
-                destinationAccountId
-        )).thenReturn(
-                new DepositUserAccountPort.DepositAccountInfo(
-                        destinationAccountId,
-                        Currency.VND
-                )
-        );
-
-        BusinessException exception =
-                assertThrows(
-                        BusinessException.class,
-                        () -> handler.execute(
-                                adminUserId,
-                                command
-                        )
-                );
-
-        assertEquals(
-                ErrorCode.TRANSACTION_CURRENCY_MISMATCH,
-                exception.getErrorCode()
-        );
-
-        verify(transactionCommandRepository, never())
-                .save(any());
-
-        verify(depositUserAccountPort, never())
-                .deposit(any(), any(), any());
-
-        verifyNoInteractions(
-                depositLedgerPort,
-                transactionEventPort,
-                transactionBusinessDayPort
-        );
-    }
-
-    @Test
-    void shouldUseCurrentBusinessDateForTransactionAndLedger() {
-
-        DepositMoneyCommand command =
-                command(
-                        destinationAccountId,
-                        "250",
-                        Currency.VND,
-                        "DEP-007",
-                        "deposit"
-                );
-
-        when(transactionCommandRepository.findByReference(
-                "DEP-007"
-        )).thenReturn(Optional.empty());
-
-        when(depositUserAccountPort.getDepositInfo(
-                destinationAccountId
-        )).thenReturn(
-                new DepositUserAccountPort.DepositAccountInfo(
-                        destinationAccountId,
-                        Currency.VND
-                )
-        );
-
-        when(transactionBusinessDayPort.getCurrentBusinessDate())
-                .thenReturn(BUSINESS_DATE);
-
-        mockSaveTransaction();
-
-        handler.execute(
-                adminUserId,
-                command
-        );
-
-        ArgumentCaptor<MoneyTransaction> captor =
-                ArgumentCaptor.forClass(
-                        MoneyTransaction.class
-                );
-
-        verify(transactionCommandRepository)
-                .save(captor.capture());
-
-        assertEquals(
-                BUSINESS_DATE,
-                captor.getValue().getBusinessDate()
-        );
-
-        verify(depositLedgerPort)
-                .recordDeposit(
-                        transactionId,
-                        destinationAccountId,
-                        new BigDecimal("250"),
-                        Currency.VND,
-                        BUSINESS_DATE
-                );
-    }
-
-    @Test
-    void shouldThrowWhenAmountScaleExceedsCurrencyScale() {
+    void shouldThrowWhenCurrencyAmountScaleIsInvalid() {
 
         DepositMoneyCommand command =
                 command(
                         destinationAccountId,
                         "100.1",
                         Currency.VND,
-                        "DEP-009",
+                        "DEP-006",
                         null
                 );
 
@@ -621,7 +498,65 @@ class DepositMoneyHandlerTest {
     }
 
     @Test
-    void shouldPublishCompletedEventAfterDeposit() {
+    void shouldThrowWhenCurrencyDoesNotMatchAccount() {
+
+        DepositMoneyCommand command =
+                command(
+                        destinationAccountId,
+                        "100",
+                        Currency.USD,
+                        "DEP-007",
+                        null
+                );
+
+        when(transactionCommandRepository.findByReference(
+                "DEP-007"
+        )).thenReturn(Optional.empty());
+
+        when(depositUserAccountPort.getDepositInfo(
+                destinationAccountId
+        )).thenReturn(
+                new DepositUserAccountPort.DepositAccountInfo(
+                        destinationAccountId,
+                        Currency.VND
+                )
+        );
+
+        BusinessException exception =
+                assertThrows(
+                        BusinessException.class,
+                        () -> handler.execute(
+                                adminUserId,
+                                command
+                        )
+                );
+
+        assertEquals(
+                ErrorCode.TRANSACTION_CURRENCY_MISMATCH,
+                exception.getErrorCode()
+        );
+
+        verify(transactionCommandRepository)
+                .findByReference("DEP-007");
+
+        verify(depositUserAccountPort)
+                .getDepositInfo(destinationAccountId);
+
+        verify(transactionCommandRepository, never())
+                .save(any());
+
+        verify(depositUserAccountPort, never())
+                .deposit(any(), any(), any());
+
+        verifyNoInteractions(
+                depositLedgerPort,
+                transactionBusinessDayPort,
+                transactionEventPort
+        );
+    }
+
+    @Test
+    void shouldUseCurrentBusinessDateForTransactionAndLedger() {
 
         DepositMoneyCommand command =
                 command(
@@ -632,8 +567,265 @@ class DepositMoneyHandlerTest {
                         "deposit"
                 );
 
+        mockValidDeposit(command);
+        mockSaveTransaction();
+
+        handler.execute(
+                adminUserId,
+                command
+        );
+
+        ArgumentCaptor<MoneyTransaction> captor =
+                ArgumentCaptor.forClass(
+                        MoneyTransaction.class
+                );
+
+        verify(transactionCommandRepository)
+                .save(captor.capture());
+
+        MoneyTransaction transaction =
+                captor.getValue();
+
+        assertEquals(
+                BUSINESS_DATE,
+                transaction.getBusinessDate()
+        );
+
+        verify(depositUserAccountPort)
+                .deposit(
+                        destinationAccountId,
+                        new BigDecimal("250"),
+                        BUSINESS_DATE
+                );
+
+        verify(depositLedgerPort)
+                .recordDeposit(
+                        transactionId,
+                        destinationAccountId,
+                        new BigDecimal("250"),
+                        Currency.VND,
+                        BUSINESS_DATE
+                );
+    }
+
+    @Test
+    void shouldCreateDepositTransactionWithCorrectFields() {
+
+        DepositMoneyCommand command =
+                command(
+                        destinationAccountId,
+                        "500",
+                        Currency.VND,
+                        "DEP-009",
+                        "Initial cash deposit"
+                );
+
+        mockValidDeposit(command);
+        mockSaveTransaction();
+
+        handler.execute(
+                adminUserId,
+                command
+        );
+
+        ArgumentCaptor<MoneyTransaction> captor =
+                ArgumentCaptor.forClass(
+                        MoneyTransaction.class
+                );
+
+        verify(transactionCommandRepository)
+                .save(captor.capture());
+
+        MoneyTransaction transaction =
+                captor.getValue();
+
+        assertEquals(
+                transactionId,
+                transaction.getId()
+        );
+
+        assertEquals(
+                "DEP-009",
+                transaction.getReference()
+        );
+
+        assertEquals(
+                TransactionType.DEPOSIT,
+                transaction.getType()
+        );
+
+        assertEquals(
+                TransactionStatus.COMPLETED,
+                transaction.getStatus()
+        );
+
+        assertEquals(
+                destinationAccountId,
+                transaction.getDestinationAccountId()
+        );
+
+        assertEquals(
+                new BigDecimal("500"),
+                transaction.getAmount()
+        );
+
+        assertEquals(
+                Currency.VND,
+                transaction.getCurrency()
+        );
+
+        assertEquals(
+                "Initial cash deposit",
+                transaction.getDescription()
+        );
+
+        assertEquals(
+                BUSINESS_DATE,
+                transaction.getBusinessDate()
+        );
+    }
+
+    @Test
+    void shouldPublishAccountBalanceChangedEventAfterDeposit() {
+
+        DepositMoneyCommand command =
+                command(
+                        destinationAccountId,
+                        "250",
+                        Currency.VND,
+                        "DEP-010",
+                        "deposit"
+                );
+
+        mockValidDeposit(command);
+        mockSaveTransaction();
+
+        handler.execute(
+                adminUserId,
+                command
+        );
+
+        ArgumentCaptor<AccountBalanceChangedEvent> captor =
+                ArgumentCaptor.forClass(
+                        AccountBalanceChangedEvent.class
+                );
+
+        verify(transactionEventPort)
+                .publishAccountBalanceChanged(
+                        captor.capture()
+                );
+
+        AccountBalanceChangedEvent event =
+                captor.getValue();
+
+        assertEquals(
+                transactionId,
+                event.transactionId()
+        );
+
+        assertEquals(
+                destinationAccountId,
+                event.accountId()
+        );
+
+        assertEquals(
+                new BigDecimal("250"),
+                event.balanceDelta()
+        );
+
+        assertEquals(
+                Currency.VND,
+                event.currency()
+        );
+
+        assertNotNull(
+                event.changedAt()
+        );
+    }
+
+    @Test
+    void shouldCompleteTransactionBeforePublishingEvent() {
+
+        DepositMoneyCommand command =
+                command(
+                        destinationAccountId,
+                        "250",
+                        Currency.VND,
+                        "DEP-011",
+                        "deposit"
+                );
+
+        mockValidDeposit(command);
+        mockSaveTransaction();
+
+        ArgumentCaptor<MoneyTransaction> transactionCaptor =
+                ArgumentCaptor.forClass(
+                        MoneyTransaction.class
+                );
+
+        InOrder inOrder = inOrder(
+                transactionCommandRepository,
+                depositUserAccountPort,
+                depositLedgerPort,
+                transactionEventPort
+        );
+
+        handler.execute(
+                adminUserId,
+                command
+        );
+
+        inOrder.verify(transactionCommandRepository)
+                .save(transactionCaptor.capture());
+
+        inOrder.verify(depositUserAccountPort)
+                .deposit(
+                        destinationAccountId,
+                        new BigDecimal("250"),
+                        BUSINESS_DATE
+                );
+
+        inOrder.verify(depositLedgerPort)
+                .recordDeposit(
+                        transactionId,
+                        destinationAccountId,
+                        new BigDecimal("250"),
+                        Currency.VND,
+                        BUSINESS_DATE
+                );
+
+        inOrder.verify(transactionEventPort)
+                .publishAccountBalanceChanged(
+                        any(AccountBalanceChangedEvent.class)
+                );
+
+        MoneyTransaction transaction =
+                transactionCaptor.getValue();
+
+        assertEquals(
+                TransactionStatus.COMPLETED,
+                transaction.getStatus()
+        );
+
+        assertNotNull(
+                transaction.getCompletedAt()
+        );
+    }
+
+    @Test
+    void shouldNotDepositWhenTransactionSaveFails() {
+
+        DepositMoneyCommand command =
+                command(
+                        destinationAccountId,
+                        "100",
+                        Currency.VND,
+                        "DEP-012",
+                        null
+                );
+
         when(transactionCommandRepository.findByReference(
-                "DEP-008"
+                "DEP-012"
         )).thenReturn(Optional.empty());
 
         when(depositUserAccountPort.getDepositInfo(
@@ -648,54 +840,184 @@ class DepositMoneyHandlerTest {
         when(transactionBusinessDayPort.getCurrentBusinessDate())
                 .thenReturn(BUSINESS_DATE);
 
+        doThrow(new RuntimeException("Save failed"))
+                .when(transactionCommandRepository)
+                .save(any(MoneyTransaction.class));
+
+        assertThrows(
+                RuntimeException.class,
+                () -> handler.execute(
+                        adminUserId,
+                        command
+                )
+        );
+
+        verify(transactionCommandRepository)
+                .save(any(MoneyTransaction.class));
+
+        verify(depositUserAccountPort, never())
+                .deposit(any(), any(), any());
+
+        verifyNoInteractions(
+                depositLedgerPort,
+                transactionEventPort
+        );
+    }
+
+    @Test
+    void shouldNotRecordLedgerWhenDepositFails() {
+
+        DepositMoneyCommand command =
+                command(
+                        destinationAccountId,
+                        "100",
+                        Currency.VND,
+                        "DEP-013",
+                        null
+                );
+
+        mockValidDeposit(command);
         mockSaveTransaction();
 
-        handler.execute(
-                adminUserId,
-                command
+        doThrow(new RuntimeException("Deposit failed"))
+                .when(depositUserAccountPort)
+                .deposit(
+                        destinationAccountId,
+                        new BigDecimal("100"),
+                        BUSINESS_DATE
+                );
+
+        assertThrows(
+                RuntimeException.class,
+                () -> handler.execute(
+                        adminUserId,
+                        command
+                )
         );
 
-        ArgumentCaptor<DepositCompletedEvent> captor =
-                ArgumentCaptor.forClass(
-                        DepositCompletedEvent.class
+        verify(transactionCommandRepository)
+                .save(any(MoneyTransaction.class));
+
+        verify(depositUserAccountPort)
+                .deposit(
+                        destinationAccountId,
+                        new BigDecimal("100"),
+                        BUSINESS_DATE
                 );
+
+        verifyNoInteractions(
+                depositLedgerPort,
+                transactionEventPort
+        );
+    }
+
+    @Test
+    void shouldNotPublishEventWhenLedgerRecordingFails() {
+
+        DepositMoneyCommand command =
+                command(
+                        destinationAccountId,
+                        "100",
+                        Currency.VND,
+                        "DEP-014",
+                        null
+                );
+
+        mockValidDeposit(command);
+        mockSaveTransaction();
+
+        doThrow(new RuntimeException("Ledger failed"))
+                .when(depositLedgerPort)
+                .recordDeposit(
+                        transactionId,
+                        destinationAccountId,
+                        new BigDecimal("100"),
+                        Currency.VND,
+                        BUSINESS_DATE
+                );
+
+        assertThrows(
+                RuntimeException.class,
+                () -> handler.execute(
+                        adminUserId,
+                        command
+                )
+        );
+
+        verify(depositUserAccountPort)
+                .deposit(
+                        destinationAccountId,
+                        new BigDecimal("100"),
+                        BUSINESS_DATE
+                );
+
+        verify(depositLedgerPort)
+                .recordDeposit(
+                        transactionId,
+                        destinationAccountId,
+                        new BigDecimal("100"),
+                        Currency.VND,
+                        BUSINESS_DATE
+                );
+
+        verifyNoInteractions(
+                transactionEventPort
+        );
+    }
+
+    @Test
+    void shouldPropagateWhenPublishingBalanceChangedEventFails() {
+
+        DepositMoneyCommand command =
+                command(
+                        destinationAccountId,
+                        "100",
+                        Currency.VND,
+                        "DEP-015",
+                        null
+                );
+
+        mockValidDeposit(command);
+        mockSaveTransaction();
+
+        doThrow(new RuntimeException("Event publishing failed"))
+                .when(transactionEventPort)
+                .publishAccountBalanceChanged(
+                        any(AccountBalanceChangedEvent.class)
+                );
+
+        assertThrows(
+                RuntimeException.class,
+                () -> handler.execute(
+                        adminUserId,
+                        command
+                )
+        );
 
         verify(transactionEventPort)
-                .publishDepositCompleted(
-                        captor.capture()
+                .publishAccountBalanceChanged(
+                        any(AccountBalanceChangedEvent.class)
                 );
+    }
 
-        DepositCompletedEvent event =
-                captor.getValue();
+    private void mockValidDeposit(
+            DepositMoneyCommand command
+    ) {
+        when(transactionCommandRepository.findByReference(
+                command.reference()
+        )).thenReturn(Optional.empty());
 
-        assertEquals(
-                transactionId,
-                event.transactionId()
+        when(depositUserAccountPort.getDepositInfo(
+                command.destinationAccountId()
+        )).thenReturn(
+                new DepositUserAccountPort.DepositAccountInfo(
+                        command.destinationAccountId(),
+                        command.currency()
+                )
         );
 
-        assertEquals(
-                "DEP-008",
-                event.reference()
-        );
-
-        assertEquals(
-                destinationAccountId,
-                event.accountId()
-        );
-
-        assertEquals(
-                new BigDecimal("250"),
-                event.amount()
-        );
-
-        assertEquals(
-                Currency.VND,
-                event.currency()
-        );
-
-        assertNotNull(
-                event.completedAt()
-        );
+        when(transactionBusinessDayPort.getCurrentBusinessDate())
+                .thenReturn(BUSINESS_DATE);
     }
 
     private void mockSaveTransaction() {

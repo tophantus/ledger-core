@@ -6,13 +6,11 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 
-public record TransferCompletedEvent(
+public record CreditFacilityBalanceChangedEvent(
         UUID transactionId,
-        String reference,
-        UUID sourceAccountId,
-        UUID destinationAccountId,
-        BigDecimal amount,
+        UUID creditFacilityId,
+        BigDecimal balanceDelta,
         Currency currency,
-        Instant completedAt
+        Instant changedAt
 ) {
 }

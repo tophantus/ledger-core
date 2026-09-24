@@ -163,3 +163,5 @@ databaseChangeLog:
       file: db/changelog/081-drop-opening-balance-from-credit-daily-balances.yaml
   - include:
       file: db/changelog/082-add-ledger-account-id-to-credit-facilities.yaml
+  - include:
+      file: db/changelog/083-create-card-captures.yaml

@@ -14,7 +14,7 @@ import com.example.ledgercore.transaction.entity.MoneyTransaction;
 import com.example.ledgercore.transaction.entity.TransferIntent;
 import com.example.ledgercore.transaction.enums.TransactionStatus;
 import com.example.ledgercore.transaction.enums.TransactionType;
-import com.example.ledgercore.transaction.event.TransferCompletedEvent;
+import com.example.ledgercore.transaction.event.AccountBalanceChangedEvent;
 import com.example.ledgercore.transaction.query.dto.TransactionResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -134,15 +134,23 @@ public class ConfirmTransferExecutionService {
 
         intent.complete(now);
 
-        transactionEventPort.publishTransferCompleted(
-                new TransferCompletedEvent(
+        transactionEventPort.publishAccountBalanceChanged(
+                new AccountBalanceChangedEvent(
                         transaction.getId(),
-                        transaction.getReference(),
-                        transaction.getSourceAccountId(),
-                        transaction.getDestinationAccountId(),
-                        transaction.getAmount(),
-                        transaction.getCurrency(),
-                        transaction.getCompletedAt()
+                        transferInfo.sourceAccountId(),
+                        intent.getAmount().negate(),
+                        intent.getCurrency(),
+                        now
+                )
+        );
+
+        transactionEventPort.publishAccountBalanceChanged(
+                new AccountBalanceChangedEvent(
+                        transaction.getId(),
+                        transferInfo.destinationAccountId(),
+                        intent.getAmount(),
+                        intent.getCurrency(),
+                        now
                 )
         );
 

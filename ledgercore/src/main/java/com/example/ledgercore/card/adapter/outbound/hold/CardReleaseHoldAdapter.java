@@ -1,6 +1,6 @@
 package com.example.ledgercore.card.adapter.outbound.hold;
 
-import com.example.ledgercore.card.command.port.outbound.CardAuthorizationHoldPort;
+import com.example.ledgercore.card.command.port.outbound.CardReleaseHoldPort;
 import com.example.ledgercore.card.enums.CardAuthorizationHoldType;
 import com.example.ledgercore.hold.command.dto.ReleaseAccountHoldCommand;
 import com.example.ledgercore.hold.command.dto.ReleaseCreditHoldCommand;
@@ -13,8 +13,8 @@ import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
-public class CardAuthorizationHoldAdapter
-        implements CardAuthorizationHoldPort {
+public class CardReleaseHoldAdapter
+        implements CardReleaseHoldPort {
 
     private final ReleaseAccountHoldUseCase
             releaseAccountHoldUseCase;
