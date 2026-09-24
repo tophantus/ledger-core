@@ -1,0 +1,68 @@
+{
+  "dashboard": {
+    "title": "Quản lý Provider",
+    "welcome": "Chào mừng, {name}"
+  },
+  "register": {
+    "title": "Đăng ký Payment Provider",
+    "description": "Đăng ký payment provider mới và tạo thông tin xác thực.",
+    "fields": {
+      "code": {
+        "label": "Mã Provider",
+        "placeholder": "VD: VNPAY"
+      },
+      "name": {
+        "label": "Tên Provider",
+        "placeholder": "VD: VNPay"
+      },
+      "type": {
+        "label": "Loại Provider",
+        "options": {
+          "psp": "PSP",
+          "acquirer": "Acquirer"
+        }
+      }
+    },
+    "actions": {
+      "register": "Đăng ký Provider",
+      "registering": "Đang đăng ký..."
+    },
+    "success": {
+      "title": "Đăng ký Provider thành công",
+      "description": "Lưu các giá trị này vào cấu hình môi trường của bạn.",
+      "providerName": "Tên Provider",
+      "clientId": "Client ID",
+      "credential": "Credential",
+      "copy": "Sao chép",
+      "copied": "Đã sao chép",
+      "copyEnv": "Sao chép .env"
+    },
+    "validation": {
+      "code": {
+        "required": "Mã Provider là bắt buộc.",
+        "maxLength": "Mã Provider tối đa 50 ký tự.",
+        "pattern": "Mã Provider chỉ được chứa chữ in hoa, số và dấu gạch dưới."
+      },
+      "name": {
+        "required": "Tên Provider là bắt buộc.",
+        "maxLength": "Tên Provider tối đa 100 ký tự."
+      }
+    }
+  },
+  "account": {
+    "accountNumber": "Số tài khoản",
+    "availableBalance": "Số dư khả dụng",
+    "balance": "Số dư",
+    "holdAmount": "Số tiền tạm giữ",
+    "status": "Trạng thái",
+    "statuses": {
+      "ACTIVE": "Đang hoạt động",
+      "BLOCKED": "Đã khóa",
+      "CLOSED": "Đã đóng"
+    },
+    "empty": {
+      "title": "Không có tài khoản Provider",
+      "description": "Payment provider này hiện không có tài khoản nào."
+    }
+  }
+}

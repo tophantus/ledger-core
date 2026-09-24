@@ -10,6 +10,8 @@ const PUBLIC_ROUTES = [
     "/register",
     "/verify-email",
     "/forgot-password",
+    "/provider",
+    "/provider/register"
 ];
 
 const REFRESH_TOKEN_COOKIE = "refresh_token";

@@ -1,0 +1,68 @@
+{
+  "dashboard": {
+    "title": "Provider Dashboard",
+    "welcome": "Welcome, {name}"
+  },
+  "register": {
+    "title": "Register Payment Provider",
+    "description": "Register a new payment provider and generate provider credentials.",
+    "fields": {
+      "code": {
+        "label": "Provider Code",
+        "placeholder": "e.g. VNPAY"
+      },
+      "name": {
+        "label": "Provider Name",
+        "placeholder": "e.g. VNPay"
+      },
+      "type": {
+        "label": "Provider Type",
+        "options": {
+          "psp": "PSP",
+          "acquirer": "Acquirer"
+        }
+      }
+    },
+    "actions": {
+      "register": "Register Provider",
+      "registering": "Registering..."
+    },
+    "success": {
+      "title": "Provider registered successfully",
+      "description": "Save these values in your environment configuration.",
+      "providerName": "Provider Name",
+      "clientId": "Client ID",
+      "credential": "Credential",
+      "copy": "Copy",
+      "copied": "Copied",
+      "copyEnv": "Copy .env"
+    },
+    "validation": {
+      "code": {
+        "required": "Provider code is required.",
+        "maxLength": "Provider code must be at most 50 characters.",
+        "pattern": "Provider code must contain only uppercase letters, numbers, and underscores."
+      },
+      "name": {
+        "required": "Provider name is required.",
+        "maxLength": "Provider name must be at most 100 characters."
+      }
+    }
+  },
+  "account": {
+    "accountNumber": "Account Number",
+    "availableBalance": "Available Balance",
+    "balance": "Balance",
+    "holdAmount": "Hold Amount",
+    "status": "Status",
+    "statuses": {
+      "ACTIVE": "Active",
+      "BLOCKED": "Blocked",
+      "CLOSED": "Closed"
+    },
+    "empty": {
+      "title": "No Provider Accounts",
+      "description": "There are no accounts available for this payment provider."
+    }
+  }
+}

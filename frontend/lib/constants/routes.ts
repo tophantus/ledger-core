@@ -42,4 +42,12 @@ export const ROUTES = {
             POSTINGS: "/admin/interests/postings",
         },
     },
+    PROVIDER: {
+        DASHBOARD: "/provider",
+        REGISTER: "/provider/register",
+        ACCOUNT: {
+            DETAIL: (accountId: string) =>
+                `/provider/accounts/${accountId}`,
+        }
+    }
 } as const;

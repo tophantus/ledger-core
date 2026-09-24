@@ -15,7 +15,8 @@ export async function getMessages(locale: Locale) {
         webhook,
         credit,
         card,
-        transfer
+        transfer,
+        provider
     ] = await Promise.all([
         import(`../messages/${locale}/common.json`),
         import(`../messages/${locale}/dashboard.json`),
@@ -31,6 +32,7 @@ export async function getMessages(locale: Locale) {
         import(`../messages/${locale}/credit.json`),
         import(`../messages/${locale}/card.json`),
         import(`../messages/${locale}/transfer.json`),
+        import(`../messages/${locale}/provider.json`),
     ]);
 
     return {
@@ -47,6 +49,7 @@ export async function getMessages(locale: Locale) {
         webhook: webhook.default,
         credit: credit.default,
         card: card.default,
-        transfer: transfer.default
+        transfer: transfer.default,
+        provider: provider.default
     };
 }
