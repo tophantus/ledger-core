@@ -8,16 +8,13 @@ import type {
 } from "@/features/account/types/account";
 
 import type {
-    CreateTransferIntentResult,
-} from "@/features/transaction/types/transaction";
-
-import type {
     TransferOtpForm,
-} from "@/features/transaction/schemas/transfer-schema";
+} from "@/features/transfer/schemas/transfer-schema";
 
 import {formatMoney} from "@/lib/utils/currency";
 import {useLocale, useTranslations} from "next-intl";
 import {UseFormReturn} from "react-hook-form";
+import {CreateTransferIntentResult} from "@/features/transfer/types/transfer";
 
 interface TransferConfirmationProps {
     intent: CreateTransferIntentResult;
@@ -41,7 +38,7 @@ export function TransferConfirmation({
                                          onConfirm,
                                      }: TransferConfirmationProps) {
     const t =
-        useTranslations("transaction");
+        useTranslations("transfer");
 
     const locale = useLocale();
 
@@ -62,13 +59,13 @@ export function TransferConfirmation({
             <div>
                 <h2 className="text-base font-semibold text-primary">
                     {t(
-                        "transfer.confirmTitle",
+                        "confirmTitle",
                     )}
                 </h2>
 
                 <p className="mt-1 text-sm text-muted">
                     {t(
-                        "transfer.confirmDescription",
+                        "confirmDescription",
                     )}
                 </p>
             </div>
@@ -78,7 +75,7 @@ export function TransferConfirmation({
                     <div>
                         <p className="text-xs text-muted">
                             {t(
-                                "transfer.sourceAccount",
+                                "sourceAccount",
                             )}
                         </p>
 
@@ -92,7 +89,7 @@ export function TransferConfirmation({
                     <div className="text-right">
                         <p className="text-xs text-muted">
                             {t(
-                                "transfer.amount",
+                                "amount",
                             )}
                         </p>
 
@@ -109,7 +106,7 @@ export function TransferConfirmation({
                 <div className="mt-4 border-t border-border pt-4">
                     <p className="text-xs text-muted">
                         {t(
-                            "transfer.recipient",
+                            "recipient",
                         )}
                     </p>
 
@@ -129,7 +126,7 @@ export function TransferConfirmation({
                 <div className="mt-4 border-t border-border pt-4">
                     <p className="text-xs text-muted">
                         {t(
-                            "transfer.reference",
+                            "reference",
                         )}
                     </p>
 
@@ -153,7 +150,7 @@ export function TransferConfirmation({
                     "
                 >
                     {t(
-                        "transfer.otp",
+                        "otp",
                     )}
                 </label>
 
@@ -178,7 +175,7 @@ export function TransferConfirmation({
                         outline-none
                     "
                     placeholder={t(
-                        "transfer.otpPlaceholder",
+                        "otpPlaceholder",
                     )}
                 />
 
@@ -212,7 +209,7 @@ export function TransferConfirmation({
                     }
                 >
                     {t(
-                        "transfer.confirm",
+                        "confirm",
                     )}
                 </Button>
             </div>

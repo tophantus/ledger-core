@@ -1,15 +1,13 @@
 "use client";
 
-import {transactionApi} from "../api/transaction-api";
-import type {
-    ConfirmTransferRequest,
-} from "../types/transaction";
+import {ConfirmTransferRequest} from "@/features/transfer/types/transfer";
+import {transferApi} from "@/features/transfer/api/transfer-api";
 
 export function useConfirmTransfer() {
     const confirmTransfer = async (
         request: ConfirmTransferRequest,
     ) => {
-        return transactionApi.confirmTransfer(
+        return transferApi.confirmTransfer(
             request,
         );
     };

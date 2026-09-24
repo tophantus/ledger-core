@@ -1,0 +1,56 @@
+{
+  "back": "Back",
+  "title": "Transfer money",
+  "description": "Send money to another account.",
+
+  "steps": {
+    "transfer": "Transfer",
+    "confirm": "Confirm",
+    "result": "Complete"
+  },
+
+  "sourceAccount": "Source account",
+  "noAccounts": "You don't have any active accounts.",
+
+  "destinationAccount": "Destination account number",
+  "destinationPlaceholder": "Enter account number",
+
+  "sameSourceDestination": "Destination account cannot be the same as the source account.",
+
+  "recipient": "Recipient",
+
+  "amount": "Amount",
+  "availableBalance": "Available balance",
+  "amountExceedsBalance": "Transfer amount cannot exceed your available balance.",
+
+  "reference": "Reference",
+
+  "descriptionField": "Description",
+  "descriptionPlaceholder": "Optional description",
+
+  "check": "Check",
+  "change": "Change",
+  "continue": "Continue",
+
+  "confirmTitle": "Confirm transfer",
+  "confirmDescription": "Enter the OTP to confirm this transfer.",
+  "otp": "OTP",
+  "otpPlaceholder": "Enter OTP",
+  "confirm": "Confirm transfer",
+
+  "successTitle": "Transfer successful",
+  "successDescription": "Your transfer has been completed successfully.",
+
+  "transactionId": "Transaction ID",
+  "status": "Status",
+
+  "viewTransactions": "View transactions",
+  "newTransfer": "New transfer",
+
+  "statuses": {
+    "PENDING": "Pending",
+    "COMPLETED": "Completed",
+    "FAILED": "Failed",
+    "CANCELLED": "Cancelled"
+  }
+}

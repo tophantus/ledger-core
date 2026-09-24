@@ -21,11 +21,10 @@ import {
     AccountSummary,
 } from "@/features/account/types/account";
 
-import {useCreateTransferIntent} from "@/features/transaction/hooks/use-create-transfer-intent";
-import {useConfirmTransfer} from "@/features/transaction/hooks/use-confirm-transfer";
+import {useCreateTransferIntent} from "@/features/transfer/hooks/use-create-transfer-intent";
+import {useConfirmTransfer} from "@/features/transfer/hooks/use-confirm-transfer";
 
 import type {
-    CreateTransferIntentResult,
     Transaction,
 } from "@/features/transaction/types/transaction";
 
@@ -36,7 +35,7 @@ import {
     type TransferDestinationForm,
     type TransferDetailsForm,
     type TransferOtpForm,
-} from "@/features/transaction/schemas/transfer-schema";
+} from "@/features/transfer/schemas/transfer-schema";
 
 import {isAmountGreaterThanZero, isAmountLessThanOrEqual} from "@/lib/utils/money";
 import {generateTransactionReference} from "@/lib/utils/reference";
@@ -48,6 +47,7 @@ import {TransferResult} from "./transfer-result";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useAccountStore} from "@/features/account/stores/account-store";
+import {CreateTransferIntentResult} from "@/features/transfer/types/transfer";
 
 type TransferStep =
     | "TRANSFER"
@@ -55,7 +55,7 @@ type TransferStep =
     | "RESULT";
 
 export default function TransferPageContent() {
-    const t = useTranslations("transaction");
+    const t = useTranslations("transfer");
     const tErrors = useTranslations("errors");
     const locale = useLocale();
 
@@ -313,7 +313,7 @@ export default function TransferPageContent() {
                 ) {
                     setError(
                         t(
-                            "transfer.amountExceedsBalance",
+                            "amountExceedsBalance",
                         ),
                     );
 
@@ -500,12 +500,12 @@ export default function TransferPageContent() {
 
                 <div>
                     <h1 className="text-2xl font-semibold text-primary">
-                        {t("transfer.title")}
+                        {t("title")}
                     </h1>
 
                     <p className="mt-1 text-sm text-muted">
                         {t(
-                            "transfer.description",
+                            "description",
                         )}
                     </p>
                 </div>

@@ -27,7 +27,7 @@ export function TransferResult({
                                    onNewTransfer,
                                }: TransferResultProps) {
     const t =
-        useTranslations("transaction");
+        useTranslations("transfer");
 
     return (
         <div
@@ -46,13 +46,13 @@ export function TransferResult({
 
                 <h2 className="mt-4 text-xl font-semibold text-success">
                     {t(
-                        "transfer.successTitle",
+                        "successTitle",
                     )}
                 </h2>
 
                 <p className="mt-1 text-sm text-muted">
                     {t(
-                        "transfer.successDescription",
+                        "successDescription",
                     )}
                 </p>
             </div>
@@ -60,7 +60,7 @@ export function TransferResult({
             <div className="mt-6 divide-y divide-border rounded-lg border">
                 <ResultRow
                     label={t(
-                        "transfer.transactionId",
+                        "transactionId",
                     )}
                     value={
                         transaction.id
@@ -69,7 +69,7 @@ export function TransferResult({
 
                 <ResultRow
                     label={t(
-                        "transfer.reference",
+                        "reference",
                     )}
                     value={
                         transaction.reference
@@ -78,7 +78,7 @@ export function TransferResult({
 
                 <ResultRow
                     label={t(
-                        "transfer.amount",
+                        "amount",
                     )}
                     value={formatMoney(
                         transaction.amount,
@@ -89,7 +89,7 @@ export function TransferResult({
 
                 <ResultRow
                     label={t(
-                        "transfer.status",
+                        "status",
                     )}
                     value={t(
                         `statuses.${transaction.status}`,
@@ -106,7 +106,7 @@ export function TransferResult({
                     }
                 >
                     {t(
-                        "transfer.viewTransactions",
+                        "viewTransactions",
                     )}
                 </Button>
 
@@ -115,7 +115,7 @@ export function TransferResult({
                     onClick={onNewTransfer}
                 >
                     {t(
-                        "transfer.newTransfer",
+                        "newTransfer",
                     )}
                 </Button>
             </div>
