@@ -3,7 +3,7 @@ package com.example.ledgercore.account.query.handler;
 import com.example.ledgercore.account.enums.AccountStatus;
 import com.example.ledgercore.account.query.dto.AccountWithdrawInfo;
 import com.example.ledgercore.account.query.service.GetUserAccountService;
-import com.example.ledgercore.account.query.service.dto.GetUserAccountQuery;
+import com.example.ledgercore.account.query.service.dto.GetUserAccountCriteria;
 import com.example.ledgercore.account.query.service.dto.GetUserAccountResult;
 import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.common.exception.BusinessException;
@@ -95,7 +95,7 @@ class GetWithdrawAccountInfoHandlerTest {
 
         verify(getUserAccountService)
                 .execute(
-                        new GetUserAccountQuery(
+                        new GetUserAccountCriteria(
                                 accountId
                         )
                 );
@@ -108,7 +108,7 @@ class GetWithdrawAccountInfoHandlerTest {
     @Test
     void shouldThrowWhenAccountNotFound() {
         when(getUserAccountService.execute(
-                new GetUserAccountQuery(accountId)
+                new GetUserAccountCriteria(accountId)
         )).thenThrow(
                 new BusinessException(
                         ErrorCode.ACCOUNT_NOT_FOUND
@@ -128,7 +128,7 @@ class GetWithdrawAccountInfoHandlerTest {
 
         verify(getUserAccountService)
                 .execute(
-                        new GetUserAccountQuery(
+                        new GetUserAccountCriteria(
                                 accountId
                         )
                 );
@@ -163,7 +163,7 @@ class GetWithdrawAccountInfoHandlerTest {
 
         verify(getUserAccountService)
                 .execute(
-                        new GetUserAccountQuery(
+                        new GetUserAccountCriteria(
                                 accountId
                         )
                 );
@@ -198,7 +198,7 @@ class GetWithdrawAccountInfoHandlerTest {
 
         verify(getUserAccountService)
                 .execute(
-                        new GetUserAccountQuery(
+                        new GetUserAccountCriteria(
                                 accountId
                         )
                 );
@@ -230,7 +230,7 @@ class GetWithdrawAccountInfoHandlerTest {
 
         verify(getUserAccountService)
                 .execute(
-                        new GetUserAccountQuery(
+                        new GetUserAccountCriteria(
                                 accountId
                         )
                 );
@@ -240,7 +240,7 @@ class GetWithdrawAccountInfoHandlerTest {
             GetUserAccountResult account
     ) {
         when(getUserAccountService.execute(
-                new GetUserAccountQuery(accountId)
+                new GetUserAccountCriteria(accountId)
         )).thenReturn(account);
     }
 

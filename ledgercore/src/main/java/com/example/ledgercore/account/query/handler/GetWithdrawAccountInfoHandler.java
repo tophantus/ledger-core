@@ -2,7 +2,7 @@ package com.example.ledgercore.account.query.handler;
 
 import com.example.ledgercore.account.enums.AccountStatus;
 import com.example.ledgercore.account.query.dto.AccountWithdrawInfo;
-import com.example.ledgercore.account.query.service.dto.GetUserAccountQuery;
+import com.example.ledgercore.account.query.service.dto.GetUserAccountCriteria;
 import com.example.ledgercore.account.query.service.dto.GetUserAccountResult;
 import com.example.ledgercore.account.query.service.GetUserAccountService;
 import com.example.ledgercore.account.query.port.inbound.GetWithdrawAccountInfoUseCase;
@@ -27,7 +27,7 @@ public class GetWithdrawAccountInfoHandler
             UUID accountId
     ) {
         GetUserAccountResult account = getUserAccountService.execute(
-                new GetUserAccountQuery(accountId)
+                new GetUserAccountCriteria(accountId)
         );
 
         if (account.status()

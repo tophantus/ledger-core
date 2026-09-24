@@ -3,7 +3,7 @@ package com.example.ledgercore.account.query.handler;
 import com.example.ledgercore.account.entity.Account;
 import com.example.ledgercore.account.enums.AccountStatus;
 import com.example.ledgercore.account.query.dto.AccountTransferInfo;
-import com.example.ledgercore.account.query.service.dto.GetUserAccountQuery;
+import com.example.ledgercore.account.query.service.dto.GetUserAccountCriteria;
 import com.example.ledgercore.account.query.service.dto.GetUserAccountResult;
 import com.example.ledgercore.account.query.port.inbound.GetTransferAccountInfoUseCase;
 import com.example.ledgercore.account.query.service.GetUserAccountService;
@@ -33,7 +33,7 @@ public class GetTransferAccountInfoHandler
     ) {
 
         GetUserAccountResult sourceAccount = getUserAccountService.execute(
-                new GetUserAccountQuery(sourceAccountId)
+                new GetUserAccountCriteria(sourceAccountId)
         );
 
         if (!sourceAccount.userId().equals(userId)) {

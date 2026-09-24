@@ -1,0 +1,31 @@
+package com.example.ledgercore.transfer.command.dto;
+
+import com.example.ledgercore.common.currency.Currency;
+import com.example.ledgercore.transfer.enums.TransferIntentStatus;
+
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.util.UUID;
+
+public record CreateTransferIntentResult(
+
+        UUID intentId,
+
+        UUID sourceAccountId,
+
+        UUID destinationAccountId,
+
+        BigDecimal amount,
+
+        Currency currency,
+
+        String reference,
+
+        TransferIntentStatus status,
+
+        Instant expiresAt,
+
+        Instant createdAt
+
+) {
+}

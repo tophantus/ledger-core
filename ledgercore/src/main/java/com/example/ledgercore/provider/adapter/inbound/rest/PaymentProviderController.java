@@ -1,10 +1,10 @@
 package com.example.ledgercore.provider.adapter.inbound.rest;
 
 import com.example.ledgercore.common.response.ApiResponse;
+import com.example.ledgercore.provider.adapter.inbound.rest.dto.RegisterPaymentProviderRequest;
 import com.example.ledgercore.provider.command.dto.RegisterPaymentProviderCommand;
 import com.example.ledgercore.provider.command.dto.RegisterPaymentProviderResult;
 import com.example.ledgercore.provider.command.port.inbound.RegisterPaymentProviderUseCase;
-import com.example.ledgercore.provider.enums.ProviderType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -49,12 +49,5 @@ public class PaymentProviderController {
                                 "Payment provider registered successfully"
                         )
                 );
-    }
-
-    public record RegisterPaymentProviderRequest(
-            String code,
-            String name,
-            ProviderType type
-    ) {
     }
 }

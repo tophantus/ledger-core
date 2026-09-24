@@ -2,7 +2,7 @@ package com.example.ledgercore.transaction.query.handler;
 
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
-import com.example.ledgercore.transaction.entity.TransferIntent;
+import com.example.ledgercore.transfer.entity.TransferIntent;
 import com.example.ledgercore.transaction.query.dto.TransferIntentNotificationInfo;
 import com.example.ledgercore.transaction.query.port.inbound.GetTransferIntentUseCase;
 import com.example.ledgercore.transaction.query.port.outbound.AccountQueryPort;

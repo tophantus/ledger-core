@@ -81,4 +81,21 @@ public final class AccountMapper {
                 projection.getStatus()
         );
     }
+
+    public static AccountSummaryResponse toSummaryResponse(
+            ProviderAccountProjection projection
+    ) {
+        return new AccountSummaryResponse(
+                projection.getAccountId(),
+                projection.getAccountNo(),
+                projection.getProductId(),
+                projection.getCurrency(),
+                projection.getBalance().toPlainString(),
+                projection.getHoldAmount().toPlainString(),
+                projection.getBalance()
+                        .subtract(projection.getHoldAmount())
+                        .toPlainString(),
+                projection.getStatus()
+        );
+    }
 }

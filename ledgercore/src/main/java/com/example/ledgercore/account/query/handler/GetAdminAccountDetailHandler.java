@@ -2,7 +2,7 @@ package com.example.ledgercore.account.query.handler;
 
 import com.example.ledgercore.account.mapper.AdminUserAccountMapper;
 import com.example.ledgercore.account.query.dto.AdminUserAccountDetailResponse;
-import com.example.ledgercore.account.query.service.dto.GetUserAccountQuery;
+import com.example.ledgercore.account.query.service.dto.GetUserAccountCriteria;
 import com.example.ledgercore.account.query.service.dto.GetUserAccountResult;
 import com.example.ledgercore.account.query.port.inbound.GetAdminAccountDetailUseCase;
 import com.example.ledgercore.account.query.service.GetUserAccountService;
@@ -26,7 +26,7 @@ public class GetAdminAccountDetailHandler
     public AdminUserAccountDetailResponse execute(UUID accountId) {
 
         GetUserAccountResult account = getUserAccountService.execute(
-                new GetUserAccountQuery(accountId)
+                new GetUserAccountCriteria(accountId)
         );
 
         AdminUserAccountDetailResponse.UserInfo user =

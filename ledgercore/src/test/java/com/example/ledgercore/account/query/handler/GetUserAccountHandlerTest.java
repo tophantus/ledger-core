@@ -3,6 +3,7 @@ package com.example.ledgercore.account.query.handler;
 import com.example.ledgercore.account.query.dto.AccountResponse;
 import com.example.ledgercore.account.query.dto.GetUserAccountQuery;
 import com.example.ledgercore.account.query.service.GetUserAccountService;
+import com.example.ledgercore.account.query.service.dto.GetUserAccountCriteria;
 import com.example.ledgercore.account.query.service.dto.GetUserAccountResult;
 import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.common.exception.BusinessException;
@@ -69,7 +70,7 @@ class GetUserAccountHandlerTest {
                 );
 
         when(getUserAccountService.execute(
-                new com.example.ledgercore.account.query.service.dto.GetUserAccountQuery(
+                new GetUserAccountCriteria(
                         accountId
                 )
         )).thenReturn(account);
@@ -119,7 +120,7 @@ class GetUserAccountHandlerTest {
 
         verify(getUserAccountService)
                 .execute(
-                        new com.example.ledgercore.account.query.service.dto.GetUserAccountQuery(
+                        new GetUserAccountCriteria(
                                 accountId
                         )
                 );
@@ -132,7 +133,7 @@ class GetUserAccountHandlerTest {
     @Test
     void shouldThrowWhenAccountNotFound() {
         when(getUserAccountService.execute(
-                new com.example.ledgercore.account.query.service.dto.GetUserAccountQuery(
+                new GetUserAccountCriteria(
                         accountId
                 )
         )).thenThrow(
@@ -159,7 +160,7 @@ class GetUserAccountHandlerTest {
 
         verify(getUserAccountService)
                 .execute(
-                        new com.example.ledgercore.account.query.service.dto.GetUserAccountQuery(
+                        new GetUserAccountCriteria(
                                 accountId
                         )
                 );
@@ -186,7 +187,7 @@ class GetUserAccountHandlerTest {
                 );
 
         when(getUserAccountService.execute(
-                new com.example.ledgercore.account.query.service.dto.GetUserAccountQuery(
+                new GetUserAccountCriteria(
                         accountId
                 )
         )).thenReturn(account);
@@ -209,7 +210,7 @@ class GetUserAccountHandlerTest {
 
         verify(getUserAccountService)
                 .execute(
-                        new com.example.ledgercore.account.query.service.dto.GetUserAccountQuery(
+                        new GetUserAccountCriteria(
                                 accountId
                         )
                 );

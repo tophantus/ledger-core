@@ -3,6 +3,7 @@ package com.example.ledgercore.account.query.handler;
 import com.example.ledgercore.account.mapper.AccountMapper;
 import com.example.ledgercore.account.query.dto.AccountResponse;
 import com.example.ledgercore.account.query.dto.GetUserAccountQuery;
+import com.example.ledgercore.account.query.service.dto.GetUserAccountCriteria;
 import com.example.ledgercore.account.query.service.dto.GetUserAccountResult;
 import com.example.ledgercore.account.query.port.inbound.GetUserAccountUseCase;
 import com.example.ledgercore.account.query.service.GetUserAccountService;
@@ -22,7 +23,7 @@ public class GetUserAccountHandler implements GetUserAccountUseCase {
     @Transactional(readOnly = true)
     public AccountResponse execute(GetUserAccountQuery query) {
         GetUserAccountResult account = getUserAccountService.execute(
-                new com.example.ledgercore.account.query.service.dto.GetUserAccountQuery(query.accountId())
+                new GetUserAccountCriteria(query.accountId())
         );
 
         if (!account.userId().equals(query.userId())) {
