@@ -128,4 +128,11 @@ export const API_ENDPOINTS = {
                 "/api/v1/admin/business-days/close",
         },
     },
+    PROVIDER: {
+        ACCOUNTS: {
+            BASE: "/api/v1/provider/accounts",
+            BY_ID: (accountId: string) =>
+                `/api/v1/provider/accounts/${accountId}`,
+        },
+    },
 } as const;
