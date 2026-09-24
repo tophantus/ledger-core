@@ -129,7 +129,7 @@ export const API_ENDPOINTS = {
         },
     },
     PROVIDER: {
-        BASE: "/api/v1/providers",
+        BASE: "/api/v1/provider",
         ACCOUNTS: {
             BASE: "/api/v1/provider/accounts",
             BY_ID: (accountId: string) =>
