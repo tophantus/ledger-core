@@ -18,25 +18,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/card-tokens")
+@RequestMapping("/api/v1/provider/card-tokens")
 @RequiredArgsConstructor
 @Tag(
-        name = "Card Token",
-        description = "Card token management APIs"
+        name = "Provider Card Token",
+        description = "Payment provider card token APIs"
 )
-public class CardTokenController {
+public class ProviderCardTokenController {
 
-    private final ProvisionCardTokenUseCase
-            provisionCardTokenUseCase;
-
-    private final SuspendCardTokenUseCase
-            suspendCardTokenUseCase;
-
-    private final ResumeCardTokenUseCase
-            resumeCardTokenUseCase;
-
-    private final RevokeCardTokenUseCase
-            revokeCardTokenUseCase;
+    private final ProvisionCardTokenUseCase provisionCardTokenUseCase;
+    private final SuspendCardTokenUseCase suspendCardTokenUseCase;
+    private final ResumeCardTokenUseCase resumeCardTokenUseCase;
+    private final RevokeCardTokenUseCase revokeCardTokenUseCase;
 
     @PostMapping
     @Operation(
@@ -86,7 +79,8 @@ public class CardTokenController {
             @RequestHeader("X-Provider-Credential")
             String credential,
 
-            @RequestParam String token
+            @RequestParam
+            String token
     ) {
         suspendCardTokenUseCase.execute(
                 new SuspendCardTokenCommand(
@@ -116,7 +110,8 @@ public class CardTokenController {
             @RequestHeader("X-Provider-Credential")
             String credential,
 
-            @RequestParam String token
+            @RequestParam
+            String token
     ) {
         resumeCardTokenUseCase.execute(
                 new ResumeCardTokenCommand(
@@ -146,7 +141,8 @@ public class CardTokenController {
             @RequestHeader("X-Provider-Credential")
             String credential,
 
-            @RequestParam String token
+            @RequestParam
+            String token
     ) {
         revokeCardTokenUseCase.execute(
                 new RevokeCardTokenCommand(
