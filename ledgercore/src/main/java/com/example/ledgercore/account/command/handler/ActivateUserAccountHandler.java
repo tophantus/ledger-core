@@ -4,7 +4,7 @@ import com.example.ledgercore.account.command.dto.ActivateUserAccountCommand;
 import com.example.ledgercore.account.command.port.inbound.ActivateUserAccountUseCase;
 import com.example.ledgercore.account.command.repository.AccountCommandRepository;
 import com.example.ledgercore.account.enums.AccountStatus;
-import com.example.ledgercore.account.query.service.dto.GetUserAccountQuery;
+import com.example.ledgercore.account.query.service.dto.GetUserAccountCriteria;
 import com.example.ledgercore.account.query.service.dto.GetUserAccountResult;
 import com.example.ledgercore.account.query.service.GetUserAccountService;
 import com.example.ledgercore.common.exception.BusinessException;
@@ -24,7 +24,7 @@ public class ActivateUserAccountHandler implements ActivateUserAccountUseCase {
     @Transactional
     public void execute(ActivateUserAccountCommand command) {
         GetUserAccountResult account = getUserAccountService.execute(
-                new GetUserAccountQuery(command.accountId())
+                new GetUserAccountCriteria(command.accountId())
         );
 
         if (!account.userId().equals(command.userId())) {

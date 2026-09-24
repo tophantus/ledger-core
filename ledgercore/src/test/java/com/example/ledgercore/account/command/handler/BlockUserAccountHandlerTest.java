@@ -4,7 +4,7 @@ import com.example.ledgercore.account.command.dto.BlockUserAccountCommand;
 import com.example.ledgercore.account.command.repository.AccountCommandRepository;
 import com.example.ledgercore.account.enums.AccountStatus;
 import com.example.ledgercore.account.query.service.GetUserAccountService;
-import com.example.ledgercore.account.query.service.dto.GetUserAccountQuery;
+import com.example.ledgercore.account.query.service.dto.GetUserAccountCriteria;
 import com.example.ledgercore.account.query.service.dto.GetUserAccountResult;
 import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.common.exception.BusinessException;
@@ -63,7 +63,7 @@ class BlockUserAccountHandlerTest {
         );
 
         when(getUserAccountService.execute(
-                new GetUserAccountQuery(accountId)
+                new GetUserAccountCriteria(accountId)
         )).thenReturn(account);
 
         BlockUserAccountCommand command =
@@ -92,7 +92,7 @@ class BlockUserAccountHandlerTest {
         );
 
         when(getUserAccountService.execute(
-                new GetUserAccountQuery(accountId)
+                new GetUserAccountCriteria(accountId)
         )).thenReturn(account);
 
         BlockUserAccountCommand command =
@@ -128,7 +128,7 @@ class BlockUserAccountHandlerTest {
         );
 
         when(getUserAccountService.execute(
-                new GetUserAccountQuery(accountId)
+                new GetUserAccountCriteria(accountId)
         )).thenReturn(account);
 
         BlockUserAccountCommand command =
@@ -164,7 +164,7 @@ class BlockUserAccountHandlerTest {
         );
 
         when(getUserAccountService.execute(
-                new GetUserAccountQuery(accountId)
+                new GetUserAccountCriteria(accountId)
         )).thenReturn(account);
 
         BlockUserAccountCommand command =
@@ -200,7 +200,7 @@ class BlockUserAccountHandlerTest {
         );
 
         when(getUserAccountService.execute(
-                new GetUserAccountQuery(accountId)
+                new GetUserAccountCriteria(accountId)
         )).thenReturn(account);
 
         BlockUserAccountCommand command =
@@ -213,7 +213,7 @@ class BlockUserAccountHandlerTest {
 
         verify(getUserAccountService)
                 .execute(
-                        new GetUserAccountQuery(accountId)
+                        new GetUserAccountCriteria(accountId)
                 );
     }
 
@@ -226,7 +226,7 @@ class BlockUserAccountHandlerTest {
         );
 
         when(getUserAccountService.execute(
-                new GetUserAccountQuery(accountId)
+                new GetUserAccountCriteria(accountId)
         )).thenReturn(account);
 
         BlockUserAccountCommand command =

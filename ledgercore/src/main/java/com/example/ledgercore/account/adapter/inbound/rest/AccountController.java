@@ -11,7 +11,7 @@ import com.example.ledgercore.account.command.port.inbound.CreateUserAccountUseC
 import com.example.ledgercore.account.query.dto.*;
 import com.example.ledgercore.account.query.port.inbound.GetAccountHolderUseCase;
 import com.example.ledgercore.account.query.port.inbound.GetUserAccountUseCase;
-import com.example.ledgercore.account.query.port.inbound.GetUserActiveAccountsUseCase;
+import com.example.ledgercore.account.query.port.inbound.GetUserAccountsUseCase;
 import com.example.ledgercore.common.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -40,7 +40,7 @@ public class AccountController {
     private final CloseUserAccountUseCase closeUserAccountUseCase;
 
     private final GetUserAccountUseCase getUserAccountUseCase;
-    private final GetUserActiveAccountsUseCase getUserActiveAccountsUseCase;
+    private final GetUserAccountsUseCase getUserAccountsUseCase;
     private final GetAccountHolderUseCase getAccountHolderUseCase;
 
     @PostMapping
@@ -129,8 +129,8 @@ public class AccountController {
             @AuthenticationPrincipal AuthPrincipal principal
     ) {
         List<AccountSummaryResponse> response =
-                getUserActiveAccountsUseCase.execute(
-                        new GetActiveUserAccountsQuery(
+                getUserAccountsUseCase.execute(
+                        new GetUserAccountsQuery(
                                 principal.getUserId()
                         )
                 );

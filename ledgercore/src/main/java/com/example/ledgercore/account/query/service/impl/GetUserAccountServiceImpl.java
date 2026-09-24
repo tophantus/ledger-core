@@ -1,6 +1,6 @@
 package com.example.ledgercore.account.query.service.impl;
 
-import com.example.ledgercore.account.query.service.dto.GetUserAccountQuery;
+import com.example.ledgercore.account.query.service.dto.GetUserAccountCriteria;
 import com.example.ledgercore.account.query.service.dto.GetUserAccountResult;
 import com.example.ledgercore.account.query.service.GetUserAccountService;
 import com.example.ledgercore.account.query.projection.UserAccountProjection;
@@ -20,7 +20,7 @@ public class GetUserAccountServiceImpl
 
     @Override
     @Transactional(readOnly = true)
-    public GetUserAccountResult execute(GetUserAccountQuery query) {
+    public GetUserAccountResult execute(GetUserAccountCriteria query) {
 
         UserAccountProjection projection =
                 userAccountQueryRepository

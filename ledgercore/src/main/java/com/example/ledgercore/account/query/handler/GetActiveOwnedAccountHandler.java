@@ -3,7 +3,7 @@ package com.example.ledgercore.account.query.handler;
 import com.example.ledgercore.account.enums.AccountStatus;
 import com.example.ledgercore.account.query.dto.GetActiveOwnedAccountQuery;
 import com.example.ledgercore.account.query.dto.GetActiveOwnedAccountResult;
-import com.example.ledgercore.account.query.service.dto.GetUserAccountQuery;
+import com.example.ledgercore.account.query.service.dto.GetUserAccountCriteria;
 import com.example.ledgercore.account.query.service.dto.GetUserAccountResult;
 import com.example.ledgercore.account.query.port.inbound.GetActiveOwnedAccountUseCase;
 import com.example.ledgercore.account.query.service.GetUserAccountService;
@@ -28,7 +28,7 @@ public class GetActiveOwnedAccountHandler
         validateQuery(query);
 
         GetUserAccountResult account = getUserAccountService.execute(
-                new GetUserAccountQuery(query.accountId())
+                new GetUserAccountCriteria(query.accountId())
         );
 
         if (!account.userId().equals(query.customerId())) {

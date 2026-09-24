@@ -5,7 +5,7 @@ import com.example.ledgercore.account.enums.AccountStatus;
 import com.example.ledgercore.account.query.dto.AccountTransferInfo;
 import com.example.ledgercore.account.query.repository.AccountQueryRepository;
 import com.example.ledgercore.account.query.service.GetUserAccountService;
-import com.example.ledgercore.account.query.service.dto.GetUserAccountQuery;
+import com.example.ledgercore.account.query.service.dto.GetUserAccountCriteria;
 import com.example.ledgercore.account.query.service.dto.GetUserAccountResult;
 import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.common.exception.BusinessException;
@@ -115,7 +115,7 @@ class GetTransferAccountInfoHandlerTest {
 
         verify(getUserAccountService)
                 .execute(
-                        new GetUserAccountQuery(
+                        new GetUserAccountCriteria(
                                 sourceAccountId
                         )
                 );
@@ -161,7 +161,7 @@ class GetTransferAccountInfoHandlerTest {
 
         verify(getUserAccountService)
                 .execute(
-                        new GetUserAccountQuery(
+                        new GetUserAccountCriteria(
                                 sourceAccountId
                         )
                 );
@@ -175,7 +175,7 @@ class GetTransferAccountInfoHandlerTest {
     @Test
     void shouldThrowWhenSourceAccountNotFound() {
         when(getUserAccountService.execute(
-                new GetUserAccountQuery(
+                new GetUserAccountCriteria(
                         sourceAccountId
                 )
         )).thenThrow(
@@ -201,7 +201,7 @@ class GetTransferAccountInfoHandlerTest {
 
         verify(getUserAccountService)
                 .execute(
-                        new GetUserAccountQuery(
+                        new GetUserAccountCriteria(
                                 sourceAccountId
                         )
                 );
@@ -245,7 +245,7 @@ class GetTransferAccountInfoHandlerTest {
 
         verify(getUserAccountService)
                 .execute(
-                        new GetUserAccountQuery(
+                        new GetUserAccountCriteria(
                                 sourceAccountId
                         )
                 );
@@ -295,7 +295,7 @@ class GetTransferAccountInfoHandlerTest {
 
         verify(getUserAccountService)
                 .execute(
-                        new GetUserAccountQuery(
+                        new GetUserAccountCriteria(
                                 sourceAccountId
                         )
                 );
@@ -345,7 +345,7 @@ class GetTransferAccountInfoHandlerTest {
 
         verify(getUserAccountService)
                 .execute(
-                        new GetUserAccountQuery(
+                        new GetUserAccountCriteria(
                                 sourceAccountId
                         )
                 );
@@ -395,7 +395,7 @@ class GetTransferAccountInfoHandlerTest {
             GetUserAccountResult sourceAccount
     ) {
         when(getUserAccountService.execute(
-                new GetUserAccountQuery(
+                new GetUserAccountCriteria(
                         sourceAccountId
                 )
         )).thenReturn(sourceAccount);
