@@ -1,4 +1,8 @@
 {
+  "dashboard": {
+    "title": "Quản lý Provider",
+    "welcome": "Chào mừng, {name}"
+  },
   "register": {
     "title": "Đăng ký Payment Provider",
     "description": "Đăng ký payment provider mới và tạo thông tin xác thực.",
@@ -25,9 +29,13 @@
     },
     "success": {
       "title": "Đăng ký Provider thành công",
-      "description": "Hãy lưu thông tin xác thực an toàn. Credential có thể chỉ được hiển thị một lần.",
+      "description": "Lưu các giá trị này vào cấu hình môi trường của bạn.",
+      "providerName": "Tên Provider",
       "clientId": "Client ID",
-      "credential": "Credential"
+      "credential": "Credential",
+      "copy": "Sao chép",
+      "copied": "Đã sao chép",
+      "copyEnv": "Sao chép .env"
     },
     "validation": {
       "code": {
@@ -39,6 +47,22 @@
         "required": "Tên Provider là bắt buộc.",
         "maxLength": "Tên Provider tối đa 100 ký tự."
       }
+    }
+  },
+  "account": {
+    "accountNumber": "Số tài khoản",
+    "availableBalance": "Số dư khả dụng",
+    "balance": "Số dư",
+    "holdAmount": "Số tiền tạm giữ",
+    "status": "Trạng thái",
+    "statuses": {
+      "ACTIVE": "Đang hoạt động",
+      "BLOCKED": "Đã khóa",
+      "CLOSED": "Đã đóng"
+    },
+    "empty": {
+      "title": "Không có tài khoản Provider",
+      "description": "Payment provider này hiện không có tài khoản nào."
     }
   }
 }

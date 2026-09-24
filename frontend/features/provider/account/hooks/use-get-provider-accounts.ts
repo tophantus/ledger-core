@@ -3,25 +3,20 @@
 import {useCallback} from "react";
 
 import {
-    providerAccountApi,
-    type ProviderCredentials,
+    providerAccountApi
 } from "../api/provider-account-api";
 
-export function useGetProviderAccount() {
-    const getProviderAccount = useCallback(
+export function useGetProviderAccounts() {
+    const getProviderAccounts = useCallback(
         async (
-            accountId: string,
-            credentials: ProviderCredentials,
         ) => {
-            return providerAccountApi.getById(
-                accountId,
-                credentials,
+            return providerAccountApi.getAccounts(
             );
         },
         [],
     );
 
     return {
-        getProviderAccount,
+        getProviderAccounts,
     };
 }

@@ -1,4 +1,5 @@
 import type {ReactNode} from "react";
+import {ProviderButton} from "@/features/auth/components/provider-button";
 
 interface AuthLayoutProps {
     children: ReactNode;
@@ -12,6 +13,8 @@ export default function AuthLayout({
             <div className="w-full max-w-md">
                 {children}
             </div>
+
+            <ProviderButton />
         </main>
     );
 }

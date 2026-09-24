@@ -27,10 +27,11 @@ export function RegisterProviderForm() {
             null,
         );
 
+    const [copied, setCopied] =
+        useState<string | null>(null);
+
     const schema =
-        createRegisterPaymentProviderSchema(
-            t,
-        );
+        createRegisterPaymentProviderSchema(t);
 
     const {
         register,
@@ -61,6 +62,44 @@ export function RegisterProviderForm() {
 
         setResult(response.data);
         reset();
+    };
+
+    const getEnvValue = (
+        key: string,
+        value: string,
+    ) => `${key}=${value}`;
+
+    const copyToClipboard = async (
+        key: string,
+        value: string,
+    ) => {
+        await navigator.clipboard.writeText(
+            getEnvValue(key, value),
+        );
+
+        setCopied(key);
+
+        window.setTimeout(() => {
+            setCopied(null);
+        }, 1500);
+    };
+
+    const copyEnvConfig = async (
+        provider: RegisterPaymentProviderResult,
+    ) => {
+        const env = [
+            `NEXT_PUBLIC_PROVIDER_NAME=${provider.name}`,
+            `NEXT_PUBLIC_PROVIDER_CLIENT_ID=${provider.clientId}`,
+            `NEXT_PUBLIC_PROVIDER_CREDENTIAL=${provider.credential}`,
+        ].join("\n");
+
+        await navigator.clipboard.writeText(env);
+
+        setCopied("env");
+
+        window.setTimeout(() => {
+            setCopied(null);
+        }, 1500);
     };
 
     return (
@@ -102,8 +141,7 @@ export function RegisterProviderForm() {
                             className="
                                 mt-2 w-full rounded-lg border border-border
                                 bg-background px-3 py-2.5 text-sm
-                                text-text-primary outline-none
-                                transition
+                                text-text-primary outline-none transition
                                 focus:ring-2 focus:ring-primary/20
                                 disabled:cursor-not-allowed
                                 disabled:opacity-60
@@ -136,8 +174,7 @@ export function RegisterProviderForm() {
                             className="
                                 mt-2 w-full rounded-lg border border-border
                                 bg-background px-3 py-2.5 text-sm
-                                text-text-primary outline-none
-                                transition
+                                text-text-primary outline-none transition
                                 focus:ring-2 focus:ring-primary/20
                                 disabled:cursor-not-allowed
                                 disabled:opacity-60
@@ -166,8 +203,7 @@ export function RegisterProviderForm() {
                             className="
                                 mt-2 w-full rounded-lg border border-border
                                 bg-background px-3 py-2.5 text-sm
-                                text-text-primary outline-none
-                                transition
+                                text-text-primary outline-none transition
                                 focus:ring-2 focus:ring-primary/20
                                 disabled:cursor-not-allowed
                                 disabled:opacity-60
@@ -213,35 +249,128 @@ export function RegisterProviderForm() {
                         bg-surface p-6 shadow-sm
                     "
                 >
-                    <h2 className="text-lg font-semibold text-text-primary">
-                        {t("success.title")}
-                    </h2>
+                    <div className="flex items-start justify-between gap-4">
+                        <div>
+                            <h2 className="text-lg font-semibold text-text-primary">
+                                {t("success.title")}
+                            </h2>
 
-                    <p className="mt-1 text-sm text-text-secondary">
-                        {t("success.description")}
-                    </p>
+                            <p className="mt-1 text-sm text-text-secondary">
+                                {t("success.description")}
+                            </p>
+                        </div>
+
+                        <button
+                            type="button"
+                            onClick={() =>
+                                copyEnvConfig(result)
+                            }
+                            className="
+                                shrink-0 rounded-lg border border-border
+                                px-3 py-2 text-xs font-medium
+                                text-text-secondary transition
+                                hover:bg-surface-subtle
+                            "
+                        >
+                            {copied === "env"
+                                ? t("success.copied")
+                                : t("success.copyEnv")}
+                        </button>
+                    </div>
 
                     <div className="mt-5 space-y-3">
                         <div>
-                            <span className="text-sm text-text-secondary">
-                                {t(
-                                    "success.clientId",
-                                )}
-                            </span>
+                            <div className="flex items-center justify-between gap-3">
+                                <span className="text-sm text-text-secondary">
+                                    {t("success.providerName")}
+                                </span>
 
-                            <p className="mt-1 font-mono text-sm text-text-primary">
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        copyToClipboard(
+                                            "NEXT_PUBLIC_PROVIDER_NAME",
+                                            result.name,
+                                        )
+                                    }
+                                    className="
+                                        text-xs font-medium
+                                        text-primary hover:underline
+                                    "
+                                >
+                                    {copied ===
+                                    "NEXT_PUBLIC_PROVIDER_NAME"
+                                        ? t("success.copied")
+                                        : t("success.copy")}
+                                </button>
+                            </div>
+
+                            <p className="mt-1 break-all font-mono text-sm text-text-primary">
+                                NEXT_PUBLIC_PROVIDER_NAME=
+                                {result.name}
+                            </p>
+                        </div>
+
+                        <div>
+                            <div className="flex items-center justify-between gap-3">
+                                <span className="text-sm text-text-secondary">
+                                    {t("success.clientId")}
+                                </span>
+
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        copyToClipboard(
+                                            "NEXT_PUBLIC_PROVIDER_CLIENT_ID",
+                                            result.clientId,
+                                        )
+                                    }
+                                    className="
+                                        text-xs font-medium
+                                        text-primary hover:underline
+                                    "
+                                >
+                                    {copied ===
+                                    "NEXT_PUBLIC_PROVIDER_CLIENT_ID"
+                                        ? t("success.copied")
+                                        : t("success.copy")}
+                                </button>
+                            </div>
+
+                            <p className="mt-1 break-all font-mono text-sm text-text-primary">
+                                NEXT_PUBLIC_PROVIDER_CLIENT_ID=
                                 {result.clientId}
                             </p>
                         </div>
 
                         <div>
-                            <span className="text-sm text-text-secondary">
-                                {t(
-                                    "success.credential",
-                                )}
-                            </span>
+                            <div className="flex items-center justify-between gap-3">
+                                <span className="text-sm text-text-secondary">
+                                    {t("success.credential")}
+                                </span>
+
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        copyToClipboard(
+                                            "NEXT_PUBLIC_PROVIDER_CREDENTIAL",
+                                            result.credential,
+                                        )
+                                    }
+                                    className="
+                                        text-xs font-medium
+                                        text-primary hover:underline
+                                    "
+                                >
+                                    {copied ===
+                                    "NEXT_PUBLIC_PROVIDER_CREDENTIAL"
+                                        ? t("success.copied")
+                                        : t("success.copy")}
+                                </button>
+                            </div>
 
                             <p className="mt-1 break-all font-mono text-sm text-text-primary">
+                                NEXT_PUBLIC_PROVIDER_CREDENTIAL=
                                 {result.credential}
                             </p>
                         </div>

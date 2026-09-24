@@ -1,4 +1,8 @@
 {
+  "dashboard": {
+    "title": "Provider Dashboard",
+    "welcome": "Welcome, {name}"
+  },
   "register": {
     "title": "Register Payment Provider",
     "description": "Register a new payment provider and generate provider credentials.",
@@ -24,10 +28,14 @@
       "registering": "Registering..."
     },
     "success": {
-      "title": "Provider Registered",
-      "description": "Save these credentials securely. The credential may only be shown once.",
+      "title": "Provider registered successfully",
+      "description": "Save these values in your environment configuration.",
+      "providerName": "Provider Name",
       "clientId": "Client ID",
-      "credential": "Credential"
+      "credential": "Credential",
+      "copy": "Copy",
+      "copied": "Copied",
+      "copyEnv": "Copy .env"
     },
     "validation": {
       "code": {
@@ -39,6 +47,22 @@
         "required": "Provider name is required.",
         "maxLength": "Provider name must be at most 100 characters."
       }
+    }
+  },
+  "account": {
+    "accountNumber": "Account Number",
+    "availableBalance": "Available Balance",
+    "balance": "Balance",
+    "holdAmount": "Hold Amount",
+    "status": "Status",
+    "statuses": {
+      "ACTIVE": "Active",
+      "BLOCKED": "Blocked",
+      "CLOSED": "Closed"
+    },
+    "empty": {
+      "title": "No Provider Accounts",
+      "description": "There are no accounts available for this payment provider."
     }
   }
 }
