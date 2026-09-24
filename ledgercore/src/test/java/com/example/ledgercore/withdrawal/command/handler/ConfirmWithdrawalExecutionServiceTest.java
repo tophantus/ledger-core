@@ -7,7 +7,7 @@ import com.example.ledgercore.withdrawal.command.dto.ConfirmWithdrawalRequestRes
 import com.example.ledgercore.withdrawal.command.dto.CreateWithdrawalLookupCodeCommand;
 import com.example.ledgercore.withdrawal.command.dto.CreateWithdrawalLookupCodeResponse;
 import com.example.ledgercore.withdrawal.command.port.inbound.CreateWithdrawalLookupCodeUseCase;
-import com.example.ledgercore.withdrawal.command.port.outbound.WithdrawalAccountInfo;
+import com.example.ledgercore.withdrawal.command.port.outbound.dto.WithdrawalAccountInfo;
 import com.example.ledgercore.withdrawal.command.port.outbound.WithdrawalAccountPort;
 import com.example.ledgercore.withdrawal.command.port.outbound.WithdrawalHoldPort;
 import com.example.ledgercore.withdrawal.command.port.outbound.WithdrawalNotificationPort;

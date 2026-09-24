@@ -2,7 +2,7 @@ package com.example.ledgercore.withdrawal.adapter.outbound.otp;
 
 import com.example.ledgercore.account.query.dto.AccountWithdrawInfo;
 import com.example.ledgercore.account.query.port.inbound.GetWithdrawAccountInfoUseCase;
-import com.example.ledgercore.withdrawal.command.port.outbound.WithdrawalAccountInfo;
+import com.example.ledgercore.withdrawal.command.port.outbound.dto.WithdrawalAccountInfo;
 import com.example.ledgercore.withdrawal.command.port.outbound.WithdrawalAccountPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

@@ -1,4 +1,4 @@
-package com.example.ledgercore.transaction.command.dto;
+package com.example.ledgercore.transfer.command.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

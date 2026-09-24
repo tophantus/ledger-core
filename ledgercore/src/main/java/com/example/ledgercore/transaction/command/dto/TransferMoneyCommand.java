@@ -14,12 +14,14 @@ public record TransferMoneyCommand(
         @NotNull
         UUID sourceAccountId,
 
-        @NotBlank
-        @Size(max = 30)
-        String destinationAccountNo,
+        @NotNull
+        UUID destinationAccountId,
 
         @NotNull
-        @DecimalMin(value = "0.0001")
+        @DecimalMin(
+                value = "0.0001",
+                message = "Transfer amount must be greater than zero"
+        )
         BigDecimal amount,
 
         @NotNull

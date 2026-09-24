@@ -5,7 +5,7 @@ import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.withdrawal.command.dto.CreateWithdrawalRequestCommand;
 import com.example.ledgercore.withdrawal.command.dto.WithdrawalRequestResponse;
-import com.example.ledgercore.withdrawal.command.port.outbound.WithdrawalAccountInfo;
+import com.example.ledgercore.withdrawal.command.port.outbound.dto.WithdrawalAccountInfo;
 import com.example.ledgercore.withdrawal.command.port.outbound.WithdrawalAccountPort;
 import com.example.ledgercore.withdrawal.command.port.outbound.WithdrawalOtpPort;
 import com.example.ledgercore.withdrawal.command.repository.WithdrawalRequestCommandRepository;

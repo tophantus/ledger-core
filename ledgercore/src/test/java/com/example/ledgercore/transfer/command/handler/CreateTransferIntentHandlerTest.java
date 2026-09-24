@@ -1,16 +1,16 @@
-package com.example.ledgercore.transaction.command.handler;
+package com.example.ledgercore.transfer.command.handler;
 
 import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.otp.enums.OtpPurpose;
-import com.example.ledgercore.transaction.command.dto.CreateTransferIntentCommand;
-import com.example.ledgercore.transaction.command.dto.CreateTransferIntentResult;
-import com.example.ledgercore.transaction.command.port.outbound.TransferUserAccountPort;
 import com.example.ledgercore.transaction.command.port.outbound.TransferOtpPort;
-import com.example.ledgercore.transaction.command.repository.TransferIntentCommandRepository;
-import com.example.ledgercore.transaction.entity.TransferIntent;
-import com.example.ledgercore.transaction.enums.TransferIntentStatus;
+import com.example.ledgercore.transaction.command.port.outbound.TransferUserAccountPort;
+import com.example.ledgercore.transfer.command.dto.CreateTransferIntentCommand;
+import com.example.ledgercore.transfer.command.dto.CreateTransferIntentResult;
+import com.example.ledgercore.transfer.command.repository.TransferIntentCommandRepository;
+import com.example.ledgercore.transfer.entity.TransferIntent;
+import com.example.ledgercore.transfer.enums.TransferIntentStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,8 +25,14 @@ import java.time.ZoneOffset;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CreateTransferIntentHandlerTest {
@@ -53,6 +59,18 @@ class CreateTransferIntentHandlerTest {
     private static final Instant NOW =
             Instant.parse("2026-08-27T10:00:00Z");
 
+    private static final BigDecimal TRANSFER_AMOUNT =
+            new BigDecimal("100000");
+
+    private static final String DESTINATION_ACCOUNT_NO =
+            "0987654321";
+
+    private static final String REFERENCE =
+            "REF-001";
+
+    private static final String DESCRIPTION =
+            "Test transfer";
+
     @BeforeEach
     void setUp() {
         clock = Clock.fixed(
@@ -78,58 +96,35 @@ class CreateTransferIntentHandlerTest {
         CreateTransferIntentCommand command =
                 createCommand();
 
-        TransferUserAccountPort.TransferAccountInfo transferInfo =
-                new TransferUserAccountPort.TransferAccountInfo(
-                        sourceAccountId,
-                        destinationAccountId,
-                        Currency.VND,
-                        new BigDecimal("1000000")
-                );
-
-        TransferIntent savedIntent =
-                TransferIntent.builder()
-                        .id(intentId)
-                        .userId(userId)
-                        .sourceAccountId(sourceAccountId)
-                        .destinationAccountId(destinationAccountId)
-                        .amount(new BigDecimal("100000"))
-                        .currency(Currency.VND)
-                        .reference("REF-001")
-                        .description("Test transfer")
-                        .status(TransferIntentStatus.PENDING)
-                        .expiresAt(
-                                NOW.plus(
-                                        OtpPurpose.CONFIRM_TRANSFER
-                                                .getExpiration()
-                                )
-                        )
-                        .createdAt(NOW)
-                        .build();
-
-        when(
-                transferIntentCommandRepository
-                        .findByReference("REF-001")
-        ).thenReturn(Optional.empty());
-
-        when(
-                transferUserAccountPort.getAccountIdByAccountNo(
-                        "0987654321"
-                )
-        ).thenReturn(destinationAccountId);
-
-        when(
-                transferUserAccountPort.getTransferInfo(
-                        userId,
-                        sourceAccountId,
-                        destinationAccountId
-                )
-        ).thenReturn(transferInfo);
+        mockAvailableTransfer();
 
         when(
                 transferIntentCommandRepository.save(
                         any(TransferIntent.class)
                 )
-        ).thenReturn(savedIntent);
+        ).thenAnswer(invocation ->
+        {
+            TransferIntent intent =
+                    invocation.getArgument(0);
+
+            return TransferIntent.builder()
+                    .id(intentId)
+                    .userId(intent.getUserId())
+                    .sourceAccountId(
+                            intent.getSourceAccountId()
+                    )
+                    .destinationAccountId(
+                            intent.getDestinationAccountId()
+                    )
+                    .amount(intent.getAmount())
+                    .currency(intent.getCurrency())
+                    .reference(intent.getReference())
+                    .description(intent.getDescription())
+                    .status(intent.getStatus())
+                    .expiresAt(intent.getExpiresAt())
+                    .createdAt(intent.getCreatedAt())
+                    .build();
+        });
 
         CreateTransferIntentResult result =
                 handler.execute(
@@ -155,7 +150,7 @@ class CreateTransferIntentHandlerTest {
         );
 
         assertEquals(
-                new BigDecimal("100000"),
+                TRANSFER_AMOUNT,
                 result.amount()
         );
 
@@ -165,7 +160,7 @@ class CreateTransferIntentHandlerTest {
         );
 
         assertEquals(
-                "REF-001",
+                REFERENCE,
                 result.reference()
         );
 
@@ -175,11 +170,13 @@ class CreateTransferIntentHandlerTest {
         );
 
         assertEquals(
-                NOW.plus(
-                        OtpPurpose.CONFIRM_TRANSFER
-                                .getExpiration()
-                ),
+                expectedExpiration(),
                 result.expiresAt()
+        );
+
+        assertEquals(
+                NOW,
+                result.createdAt()
         );
 
         verify(
@@ -195,32 +192,7 @@ class CreateTransferIntentHandlerTest {
         CreateTransferIntentCommand command =
                 createCommand();
 
-        TransferUserAccountPort.TransferAccountInfo transferInfo =
-                new TransferUserAccountPort.TransferAccountInfo(
-                        sourceAccountId,
-                        destinationAccountId,
-                        Currency.VND,
-                        new BigDecimal("1000000")
-                );
-
-        when(
-                transferIntentCommandRepository
-                        .findByReference("REF-001")
-        ).thenReturn(Optional.empty());
-
-        when(
-                transferUserAccountPort.getAccountIdByAccountNo(
-                        "0987654321"
-                )
-        ).thenReturn(destinationAccountId);
-
-        when(
-                transferUserAccountPort.getTransferInfo(
-                        userId,
-                        sourceAccountId,
-                        destinationAccountId
-                )
-        ).thenReturn(transferInfo);
+        mockAvailableTransfer();
 
         when(
                 transferIntentCommandRepository.save(
@@ -253,10 +225,7 @@ class CreateTransferIntentHandlerTest {
         );
 
         assertEquals(
-                NOW.plus(
-                        OtpPurpose.CONFIRM_TRANSFER
-                                .getExpiration()
-                ),
+                expectedExpiration(),
                 intent.getExpiresAt()
         );
     }
@@ -267,25 +236,14 @@ class CreateTransferIntentHandlerTest {
                 createCommand();
 
         TransferIntent existingIntent =
-                TransferIntent.builder()
-                        .id(intentId)
-                        .userId(userId)
-                        .sourceAccountId(sourceAccountId)
-                        .destinationAccountId(destinationAccountId)
-                        .amount(new BigDecimal("100000"))
-                        .currency(Currency.VND)
-                        .reference("REF-001")
-                        .description("Test transfer")
-                        .status(TransferIntentStatus.PENDING)
-                        .expiresAt(
-                                NOW.plusSeconds(300)
-                        )
-                        .createdAt(NOW)
-                        .build();
+                createPendingIntent(
+                        intentId,
+                        userId
+                );
 
         when(
                 transferIntentCommandRepository
-                        .findByReference("REF-001")
+                        .findByReference(REFERENCE)
         ).thenReturn(
                 Optional.of(existingIntent)
         );
@@ -312,7 +270,7 @@ class CreateTransferIntentHandlerTest {
         );
 
         assertEquals(
-                new BigDecimal("100000"),
+                TRANSFER_AMOUNT,
                 result.amount()
         );
 
@@ -322,13 +280,23 @@ class CreateTransferIntentHandlerTest {
         );
 
         assertEquals(
-                "REF-001",
+                REFERENCE,
                 result.reference()
         );
 
         assertEquals(
                 TransferIntentStatus.PENDING,
                 result.status()
+        );
+
+        assertEquals(
+                existingIntent.getExpiresAt(),
+                result.expiresAt()
+        );
+
+        assertEquals(
+                existingIntent.getCreatedAt(),
+                result.createdAt()
         );
 
         verify(
@@ -364,17 +332,14 @@ class CreateTransferIntentHandlerTest {
         CreateTransferIntentCommand command =
                 new CreateTransferIntentCommand(
                         sourceAccountId,
-                        "0987654321",
+                        DESTINATION_ACCOUNT_NO,
                         new BigDecimal("100.1"),
                         Currency.VND,
-                        "REF-001",
-                        "Test transfer"
+                        REFERENCE,
+                        DESCRIPTION
                 );
 
-        when(
-                transferIntentCommandRepository
-                        .findByReference("REF-001")
-        ).thenReturn(Optional.empty());
+        mockReferenceNotFound();
 
         BusinessException exception =
                 assertThrows(
@@ -410,22 +375,14 @@ class CreateTransferIntentHandlerTest {
                 UUID.randomUUID();
 
         TransferIntent existingIntent =
-                TransferIntent.builder()
-                        .id(intentId)
-                        .userId(anotherUserId)
-                        .sourceAccountId(sourceAccountId)
-                        .destinationAccountId(destinationAccountId)
-                        .amount(new BigDecimal("100000"))
-                        .currency(Currency.VND)
-                        .reference("REF-001")
-                        .status(TransferIntentStatus.PENDING)
-                        .expiresAt(NOW.plusSeconds(300))
-                        .createdAt(NOW)
-                        .build();
+                createPendingIntent(
+                        intentId,
+                        anotherUserId
+                );
 
         when(
                 transferIntentCommandRepository
-                        .findByReference("REF-001")
+                        .findByReference(REFERENCE)
         ).thenReturn(
                 Optional.of(existingIntent)
         );
@@ -460,17 +417,14 @@ class CreateTransferIntentHandlerTest {
         CreateTransferIntentCommand command =
                 new CreateTransferIntentCommand(
                         sourceAccountId,
-                        "0987654321",
+                        DESTINATION_ACCOUNT_NO,
                         BigDecimal.ZERO,
                         Currency.VND,
-                        "REF-001",
-                        "Test transfer"
+                        REFERENCE,
+                        DESCRIPTION
                 );
 
-        when(
-                transferIntentCommandRepository
-                        .findByReference("REF-001")
-        ).thenReturn(Optional.empty());
+        mockReferenceNotFound();
 
         BusinessException exception =
                 assertThrows(
@@ -502,17 +456,14 @@ class CreateTransferIntentHandlerTest {
         CreateTransferIntentCommand command =
                 new CreateTransferIntentCommand(
                         sourceAccountId,
-                        "0987654321",
+                        DESTINATION_ACCOUNT_NO,
                         new BigDecimal("-100"),
                         Currency.VND,
-                        "REF-001",
-                        "Test transfer"
+                        REFERENCE,
+                        DESCRIPTION
                 );
 
-        when(
-                transferIntentCommandRepository
-                        .findByReference("REF-001")
-        ).thenReturn(Optional.empty());
+        mockReferenceNotFound();
 
         BusinessException exception =
                 assertThrows(
@@ -532,6 +483,11 @@ class CreateTransferIntentHandlerTest {
                 transferUserAccountPort,
                 transferOtpPort
         );
+
+        verify(
+                transferIntentCommandRepository,
+                never()
+        ).save(any());
     }
 
     @Test
@@ -539,14 +495,11 @@ class CreateTransferIntentHandlerTest {
         CreateTransferIntentCommand command =
                 createCommand();
 
-        when(
-                transferIntentCommandRepository
-                        .findByReference("REF-001")
-        ).thenReturn(Optional.empty());
+        mockReferenceNotFound();
 
         when(
                 transferUserAccountPort.getAccountIdByAccountNo(
-                        "0987654321"
+                        DESTINATION_ACCOUNT_NO
                 )
         ).thenReturn(sourceAccountId);
 
@@ -567,7 +520,7 @@ class CreateTransferIntentHandlerTest {
         verify(
                 transferUserAccountPort
         ).getAccountIdByAccountNo(
-                "0987654321"
+                DESTINATION_ACCOUNT_NO
         );
 
         verify(
@@ -595,21 +548,16 @@ class CreateTransferIntentHandlerTest {
                 createCommand();
 
         TransferUserAccountPort.TransferAccountInfo transferInfo =
-                new TransferUserAccountPort.TransferAccountInfo(
-                        sourceAccountId,
-                        destinationAccountId,
+                createTransferInfo(
                         Currency.USD,
                         new BigDecimal("1000000")
                 );
 
-        when(
-                transferIntentCommandRepository
-                        .findByReference("REF-001")
-        ).thenReturn(Optional.empty());
+        mockReferenceNotFound();
 
         when(
                 transferUserAccountPort.getAccountIdByAccountNo(
-                        "0987654321"
+                        DESTINATION_ACCOUNT_NO
                 )
         ).thenReturn(destinationAccountId);
 
@@ -651,21 +599,16 @@ class CreateTransferIntentHandlerTest {
                 createCommand();
 
         TransferUserAccountPort.TransferAccountInfo transferInfo =
-                new TransferUserAccountPort.TransferAccountInfo(
-                        sourceAccountId,
-                        destinationAccountId,
+                createTransferInfo(
                         Currency.VND,
                         new BigDecimal("50000")
                 );
 
-        when(
-                transferIntentCommandRepository
-                        .findByReference("REF-001")
-        ).thenReturn(Optional.empty());
+        mockReferenceNotFound();
 
         when(
                 transferUserAccountPort.getAccountIdByAccountNo(
-                        "0987654321"
+                        DESTINATION_ACCOUNT_NO
                 )
         ).thenReturn(destinationAccountId);
 
@@ -706,32 +649,7 @@ class CreateTransferIntentHandlerTest {
         CreateTransferIntentCommand command =
                 createCommand();
 
-        TransferUserAccountPort.TransferAccountInfo transferInfo =
-                new TransferUserAccountPort.TransferAccountInfo(
-                        sourceAccountId,
-                        destinationAccountId,
-                        Currency.VND,
-                        new BigDecimal("1000000")
-                );
-
-        when(
-                transferIntentCommandRepository
-                        .findByReference("REF-001")
-        ).thenReturn(Optional.empty());
-
-        when(
-                transferUserAccountPort.getAccountIdByAccountNo(
-                        "0987654321"
-                )
-        ).thenReturn(destinationAccountId);
-
-        when(
-                transferUserAccountPort.getTransferInfo(
-                        userId,
-                        sourceAccountId,
-                        destinationAccountId
-                )
-        ).thenReturn(transferInfo);
+        mockAvailableTransfer();
 
         when(
                 transferIntentCommandRepository.save(
@@ -758,14 +676,83 @@ class CreateTransferIntentHandlerTest {
         );
     }
 
+    private void mockReferenceNotFound() {
+        when(
+                transferIntentCommandRepository
+                        .findByReference(REFERENCE)
+        ).thenReturn(Optional.empty());
+    }
+
+    private void mockAvailableTransfer() {
+        mockReferenceNotFound();
+
+        when(
+                transferUserAccountPort.getAccountIdByAccountNo(
+                        DESTINATION_ACCOUNT_NO
+                )
+        ).thenReturn(destinationAccountId);
+
+        when(
+                transferUserAccountPort.getTransferInfo(
+                        userId,
+                        sourceAccountId,
+                        destinationAccountId
+                )
+        ).thenReturn(
+                createTransferInfo(
+                        Currency.VND,
+                        new BigDecimal("1000000")
+                )
+        );
+    }
+
+    private TransferUserAccountPort.TransferAccountInfo
+    createTransferInfo(
+            Currency currency,
+            BigDecimal balance
+    ) {
+        return new TransferUserAccountPort.TransferAccountInfo(
+                sourceAccountId,
+                destinationAccountId,
+                currency,
+                balance
+        );
+    }
+
+    private TransferIntent createPendingIntent(
+            UUID id,
+            UUID ownerId
+    ) {
+        return TransferIntent.builder()
+                .id(id)
+                .userId(ownerId)
+                .sourceAccountId(sourceAccountId)
+                .destinationAccountId(destinationAccountId)
+                .amount(TRANSFER_AMOUNT)
+                .currency(Currency.VND)
+                .reference(REFERENCE)
+                .description(DESCRIPTION)
+                .status(TransferIntentStatus.PENDING)
+                .expiresAt(NOW.plusSeconds(300))
+                .createdAt(NOW)
+                .build();
+    }
+
     private CreateTransferIntentCommand createCommand() {
         return new CreateTransferIntentCommand(
                 sourceAccountId,
-                "0987654321",
-                new BigDecimal("100000"),
+                DESTINATION_ACCOUNT_NO,
+                TRANSFER_AMOUNT,
                 Currency.VND,
-                "REF-001",
-                "Test transfer"
+                REFERENCE,
+                DESCRIPTION
+        );
+    }
+
+    private Instant expectedExpiration() {
+        return NOW.plus(
+                OtpPurpose.CONFIRM_TRANSFER
+                        .getExpiration()
         );
     }
 }

@@ -1,17 +1,17 @@
-package com.example.ledgercore.transaction.command.handler;
+package com.example.ledgercore.transfer.command.handler;
 
 import com.example.ledgercore.common.currency.CurrencyAmountPolicy;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.otp.enums.OtpPurpose;
-import com.example.ledgercore.transaction.command.dto.CreateTransferIntentCommand;
-import com.example.ledgercore.transaction.command.dto.CreateTransferIntentResult;
-import com.example.ledgercore.transaction.command.port.inbound.CreateTransferIntentUseCase;
+import com.example.ledgercore.transfer.command.dto.CreateTransferIntentCommand;
+import com.example.ledgercore.transfer.command.dto.CreateTransferIntentResult;
+import com.example.ledgercore.transfer.command.port.inbound.CreateTransferIntentUseCase;
 import com.example.ledgercore.transaction.command.port.outbound.TransferUserAccountPort;
 import com.example.ledgercore.transaction.command.port.outbound.TransferOtpPort;
-import com.example.ledgercore.transaction.command.repository.TransferIntentCommandRepository;
-import com.example.ledgercore.transaction.entity.TransferIntent;
-import com.example.ledgercore.transaction.enums.TransferIntentStatus;
+import com.example.ledgercore.transfer.command.repository.TransferIntentCommandRepository;
+import com.example.ledgercore.transfer.entity.TransferIntent;
+import com.example.ledgercore.transfer.enums.TransferIntentStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

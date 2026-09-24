@@ -1,6 +1,6 @@
-package com.example.ledgercore.transaction.command.repository;
+package com.example.ledgercore.transfer.command.repository;
 
-import com.example.ledgercore.transaction.entity.TransferIntent;
+import com.example.ledgercore.transfer.entity.TransferIntent;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

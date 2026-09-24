@@ -1,7 +1,7 @@
-package com.example.ledgercore.transaction.entity;
+package com.example.ledgercore.transfer.entity;
 
 import com.example.ledgercore.common.currency.Currency;
-import com.example.ledgercore.transaction.enums.TransferIntentStatus;
+import com.example.ledgercore.transfer.enums.TransferIntentStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -109,7 +109,7 @@ public class TransferIntent {
     private Long version = 0L;
 
     public boolean isExpired(Instant now) {
-        return now.isAfter(expiresAt);
+        return !expiresAt.isAfter(now);
     }
 
     public boolean isPending() {

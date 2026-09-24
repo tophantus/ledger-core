@@ -1,4 +1,4 @@
-package com.example.ledgercore.transaction.enums;
+package com.example.ledgercore.transfer.enums;
 
 public enum TransferIntentStatus {
 

@@ -1,13 +1,13 @@
-package com.example.ledgercore.transaction.command.handler;
+package com.example.ledgercore.transfer.command.handler;
 
 import com.example.ledgercore.common.currency.CurrencyAmountPolicy;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
-import com.example.ledgercore.transaction.command.dto.ConfirmTransferCommand;
-import com.example.ledgercore.transaction.command.port.inbound.ConfirmTransferUseCase;
+import com.example.ledgercore.transfer.command.dto.ConfirmTransferCommand;
+import com.example.ledgercore.transfer.command.port.inbound.ConfirmTransferUseCase;
 import com.example.ledgercore.transaction.command.port.outbound.TransferOtpPort;
-import com.example.ledgercore.transaction.command.repository.TransferIntentCommandRepository;
-import com.example.ledgercore.transaction.entity.TransferIntent;
+import com.example.ledgercore.transfer.command.repository.TransferIntentCommandRepository;
+import com.example.ledgercore.transfer.entity.TransferIntent;
 import com.example.ledgercore.transaction.query.dto.TransactionResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

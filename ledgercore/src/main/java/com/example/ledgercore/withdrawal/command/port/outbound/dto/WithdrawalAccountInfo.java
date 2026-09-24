@@ -1,4 +1,4 @@
-package com.example.ledgercore.withdrawal.command.port.outbound;
+package com.example.ledgercore.withdrawal.command.port.outbound.dto;
 
 import com.example.ledgercore.common.currency.Currency;
 

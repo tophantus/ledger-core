@@ -1,4 +1,4 @@
-package com.example.ledgercore.transaction.command.dto;
+package com.example.ledgercore.transfer.command.dto;
 
 import com.example.ledgercore.common.currency.Currency;
 import jakarta.validation.constraints.DecimalMin;
