@@ -1,0 +1,44 @@
+{
+  "register": {
+    "title": "Register Payment Provider",
+    "description": "Register a new payment provider and generate provider credentials.",
+    "fields": {
+      "code": {
+        "label": "Provider Code",
+        "placeholder": "e.g. VNPAY"
+      },
+      "name": {
+        "label": "Provider Name",
+        "placeholder": "e.g. VNPay"
+      },
+      "type": {
+        "label": "Provider Type",
+        "options": {
+          "psp": "PSP",
+          "acquirer": "Acquirer"
+        }
+      }
+    },
+    "actions": {
+      "register": "Register Provider",
+      "registering": "Registering..."
+    },
+    "success": {
+      "title": "Provider Registered",
+      "description": "Save these credentials securely. The credential may only be shown once.",
+      "clientId": "Client ID",
+      "credential": "Credential"
+    },
+    "validation": {
+      "code": {
+        "required": "Provider code is required.",
+        "maxLength": "Provider code must be at most 50 characters.",
+        "pattern": "Provider code must contain only uppercase letters, numbers, and underscores."
+      },
+      "name": {
+        "required": "Provider name is required.",
+        "maxLength": "Provider name must be at most 100 characters."
+      }
+    }
+  }
+}

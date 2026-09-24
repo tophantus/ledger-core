@@ -1,0 +1,44 @@
+{
+  "register": {
+    "title": "Đăng ký Payment Provider",
+    "description": "Đăng ký payment provider mới và tạo thông tin xác thực.",
+    "fields": {
+      "code": {
+        "label": "Mã Provider",
+        "placeholder": "VD: VNPAY"
+      },
+      "name": {
+        "label": "Tên Provider",
+        "placeholder": "VD: VNPay"
+      },
+      "type": {
+        "label": "Loại Provider",
+        "options": {
+          "psp": "PSP",
+          "acquirer": "Acquirer"
+        }
+      }
+    },
+    "actions": {
+      "register": "Đăng ký Provider",
+      "registering": "Đang đăng ký..."
+    },
+    "success": {
+      "title": "Đăng ký Provider thành công",
+      "description": "Hãy lưu thông tin xác thực an toàn. Credential có thể chỉ được hiển thị một lần.",
+      "clientId": "Client ID",
+      "credential": "Credential"
+    },
+    "validation": {
+      "code": {
+        "required": "Mã Provider là bắt buộc.",
+        "maxLength": "Mã Provider tối đa 50 ký tự.",
+        "pattern": "Mã Provider chỉ được chứa chữ in hoa, số và dấu gạch dưới."
+      },
+      "name": {
+        "required": "Tên Provider là bắt buộc.",
+        "maxLength": "Tên Provider tối đa 100 ký tự."
+      }
+    }
+  }
+}
