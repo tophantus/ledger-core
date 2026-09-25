@@ -1,4 +1,4 @@
-package com.example.ledgercore.interest.command.handler;
+package com.example.ledgercore.interest.command.handler.service.impl;
 
 import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.interest.command.dto.PostInterestCommand;
