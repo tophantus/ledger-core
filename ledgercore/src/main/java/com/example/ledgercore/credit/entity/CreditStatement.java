@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.Version;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -36,6 +37,10 @@ import java.util.UUID;
                 @Index(
                         name = "idx_credit_statements_due_date",
                         columnList = "due_date"
+                ),
+                @Index(
+                        name = "idx_credit_statements_facility_id",
+                        columnList = "credit_facility_id"
                 )
         }
 )
@@ -119,13 +124,61 @@ public class CreditStatement {
     )
     private BigDecimal minimumPayment;
 
+    @Column(
+            name = "paid_amount",
+            nullable = false,
+            precision = 19,
+            scale = 2
+    )
+    @Builder.Default
+    private BigDecimal paidAmount = BigDecimal.ZERO;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 20)
     private CreditStatementStatus status;
+
+    @Version
+    @Column(name = "version", nullable = false)
+    private Long version;
 
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
+
+    public BigDecimal getRemainingAmount() {
+        return closingBalance.subtract(paidAmount);
+    }
+
+    public boolean isMinimumPaymentSatisfied() {
+        return paidAmount.compareTo(minimumPayment) >= 0;
+    }
+
+    public boolean isPaid() {
+        return paidAmount.compareTo(closingBalance) >= 0;
+    }
+
+    public boolean isPastDue(LocalDate date) {
+        return date.isAfter(dueDate)
+                && !isMinimumPaymentSatisfied();
+    }
+
+    public void applyPayment(BigDecimal amount) {
+        if (amount == null || amount.signum() <= 0) {
+            throw new IllegalArgumentException(
+                    "Payment amount must be greater than zero"
+            );
+        }
+
+        BigDecimal remainingAmount = getRemainingAmount();
+
+        if (amount.compareTo(remainingAmount) > 0) {
+            throw new IllegalArgumentException(
+                    "Payment amount exceeds statement remaining amount"
+            );
+        }
+
+        this.paidAmount = this.paidAmount.add(amount);
+    }
 }

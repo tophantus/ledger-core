@@ -165,3 +165,5 @@ databaseChangeLog:
       file: db/changelog/082-add-ledger-account-id-to-credit-facilities.yaml
   - include:
       file: db/changelog/083-create-card-captures.yaml
+  - include:
+      file: db/changelog/084-add-payment-tracking-to-credit-statements.yaml

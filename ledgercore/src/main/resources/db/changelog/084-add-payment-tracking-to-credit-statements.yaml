@@ -1,0 +1,31 @@
+databaseChangeLog:
+  - changeSet:
+      id: 084-add-payment-tracking-to-credit-statements
+      author: tophantus
+      changes:
+        - addColumn:
+            tableName: credit_statements
+            columns:
+              - column:
+                  name: paid_amount
+                  type: DECIMAL(19,2)
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+
+        - addColumn:
+            tableName: credit_statements
+            columns:
+              - column:
+                  name: version
+                  type: BIGINT
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+
+        - createIndex:
+            tableName: credit_statements
+            indexName: idx_credit_statements_facility_id
+            columns:
+              - column:
+                  name: credit_facility_id
