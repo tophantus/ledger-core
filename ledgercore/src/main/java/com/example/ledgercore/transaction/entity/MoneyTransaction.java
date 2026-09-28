@@ -56,6 +56,9 @@ public class MoneyTransaction {
     @Column(name = "source_credit_facility_id")
     private UUID sourceCreditFacilityId;
 
+    @Column(name = "destination_credit_facility_id")
+    private UUID destinationCreditFacilityId;
+
     @Column(
             nullable = false,
             precision = 19,

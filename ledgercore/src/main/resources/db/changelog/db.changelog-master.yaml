@@ -169,3 +169,5 @@ databaseChangeLog:
       file: db/changelog/084-add-payment-tracking-to-credit-statements.yaml
   - include:
       file: db/changelog/085-create-credit-interest-accruals-and-postings.yaml
+  - include:
+      file: db/changelog/086-add-destination-credit-facility-id-to-transactions.yaml

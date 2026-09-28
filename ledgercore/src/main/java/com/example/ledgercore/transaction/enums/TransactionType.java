@@ -5,7 +5,8 @@ public enum TransactionType {
     DEPOSIT,
     WITHDRAW,
     CARD_PAYMENT,
-    CREDIT_ADVANCE,
+    CASH_ADVANCE,
+    CREDIT_PAYMENT,
     FEE,
     REFUND,
     INTEREST
