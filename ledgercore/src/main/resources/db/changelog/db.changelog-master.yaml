@@ -167,3 +167,5 @@ databaseChangeLog:
       file: db/changelog/083-create-card-captures.yaml
   - include:
       file: db/changelog/084-add-payment-tracking-to-credit-statements.yaml
+  - include:
+      file: db/changelog/085-create-credit-interest-accruals-and-postings.yaml
