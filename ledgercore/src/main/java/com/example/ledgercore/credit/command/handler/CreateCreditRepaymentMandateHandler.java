@@ -6,7 +6,9 @@ import com.example.ledgercore.credit.command.dto.CreateCreditRepaymentMandateCom
 import com.example.ledgercore.credit.command.dto.CreateCreditRepaymentMandateResult;
 import com.example.ledgercore.credit.command.port.inbound.CreateCreditRepaymentMandateUseCase;
 import com.example.ledgercore.credit.command.port.outbound.VerifyRepaymentAccountOwnershipPort;
+import com.example.ledgercore.credit.command.repository.CreditFacilityCommandRepository;
 import com.example.ledgercore.credit.command.repository.CreditRepaymentMandateCommandRepository;
+import com.example.ledgercore.credit.entity.CreditFacility;
 import com.example.ledgercore.credit.entity.CreditRepaymentMandate;
 import com.example.ledgercore.credit.enums.CreditRepaymentMandateStatus;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,7 @@ public class CreateCreditRepaymentMandateHandler
         implements CreateCreditRepaymentMandateUseCase {
 
     private final CreditRepaymentMandateCommandRepository mandateRepository;
+    private final CreditFacilityCommandRepository creditFacilityRepository;
     private final VerifyRepaymentAccountOwnershipPort ownershipPort;
 
     @Override
@@ -31,13 +34,21 @@ public class CreateCreditRepaymentMandateHandler
     ) {
         validateCommand(command);
 
+        CreditFacility creditFacility = creditFacilityRepository
+                .findById(command.creditFacilityId())
+                .orElseThrow(() -> new BusinessException(
+                        ErrorCode.CREDIT_FACILITY_NOT_FOUND
+                ));
+
+        if (!creditFacility.getCustomerId().equals(command.userId())) {
+            throw new BusinessException(ErrorCode.ACCESS_DENIED);
+        }
+
         if (!ownershipPort.verify(
                 command.userId(),
                 command.accountId()
         )) {
-            throw new BusinessException(
-                    ErrorCode.ACCESS_DENIED
-            );
+            throw new BusinessException(ErrorCode.ACCESS_DENIED);
         }
 
         if (mandateRepository.existsByCreditFacilityIdAndAccountIdAndStatus(
@@ -51,16 +62,16 @@ public class CreateCreditRepaymentMandateHandler
         }
 
         Instant now = Instant.now();
-        UUID mandateId = UUID.randomUUID();
 
         CreditRepaymentMandate mandate =
                 CreditRepaymentMandate.builder()
-                        .id(mandateId)
+                        .id(UUID.randomUUID())
                         .creditFacilityId(command.creditFacilityId())
                         .accountId(command.accountId())
                         .repaymentType(command.repaymentType())
                         .status(CreditRepaymentMandateStatus.ACTIVE)
                         .createdAt(now)
+                        .updatedAt(now)
                         .build();
 
         mandateRepository.save(mandate);
