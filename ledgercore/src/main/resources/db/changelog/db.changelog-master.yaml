@@ -171,3 +171,5 @@ databaseChangeLog:
       file: db/changelog/085-create-credit-interest-accruals-and-postings.yaml
   - include:
       file: db/changelog/086-add-destination-credit-facility-id-to-transactions.yaml
+  - include:
+      file: db/changelog/087-add-parent-transaction-id-to-transactions.yaml

@@ -32,6 +32,9 @@ public class MoneyTransaction {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Column(name = "parent_transaction_id")
+    private UUID parentTransactionId;
+
     @Column(nullable = false, length = 50)
     private String reference;
 

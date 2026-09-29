@@ -1,0 +1,18 @@
+databaseChangeLog:
+  - changeSet:
+      id: 087-add-parent-transaction-id-to-transactions
+      author: tophantus
+      changes:
+        - addColumn:
+            tableName: transactions
+            columns:
+              - column:
+                  name: parent_transaction_id
+                  type: UUID
+
+        - createIndex:
+            tableName: transactions
+            indexName: idx_transactions_parent_transaction_id
+            columns:
+              - column:
+                  name: parent_transaction_id
