@@ -24,6 +24,22 @@ public interface TransactionQueryRepository
     );
 
     @Query("""
+    SELECT COALESCE(SUM(t.amount), 0)
+    FROM MoneyTransaction t
+    WHERE t.destinationCreditFacilityId = :creditFacilityId
+      AND t.type = :type
+      AND t.status = :status
+      AND t.businessDate BETWEEN :fromDate AND :toDate
+    """)
+    BigDecimal sumCreditPaymentAmount(
+            @Param("creditFacilityId") UUID creditFacilityId,
+            @Param("type") TransactionType type,
+            @Param("status") TransactionStatus status,
+            @Param("fromDate") LocalDate fromDate,
+            @Param("toDate") LocalDate toDate
+    );
+
+    @Query("""
         SELECT COALESCE(SUM(t.amount), 0)
         FROM MoneyTransaction t
         WHERE t.sourceCreditFacilityId = :creditFacilityId
