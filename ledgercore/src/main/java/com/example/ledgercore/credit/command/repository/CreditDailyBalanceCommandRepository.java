@@ -14,4 +14,10 @@ public interface CreditDailyBalanceCommandRepository
             UUID creditFacilityId,
             LocalDate businessDate
     );
+
+    Optional<CreditDailyBalance>
+    findFirstByCreditFacilityIdAndBusinessDateLessThanEqualOrderByBusinessDateDesc(
+            UUID creditFacilityId,
+            LocalDate businessDate
+    );
 }

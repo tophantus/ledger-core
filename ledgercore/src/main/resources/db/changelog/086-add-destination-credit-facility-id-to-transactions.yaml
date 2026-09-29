@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: 086-add-destination-credit-facility-id-to-transactions
+      author: tophantus
+      changes:
+        - addColumn:
+            tableName: transactions
+            columns:
+              - column:
+                  name: destination_credit_facility_id
+                  type: UUID

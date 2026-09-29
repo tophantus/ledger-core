@@ -433,6 +433,18 @@ public enum ErrorCode {
             HttpStatus.BAD_REQUEST
     ),
 
+    CREDIT_STATEMENT_ALREADY_EXISTS(
+            "CREDIT_012",
+            "Credit statement already exists for this period",
+            HttpStatus.CONFLICT
+    ),
+
+    CREDIT_DAILY_BALANCE_NOT_FOUND(
+            "CREDIT_013",
+            "Credit daily balance not found for statement period",
+            HttpStatus.NOT_FOUND
+    ),
+
     // Hold
 
     ACCOUNT_HOLD_NOT_FOUND(

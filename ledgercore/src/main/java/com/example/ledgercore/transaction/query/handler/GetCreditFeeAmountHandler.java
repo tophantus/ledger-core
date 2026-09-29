@@ -1,0 +1,79 @@
+package com.example.ledgercore.transaction.query.handler;
+
+import com.example.ledgercore.transaction.enums.TransactionStatus;
+import com.example.ledgercore.transaction.enums.TransactionType;
+import com.example.ledgercore.transaction.query.dto.GetCreditFeeAmountQuery;
+import com.example.ledgercore.transaction.query.dto.GetCreditFeeAmountResult;
+import com.example.ledgercore.transaction.query.port.inbound.GetCreditFeeAmountUseCase;
+import com.example.ledgercore.transaction.query.repository.TransactionQueryRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+
+@Service
+@RequiredArgsConstructor
+public class GetCreditFeeAmountHandler
+        implements GetCreditFeeAmountUseCase {
+
+    private final TransactionQueryRepository repository;
+
+    @Override
+    @Transactional(readOnly = true)
+    public GetCreditFeeAmountResult execute(
+            GetCreditFeeAmountQuery query
+    ) {
+        validate(query);
+
+        BigDecimal totalAmount =
+                repository.sumCreditFeeAmount(
+                        query.creditFacilityId(),
+                        TransactionType.FEE,
+                        TransactionStatus.COMPLETED,
+                        query.fromDate(),
+                        query.toDate()
+                );
+
+        return new GetCreditFeeAmountResult(
+                query.creditFacilityId(),
+                query.fromDate(),
+                query.toDate(),
+                totalAmount
+        );
+    }
+
+    private void validate(
+            GetCreditFeeAmountQuery query
+    ) {
+        if (query == null) {
+            throw new IllegalArgumentException(
+                    "query must not be null"
+            );
+        }
+
+        if (query.creditFacilityId() == null) {
+            throw new IllegalArgumentException(
+                    "creditFacilityId must not be null"
+            );
+        }
+
+        if (query.fromDate() == null) {
+            throw new IllegalArgumentException(
+                    "fromDate must not be null"
+            );
+        }
+
+        if (query.toDate() == null) {
+            throw new IllegalArgumentException(
+                    "toDate must not be null"
+            );
+        }
+
+        if (query.fromDate().isAfter(query.toDate())) {
+            throw new IllegalArgumentException(
+                    "fromDate must not be after toDate"
+            );
+        }
+    }
+}

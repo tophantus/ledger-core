@@ -163,6 +163,11 @@ interest:
     lease-duration: 5m
 
 credit:
+  statement:
+    minimum-payment:
+      rate: 0.05
+      fixed-minimum: 50000
+
   offer:
     scheduler:
       enabled: true
