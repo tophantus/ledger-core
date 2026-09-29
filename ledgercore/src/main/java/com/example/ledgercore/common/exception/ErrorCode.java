@@ -445,6 +445,12 @@ public enum ErrorCode {
             HttpStatus.NOT_FOUND
     ),
 
+    CREDIT_REPAYMENT_MANDATE_ALREADY_EXISTS(
+            "CREDIT_014",
+            "Credit repayment mandate already exists",
+            HttpStatus.CONFLICT
+    ),
+
     // Hold
 
     ACCOUNT_HOLD_NOT_FOUND(
