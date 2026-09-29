@@ -2,12 +2,14 @@ package com.example.ledgercore.transaction.query.repository;
 
 import com.example.ledgercore.transaction.entity.MoneyTransaction;
 import com.example.ledgercore.transaction.enums.TransactionStatus;
+import com.example.ledgercore.transaction.enums.TransactionType;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +21,22 @@ public interface TransactionQueryRepository
 
     Optional<MoneyTransaction> findByReference(
             String reference
+    );
+
+    @Query("""
+        SELECT COALESCE(SUM(t.amount), 0)
+        FROM MoneyTransaction t
+        WHERE t.sourceCreditFacilityId = :creditFacilityId
+          AND t.type IN :types
+          AND t.status = :status
+          AND t.businessDate BETWEEN :fromDate AND :toDate
+        """)
+    BigDecimal sumCreditFacilityPurchasesAmount(
+            @Param("creditFacilityId") UUID creditFacilityId,
+            @Param("types") List<TransactionType> types,
+            @Param("status") TransactionStatus status,
+            @Param("fromDate") LocalDate fromDate,
+            @Param("toDate") LocalDate toDate
     );
 
     @Query("""
