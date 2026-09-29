@@ -57,6 +57,22 @@ public class CreditRepaymentMandate {
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
+    @Column(name = "updated_at", nullable = false)
+    private Instant updatedAt;
+
     @Column(name = "revoked_at")
     private Instant revokedAt;
+
+    public void updateRepaymentType(RepaymentType repaymentType) {
+        this.repaymentType = repaymentType;
+        this.updatedAt = Instant.now();
+    }
+
+    public void revoke() {
+        Instant now = Instant.now();
+
+        this.status = CreditRepaymentMandateStatus.REVOKED;
+        this.revokedAt = now;
+        this.updatedAt = now;
+    }
 }
