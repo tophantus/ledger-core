@@ -1,4 +1,4 @@
-package com.example.ledgercore.credit.command.dto;
+package com.example.ledgercore.credit.command.service.dto;
 
 import java.time.LocalDate;
 import java.util.UUID;

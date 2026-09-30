@@ -1,9 +1,9 @@
-package com.example.ledgercore.credit.command.handler;
+package com.example.ledgercore.credit.command.service.impl;
 
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
-import com.example.ledgercore.credit.command.dto.CreateCreditStatementCommand;
-import com.example.ledgercore.credit.command.port.inbound.CreateCreditStatementUseCase;
+import com.example.ledgercore.credit.command.service.dto.CreateCreditStatementCommand;
+import com.example.ledgercore.credit.command.service.CreateCreditStatementService;
 import com.example.ledgercore.credit.command.port.outbound.CreditStatementAmountsPort;
 import com.example.ledgercore.credit.command.port.outbound.dto.CreditStatementAmounts;
 import com.example.ledgercore.credit.command.repository.CreditDailyBalanceCommandRepository;
@@ -25,8 +25,8 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class CreateCreditStatementHandler
-        implements CreateCreditStatementUseCase {
+public class CreateCreditStatementServiceImpl
+        implements CreateCreditStatementService {
 
     private final CreditFacilityCommandRepository facilityRepository;
     private final CreditStatementCommandRepository statementRepository;

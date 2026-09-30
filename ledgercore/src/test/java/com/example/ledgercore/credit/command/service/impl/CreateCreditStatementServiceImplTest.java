@@ -1,10 +1,10 @@
 
-package com.example.ledgercore.credit.command.handler;
+package com.example.ledgercore.credit.command.service.impl;
 
 import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
-import com.example.ledgercore.credit.command.dto.CreateCreditStatementCommand;
+import com.example.ledgercore.credit.command.service.dto.CreateCreditStatementCommand;
 import com.example.ledgercore.credit.command.port.outbound.CreditStatementAmountsPort;
 import com.example.ledgercore.credit.command.port.outbound.dto.CreditStatementAmounts;
 import com.example.ledgercore.credit.command.repository.CreditDailyBalanceCommandRepository;
@@ -34,7 +34,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class CreateCreditStatementHandlerTest {
+class CreateCreditStatementServiceImplTest {
 
     @Mock
     private CreditFacilityCommandRepository facilityRepository;
@@ -58,7 +58,7 @@ class CreateCreditStatementHandlerTest {
     private CreditDailyBalance dailyBalance;
 
     @InjectMocks
-    private CreateCreditStatementHandler handler;
+    private CreateCreditStatementServiceImpl handler;
 
     private UUID runId;
     private UUID creditFacilityId;
