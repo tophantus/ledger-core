@@ -5,6 +5,7 @@ import com.example.ledgercore.credit.enums.CreditRepaymentMandateStatus;
 import com.example.ledgercore.credit.enums.CreditStatementStatus;
 import com.example.ledgercore.credit.enums.RepaymentType;
 import com.example.ledgercore.credit.query.dto.GetDueRepaymentCandidatesResult;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -17,6 +18,11 @@ import java.util.UUID;
 
 public interface CreditStatementQueryRepository
         extends JpaRepository<CreditStatement, UUID> {
+
+    Page<CreditStatement> findByCreditFacilityIdOrderByPeriodEndDesc(
+            UUID creditFacilityId,
+            Pageable pageable
+    );
 
     @Query("""
         select new com.example.ledgercore.credit.query.dto.GetDueRepaymentCandidatesResult(
