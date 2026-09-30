@@ -1,5 +1,6 @@
 package com.example.ledgercore.interest.command.service.impl;
 
+import com.example.ledgercore.credit.command.port.inbound.ProcessCreditStatementBusinessDayClosedUseCase;
 import com.example.ledgercore.interest.command.dto.ClaimedInterestRun;
 import com.example.ledgercore.interest.command.dto.InterestRunBatchResult;
 import com.example.ledgercore.interest.command.port.inbound.CompleteInterestRunUseCase;
@@ -27,6 +28,9 @@ public class ProcessInterestRunBatchResultServiceImpl
     private final CreateInterestRunUseCase
             createInterestRunUseCase;
 
+    private final ProcessCreditStatementBusinessDayClosedUseCase
+            processCreditStatementBusinessDayClosedUseCase;
+
     @Override
     @Transactional
     public void process(
@@ -48,19 +52,27 @@ public class ProcessInterestRunBatchResultServiceImpl
                 Instant.now()
         );
 
-        if (isEndOfMonthAccrual(run)) {
+        if (!isEndOfMonth(run)) {
+            return;
+        }
+
+        if (run.runType() == InterestRunType.ACCRUAL) {
             createInterestRunUseCase.execute(
                     run.businessDate(),
                     InterestRunType.POSTING
             );
+            return;
+        }
+
+        if (run.runType() == InterestRunType.CREDIT_ACCRUAL) {
+            processCreditStatementBusinessDayClosedUseCase.execute(
+                    run.businessDate()
+            );
         }
     }
 
-    private boolean isEndOfMonthAccrual(
-            ClaimedInterestRun run
-    ) {
-        return run.runType() == InterestRunType.ACCRUAL
-                && run.businessDate().getDayOfMonth()
+    private boolean isEndOfMonth(ClaimedInterestRun run) {
+        return run.businessDate().getDayOfMonth()
                 == run.businessDate().lengthOfMonth();
     }
 }
