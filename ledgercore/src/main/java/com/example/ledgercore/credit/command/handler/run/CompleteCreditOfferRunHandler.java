@@ -1,6 +1,6 @@
-package com.example.ledgercore.credit.command.handler;
+package com.example.ledgercore.credit.command.handler.run;
 
-import com.example.ledgercore.credit.command.port.inbound.UpdateCreditOfferRunProgressUseCase;
+import com.example.ledgercore.credit.command.port.inbound.run.CompleteCreditOfferRunUseCase;
 import com.example.ledgercore.credit.command.repository.CreditOfferRunCommandRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -11,8 +11,8 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class UpdateCreditOfferRunProgressHandler
-        implements UpdateCreditOfferRunProgressUseCase {
+public class CompleteCreditOfferRunHandler
+        implements CompleteCreditOfferRunUseCase {
 
     private final CreditOfferRunCommandRepository creditOfferRunCommandRepository;
 
@@ -20,16 +20,12 @@ public class UpdateCreditOfferRunProgressHandler
     @Transactional
     public void execute(
             UUID runId,
-            UUID lastProcessedId,
-            Instant heartbeatAt
+            Instant completedAt
     ) {
         creditOfferRunCommandRepository
                 .findById(runId)
                 .ifPresent(run ->
-                        run.updateProgress(
-                                lastProcessedId,
-                                heartbeatAt
-                        )
+                        run.complete(completedAt)
                 );
     }
 }

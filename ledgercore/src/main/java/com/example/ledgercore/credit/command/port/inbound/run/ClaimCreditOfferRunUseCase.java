@@ -1,6 +1,6 @@
-package com.example.ledgercore.credit.command.port.inbound;
+package com.example.ledgercore.credit.command.port.inbound.run;
 
-import com.example.ledgercore.credit.command.dto.ClaimedCreditOfferRun;
+import com.example.ledgercore.credit.command.dto.run.ClaimedCreditOfferRun;
 
 import java.time.Instant;
 import java.util.Optional;

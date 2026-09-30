@@ -1,7 +1,7 @@
-package com.example.ledgercore.credit.command.handler;
+package com.example.ledgercore.credit.command.handler.run;
 
-import com.example.ledgercore.credit.command.dto.ClaimedCreditOfferRun;
-import com.example.ledgercore.credit.command.port.inbound.ClaimCreditOfferRunUseCase;
+import com.example.ledgercore.credit.command.dto.run.ClaimedCreditOfferRun;
+import com.example.ledgercore.credit.command.port.inbound.run.ClaimCreditOfferRunUseCase;
 import com.example.ledgercore.credit.command.repository.CreditOfferRunCommandRepository;
 import com.example.ledgercore.credit.entity.CreditOfferRun;
 import com.example.ledgercore.credit.enums.CreditOfferRunStatus;

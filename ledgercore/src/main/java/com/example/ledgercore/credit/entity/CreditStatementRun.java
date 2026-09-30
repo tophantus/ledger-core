@@ -111,11 +111,9 @@ public class CreditStatementRun {
 
     public void updateProgress(
             UUID lastProcessedFacilityId,
-            long processedCount,
             Instant heartbeatAt
     ) {
         this.lastProcessedFacilityId = lastProcessedFacilityId;
-        this.processedCount = processedCount;
         this.heartbeatAt = heartbeatAt;
     }
 

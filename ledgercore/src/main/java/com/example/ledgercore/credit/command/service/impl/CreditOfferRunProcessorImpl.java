@@ -1,9 +1,9 @@
 package com.example.ledgercore.credit.command.service.impl;
 
-import com.example.ledgercore.credit.command.dto.ClaimedCreditOfferRun;
-import com.example.ledgercore.credit.command.port.inbound.CompleteCreditOfferRunUseCase;
+import com.example.ledgercore.credit.command.dto.run.ClaimedCreditOfferRun;
+import com.example.ledgercore.credit.command.port.inbound.run.CompleteCreditOfferRunUseCase;
 import com.example.ledgercore.credit.command.port.inbound.ProcessCreditOfferBatchUseCase;
-import com.example.ledgercore.credit.command.port.inbound.UpdateCreditOfferRunProgressUseCase;
+import com.example.ledgercore.credit.command.port.inbound.run.UpdateCreditOfferRunProgressUseCase;
 import com.example.ledgercore.credit.command.service.CreditOfferRunProcessor;
 import com.example.ledgercore.credit.config.CreditOfferRunProperties;
 import lombok.RequiredArgsConstructor;

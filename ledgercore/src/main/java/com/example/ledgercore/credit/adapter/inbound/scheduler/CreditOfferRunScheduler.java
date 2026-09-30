@@ -1,7 +1,7 @@
 package com.example.ledgercore.credit.adapter.inbound.scheduler;
 
-import com.example.ledgercore.credit.command.dto.ClaimedCreditOfferRun;
-import com.example.ledgercore.credit.command.port.inbound.ClaimCreditOfferRunUseCase;
+import com.example.ledgercore.credit.command.dto.run.ClaimedCreditOfferRun;
+import com.example.ledgercore.credit.command.port.inbound.run.ClaimCreditOfferRunUseCase;
 import com.example.ledgercore.credit.command.service.CreditOfferRunProcessor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
