@@ -34,7 +34,7 @@ public class GetProviderAccountHandler
                 providerAccountQueryRepository
                         .findByProviderIdAndCurrency(
                                 providerId,
-                                currency
+                                currency.name()
                         )
                         .orElseThrow(() ->
                                 new BusinessException(

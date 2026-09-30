@@ -72,6 +72,6 @@ public interface ProviderAccountQueryRepository
     )
     Optional<ProviderAccountProjection> findByProviderIdAndCurrency(
             @Param("providerId") UUID providerId,
-            @Param("currency") Currency currency
+            @Param("currency") String currency
     );
 }
