@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import type {
     Control,
     FieldErrors,
@@ -38,7 +39,7 @@ export function CreditRepaymentMandateForm({
                                                onSubmit,
                                                onCancel,
                                            }: CreditRepaymentMandateFormProps) {
-    const t = useTranslations("credit");
+    const t = useTranslations("credit.facility");
 
     return (
         <form
@@ -57,47 +58,39 @@ export function CreditRepaymentMandateForm({
                     "
                 >
                     {t(
-                        "facility.repaymentMandate.account",
+                        "repaymentMandate.account",
                     )}
                 </label>
 
-                {mandate ? (
-                    <AccountSelect
-                        id="repayment-account"
-                        accounts={availableAccounts}
-                        value={mandate.accountId}
-                        onChange={() => undefined}
-                        disabled
-                    />
-                ) : (
-                    <Controller
-                        name="accountId"
-                        control={control}
-                        render={({
-                                     field,
-                                     fieldState,
-                                 }) => (
-                            <AccountSelect
-                                id="repayment-account"
-                                accounts={availableAccounts}
-                                value={field.value}
-                                onChange={
-                                    field.onChange
-                                }
-                                disabled={
-                                    isSubmitting
-                                }
-                                placeholder={t(
-                                    "facility.repaymentMandate.accountPlaceholder",
-                                )}
-                                error={
-                                    fieldState.error
-                                        ?.message
-                                }
-                            />
-                        )}
-                    />
-                )}
+                <Controller
+                    name="accountId"
+                    control={control}
+                    render={({
+                                 field,
+                                 fieldState,
+                             }) => (
+                        <AccountSelect
+                            id="repayment-account"
+                            accounts={
+                                availableAccounts
+                            }
+                            value={field.value}
+                            onChange={
+                                field.onChange
+                            }
+                            disabled={
+                                isSubmitting
+                            }
+                            placeholder={t(
+                                "repaymentMandate.accountPlaceholder",
+                            )}
+                            error={
+                                fieldState.error
+                                    ?.message
+                            }
+                        />
+                    )}
+                />
             </div>
 
             {/* Repayment Type */}
@@ -112,7 +105,7 @@ export function CreditRepaymentMandateForm({
                     "
                 >
                     {t(
-                        "facility.repaymentMandate.repaymentType",
+                        "repaymentMandate.repaymentType",
                     )}
                 </label>
 
@@ -145,7 +138,7 @@ export function CreditRepaymentMandateForm({
                         }
                     >
                         {t(
-                            "facility.repaymentMandate.types.FULL_BALANCE",
+                            "repaymentMandate.types.FULL_BALANCE",
                         )}
                     </option>
 
@@ -155,7 +148,7 @@ export function CreditRepaymentMandateForm({
                         }
                     >
                         {t(
-                            "facility.repaymentMandate.types.MINIMUM_PAYMENT",
+                            "repaymentMandate.types.MINIMUM_PAYMENT",
                         )}
                     </option>
                 </select>
@@ -193,7 +186,7 @@ export function CreditRepaymentMandateForm({
                     "
                 >
                     {t(
-                        "facility.repaymentMandate.actions.cancel",
+                        "repaymentMandate.actions.cancel",
                     )}
                 </button>
 
@@ -216,14 +209,14 @@ export function CreditRepaymentMandateForm({
                 >
                     {isSubmitting
                         ? t(
-                            "facility.repaymentMandate.actions.saving",
+                            "repaymentMandate.actions.saving",
                         )
                         : mandate
                             ? t(
-                                "facility.repaymentMandate.actions.save",
+                                "repaymentMandate.actions.save",
                             )
                             : t(
-                                "facility.repaymentMandate.actions.register",
+                                "repaymentMandate.actions.register",
                             )}
                 </button>
             </div>

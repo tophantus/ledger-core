@@ -26,6 +26,7 @@ export interface CreateCreditRepaymentMandateResult {
 }
 
 export interface UpdateCreditRepaymentMandateRequest {
+    accountId: string;
     repaymentType: RepaymentType;
 }
 

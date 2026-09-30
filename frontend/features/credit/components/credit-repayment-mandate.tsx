@@ -6,14 +6,17 @@ import {
     useState,
 } from "react";
 import {useTranslations} from "next-intl";
-import {
-    useForm,
-} from "react-hook-form";
+import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 
 import {useMyAccounts} from "@/features/account/hooks/use-my-accounts";
 import {useAccountStore} from "@/features/account/stores/account-store";
 import {AccountStatus} from "@/features/account/types/account";
+
+import {CreditRepaymentMandateConfigured} from "@/features/credit/components/credit-repayment-mandate-configured";
+import {CreditRepaymentMandateEmpty} from "@/features/credit/components/credit-repayment-mandate-empty";
+import {CreditRepaymentMandateForm} from "@/features/credit/components/credit-repayment-mandate-form";
+import {CreditRepaymentMandateHeader} from "@/features/credit/components/credit-repayment-mandate-header";
 
 import {useCreateCreditRepaymentMandate} from "../hooks/use-create-credit-repayment-mandate";
 import {useRevokeCreditRepaymentMandate} from "../hooks/use-revoke-credit-repayment-mandate";
@@ -22,15 +25,14 @@ import {
     createCreditRepaymentMandateSchema,
     type CreditRepaymentMandateFormValues,
 } from "../schemas/credit-repayment-mandate-schema";
-import type {CreditRepaymentMandate, GetUserCreditFacilityResult} from "../types/credit-facility";
+import type {
+    CreditRepaymentMandate,
+    GetUserCreditFacilityResult,
+} from "../types/credit-facility";
 import {
     CreditRepaymentMandateStatus,
     RepaymentType,
 } from "../types/credit-repayment-mandate";
-import {CreditRepaymentMandateHeader} from "@/features/credit/components/credit-repayment-mandate-header";
-import {CreditRepaymentMandateEmpty} from "@/features/credit/components/credit-repayment-mandate-empty";
-import {CreditRepaymentMandateConfigured} from "@/features/credit/components/credit-repayment-mandate-configured";
-import {CreditRepaymentMandateForm} from "@/features/credit/components/credit-repayment-mandate-form";
 
 interface CreditRepaymentMandateProps {
     facility: GetUserCreditFacilityResult;
@@ -173,6 +175,8 @@ export function CreditRepaymentMandate({
                 await updateMandate(
                     activeMandate.id,
                     {
+                        accountId:
+                        values.accountId,
                         repaymentType:
                         values.repaymentType,
                     },
@@ -186,6 +190,9 @@ export function CreditRepaymentMandate({
                 current
                     ? {
                         ...current,
+                        accountId:
+                        response.data
+                            .accountId,
                         repaymentType:
                         response.data
                             .repaymentType,

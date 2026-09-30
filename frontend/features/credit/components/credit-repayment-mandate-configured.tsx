@@ -24,7 +24,7 @@ export function CreditRepaymentMandateConfigured({
                                                      onRevoke,
                                                      isRevoking,
                                                  }: CreditRepaymentMandateConfiguredProps) {
-    const t = useTranslations("credit");
+    const t = useTranslations("credit.facility");
 
     const account = accounts.find(
         (item) =>
@@ -43,7 +43,7 @@ export function CreditRepaymentMandateConfigured({
                 <div>
                     <p className="text-xs text-text-muted">
                         {t(
-                            "facility.repaymentMandate.account",
+                            "repaymentMandate.account",
                         )}
                     </p>
 
@@ -56,13 +56,13 @@ export function CreditRepaymentMandateConfigured({
                 <div>
                     <p className="text-xs text-text-muted">
                         {t(
-                            "facility.repaymentMandate.repaymentType",
+                            "repaymentMandate.repaymentType",
                         )}
                     </p>
 
                     <p className="mt-1 text-sm font-medium text-text-primary">
                         {t(
-                            `facility.repaymentMandate.types.${mandate.repaymentType}`,
+                            `repaymentMandate.types.${mandate.repaymentType}`,
                         )}
                     </p>
                 </div>
@@ -92,7 +92,7 @@ export function CreditRepaymentMandateConfigured({
                     <Pencil className="h-4 w-4" />
 
                     {t(
-                        "facility.repaymentMandate.actions.edit",
+                        "repaymentMandate.actions.edit",
                     )}
                 </button>
 
@@ -123,10 +123,10 @@ export function CreditRepaymentMandateConfigured({
 
                     {isRevoking
                         ? t(
-                            "facility.repaymentMandate.actions.revoking",
+                            "repaymentMandate.actions.revoking",
                         )
                         : t(
-                            "facility.repaymentMandate.actions.revoke",
+                            "repaymentMandate.actions.revoke",
                         )}
                 </button>
             </div>
