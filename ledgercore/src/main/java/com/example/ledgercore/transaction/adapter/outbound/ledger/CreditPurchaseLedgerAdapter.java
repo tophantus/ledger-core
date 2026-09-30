@@ -1,9 +1,9 @@
 package com.example.ledgercore.transaction.adapter.outbound.ledger;
 
 import com.example.ledgercore.common.currency.Currency;
-import com.example.ledgercore.ledger.command.dto.RecordCreditPaymentCommand;
-import com.example.ledgercore.ledger.command.port.inbound.RecordCreditPaymentUseCase;
-import com.example.ledgercore.transaction.command.port.outbound.CreditPaymentLedgerPort;
+import com.example.ledgercore.ledger.command.dto.RecordCreditPurchaseCommand;
+import com.example.ledgercore.ledger.command.port.inbound.RecordCreditPurchaseUseCase;
+import com.example.ledgercore.transaction.command.port.outbound.CreditPurchaseLedgerPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -13,26 +13,26 @@ import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
-public class CreditPaymentLedgerAdapter
-        implements CreditPaymentLedgerPort {
+public class CreditPurchaseLedgerAdapter
+        implements CreditPurchaseLedgerPort {
 
-    private final RecordCreditPaymentUseCase
-            recordCreditPaymentUseCase;
+    private final RecordCreditPurchaseUseCase
+            recordCreditPurchaseUseCase;
 
     @Override
     public void recordCreditPayment(
             UUID transactionId,
             UUID creditFacilityId,
-            UUID accountId,
+            UUID providerAccountId,
             BigDecimal amount,
             Currency currency,
             LocalDate businessDate
     ) {
-        recordCreditPaymentUseCase.execute(
-                new RecordCreditPaymentCommand(
+        recordCreditPurchaseUseCase.execute(
+                new RecordCreditPurchaseCommand(
                         transactionId,
                         creditFacilityId,
-                        accountId,
+                        providerAccountId,
                         amount,
                         currency,
                         businessDate

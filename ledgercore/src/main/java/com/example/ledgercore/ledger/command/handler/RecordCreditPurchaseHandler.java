@@ -3,8 +3,8 @@ package com.example.ledgercore.ledger.command.handler;
 import com.example.ledgercore.common.currency.CurrencyAmountPolicy;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
-import com.example.ledgercore.ledger.command.dto.RecordCreditPaymentCommand;
-import com.example.ledgercore.ledger.command.port.inbound.RecordCreditPaymentUseCase;
+import com.example.ledgercore.ledger.command.dto.RecordCreditPurchaseCommand;
+import com.example.ledgercore.ledger.command.port.inbound.RecordCreditPurchaseUseCase;
 import com.example.ledgercore.ledger.command.port.outbound.AccountLedgerMappingPort;
 import com.example.ledgercore.ledger.command.port.outbound.CreditFacilityLedgerMappingPort;
 import com.example.ledgercore.ledger.command.repository.JournalEntryCommandRepository;
@@ -21,8 +21,8 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class RecordCreditPaymentHandler
-        implements RecordCreditPaymentUseCase {
+public class RecordCreditPurchaseHandler
+        implements RecordCreditPurchaseUseCase {
 
     private final JournalEntryCommandRepository
             journalEntryCommandRepository;
@@ -39,7 +39,7 @@ public class RecordCreditPaymentHandler
     @Override
     @Transactional
     public void execute(
-            RecordCreditPaymentCommand command
+            RecordCreditPurchaseCommand command
     ) {
         validateCommand(command);
 
@@ -48,9 +48,9 @@ public class RecordCreditPaymentHandler
                         command.creditFacilityId()
                 );
 
-        UUID accountLedgerAccountId =
+        UUID providerLedgerAccountId =
                 accountLedgerMappingPort.getLedgerAccountId(
-                        command.accountId()
+                        command.providerAccountId()
                 );
 
         JournalEntry journalEntry =
@@ -66,7 +66,7 @@ public class RecordCreditPaymentHandler
         JournalEntryLine debitLine =
                 JournalEntryLine.builder()
                         .journalEntryId(savedJournalEntry.getId())
-                        .ledgerAccountId(creditLedgerAccountId)
+                        .ledgerAccountId(providerLedgerAccountId)
                         .entryType(EntryType.DEBIT)
                         .amount(command.amount())
                         .currency(command.currency())
@@ -75,7 +75,7 @@ public class RecordCreditPaymentHandler
         JournalEntryLine creditLine =
                 JournalEntryLine.builder()
                         .journalEntryId(savedJournalEntry.getId())
-                        .ledgerAccountId(accountLedgerAccountId)
+                        .ledgerAccountId(creditLedgerAccountId)
                         .entryType(EntryType.CREDIT)
                         .amount(command.amount())
                         .currency(command.currency())
@@ -86,12 +86,12 @@ public class RecordCreditPaymentHandler
     }
 
     private void validateCommand(
-            RecordCreditPaymentCommand command
+            RecordCreditPurchaseCommand command
     ) {
         if (command == null
                 || command.transactionId() == null
                 || command.creditFacilityId() == null
-                || command.accountId() == null
+                || command.providerAccountId() == null
                 || command.currency() == null
                 || command.businessDate() == null) {
 

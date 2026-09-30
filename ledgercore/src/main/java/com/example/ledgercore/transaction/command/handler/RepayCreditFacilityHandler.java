@@ -3,9 +3,13 @@ package com.example.ledgercore.transaction.command.handler;
 import com.example.ledgercore.common.currency.CurrencyAmountPolicy;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
-import com.example.ledgercore.transaction.command.dto.TransferCreditCardToProviderCommand;
-import com.example.ledgercore.transaction.command.port.inbound.TransferCreditCardToProviderUseCase;
-import com.example.ledgercore.transaction.command.port.outbound.*;
+import com.example.ledgercore.transaction.command.dto.RepayCreditFacilityCommand;
+import com.example.ledgercore.transaction.command.port.inbound.RepayCreditFacilityUseCase;
+import com.example.ledgercore.transaction.command.port.outbound.RepayCreditFacilityAccountBalancePort;
+import com.example.ledgercore.transaction.command.port.outbound.CreditFacilityBalancePort;
+import com.example.ledgercore.transaction.command.port.outbound.CreditPaymentLedgerPort;
+import com.example.ledgercore.transaction.command.port.outbound.TransactionBusinessDayPort;
+import com.example.ledgercore.transaction.command.port.outbound.TransactionEventPort;
 import com.example.ledgercore.transaction.command.repository.TransactionCommandRepository;
 import com.example.ledgercore.transaction.entity.MoneyTransaction;
 import com.example.ledgercore.transaction.enums.TransactionStatus;
@@ -22,25 +26,31 @@ import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
-public class TransferCreditCardToProviderHandler
-        implements TransferCreditCardToProviderUseCase {
+public class RepayCreditFacilityHandler
+        implements RepayCreditFacilityUseCase {
 
     private final TransactionCommandRepository
             transactionCommandRepository;
 
-    private final TransferCreditFacilityToProviderPort
-            transferCreditFacilityToProviderPort;
+    private final RepayCreditFacilityAccountBalancePort
+            repayCreditFacilityAccountBalancePort;
 
-    private final CreditPurchaseLedgerPort creditPurchaseLedgerPort;
+    private final CreditFacilityBalancePort
+            creditFacilityBalancePort;
 
-    private final TransactionBusinessDayPort transactionBusinessDayPort;
+    private final CreditPaymentLedgerPort
+            creditPaymentLedgerPort;
 
-    private final TransactionEventPort transactionEventPort;
+    private final TransactionBusinessDayPort
+            transactionBusinessDayPort;
+
+    private final TransactionEventPort
+            transactionEventPort;
 
     @Override
     @Transactional
     public TransactionResponse execute(
-            TransferCreditCardToProviderCommand command
+            RepayCreditFacilityCommand command
     ) {
         validateCommand(command);
 
@@ -50,14 +60,12 @@ public class TransferCreditCardToProviderHandler
         MoneyTransaction transaction =
                 MoneyTransaction.builder()
                         .reference(command.reference())
-                        .type(TransactionType.CARD_PAYMENT)
+                        .type(TransactionType.CREDIT_PAYMENT)
                         .status(TransactionStatus.PENDING)
                         .businessDate(businessDate)
-                        .sourceCreditFacilityId(
+                        .sourceAccountId(command.accountId())
+                        .destinationCreditFacilityId(
                                 command.creditFacilityId()
-                        )
-                        .destinationAccountId(
-                                command.providerAccountId()
                         )
                         .amount(command.amount())
                         .currency(command.currency())
@@ -66,26 +74,24 @@ public class TransferCreditCardToProviderHandler
 
         transactionCommandRepository.save(transaction);
 
-        transferCreditFacilityToProviderPort
-                .increaseCreditFacilityOutstandingBalance(
-                        command.creditFacilityId(),
-                        command.amount(),
-                        command.currency(),
-                        businessDate
-                );
+        repayCreditFacilityAccountBalancePort.decreaseBalance(
+                command.accountId(),
+                command.amount(),
+                command.currency(),
+                businessDate
+        );
 
-        transferCreditFacilityToProviderPort
-                .increaseProviderAccount(
-                        command.providerAccountId(),
-                        command.amount(),
-                        command.currency(),
-                        businessDate
-                );
+        creditFacilityBalancePort.decreaseOutstandingBalance(
+                command.creditFacilityId(),
+                command.amount(),
+                command.currency(),
+                businessDate
+        );
 
-        creditPurchaseLedgerPort.recordCreditPayment(
+        creditPaymentLedgerPort.recordCreditPayment(
                 transaction.getId(),
                 command.creditFacilityId(),
-                command.providerAccountId(),
+                command.accountId(),
                 command.amount(),
                 command.currency(),
                 businessDate
@@ -101,6 +107,16 @@ public class TransferCreditCardToProviderHandler
                 completedAt
         );
 
+        transactionEventPort.publishAccountBalanceChanged(
+                new AccountBalanceChangedEvent(
+                        transaction.getId(),
+                        command.accountId(),
+                        command.amount().negate(),
+                        command.currency(),
+                        completedAt
+                )
+        );
+
         transactionEventPort.publishCreditFacilityBalanceChanged(
                 new CreditFacilityBalanceChangedEvent(
                         transaction.getId(),
@@ -111,27 +127,19 @@ public class TransferCreditCardToProviderHandler
                 )
         );
 
-        transactionEventPort.publishAccountBalanceChanged(
-                new AccountBalanceChangedEvent(
-                        transaction.getId(),
-                        command.providerAccountId(),
-                        command.amount(),
-                        command.currency(),
-                        completedAt
-                )
-        );
-
         return toResponse(transaction);
     }
 
     private void validateCommand(
-            TransferCreditCardToProviderCommand command
+            RepayCreditFacilityCommand command
     ) {
         if (command == null
+                || command.accountId() == null
                 || command.creditFacilityId() == null
-                || command.providerAccountId() == null
                 || command.amount() == null
-                || command.currency() == null) {
+                || command.currency() == null
+                || command.reference() == null
+                || command.reference().isBlank()) {
 
             throw new BusinessException(
                     ErrorCode.INVALID_REQUEST

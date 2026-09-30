@@ -6,12 +6,12 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 
-public interface CreditPaymentLedgerPort {
+public interface CreditPurchaseLedgerPort {
 
     void recordCreditPayment(
             UUID transactionId,
             UUID creditFacilityId,
-            UUID accountId,
+            UUID providerAccountId,
             BigDecimal amount,
             Currency currency,
             LocalDate businessDate

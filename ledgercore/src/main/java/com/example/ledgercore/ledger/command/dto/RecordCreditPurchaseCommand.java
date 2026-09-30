@@ -6,10 +6,10 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 
-public record RecordCreditPaymentCommand(
+public record RecordCreditPurchaseCommand(
         UUID transactionId,
         UUID creditFacilityId,
-        UUID accountId,
+        UUID providerAccountId,
         BigDecimal amount,
         Currency currency,
         LocalDate businessDate
