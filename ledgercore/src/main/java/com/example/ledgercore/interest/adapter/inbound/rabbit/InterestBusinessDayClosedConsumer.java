@@ -24,5 +24,10 @@ public class InterestBusinessDayClosedConsumer {
                 event.businessDate(),
                 InterestRunType.ACCRUAL
         );
+
+        createInterestRunUseCase.execute(
+                event.businessDate(),
+                InterestRunType.CREDIT_ACCRUAL
+        );
     }
 }
