@@ -1,4 +1,4 @@
-package com.example.ledgercore.transaction.command.port.outbound;
+package com.example.ledgercore.transfer.command.port.outbound;
 
 import java.util.UUID;
 

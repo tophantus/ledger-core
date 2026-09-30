@@ -5,7 +5,7 @@ import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.common.lock.DistributedLock;
 import com.example.ledgercore.common.lock.LockKeyPrefix;
 import com.example.ledgercore.transaction.command.dto.TransferMoneyCommand;
-import com.example.ledgercore.transaction.command.port.outbound.TransferUserAccountPort;
+import com.example.ledgercore.transfer.command.port.outbound.TransferAccountPort;
 import com.example.ledgercore.transfer.command.port.outbound.TransferTransactionPort;
 import com.example.ledgercore.transfer.command.repository.TransferIntentCommandRepository;
 import com.example.ledgercore.transfer.entity.TransferIntent;
@@ -25,7 +25,7 @@ public class ConfirmTransferExecutionService {
     private final TransferIntentCommandRepository
             transferIntentCommandRepository;
 
-    private final TransferUserAccountPort transferUserAccountPort;
+    private final TransferAccountPort transferAccountPort;
 
     private final TransferTransactionPort
             transferTransactionPort;
@@ -74,8 +74,8 @@ public class ConfirmTransferExecutionService {
                 now
         );
 
-        TransferUserAccountPort.TransferAccountInfo transferInfo =
-                transferUserAccountPort.getTransferInfo(
+        TransferAccountPort.TransferAccountInfo transferInfo =
+                transferAccountPort.getTransferInfo(
                         userId,
                         sourceAccountId,
                         destinationAccountId
@@ -155,7 +155,7 @@ public class ConfirmTransferExecutionService {
 
     private void validateTransfer(
             TransferIntent intent,
-            TransferUserAccountPort.TransferAccountInfo transferInfo
+            TransferAccountPort.TransferAccountInfo transferInfo
     ) {
         if (transferInfo.currency() != intent.getCurrency()) {
 

@@ -4,10 +4,10 @@ import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.otp.enums.OtpPurpose;
-import com.example.ledgercore.transaction.command.port.outbound.TransferOtpPort;
-import com.example.ledgercore.transaction.command.port.outbound.TransferUserAccountPort;
+import com.example.ledgercore.transfer.command.port.outbound.TransferOtpPort;
 import com.example.ledgercore.transfer.command.dto.CreateTransferIntentCommand;
 import com.example.ledgercore.transfer.command.dto.CreateTransferIntentResult;
+import com.example.ledgercore.transfer.command.port.outbound.TransferAccountPort;
 import com.example.ledgercore.transfer.command.repository.TransferIntentCommandRepository;
 import com.example.ledgercore.transfer.entity.TransferIntent;
 import com.example.ledgercore.transfer.enums.TransferIntentStatus;
@@ -38,7 +38,7 @@ import static org.mockito.Mockito.when;
 class CreateTransferIntentHandlerTest {
 
     @Mock
-    private TransferUserAccountPort transferUserAccountPort;
+    private TransferAccountPort transferAccountPort;
 
     @Mock
     private TransferIntentCommandRepository
@@ -79,7 +79,7 @@ class CreateTransferIntentHandlerTest {
         );
 
         handler = new CreateTransferIntentHandler(
-                transferUserAccountPort,
+                transferAccountPort,
                 transferIntentCommandRepository,
                 transferOtpPort,
                 clock
@@ -313,12 +313,12 @@ class CreateTransferIntentHandlerTest {
         );
 
         verify(
-                transferUserAccountPort,
+                transferAccountPort,
                 never()
         ).getAccountIdByAccountNo(any());
 
         verify(
-                transferUserAccountPort,
+                transferAccountPort,
                 never()
         ).getTransferInfo(
                 any(),
@@ -356,7 +356,7 @@ class CreateTransferIntentHandlerTest {
         );
 
         verifyNoInteractions(
-                transferUserAccountPort,
+                transferAccountPort,
                 transferOtpPort
         );
 
@@ -407,7 +407,7 @@ class CreateTransferIntentHandlerTest {
         ).save(any());
 
         verifyNoInteractions(
-                transferUserAccountPort,
+                transferAccountPort,
                 transferOtpPort
         );
     }
@@ -441,7 +441,7 @@ class CreateTransferIntentHandlerTest {
         );
 
         verifyNoInteractions(
-                transferUserAccountPort,
+                transferAccountPort,
                 transferOtpPort
         );
 
@@ -480,7 +480,7 @@ class CreateTransferIntentHandlerTest {
         );
 
         verifyNoInteractions(
-                transferUserAccountPort,
+                transferAccountPort,
                 transferOtpPort
         );
 
@@ -498,7 +498,7 @@ class CreateTransferIntentHandlerTest {
         mockReferenceNotFound();
 
         when(
-                transferUserAccountPort.getAccountIdByAccountNo(
+                transferAccountPort.getAccountIdByAccountNo(
                         DESTINATION_ACCOUNT_NO
                 )
         ).thenReturn(sourceAccountId);
@@ -518,13 +518,13 @@ class CreateTransferIntentHandlerTest {
         );
 
         verify(
-                transferUserAccountPort
+                transferAccountPort
         ).getAccountIdByAccountNo(
                 DESTINATION_ACCOUNT_NO
         );
 
         verify(
-                transferUserAccountPort,
+                transferAccountPort,
                 never()
         ).getTransferInfo(
                 any(),
@@ -547,7 +547,7 @@ class CreateTransferIntentHandlerTest {
         CreateTransferIntentCommand command =
                 createCommand();
 
-        TransferUserAccountPort.TransferAccountInfo transferInfo =
+        TransferAccountPort.TransferAccountInfo transferInfo =
                 createTransferInfo(
                         Currency.USD,
                         new BigDecimal("1000000")
@@ -556,13 +556,13 @@ class CreateTransferIntentHandlerTest {
         mockReferenceNotFound();
 
         when(
-                transferUserAccountPort.getAccountIdByAccountNo(
+                transferAccountPort.getAccountIdByAccountNo(
                         DESTINATION_ACCOUNT_NO
                 )
         ).thenReturn(destinationAccountId);
 
         when(
-                transferUserAccountPort.getTransferInfo(
+                transferAccountPort.getTransferInfo(
                         userId,
                         sourceAccountId,
                         destinationAccountId
@@ -598,7 +598,7 @@ class CreateTransferIntentHandlerTest {
         CreateTransferIntentCommand command =
                 createCommand();
 
-        TransferUserAccountPort.TransferAccountInfo transferInfo =
+        TransferAccountPort.TransferAccountInfo transferInfo =
                 createTransferInfo(
                         Currency.VND,
                         new BigDecimal("50000")
@@ -607,13 +607,13 @@ class CreateTransferIntentHandlerTest {
         mockReferenceNotFound();
 
         when(
-                transferUserAccountPort.getAccountIdByAccountNo(
+                transferAccountPort.getAccountIdByAccountNo(
                         DESTINATION_ACCOUNT_NO
                 )
         ).thenReturn(destinationAccountId);
 
         when(
-                transferUserAccountPort.getTransferInfo(
+                transferAccountPort.getTransferInfo(
                         userId,
                         sourceAccountId,
                         destinationAccountId
@@ -687,13 +687,13 @@ class CreateTransferIntentHandlerTest {
         mockReferenceNotFound();
 
         when(
-                transferUserAccountPort.getAccountIdByAccountNo(
+                transferAccountPort.getAccountIdByAccountNo(
                         DESTINATION_ACCOUNT_NO
                 )
         ).thenReturn(destinationAccountId);
 
         when(
-                transferUserAccountPort.getTransferInfo(
+                transferAccountPort.getTransferInfo(
                         userId,
                         sourceAccountId,
                         destinationAccountId
@@ -706,12 +706,12 @@ class CreateTransferIntentHandlerTest {
         );
     }
 
-    private TransferUserAccountPort.TransferAccountInfo
+    private TransferAccountPort.TransferAccountInfo
     createTransferInfo(
             Currency currency,
             BigDecimal balance
     ) {
-        return new TransferUserAccountPort.TransferAccountInfo(
+        return new TransferAccountPort.TransferAccountInfo(
                 sourceAccountId,
                 destinationAccountId,
                 currency,

@@ -1,4 +1,4 @@
-package com.example.ledgercore.transaction.adapter.outbound.otp;
+package com.example.ledgercore.transfer.adapter.outbound.otp;
 
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
@@ -9,7 +9,7 @@ import com.example.ledgercore.otp.command.port.inbound.VerifyOtpUseCase;
 import com.example.ledgercore.otp.enums.OtpChannel;
 import com.example.ledgercore.otp.enums.OtpPurpose;
 import com.example.ledgercore.otp.enums.OtpStatus;
-import com.example.ledgercore.transaction.command.port.outbound.TransferOtpPort;
+import com.example.ledgercore.transfer.command.port.outbound.TransferOtpPort;
 import com.example.ledgercore.user.query.dto.UserEmailResponse;
 import com.example.ledgercore.user.query.port.inbound.GetUserEmailUseCase;
 import lombok.RequiredArgsConstructor;
