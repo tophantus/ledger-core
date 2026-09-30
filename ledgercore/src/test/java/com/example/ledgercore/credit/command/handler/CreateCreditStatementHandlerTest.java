@@ -1,3 +1,4 @@
+
 package com.example.ledgercore.credit.command.handler;
 
 import com.example.ledgercore.common.currency.Currency;
@@ -29,7 +30,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -50,6 +51,12 @@ class CreateCreditStatementHandlerTest {
     @Mock
     private CreditMinimumPaymentService minimumPaymentService;
 
+    @Mock
+    private CreditFacility facility;
+
+    @Mock
+    private CreditDailyBalance dailyBalance;
+
     @InjectMocks
     private CreateCreditStatementHandler handler;
 
@@ -58,10 +65,14 @@ class CreateCreditStatementHandlerTest {
     private LocalDate periodEnd;
     private LocalDate statementDate;
     private LocalDate dueDate;
-
-    private CreditFacility facility;
-    private CreditDailyBalance dailyBalance;
     private CreditStatementAmounts amounts;
+
+    private static final BigDecimal PURCHASES = new BigDecimal("1000.00");
+    private static final BigDecimal PAYMENTS = new BigDecimal("300.00");
+    private static final BigDecimal FEES = new BigDecimal("50.00");
+    private static final BigDecimal INTEREST = new BigDecimal("20.00");
+    private static final BigDecimal CLOSING_BALANCE = new BigDecimal("770.00");
+    private static final BigDecimal MINIMUM_PAYMENT = new BigDecimal("50.00");
 
     @BeforeEach
     void setUp() {
@@ -72,211 +83,156 @@ class CreateCreditStatementHandlerTest {
         statementDate = LocalDate.of(2026, 9, 30);
         dueDate = LocalDate.of(2026, 10, 20);
 
-        facility = mock(CreditFacility.class);
-        dailyBalance = mock(CreditDailyBalance.class);
-
         amounts = new CreditStatementAmounts(
-                new BigDecimal("1000.00"), // purchases
-                new BigDecimal("300.00"),  // payments
-                new BigDecimal("50.00"),   // fees
-                new BigDecimal("20.00")    // interest
+                PURCHASES,
+                PAYMENTS,
+                FEES,
+                INTEREST
         );
     }
 
+    // -------------------------------------------------------------------------
+    // Success cases
+    // -------------------------------------------------------------------------
+
     @Test
-    void execute_shouldCreateStatement_whenCommandIsValid() {
+    void execute_shouldCreateIssuedStatement_whenCommandIsValid() {
         CreateCreditStatementCommand command = validCommand();
 
-        when(facilityRepository.findById(creditFacilityId))
-                .thenReturn(Optional.of(facility));
+        givenActiveFacility();
+        givenFacilityCurrency();
+        givenNoExistingStatement();
+        givenNoPreviousStatement();
+        givenDailyBalance(CLOSING_BALANCE);
+        givenAmounts(amounts);
+        givenMinimumPayment(CLOSING_BALANCE, MINIMUM_PAYMENT);
 
-        when(facility.getStatus())
-                .thenReturn(CreditFacilityStatus.ACTIVE);
+        assertDoesNotThrow(() -> handler.execute(command));
 
-        when(facility.getCurrency())
-                .thenReturn(Currency.VND);
+        CreditStatement statement = captureSavedStatement();
 
-        when(statementRepository
-                .existsByCreditFacilityIdAndPeriodStartAndPeriodEnd(
-                        creditFacilityId,
-                        periodStart,
-                        periodEnd
-                ))
-                .thenReturn(false);
-
-        when(statementRepository
-                .findFirstByCreditFacilityIdAndPeriodEndLessThanOrderByPeriodEndDesc(
-                        creditFacilityId,
-                        periodStart
-                ))
-                .thenReturn(Optional.empty());
-
-        when(dailyBalanceRepository
-                .findFirstByCreditFacilityIdAndBusinessDateLessThanEqualOrderByBusinessDateDesc(
-                        creditFacilityId,
-                        periodEnd
-                ))
-                .thenReturn(Optional.of(dailyBalance));
-
-        when(dailyBalance.getClosingBalance())
-                .thenReturn(new BigDecimal("770.00"));
-
-        when(amountsPort.getAmounts(
-                creditFacilityId,
-                periodStart,
-                periodEnd
-        )).thenReturn(amounts);
-
-        when(minimumPaymentService.calculate(
-                new BigDecimal("770.00"),
-                Currency.VND
-        )).thenReturn(new BigDecimal("50.00"));
-
-        handler.execute(command);
-
-        ArgumentCaptor<CreditStatement> captor =
-                ArgumentCaptor.forClass(CreditStatement.class);
-
-        verify(statementRepository).save(captor.capture());
-
-        CreditStatement statement = captor.getValue();
-
+        assertNotNull(statement.getId());
         assertEquals(creditFacilityId, statement.getCreditFacilityId());
         assertEquals(periodStart, statement.getPeriodStart());
         assertEquals(periodEnd, statement.getPeriodEnd());
         assertEquals(statementDate, statement.getStatementDate());
         assertEquals(dueDate, statement.getDueDate());
 
-        assertEquals(
-                new BigDecimal("0"),
-                statement.getOpeningBalance()
-        );
+        assertBigDecimalEquals(BigDecimal.ZERO, statement.getOpeningBalance());
+        assertBigDecimalEquals(PURCHASES, statement.getPurchasesAmount());
+        assertBigDecimalEquals(PAYMENTS, statement.getPaymentsAmount());
+        assertBigDecimalEquals(FEES, statement.getFeesAmount());
+        assertBigDecimalEquals(INTEREST, statement.getInterestAmount());
+        assertBigDecimalEquals(CLOSING_BALANCE, statement.getClosingBalance());
+        assertBigDecimalEquals(MINIMUM_PAYMENT, statement.getMinimumPayment());
+        assertBigDecimalEquals(BigDecimal.ZERO, statement.getPaidAmount());
 
-        assertEquals(
-                new BigDecimal("1000.00"),
-                statement.getPurchasesAmount()
-        );
+        assertEquals(CreditStatementStatus.ISSUED, statement.getStatus());
+        assertNotNull(statement.getCreatedAt());
+        assertNotNull(statement.getUpdatedAt());
+        assertEquals(statement.getCreatedAt(), statement.getUpdatedAt());
 
-        assertEquals(
-                new BigDecimal("300.00"),
-                statement.getPaymentsAmount()
-        );
+        verify(minimumPaymentService)
+                .calculate(CLOSING_BALANCE, Currency.VND);
+        verify(statementRepository).save(any(CreditStatement.class));
+    }
 
-        assertEquals(
-                new BigDecimal("50.00"),
-                statement.getFeesAmount()
-        );
+    @Test
+    void execute_shouldCreateClosedStatement_whenClosingBalanceIsZero() {
+        CreateCreditStatementCommand command = validCommand();
 
-        assertEquals(
-                new BigDecimal("20.00"),
-                statement.getInterestAmount()
-        );
+        CreditStatementAmounts zeroBalanceAmounts =
+                new CreditStatementAmounts(
+                        new BigDecimal("300.00"),
+                        new BigDecimal("300.00"),
+                        BigDecimal.ZERO,
+                        BigDecimal.ZERO
+                );
 
-        assertEquals(
-                new BigDecimal("770.00"),
-                statement.getClosingBalance()
-        );
+        givenActiveFacility();
+        givenFacilityCurrency();
+        givenNoExistingStatement();
+        givenNoPreviousStatement();
+        givenDailyBalance(BigDecimal.ZERO);
+        givenAmounts(zeroBalanceAmounts);
+        givenMinimumPayment(BigDecimal.ZERO, BigDecimal.ZERO);
 
-        assertEquals(
-                new BigDecimal("50.00"),
-                statement.getMinimumPayment()
-        );
+        handler.execute(command);
 
-        assertEquals(
-                BigDecimal.ZERO,
-                statement.getPaidAmount()
-        );
+        CreditStatement statement = captureSavedStatement();
 
-        assertEquals(
-                CreditStatementStatus.OPEN,
-                statement.getStatus()
-        );
+        assertBigDecimalEquals(BigDecimal.ZERO, statement.getClosingBalance());
+        assertBigDecimalEquals(BigDecimal.ZERO, statement.getMinimumPayment());
+        assertEquals(CreditStatementStatus.CLOSED, statement.getStatus());
+
+        verify(minimumPaymentService)
+                .calculate(BigDecimal.ZERO, Currency.VND);
     }
 
     @Test
     void execute_shouldUsePreviousStatementClosingBalanceAsOpeningBalance() {
         CreateCreditStatementCommand command = validCommand();
-
         CreditStatement previousStatement = mock(CreditStatement.class);
 
-        when(facilityRepository.findById(creditFacilityId))
-                .thenReturn(Optional.of(facility));
-        when(facility.getStatus())
-                .thenReturn(CreditFacilityStatus.ACTIVE);
-        when(facility.getCurrency())
-                .thenReturn(Currency.VND);
+        BigDecimal openingBalance = new BigDecimal("500.00");
+        BigDecimal closingBalance = new BigDecimal("1270.00");
 
-        when(statementRepository
-                .existsByCreditFacilityIdAndPeriodStartAndPeriodEnd(
-                        creditFacilityId, periodStart, periodEnd
-                ))
-                .thenReturn(false);
+        givenActiveFacility();
+        givenFacilityCurrency();
+        givenNoExistingStatement();
 
         when(statementRepository
                 .findFirstByCreditFacilityIdAndPeriodEndLessThanOrderByPeriodEndDesc(
-                        creditFacilityId, periodStart
+                        creditFacilityId,
+                        periodStart
                 ))
                 .thenReturn(Optional.of(previousStatement));
-
         when(previousStatement.getClosingBalance())
-                .thenReturn(new BigDecimal("500.00"));
+                .thenReturn(openingBalance);
 
-        mockValidDailyBalance(new BigDecimal("1270.00"));
-
-        when(amountsPort.getAmounts(
-                creditFacilityId, periodStart, periodEnd
-        )).thenReturn(amounts);
-
-        when(minimumPaymentService.calculate(
-                new BigDecimal("1270.00"), Currency.VND
-        )).thenReturn(new BigDecimal("63.50"));
+        givenDailyBalance(closingBalance);
+        givenAmounts(amounts);
+        givenMinimumPayment(closingBalance, new BigDecimal("63.50"));
 
         handler.execute(command);
 
-        ArgumentCaptor<CreditStatement> captor =
-                ArgumentCaptor.forClass(CreditStatement.class);
+        CreditStatement statement = captureSavedStatement();
 
-        verify(statementRepository).save(captor.capture());
+        assertBigDecimalEquals(openingBalance, statement.getOpeningBalance());
+        assertBigDecimalEquals(closingBalance, statement.getClosingBalance());
 
-        assertEquals(
-                new BigDecimal("500.00"),
-                captor.getValue().getOpeningBalance()
-        );
+        verify(statementRepository)
+                .findFirstByCreditFacilityIdAndPeriodEndLessThanOrderByPeriodEndDesc(
+                        creditFacilityId,
+                        periodStart
+                );
     }
 
     @Test
     void execute_shouldUseZeroOpeningBalance_whenPreviousStatementDoesNotExist() {
         CreateCreditStatementCommand command = validCommand();
 
-        mockValidFacility();
-        mockFacilityCurrency();
-        mockNoDuplicateStatement();
-
-        when(statementRepository
-                .findFirstByCreditFacilityIdAndPeriodEndLessThanOrderByPeriodEndDesc(
-                        creditFacilityId, periodStart
-                ))
-                .thenReturn(Optional.empty());
-
-        mockValidDailyBalance(new BigDecimal("770.00"));
-        mockValidAmounts();
-        mockMinimumPayment(new BigDecimal("770.00"));
+        givenActiveFacility();
+        givenFacilityCurrency();
+        givenNoExistingStatement();
+        givenNoPreviousStatement();
+        givenDailyBalance(CLOSING_BALANCE);
+        givenAmounts(amounts);
+        givenMinimumPayment(CLOSING_BALANCE, MINIMUM_PAYMENT);
 
         handler.execute(command);
 
-        ArgumentCaptor<CreditStatement> captor =
-                ArgumentCaptor.forClass(CreditStatement.class);
+        CreditStatement statement = captureSavedStatement();
 
-        verify(statementRepository).save(captor.capture());
-
-        assertEquals(
-                BigDecimal.ZERO,
-                captor.getValue().getOpeningBalance()
-        );
+        assertBigDecimalEquals(BigDecimal.ZERO, statement.getOpeningBalance());
     }
 
+    // -------------------------------------------------------------------------
+    // Command validation
+    // -------------------------------------------------------------------------
+
     @Test
-    void execute_shouldThrow_whenCommandIsNull() {
+    void execute_shouldThrowInvalidRequest_whenCommandIsNull() {
         BusinessException exception = assertThrows(
                 BusinessException.class,
                 () -> handler.execute(null)
@@ -294,61 +250,67 @@ class CreateCreditStatementHandlerTest {
     }
 
     @Test
-    void execute_shouldThrow_whenCommandHasMissingField() {
-        CreateCreditStatementCommand command =
-                new CreateCreditStatementCommand(
-                        creditFacilityId,
-                        null,
-                        periodEnd,
-                        statementDate,
-                        dueDate
-                );
-
-        BusinessException exception = assertThrows(
-                BusinessException.class,
-                () -> handler.execute(command)
-        );
-
-        assertEquals(ErrorCode.INVALID_REQUEST, exception.getErrorCode());
-
-        verifyNoInteractions(
-                facilityRepository,
-                statementRepository,
-                dailyBalanceRepository,
-                amountsPort,
-                minimumPaymentService
-        );
+    void execute_shouldThrowInvalidRequest_whenCreditFacilityIdIsNull() {
+        assertInvalidCommand(new CreateCreditStatementCommand(
+                null, periodStart, periodEnd, statementDate, dueDate
+        ));
     }
 
     @Test
-    void execute_shouldThrow_whenDatesAreInvalid() {
-        CreateCreditStatementCommand command =
-                new CreateCreditStatementCommand(
-                        creditFacilityId,
-                        periodEnd,
-                        periodStart,
-                        statementDate,
-                        dueDate
-                );
-
-        BusinessException exception = assertThrows(
-                BusinessException.class,
-                () -> handler.execute(command)
-        );
-
-        assertEquals(ErrorCode.INVALID_REQUEST, exception.getErrorCode());
-
-        verifyNoInteractions(
-                facilityRepository,
-                statementRepository,
-                dailyBalanceRepository,
-                amountsPort,
-                minimumPaymentService
-        );
+    void execute_shouldThrowInvalidRequest_whenPeriodStartIsNull() {
+        assertInvalidCommand(new CreateCreditStatementCommand(
+                creditFacilityId, null, periodEnd, statementDate, dueDate
+        ));
     }
 
     @Test
-    void execute_shouldThrow_whenFacilityDoesNotExist() {
+    void execute_shouldThrowInvalidRequest_whenPeriodEndIsNull() {
+        assertInvalidCommand(new CreateCreditStatementCommand(
+                creditFacilityId, periodStart, null, statementDate, dueDate
+        ));
+    }
+
+    @Test
+    void execute_shouldThrowInvalidRequest_whenStatementDateIsNull() {
+        assertInvalidCommand(new CreateCreditStatementCommand(
+                creditFacilityId, periodStart, periodEnd, null, dueDate
+        ));
+    }
+
+    @Test
+    void execute_shouldThrowInvalidRequest_whenDueDateIsNull() {
+        assertInvalidCommand(new CreateCreditStatementCommand(
+                creditFacilityId, periodStart, periodEnd, statementDate, null
+        ));
+    }
+
+    @Test
+    void execute_shouldThrowInvalidRequest_whenPeriodStartIsAfterPeriodEnd() {
+        assertInvalidCommand(new CreateCreditStatementCommand(
+                creditFacilityId, periodEnd, periodStart, statementDate, dueDate
+        ));
+    }
+
+    @Test
+    void execute_shouldThrowInvalidRequest_whenPeriodEndIsAfterStatementDate() {
+        assertInvalidCommand(new CreateCreditStatementCommand(
+                creditFacilityId, periodStart, periodEnd, periodStart, dueDate
+        ));
+    }
+
+    @Test
+    void execute_shouldThrowInvalidRequest_whenStatementDateIsAfterDueDate() {
+        assertInvalidCommand(new CreateCreditStatementCommand(
+                creditFacilityId, periodStart, periodEnd, dueDate, statementDate
+        ));
+    }
+
+    // -------------------------------------------------------------------------
+    // Facility validation
+    // -------------------------------------------------------------------------
+
+    @Test
+    void execute_shouldThrowFacilityNotFound_whenFacilityDoesNotExist() {
         CreateCreditStatementCommand command = validCommand();
 
         when(facilityRepository.findById(creditFacilityId))
@@ -364,12 +326,9 @@ class CreateCreditStatementHandlerTest {
                 exception.getErrorCode()
         );
 
-        verify(statementRepository, never())
-                .existsByCreditFacilityIdAndPeriodStartAndPeriodEnd(
-                        any(), any(), any()
-                );
-
+        verify(facilityRepository).findById(creditFacilityId);
         verifyNoInteractions(
+                statementRepository,
                 dailyBalanceRepository,
                 amountsPort,
                 minimumPaymentService
@@ -377,12 +336,11 @@ class CreateCreditStatementHandlerTest {
     }
 
     @Test
-    void execute_shouldThrow_whenFacilityIsNotActive() {
+    void execute_shouldThrowFacilityNotActive_whenFacilityIsClosed() {
         CreateCreditStatementCommand command = validCommand();
 
         when(facilityRepository.findById(creditFacilityId))
                 .thenReturn(Optional.of(facility));
-
         when(facility.getStatus())
                 .thenReturn(CreditFacilityStatus.CLOSED);
 
@@ -396,12 +354,8 @@ class CreateCreditStatementHandlerTest {
                 exception.getErrorCode()
         );
 
-        verify(statementRepository, never())
-                .existsByCreditFacilityIdAndPeriodStartAndPeriodEnd(
-                        any(), any(), any()
-                );
-
         verifyNoInteractions(
+                statementRepository,
                 dailyBalanceRepository,
                 amountsPort,
                 minimumPaymentService
@@ -409,18 +363,11 @@ class CreateCreditStatementHandlerTest {
     }
 
     @Test
-    void execute_shouldThrow_whenStatementAlreadyExists() {
+    void execute_shouldThrowStatementAlreadyExists_whenDuplicatePeriodExists() {
         CreateCreditStatementCommand command = validCommand();
 
-        mockValidFacility();
-
-        when(statementRepository
-                .existsByCreditFacilityIdAndPeriodStartAndPeriodEnd(
-                        creditFacilityId,
-                        periodStart,
-                        periodEnd
-                ))
-                .thenReturn(true);
+        givenActiveFacility();
+        givenNoExistingStatement(true);
 
         BusinessException exception = assertThrows(
                 BusinessException.class,
@@ -432,28 +379,36 @@ class CreateCreditStatementHandlerTest {
                 exception.getErrorCode()
         );
 
+        verify(statementRepository)
+                .existsByCreditFacilityIdAndPeriodStartAndPeriodEnd(
+                        creditFacilityId,
+                        periodStart,
+                        periodEnd
+                );
         verify(statementRepository, never())
-                .save(any(CreditStatement.class));
-
+                .findFirstByCreditFacilityIdAndPeriodEndLessThanOrderByPeriodEndDesc(
+                        any(),
+                        any()
+                );
         verifyNoInteractions(
                 dailyBalanceRepository,
                 amountsPort,
                 minimumPaymentService
         );
+        verify(statementRepository, never()).save(any(CreditStatement.class));
     }
 
+    // -------------------------------------------------------------------------
+    // Daily balance and amount validation
+    // -------------------------------------------------------------------------
+
     @Test
-    void execute_shouldThrow_whenDailyBalanceDoesNotExist() {
+    void execute_shouldThrowDailyBalanceNotFound_whenNoDailyBalanceExists() {
         CreateCreditStatementCommand command = validCommand();
 
-        mockValidFacility();
-        mockNoDuplicateStatement();
-
-        when(statementRepository
-                .findFirstByCreditFacilityIdAndPeriodEndLessThanOrderByPeriodEndDesc(
-                        creditFacilityId, periodStart
-                ))
-                .thenReturn(Optional.empty());
+        givenActiveFacility();
+        givenNoExistingStatement();
+        givenNoPreviousStatement();
 
         when(dailyBalanceRepository
                 .findFirstByCreditFacilityIdAndBusinessDateLessThanEqualOrderByBusinessDateDesc(
@@ -473,27 +428,18 @@ class CreateCreditStatementHandlerTest {
         );
 
         verifyNoInteractions(amountsPort, minimumPaymentService);
-
-        verify(statementRepository, never())
-                .save(any(CreditStatement.class));
+        verify(statementRepository, never()).save(any(CreditStatement.class));
     }
 
     @Test
-    void execute_shouldThrow_whenClosingBalanceDoesNotMatch() {
+    void execute_shouldThrowIllegalState_whenExpectedClosingBalanceDoesNotMatch() {
         CreateCreditStatementCommand command = validCommand();
 
-        mockValidFacility();
-        mockNoDuplicateStatement();
-
-        when(statementRepository
-                .findFirstByCreditFacilityIdAndPeriodEndLessThanOrderByPeriodEndDesc(
-                        creditFacilityId, periodStart
-                ))
-                .thenReturn(Optional.empty());
-
-        mockValidDailyBalance(new BigDecimal("800.00"));
-
-        mockValidAmounts();
+        givenActiveFacility();
+        givenNoExistingStatement();
+        givenNoPreviousStatement();
+        givenDailyBalance(new BigDecimal("800.00"));
+        givenAmounts(amounts);
 
         IllegalStateException exception = assertThrows(
                 IllegalStateException.class,
@@ -505,116 +451,101 @@ class CreateCreditStatementHandlerTest {
                 exception.getMessage()
         );
 
-        verify(minimumPaymentService, never())
-                .calculate(any(), any());
-
-        verify(statementRepository, never())
-                .save(any(CreditStatement.class));
+        verify(amountsPort)
+                .getAmounts(creditFacilityId, periodStart, periodEnd);
+        verifyNoInteractions(minimumPaymentService);
+        verify(statementRepository, never()).save(any(CreditStatement.class));
     }
 
     @Test
-    void execute_shouldPropagateException_whenAmountsPortFails() {
+    void execute_shouldAcceptNumericallyEqualBalancesWithDifferentScale() {
         CreateCreditStatementCommand command = validCommand();
 
-        mockValidFacility();
-        mockNoDuplicateStatement();
+        CreditStatementAmounts scaledAmounts =
+                new CreditStatementAmounts(
+                        new BigDecimal("1000.0"),
+                        new BigDecimal("300.00"),
+                        new BigDecimal("50"),
+                        new BigDecimal("20.000")
+                );
 
-        when(statementRepository
-                .findFirstByCreditFacilityIdAndPeriodEndLessThanOrderByPeriodEndDesc(
-                        creditFacilityId, periodStart
-                ))
-                .thenReturn(Optional.empty());
+        givenActiveFacility();
+        givenFacilityCurrency();
+        givenNoExistingStatement();
+        givenNoPreviousStatement();
+        givenDailyBalance(new BigDecimal("770.0000"));
+        givenAmounts(scaledAmounts);
+        givenMinimumPayment(new BigDecimal("770.0000"), MINIMUM_PAYMENT);
 
-        // Không stub getClosingBalance() vì amountsPort fail trước khi value này được dùng.
-        when(dailyBalanceRepository
-                .findFirstByCreditFacilityIdAndBusinessDateLessThanEqualOrderByBusinessDateDesc(
-                        creditFacilityId,
-                        periodEnd
-                ))
-                .thenReturn(Optional.of(dailyBalance));
+        assertDoesNotThrow(() -> handler.execute(command));
 
-        RuntimeException expectedException =
-                new RuntimeException("Amounts query failed");
+        CreditStatement statement = captureSavedStatement();
+
+        assertBigDecimalEquals(
+                new BigDecimal("770.0000"),
+                statement.getClosingBalance()
+        );
+    }
+
+    @Test
+    void execute_shouldPropagateAmountsPortException_whenAmountsLookupFails() {
+        CreateCreditStatementCommand command = validCommand();
+
+        givenActiveFacility();
+        givenNoExistingStatement();
+        givenNoPreviousStatement();
+        givenDailyBalanceExists();
+
+        RuntimeException expected =
+                new RuntimeException("Amounts lookup failed");
 
         when(amountsPort.getAmounts(
                 creditFacilityId,
                 periodStart,
                 periodEnd
-        )).thenThrow(expectedException);
+        )).thenThrow(expected);
 
-        RuntimeException exception = assertThrows(
+        RuntimeException actual = assertThrows(
                 RuntimeException.class,
                 () -> handler.execute(command)
         );
 
-        assertSame(expectedException, exception);
-
-        verify(statementRepository, never())
-                .save(any(CreditStatement.class));
-
+        assertSame(expected, actual);
         verifyNoInteractions(minimumPaymentService);
+        verify(statementRepository, never()).save(any(CreditStatement.class));
     }
 
     @Test
-    void execute_shouldPropagateException_whenMinimumPaymentCalculationFails() {
+    void execute_shouldPropagateMinimumPaymentException_whenCalculationFails() {
         CreateCreditStatementCommand command = validCommand();
 
-        mockValidFacility();
-        mockFacilityCurrency();
-        mockNoDuplicateStatement();
+        givenActiveFacility();
+        givenFacilityCurrency();
+        givenNoExistingStatement();
+        givenNoPreviousStatement();
+        givenDailyBalance(CLOSING_BALANCE);
+        givenAmounts(amounts);
 
-        when(statementRepository
-                .findFirstByCreditFacilityIdAndPeriodEndLessThanOrderByPeriodEndDesc(
-                        creditFacilityId, periodStart
-                ))
-                .thenReturn(Optional.empty());
-
-        mockValidDailyBalance(new BigDecimal("770.00"));
-        mockValidAmounts();
-
-        RuntimeException expectedException =
+        RuntimeException expected =
                 new RuntimeException("Minimum payment calculation failed");
 
         when(minimumPaymentService.calculate(
-                new BigDecimal("770.00"),
+                CLOSING_BALANCE,
                 Currency.VND
-        )).thenThrow(expectedException);
+        )).thenThrow(expected);
 
-        RuntimeException exception = assertThrows(
+        RuntimeException actual = assertThrows(
                 RuntimeException.class,
                 () -> handler.execute(command)
         );
 
-        assertSame(expectedException, exception);
-
-        verify(statementRepository, never())
-                .save(any(CreditStatement.class));
+        assertSame(expected, actual);
+        verify(statementRepository, never()).save(any(CreditStatement.class));
     }
 
-    @Test
-    void execute_shouldNotSave_whenClosingBalanceMismatch() {
-        CreateCreditStatementCommand command = validCommand();
-
-        mockValidFacility();
-        mockNoDuplicateStatement();
-
-        when(statementRepository
-                .findFirstByCreditFacilityIdAndPeriodEndLessThanOrderByPeriodEndDesc(
-                        creditFacilityId, periodStart
-                ))
-                .thenReturn(Optional.empty());
-
-        mockValidDailyBalance(new BigDecimal("700.00"));
-        mockValidAmounts();
-
-        assertThrows(
-                IllegalStateException.class,
-                () -> handler.execute(command)
-        );
-
-        verify(statementRepository, never())
-                .save(any(CreditStatement.class));
-    }
+    // -------------------------------------------------------------------------
+    // Helpers
+    // -------------------------------------------------------------------------
 
     private CreateCreditStatementCommand validCommand() {
         return new CreateCreditStatementCommand(
@@ -626,54 +557,111 @@ class CreateCreditStatementHandlerTest {
         );
     }
 
-    private void mockValidFacility() {
-        when(facilityRepository.findById(creditFacilityId))
-                .thenReturn(Optional.of(facility));
+    private void assertInvalidCommand(CreateCreditStatementCommand command) {
+        BusinessException exception = assertThrows(
+                BusinessException.class,
+                () -> handler.execute(command)
+        );
 
-        when(facility.getStatus())
-                .thenReturn(CreditFacilityStatus.ACTIVE);
+        assertEquals(
+                ErrorCode.INVALID_REQUEST,
+                exception.getErrorCode()
+        );
 
+        verifyNoInteractions(
+                facilityRepository,
+                statementRepository,
+                dailyBalanceRepository,
+                amountsPort,
+                minimumPaymentService
+        );
     }
 
-    private void mockFacilityCurrency() {
+    private void givenActiveFacility() {
+        when(facilityRepository.findById(creditFacilityId))
+                .thenReturn(Optional.of(facility));
+        when(facility.getStatus())
+                .thenReturn(CreditFacilityStatus.ACTIVE);
+    }
+
+    private void givenFacilityCurrency() {
         when(facility.getCurrency())
                 .thenReturn(Currency.VND);
     }
 
-    private void mockNoDuplicateStatement() {
+    private void givenNoExistingStatement() {
+        givenNoExistingStatement(false);
+    }
+
+    private void givenNoExistingStatement(boolean exists) {
         when(statementRepository
                 .existsByCreditFacilityIdAndPeriodStartAndPeriodEnd(
                         creditFacilityId,
                         periodStart,
                         periodEnd
                 ))
-                .thenReturn(false);
+                .thenReturn(exists);
     }
 
-    private void mockValidDailyBalance(BigDecimal closingBalance) {
+    private void givenNoPreviousStatement() {
+        when(statementRepository
+                .findFirstByCreditFacilityIdAndPeriodEndLessThanOrderByPeriodEndDesc(
+                        creditFacilityId,
+                        periodStart
+                ))
+                .thenReturn(Optional.empty());
+    }
+
+    private void givenDailyBalanceExists() {
         when(dailyBalanceRepository
                 .findFirstByCreditFacilityIdAndBusinessDateLessThanEqualOrderByBusinessDateDesc(
                         creditFacilityId,
                         periodEnd
                 ))
                 .thenReturn(Optional.of(dailyBalance));
+    }
 
+    private void givenDailyBalance(BigDecimal closingBalance) {
+        givenDailyBalanceExists();
         when(dailyBalance.getClosingBalance())
                 .thenReturn(closingBalance);
     }
 
-    private void mockValidAmounts() {
+    private void givenAmounts(CreditStatementAmounts value) {
         when(amountsPort.getAmounts(
                 creditFacilityId,
                 periodStart,
                 periodEnd
-        )).thenReturn(amounts);
+        )).thenReturn(value);
     }
 
-    private void mockMinimumPayment(BigDecimal closingBalance) {
+    private void givenMinimumPayment(
+            BigDecimal closingBalance,
+            BigDecimal minimumPayment
+    ) {
         when(minimumPaymentService.calculate(
                 closingBalance,
                 Currency.VND
-        )).thenReturn(new BigDecimal("50.00"));
+        )).thenReturn(minimumPayment);
+    }
+
+    private CreditStatement captureSavedStatement() {
+        ArgumentCaptor<CreditStatement> captor =
+                ArgumentCaptor.forClass(CreditStatement.class);
+
+        verify(statementRepository).save(captor.capture());
+        return captor.getValue();
+    }
+
+    private void assertBigDecimalEquals(
+            BigDecimal expected,
+            BigDecimal actual
+    ) {
+        assertNotNull(actual);
+        assertEquals(
+                0,
+                expected.compareTo(actual),
+                () -> "Expected " + expected + " but was " + actual
+        );
     }
 }

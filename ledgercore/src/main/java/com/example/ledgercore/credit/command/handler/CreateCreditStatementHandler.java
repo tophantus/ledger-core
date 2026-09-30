@@ -65,7 +65,8 @@ public class CreateCreditStatementHandler
 
         BigDecimal openingBalance = statementRepository
                 .findFirstByCreditFacilityIdAndPeriodEndLessThanOrderByPeriodEndDesc(
-                        command.creditFacilityId(), command.periodStart()
+                        command.creditFacilityId(),
+                        command.periodStart()
                 )
                 .map(CreditStatement::getClosingBalance)
                 .orElse(BigDecimal.ZERO);
@@ -93,37 +94,45 @@ public class CreateCreditStatementHandler
                 .add(amounts.interestAmount())
                 .subtract(amounts.paymentsAmount());
 
-        if (expectedClosingBalance.compareTo(
-                closingBalance
-        ) != 0) {
+        if (expectedClosingBalance.compareTo(closingBalance) != 0) {
             throw new IllegalStateException(
                     "Expected closing balance does not match daily balance"
             );
         }
 
+        BigDecimal minimumPayment = minimumPaymentService.calculate(
+                closingBalance,
+                facility.getCurrency()
+        );
+
+        CreditStatementStatus status =
+                closingBalance.signum() == 0
+                        ? CreditStatementStatus.CLOSED
+                        : CreditStatementStatus.ISSUED;
+
         Instant now = Instant.now();
 
-        statementRepository.save(CreditStatement.builder()
-                .id(UUID.randomUUID())
-                .creditFacilityId(command.creditFacilityId())
-                .periodStart(command.periodStart())
-                .periodEnd(command.periodEnd())
-                .statementDate(command.statementDate())
-                .dueDate(command.dueDate())
-                .openingBalance(openingBalance)
-                .purchasesAmount(amounts.purchasesAmount())
-                .paymentsAmount(amounts.paymentsAmount())
-                .feesAmount(amounts.feesAmount())
-                .interestAmount(amounts.interestAmount())
-                .closingBalance(closingBalance)
-                .minimumPayment(minimumPaymentService.calculate(
-                        closingBalance, facility.getCurrency()
-                ))
-                .paidAmount(BigDecimal.ZERO)
-                .status(CreditStatementStatus.OPEN)
-                .createdAt(now)
-                .updatedAt(now)
-                .build());
+        statementRepository.save(
+                CreditStatement.builder()
+                        .id(UUID.randomUUID())
+                        .creditFacilityId(command.creditFacilityId())
+                        .periodStart(command.periodStart())
+                        .periodEnd(command.periodEnd())
+                        .statementDate(command.statementDate())
+                        .dueDate(command.dueDate())
+                        .openingBalance(openingBalance)
+                        .purchasesAmount(amounts.purchasesAmount())
+                        .paymentsAmount(amounts.paymentsAmount())
+                        .feesAmount(amounts.feesAmount())
+                        .interestAmount(amounts.interestAmount())
+                        .closingBalance(closingBalance)
+                        .minimumPayment(minimumPayment)
+                        .paidAmount(BigDecimal.ZERO)
+                        .status(status)
+                        .createdAt(now)
+                        .updatedAt(now)
+                        .build()
+        );
     }
 
     private void validateCommand(CreateCreditStatementCommand command) {
