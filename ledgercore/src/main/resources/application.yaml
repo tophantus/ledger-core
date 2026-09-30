@@ -175,6 +175,12 @@ credit:
     run:
       batch-size: 100
 
+  repayment:
+    scheduler:
+      enabled: true
+      fixed-delay: 300000
+      batch-size: 100
+
   offer:
     scheduler:
       enabled: true
