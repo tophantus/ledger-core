@@ -1,11 +1,11 @@
 package com.example.ledgercore.transaction.command.port.inbound;
 
-import com.example.ledgercore.transaction.command.dto.RepayCreditFacilityCommand;
+import com.example.ledgercore.transaction.command.dto.RepayCreditCommand;
 import com.example.ledgercore.transaction.query.dto.TransactionResponse;
 
-public interface RepayCreditFacilityUseCase {
+public interface RepayCreditUseCase {
 
     TransactionResponse execute(
-            RepayCreditFacilityCommand command
+            RepayCreditCommand command
     );
 }

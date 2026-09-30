@@ -4,7 +4,7 @@ package com.example.ledgercore.transaction.command.handler;
 import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
-import com.example.ledgercore.transaction.command.dto.RepayCreditFacilityCommand;
+import com.example.ledgercore.transaction.command.dto.RepayCreditCommand;
 import com.example.ledgercore.transaction.command.port.outbound.CreditFacilityBalancePort;
 import com.example.ledgercore.transaction.command.port.outbound.CreditPaymentLedgerPort;
 import com.example.ledgercore.transaction.command.port.outbound.RepayCreditFacilityAccountBalancePort;
@@ -34,7 +34,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class RepayCreditFacilityHandlerTest {
+class RepayCreditHandlerTest {
 
     @Mock
     private TransactionCommandRepository transactionCommandRepository;
@@ -55,7 +55,7 @@ class RepayCreditFacilityHandlerTest {
     @Mock
     private TransactionEventPort transactionEventPort;
 
-    private RepayCreditFacilityHandler handler;
+    private RepayCreditHandler handler;
 
     private UUID accountId;
     private UUID creditFacilityId;
@@ -64,11 +64,11 @@ class RepayCreditFacilityHandlerTest {
     private LocalDate businessDate;
     private BigDecimal amount;
     private Currency currency;
-    private RepayCreditFacilityCommand command;
+    private RepayCreditCommand command;
 
     @BeforeEach
     void setUp() {
-        handler = new RepayCreditFacilityHandler(
+        handler = new RepayCreditHandler(
                 transactionCommandRepository,
                 repayCreditFacilityAccountBalancePort,
                 creditFacilityBalancePort,
@@ -235,7 +235,7 @@ class RepayCreditFacilityHandlerTest {
     @Test
     void shouldRejectNullAccountId() {
         assertInvalidCommand(
-                new RepayCreditFacilityCommand(
+                new RepayCreditCommand(
                         null,
                         creditFacilityId,
                         amount,
@@ -250,7 +250,7 @@ class RepayCreditFacilityHandlerTest {
     @Test
     void shouldRejectNullCreditFacilityId() {
         assertInvalidCommand(
-                new RepayCreditFacilityCommand(
+                new RepayCreditCommand(
                         accountId,
                         null,
                         amount,
@@ -265,7 +265,7 @@ class RepayCreditFacilityHandlerTest {
     @Test
     void shouldRejectNullAmount() {
         assertInvalidCommand(
-                new RepayCreditFacilityCommand(
+                new RepayCreditCommand(
                         accountId,
                         creditFacilityId,
                         null,
@@ -280,7 +280,7 @@ class RepayCreditFacilityHandlerTest {
     @Test
     void shouldRejectNullCurrency() {
         assertInvalidCommand(
-                new RepayCreditFacilityCommand(
+                new RepayCreditCommand(
                         accountId,
                         creditFacilityId,
                         amount,
@@ -295,7 +295,7 @@ class RepayCreditFacilityHandlerTest {
     @Test
     void shouldRejectNullReference() {
         assertInvalidCommand(
-                new RepayCreditFacilityCommand(
+                new RepayCreditCommand(
                         accountId,
                         creditFacilityId,
                         amount,
@@ -310,7 +310,7 @@ class RepayCreditFacilityHandlerTest {
     @Test
     void shouldRejectBlankReference() {
         assertInvalidCommand(
-                new RepayCreditFacilityCommand(
+                new RepayCreditCommand(
                         accountId,
                         creditFacilityId,
                         amount,
@@ -340,7 +340,7 @@ class RepayCreditFacilityHandlerTest {
 
     @Test
     void shouldRejectAmountWithInvalidCurrencyPrecision() {
-        RepayCreditFacilityCommand invalidCommand =
+        RepayCreditCommand invalidCommand =
                 commandWithAmount(new BigDecimal("100.50"));
 
         assertThatThrownBy(() -> handler.execute(invalidCommand))
@@ -545,8 +545,8 @@ class RepayCreditFacilityHandlerTest {
                 .thenReturn(businessDate);
     }
 
-    private RepayCreditFacilityCommand validCommand() {
-        return new RepayCreditFacilityCommand(
+    private RepayCreditCommand validCommand() {
+        return new RepayCreditCommand(
                 accountId,
                 creditFacilityId,
                 amount,
@@ -556,10 +556,10 @@ class RepayCreditFacilityHandlerTest {
         );
     }
 
-    private RepayCreditFacilityCommand commandWithAmount(
+    private RepayCreditCommand commandWithAmount(
             BigDecimal newAmount
     ) {
-        return new RepayCreditFacilityCommand(
+        return new RepayCreditCommand(
                 accountId,
                 creditFacilityId,
                 newAmount,
@@ -570,7 +570,7 @@ class RepayCreditFacilityHandlerTest {
     }
 
     private void assertInvalidCommand(
-            RepayCreditFacilityCommand invalidCommand,
+            RepayCreditCommand invalidCommand,
             ErrorCode expectedErrorCode
     ) {
         assertThatThrownBy(() -> handler.execute(invalidCommand))

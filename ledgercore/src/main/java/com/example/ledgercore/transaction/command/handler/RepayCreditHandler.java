@@ -3,8 +3,8 @@ package com.example.ledgercore.transaction.command.handler;
 import com.example.ledgercore.common.currency.CurrencyAmountPolicy;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
-import com.example.ledgercore.transaction.command.dto.RepayCreditFacilityCommand;
-import com.example.ledgercore.transaction.command.port.inbound.RepayCreditFacilityUseCase;
+import com.example.ledgercore.transaction.command.dto.RepayCreditCommand;
+import com.example.ledgercore.transaction.command.port.inbound.RepayCreditUseCase;
 import com.example.ledgercore.transaction.command.port.outbound.RepayCreditFacilityAccountBalancePort;
 import com.example.ledgercore.transaction.command.port.outbound.CreditFacilityBalancePort;
 import com.example.ledgercore.transaction.command.port.outbound.CreditPaymentLedgerPort;
@@ -26,8 +26,8 @@ import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
-public class RepayCreditFacilityHandler
-        implements RepayCreditFacilityUseCase {
+public class RepayCreditHandler
+        implements RepayCreditUseCase {
 
     private final TransactionCommandRepository
             transactionCommandRepository;
@@ -50,7 +50,7 @@ public class RepayCreditFacilityHandler
     @Override
     @Transactional
     public TransactionResponse execute(
-            RepayCreditFacilityCommand command
+            RepayCreditCommand command
     ) {
         validateCommand(command);
 
@@ -131,7 +131,7 @@ public class RepayCreditFacilityHandler
     }
 
     private void validateCommand(
-            RepayCreditFacilityCommand command
+            RepayCreditCommand command
     ) {
         if (command == null
                 || command.accountId() == null

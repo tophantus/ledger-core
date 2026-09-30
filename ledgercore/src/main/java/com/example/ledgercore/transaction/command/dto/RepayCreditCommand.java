@@ -5,7 +5,7 @@ import com.example.ledgercore.common.currency.Currency;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-public record RepayCreditFacilityCommand(
+public record RepayCreditCommand(
         UUID accountId,
         UUID creditFacilityId,
         BigDecimal amount,
