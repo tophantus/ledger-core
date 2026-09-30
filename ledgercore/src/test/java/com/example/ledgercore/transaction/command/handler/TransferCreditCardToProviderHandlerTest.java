@@ -134,7 +134,7 @@ class TransferCreditCardToProviderHandlerTest {
         assertNotNull(response.completedAt());
 
         verify(transferCreditFacilityToProviderPort)
-                .decreaseCreditFacilityOutstandingBalance(
+                .increaseCreditFacilityOutstandingBalance(
                         creditFacilityId,
                         amount,
                         currency,
@@ -251,7 +251,7 @@ class TransferCreditCardToProviderHandlerTest {
                 .save(any(MoneyTransaction.class));
 
         inOrder.verify(transferCreditFacilityToProviderPort)
-                .decreaseCreditFacilityOutstandingBalance(
+                .increaseCreditFacilityOutstandingBalance(
                         creditFacilityId,
                         amount,
                         currency,
@@ -652,7 +652,7 @@ class TransferCreditCardToProviderHandlerTest {
 
         doThrow(exception)
                 .when(transferCreditFacilityToProviderPort)
-                .decreaseCreditFacilityOutstandingBalance(
+                .increaseCreditFacilityOutstandingBalance(
                         creditFacilityId,
                         amount,
                         currency,
@@ -668,7 +668,7 @@ class TransferCreditCardToProviderHandlerTest {
         assertSame(exception, thrown);
 
         verify(transferCreditFacilityToProviderPort)
-                .decreaseCreditFacilityOutstandingBalance(
+                .increaseCreditFacilityOutstandingBalance(
                         creditFacilityId,
                         amount,
                         currency,
@@ -719,7 +719,7 @@ class TransferCreditCardToProviderHandlerTest {
         assertSame(exception, thrown);
 
         verify(transferCreditFacilityToProviderPort)
-                .decreaseCreditFacilityOutstandingBalance(
+                .increaseCreditFacilityOutstandingBalance(
                         creditFacilityId,
                         amount,
                         currency,
@@ -770,7 +770,7 @@ class TransferCreditCardToProviderHandlerTest {
         assertSame(exception, thrown);
 
         verify(transferCreditFacilityToProviderPort)
-                .decreaseCreditFacilityOutstandingBalance(
+                .increaseCreditFacilityOutstandingBalance(
                         creditFacilityId,
                         amount,
                         currency,

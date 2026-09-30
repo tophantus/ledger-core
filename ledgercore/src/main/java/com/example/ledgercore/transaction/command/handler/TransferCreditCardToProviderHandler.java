@@ -67,7 +67,7 @@ public class TransferCreditCardToProviderHandler
         transactionCommandRepository.save(transaction);
 
         transferCreditFacilityToProviderPort
-                .decreaseCreditFacilityOutstandingBalance(
+                .increaseCreditFacilityOutstandingBalance(
                         command.creditFacilityId(),
                         command.amount(),
                         command.currency(),

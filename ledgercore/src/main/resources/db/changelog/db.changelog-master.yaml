@@ -179,3 +179,5 @@ databaseChangeLog:
       file: db/changelog/089-create-credit-statement-runs.yaml
   - include:
       file: db/changelog/090-add-run-id-to-credit-statements.yaml
+  - include:
+      file: db/changelog/091-drop-transactions-type-check-constraint.yaml

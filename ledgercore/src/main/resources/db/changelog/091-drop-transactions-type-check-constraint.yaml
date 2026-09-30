@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: 091-drop-transactions-type-check-constraint
+      author: tophantus
+      changes:
+        - sql:
+            sql: >
+              ALTER TABLE transactions
+              DROP CONSTRAINT IF EXISTS chk_transactions_type;
