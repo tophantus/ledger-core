@@ -1,6 +1,6 @@
 package com.example.ledgercore.interest.command.handler;
 
-import com.example.ledgercore.interest.command.dto.AccrueCreditInterestCommand;
+import com.example.ledgercore.interest.command.service.dto.AccrueCreditInterestCommand;
 import com.example.ledgercore.interest.command.port.inbound.ProcessInterestCreditAccrualBatchUseCase;
 import com.example.ledgercore.interest.command.port.outbound.credit.InterestEligibleCreditFacility;
 import com.example.ledgercore.interest.command.port.outbound.credit.InterestEligibleCreditFacilityQueryPort;

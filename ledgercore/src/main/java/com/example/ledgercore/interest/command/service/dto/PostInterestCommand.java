@@ -1,4 +1,4 @@
-package com.example.ledgercore.interest.command.dto;
+package com.example.ledgercore.interest.command.service.dto;
 
 import java.time.LocalDate;
 import java.util.UUID;

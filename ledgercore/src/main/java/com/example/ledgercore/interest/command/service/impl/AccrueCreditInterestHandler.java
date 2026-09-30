@@ -1,6 +1,6 @@
 package com.example.ledgercore.interest.command.service.impl;
 
-import com.example.ledgercore.interest.command.dto.AccrueCreditInterestCommand;
+import com.example.ledgercore.interest.command.service.dto.AccrueCreditInterestCommand;
 import com.example.ledgercore.interest.command.port.outbound.InterestJournalPort;
 import com.example.ledgercore.interest.command.port.outbound.credit.CreditDailyBalanceInfo;
 import com.example.ledgercore.interest.command.port.outbound.credit.CreditDailyBalancePort;
