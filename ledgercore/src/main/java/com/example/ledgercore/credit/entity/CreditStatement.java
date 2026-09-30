@@ -140,6 +140,9 @@ public class CreditStatement {
     @Column(name = "status", nullable = false, length = 20)
     private CreditStatementStatus status;
 
+    @Column(name = "next_repayment_attempt_at")
+    private Instant nextRepaymentAttemptAt;
+
     @Version
     @Column(name = "version", nullable = false)
     private Long version;
@@ -174,6 +177,20 @@ public class CreditStatement {
             );
         }
 
+        if (status == CreditStatementStatus.PAID
+                || status == CreditStatementStatus.NO_PAYMENT_DUE
+                || status == CreditStatementStatus.OVERDUE) {
+            throw new IllegalStateException(
+                    "Statement does not accept payment"
+            );
+        }
+
+        if (status == CreditStatementStatus.OPEN) {
+            throw new IllegalStateException(
+                    "Statement has not been issued"
+            );
+        }
+
         BigDecimal remainingAmount = getRemainingAmount();
 
         if (amount.compareTo(remainingAmount) > 0) {
@@ -183,5 +200,19 @@ public class CreditStatement {
         }
 
         this.paidAmount = this.paidAmount.add(amount);
+
+        if (isPaid()) {
+            this.status = CreditStatementStatus.PAID;
+        } else {
+            this.status = CreditStatementStatus.PARTIALLY_PAID;
+        }
+    }
+
+    public void scheduleNextRepaymentAttempt(Instant nextAttemptAt) {
+        this.nextRepaymentAttemptAt = nextAttemptAt;
+    }
+
+    public void clearNextRepaymentAttempt() {
+        this.nextRepaymentAttemptAt = null;
     }
 }

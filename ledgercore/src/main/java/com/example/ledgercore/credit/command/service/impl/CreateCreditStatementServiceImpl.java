@@ -107,7 +107,7 @@ public class CreateCreditStatementServiceImpl
 
         CreditStatementStatus status =
                 closingBalance.signum() == 0
-                        ? CreditStatementStatus.CLOSED
+                        ? CreditStatementStatus.NO_PAYMENT_DUE
                         : CreditStatementStatus.ISSUED;
 
         Instant now = Instant.now();

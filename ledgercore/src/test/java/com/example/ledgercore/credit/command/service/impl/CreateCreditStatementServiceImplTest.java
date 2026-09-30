@@ -165,7 +165,7 @@ class CreateCreditStatementServiceImplTest {
 
         assertBigDecimalEquals(BigDecimal.ZERO, statement.getClosingBalance());
         assertBigDecimalEquals(BigDecimal.ZERO, statement.getMinimumPayment());
-        assertEquals(CreditStatementStatus.CLOSED, statement.getStatus());
+        assertEquals(CreditStatementStatus.NO_PAYMENT_DUE, statement.getStatus());
 
         verify(minimumPaymentService)
                 .calculate(BigDecimal.ZERO, Currency.VND);
