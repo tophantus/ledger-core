@@ -115,6 +115,7 @@ public class CreateCreditStatementHandler
         statementRepository.save(
                 CreditStatement.builder()
                         .id(UUID.randomUUID())
+                        .runId(command.runId())
                         .creditFacilityId(command.creditFacilityId())
                         .periodStart(command.periodStart())
                         .periodEnd(command.periodEnd())
@@ -137,6 +138,7 @@ public class CreateCreditStatementHandler
 
     private void validateCommand(CreateCreditStatementCommand command) {
         if (command == null
+                || command.runId() == null
                 || command.creditFacilityId() == null
                 || command.periodStart() == null
                 || command.periodEnd() == null

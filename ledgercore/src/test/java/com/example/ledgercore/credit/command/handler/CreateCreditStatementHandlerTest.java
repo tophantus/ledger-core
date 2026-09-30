@@ -60,6 +60,7 @@ class CreateCreditStatementHandlerTest {
     @InjectMocks
     private CreateCreditStatementHandler handler;
 
+    private UUID runId;
     private UUID creditFacilityId;
     private LocalDate periodStart;
     private LocalDate periodEnd;
@@ -76,6 +77,7 @@ class CreateCreditStatementHandlerTest {
 
     @BeforeEach
     void setUp() {
+        runId = UUID.randomUUID();
         creditFacilityId = UUID.randomUUID();
 
         periodStart = LocalDate.of(2026, 9, 1);
@@ -250,58 +252,66 @@ class CreateCreditStatementHandlerTest {
     }
 
     @Test
+    void execute_shouldThrowInvalidRequest_whenRunIdIsNull() {
+        assertInvalidCommand(new CreateCreditStatementCommand(
+                null, creditFacilityId, periodStart, periodEnd, statementDate, dueDate
+        ));
+    }
+
+
+    @Test
     void execute_shouldThrowInvalidRequest_whenCreditFacilityIdIsNull() {
         assertInvalidCommand(new CreateCreditStatementCommand(
-                null, periodStart, periodEnd, statementDate, dueDate
+                runId, null, periodStart, periodEnd, statementDate, dueDate
         ));
     }
 
     @Test
     void execute_shouldThrowInvalidRequest_whenPeriodStartIsNull() {
         assertInvalidCommand(new CreateCreditStatementCommand(
-                creditFacilityId, null, periodEnd, statementDate, dueDate
+                runId, creditFacilityId, null, periodEnd, statementDate, dueDate
         ));
     }
 
     @Test
     void execute_shouldThrowInvalidRequest_whenPeriodEndIsNull() {
         assertInvalidCommand(new CreateCreditStatementCommand(
-                creditFacilityId, periodStart, null, statementDate, dueDate
+                runId, creditFacilityId, periodStart, null, statementDate, dueDate
         ));
     }
 
     @Test
     void execute_shouldThrowInvalidRequest_whenStatementDateIsNull() {
         assertInvalidCommand(new CreateCreditStatementCommand(
-                creditFacilityId, periodStart, periodEnd, null, dueDate
+                runId, creditFacilityId, periodStart, periodEnd, null, dueDate
         ));
     }
 
     @Test
     void execute_shouldThrowInvalidRequest_whenDueDateIsNull() {
         assertInvalidCommand(new CreateCreditStatementCommand(
-                creditFacilityId, periodStart, periodEnd, statementDate, null
+                runId, creditFacilityId, periodStart, periodEnd, statementDate, null
         ));
     }
 
     @Test
     void execute_shouldThrowInvalidRequest_whenPeriodStartIsAfterPeriodEnd() {
         assertInvalidCommand(new CreateCreditStatementCommand(
-                creditFacilityId, periodEnd, periodStart, statementDate, dueDate
+                runId, creditFacilityId, periodEnd, periodStart, statementDate, dueDate
         ));
     }
 
     @Test
     void execute_shouldThrowInvalidRequest_whenPeriodEndIsAfterStatementDate() {
         assertInvalidCommand(new CreateCreditStatementCommand(
-                creditFacilityId, periodStart, periodEnd, periodStart, dueDate
+                runId, creditFacilityId, periodStart, periodEnd, periodStart, dueDate
         ));
     }
 
     @Test
     void execute_shouldThrowInvalidRequest_whenStatementDateIsAfterDueDate() {
         assertInvalidCommand(new CreateCreditStatementCommand(
-                creditFacilityId, periodStart, periodEnd, dueDate, statementDate
+                runId, creditFacilityId, periodStart, periodEnd, dueDate, statementDate
         ));
     }
 
@@ -549,6 +559,7 @@ class CreateCreditStatementHandlerTest {
 
     private CreateCreditStatementCommand validCommand() {
         return new CreateCreditStatementCommand(
+                runId,
                 creditFacilityId,
                 periodStart,
                 periodEnd,

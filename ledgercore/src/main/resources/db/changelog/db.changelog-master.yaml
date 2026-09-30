@@ -177,3 +177,5 @@ databaseChangeLog:
       file: db/changelog/088-add-updated-at-to-credit-repayment-mandates.yaml
   - include:
       file: db/changelog/089-create-credit-statement-runs.yaml
+  - include:
+      file: db/changelog/090-add-run-id-to-credit-statements.yaml

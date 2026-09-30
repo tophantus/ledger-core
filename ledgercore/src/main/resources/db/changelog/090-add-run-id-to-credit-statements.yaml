@@ -1,0 +1,25 @@
+databaseChangeLog:
+  - changeSet:
+      id: 090-add-run-id-to-credit-statements
+      author: tophantus
+      changes:
+        - addColumn:
+            tableName: credit_statements
+            columns:
+              - column:
+                  name: run_id
+                  type: UUID
+
+        - addForeignKeyConstraint:
+            baseTableName: credit_statements
+            baseColumnNames: run_id
+            referencedTableName: credit_statement_runs
+            referencedColumnNames: id
+            constraintName: fk_credit_statements_run
+
+        - createIndex:
+            tableName: credit_statements
+            indexName: idx_credit_statements_run_id
+            columns:
+              - column:
+                  name: run_id

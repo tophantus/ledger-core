@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 public record CreateCreditStatementCommand(
+        UUID runId,
         UUID creditFacilityId,
         LocalDate periodStart,
         LocalDate periodEnd,

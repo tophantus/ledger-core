@@ -53,6 +53,9 @@ public class CreditStatement {
     @Id
     private UUID id;
 
+    @Column(name = "run_id", nullable = false)
+    private UUID runId;
+
     @Column(name = "credit_facility_id", nullable = false)
     private UUID creditFacilityId;
 
