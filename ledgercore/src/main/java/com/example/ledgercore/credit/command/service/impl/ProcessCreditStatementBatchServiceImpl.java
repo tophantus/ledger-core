@@ -1,8 +1,8 @@
-package com.example.ledgercore.credit.command.handler;
+package com.example.ledgercore.credit.command.service.impl;
 
 import com.example.ledgercore.credit.command.service.dto.CreateCreditStatementCommand;
 import com.example.ledgercore.credit.command.service.CreateCreditStatementService;
-import com.example.ledgercore.credit.command.port.inbound.ProcessCreditStatementBatchUseCase;
+import com.example.ledgercore.credit.command.service.ProcessCreditStatementBatchService;
 import com.example.ledgercore.credit.command.repository.CreditFacilityCommandRepository;
 import com.example.ledgercore.credit.entity.CreditFacility;
 import lombok.RequiredArgsConstructor;
@@ -16,8 +16,8 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class ProcessCreditStatementBatchHandler
-        implements ProcessCreditStatementBatchUseCase {
+public class ProcessCreditStatementBatchServiceImpl
+        implements ProcessCreditStatementBatchService {
 
     private final CreditFacilityCommandRepository
             creditFacilityCommandRepository;

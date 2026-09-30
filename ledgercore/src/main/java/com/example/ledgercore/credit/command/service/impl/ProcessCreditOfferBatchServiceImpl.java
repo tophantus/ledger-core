@@ -1,7 +1,7 @@
-package com.example.ledgercore.credit.command.handler;
+package com.example.ledgercore.credit.command.service.impl;
 
 import com.example.ledgercore.credit.command.port.inbound.EvaluateAndCreateCreditOfferUseCase;
-import com.example.ledgercore.credit.command.port.inbound.ProcessCreditOfferBatchUseCase;
+import com.example.ledgercore.credit.command.service.ProcessCreditOfferBatchService;
 import com.example.ledgercore.credit.command.port.outbound.CreditOfferCandidateQueryPort;
 import com.example.ledgercore.credit.command.port.outbound.dto.CreditOfferCandidate;
 import lombok.RequiredArgsConstructor;
@@ -14,8 +14,8 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class ProcessCreditOfferBatchHandler
-        implements ProcessCreditOfferBatchUseCase {
+public class ProcessCreditOfferBatchServiceImpl
+        implements ProcessCreditOfferBatchService {
 
     private final CreditOfferCandidateQueryPort
             creditOfferCandidateQueryPort;

@@ -168,6 +168,13 @@ credit:
       rate: 0.05
       fixed-minimum: 50000
 
+    scheduler:
+      enabled: true
+      fixed-delay: 1000
+
+    run:
+      batch-size: 100
+
   offer:
     scheduler:
       enabled: true

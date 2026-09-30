@@ -1,10 +1,10 @@
-package com.example.ledgercore.credit.command.service.impl;
+package com.example.ledgercore.credit.command.handler;
 
 import com.example.ledgercore.credit.command.dto.run.ClaimedCreditOfferRun;
 import com.example.ledgercore.credit.command.port.inbound.run.CompleteCreditOfferRunUseCase;
-import com.example.ledgercore.credit.command.port.inbound.ProcessCreditOfferBatchUseCase;
+import com.example.ledgercore.credit.command.service.ProcessCreditOfferBatchService;
 import com.example.ledgercore.credit.command.port.inbound.run.UpdateCreditOfferRunProgressUseCase;
-import com.example.ledgercore.credit.command.service.CreditOfferRunProcessor;
+import com.example.ledgercore.credit.command.port.inbound.ProcessCreditOfferRunUseCase;
 import com.example.ledgercore.credit.config.CreditOfferRunProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,10 +16,10 @@ import java.util.UUID;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class CreditOfferRunProcessorImpl
-        implements CreditOfferRunProcessor {
+public class ProcessCreditOfferRunHandler
+        implements ProcessCreditOfferRunUseCase {
 
-    private final ProcessCreditOfferBatchUseCase
+    private final ProcessCreditOfferBatchService
             processBatchUseCase;
 
     private final UpdateCreditOfferRunProgressUseCase
@@ -46,7 +46,7 @@ public class CreditOfferRunProcessorImpl
 
         while (true) {
 
-            ProcessCreditOfferBatchUseCase.BatchResult result =
+            ProcessCreditOfferBatchService.BatchResult result =
                     processBatchUseCase.execute(
                             runId,
                             run.businessDate(),

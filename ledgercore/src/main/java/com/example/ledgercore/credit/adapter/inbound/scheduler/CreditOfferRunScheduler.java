@@ -2,7 +2,7 @@ package com.example.ledgercore.credit.adapter.inbound.scheduler;
 
 import com.example.ledgercore.credit.command.dto.run.ClaimedCreditOfferRun;
 import com.example.ledgercore.credit.command.port.inbound.run.ClaimCreditOfferRunUseCase;
-import com.example.ledgercore.credit.command.service.CreditOfferRunProcessor;
+import com.example.ledgercore.credit.command.port.inbound.ProcessCreditOfferRunUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -21,7 +21,7 @@ import java.util.Optional;
 public class CreditOfferRunScheduler {
 
     private final ClaimCreditOfferRunUseCase claimCreditOfferRunUseCase;
-    private final CreditOfferRunProcessor creditOfferRunProcessor;
+    private final ProcessCreditOfferRunUseCase processCreditOfferRunUseCase;
 
     @Scheduled(
             fixedDelayString =
@@ -38,7 +38,7 @@ public class CreditOfferRunScheduler {
             return;
         }
 
-        creditOfferRunProcessor.process(
+        processCreditOfferRunUseCase.process(
                 optionalRun.get()
         );
     }

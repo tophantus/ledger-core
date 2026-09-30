@@ -1,9 +1,9 @@
-package com.example.ledgercore.credit.command.port.inbound;
+package com.example.ledgercore.credit.command.service;
 
 import java.time.LocalDate;
 import java.util.UUID;
 
-public interface ProcessCreditStatementBatchUseCase {
+public interface ProcessCreditStatementBatchService {
 
     BatchResult execute(
             UUID runId,
