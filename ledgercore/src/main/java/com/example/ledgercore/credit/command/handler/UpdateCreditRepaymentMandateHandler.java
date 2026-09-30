@@ -5,6 +5,7 @@ import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.credit.command.dto.UpdateCreditRepaymentMandateCommand;
 import com.example.ledgercore.credit.command.dto.UpdateCreditRepaymentMandateResult;
 import com.example.ledgercore.credit.command.port.inbound.UpdateCreditRepaymentMandateUseCase;
+import com.example.ledgercore.credit.command.port.outbound.VerifyRepaymentAccountOwnershipPort;
 import com.example.ledgercore.credit.command.repository.CreditFacilityCommandRepository;
 import com.example.ledgercore.credit.command.repository.CreditRepaymentMandateCommandRepository;
 import com.example.ledgercore.credit.entity.CreditFacility;
@@ -23,6 +24,7 @@ public class UpdateCreditRepaymentMandateHandler
 
     private final CreditRepaymentMandateCommandRepository mandateRepository;
     private final CreditFacilityCommandRepository creditFacilityRepository;
+    private final VerifyRepaymentAccountOwnershipPort ownershipPort;
 
     @Override
     @Transactional
@@ -49,14 +51,25 @@ public class UpdateCreditRepaymentMandateHandler
             throw new BusinessException(ErrorCode.ACCESS_DENIED);
         }
 
-        if (mandate.getStatus() !=
-                CreditRepaymentMandateStatus.ACTIVE) {
+        if (mandate.getStatus() != CreditRepaymentMandateStatus.ACTIVE) {
             throw new BusinessException(
                     ErrorCode.CREDIT_REPAYMENT_MANDATE_NOT_ACTIVE
             );
         }
 
-        mandate.updateRepaymentType(command.repaymentType());
+        if (command.accountId() != null
+                && !command.accountId().equals(mandate.getAccountId())
+                && !ownershipPort.verify(
+                command.userId(),
+                command.accountId()
+        )) {
+            throw new BusinessException(ErrorCode.ACCESS_DENIED);
+        }
+
+        mandate.update(
+                command.accountId(),
+                command.repaymentType()
+        );
 
         mandateRepository.save(mandate);
 
@@ -73,8 +86,7 @@ public class UpdateCreditRepaymentMandateHandler
     private void validate(UpdateCreditRepaymentMandateCommand command) {
         if (command == null
                 || command.userId() == null
-                || command.mandateId() == null
-                || command.repaymentType() == null) {
+                || command.mandateId() == null) {
             throw new BusinessException(ErrorCode.INVALID_REQUEST);
         }
     }

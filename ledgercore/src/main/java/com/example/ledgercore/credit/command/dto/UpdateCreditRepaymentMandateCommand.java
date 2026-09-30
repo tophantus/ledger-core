@@ -7,6 +7,7 @@ import java.util.UUID;
 public record UpdateCreditRepaymentMandateCommand(
         UUID userId,
         UUID mandateId,
+        UUID accountId,
         RepaymentType repaymentType
 ) {
 }

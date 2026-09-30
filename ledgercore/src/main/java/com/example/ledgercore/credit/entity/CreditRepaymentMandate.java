@@ -63,8 +63,18 @@ public class CreditRepaymentMandate {
     @Column(name = "revoked_at")
     private Instant revokedAt;
 
-    public void updateRepaymentType(RepaymentType repaymentType) {
-        this.repaymentType = repaymentType;
+    public void update(
+            UUID accountId,
+            RepaymentType repaymentType
+    ) {
+        if (accountId != null) {
+            this.accountId = accountId;
+        }
+
+        if (repaymentType != null) {
+            this.repaymentType = repaymentType;
+        }
+
         this.updatedAt = Instant.now();
     }
 

@@ -72,6 +72,7 @@ public class CreditRepaymentMandateController {
                         new UpdateCreditRepaymentMandateCommand(
                                 principal.getUserId(),
                                 mandateId,
+                                request.accountId(),
                                 request.repaymentType()
                         )
                 );
