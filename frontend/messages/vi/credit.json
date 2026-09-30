@@ -14,21 +14,56 @@
     }
   },
   "facility": {
-    "title": "Hạn mức tín dụng",
-    "description": "Xem hạn mức tín dụng và số dư tín dụng hiện tại.",
-    "empty": "Bạn chưa có hạn mức tín dụng đang hoạt động.",
-    "cardTitle": "Tài khoản tín dụng",
-    "cardDescription": "Hạn mức tín dụng hiện tại của bạn",
+    "title": "Khoản tín dụng",
+    "description": "Xem thông tin khoản tín dụng và thiết lập thanh toán.",
+    "empty": "Bạn chưa có khoản tín dụng đang hoạt động.",
+    "cardTitle": "Khoản tín dụng",
+    "cardDescription": "Thông tin khoản tín dụng hiện tại của bạn.",
+    "availableCredit": "Hạn mức khả dụng",
     "creditLimit": "Hạn mức tín dụng",
     "outstandingBalance": "Dư nợ",
     "holdAmount": "Số tiền tạm giữ",
-    "availableCredit": "Tín dụng khả dụng",
-    "status": "Trạng thái",
     "openedAt": "Ngày mở",
+
     "statuses": {
       "ACTIVE": "Đang hoạt động",
       "SUSPENDED": "Tạm ngưng",
       "CLOSED": "Đã đóng"
+    },
+
+    "repaymentMandate": {
+      "title": "Ủy quyền thanh toán",
+      "description": "Thiết lập tài khoản và phương thức dùng để thanh toán dư nợ tín dụng.",
+      "notConfigured": "Khoản tín dụng này chưa được thiết lập ủy quyền thanh toán.",
+      "account": "Tài khoản thanh toán",
+      "accountPlaceholder": "Chọn tài khoản",
+      "repaymentType": "Phương thức thanh toán",
+
+      "types": {
+        "FULL_BALANCE": "Thanh toán toàn bộ dư nợ",
+        "MINIMUM_PAYMENT": "Thanh toán tối thiểu"
+      },
+
+      "statuses": {
+        "ACTIVE": "Đang hoạt động",
+        "REVOKED": "Đã thu hồi"
+      },
+
+      "actions": {
+        "register": "Đăng ký ủy quyền thanh toán",
+        "edit": "Chỉnh sửa",
+        "save": "Lưu thay đổi",
+        "saving": "Đang lưu...",
+        "revoke": "Thu hồi",
+        "revoking": "Đang thu hồi...",
+        "cancel": "Hủy"
+      },
+
+      "validation": {
+        "account": {
+          "required": "Vui lòng chọn tài khoản thanh toán."
+        }
+      }
     }
   }
 }

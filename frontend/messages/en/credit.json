@@ -22,20 +22,55 @@
   },
   "facility": {
     "title": "Credit Facility",
-    "description": "View your current credit facility and available credit.",
+    "description": "View your credit facility and repayment settings.",
     "empty": "You do not have an active credit facility.",
-    "cardTitle": "Credit Account",
-    "cardDescription": "Your current credit facility",
+    "cardTitle": "Credit Facility",
+    "cardDescription": "Your current credit facility details.",
+    "availableCredit": "Available Credit",
     "creditLimit": "Credit Limit",
     "outstandingBalance": "Outstanding Balance",
     "holdAmount": "Hold Amount",
-    "availableCredit": "Available Credit",
-    "status": "Status",
-    "openedAt": "Opened",
+    "openedAt": "Opened At",
+
     "statuses": {
       "ACTIVE": "Active",
       "SUSPENDED": "Suspended",
       "CLOSED": "Closed"
+    },
+
+    "repaymentMandate": {
+      "title": "Repayment Mandate",
+      "description": "Configure the account and repayment method used to repay your credit balance.",
+      "notConfigured": "No repayment mandate has been configured for this credit facility.",
+      "account": "Repayment Account",
+      "accountPlaceholder": "Select an account",
+      "repaymentType": "Repayment Type",
+
+      "types": {
+        "FULL_BALANCE": "Full Balance",
+        "MINIMUM_PAYMENT": "Minimum Payment"
+      },
+
+      "statuses": {
+        "ACTIVE": "Active",
+        "REVOKED": "Revoked"
+      },
+
+      "actions": {
+        "register": "Register Repayment Mandate",
+        "edit": "Edit",
+        "save": "Save Changes",
+        "saving": "Saving...",
+        "revoke": "Revoke",
+        "revoking": "Revoking...",
+        "cancel": "Cancel"
+      },
+
+      "validation": {
+        "account": {
+          "required": "Please select a repayment account."
+        }
+      }
     }
   }
 }
