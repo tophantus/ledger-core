@@ -2,8 +2,6 @@ package com.example.ledgercore.interest.command.service.impl;
 
 import com.example.ledgercore.interest.command.service.dto.AccrueCreditInterestCommand;
 import com.example.ledgercore.interest.command.port.outbound.InterestJournalPort;
-import com.example.ledgercore.interest.command.port.outbound.credit.CreditDailyBalanceInfo;
-import com.example.ledgercore.interest.command.port.outbound.credit.CreditDailyBalancePort;
 import com.example.ledgercore.interest.command.repository.CreditInterestAccrualCommandRepository;
 import com.example.ledgercore.interest.command.service.AccrueCreditInterestUseCase;
 import com.example.ledgercore.interest.entity.CreditInterestAccrual;
@@ -22,7 +20,6 @@ import java.util.UUID;
 public class AccrueCreditInterestHandler
         implements AccrueCreditInterestUseCase {
 
-    private final CreditDailyBalancePort creditDailyBalancePort;
     private final InterestConfigService interestConfigService;
     private final InterestCalculationService interestCalculationService;
     private final CreditInterestAccrualCommandRepository repository;
@@ -40,11 +37,7 @@ public class AccrueCreditInterestHandler
             return;
         }
 
-        CreditDailyBalanceInfo dailyBalance =
-                creditDailyBalancePort.findClosingBalance(
-                        command.creditFacilityId(),
-                        command.businessDate()
-                );
+        BigDecimal principal = command.closingBalance();
 
         InterestConfig config = interestConfigService.getApplicableConfig(
                 command.productId(),
@@ -54,7 +47,7 @@ public class AccrueCreditInterestHandler
 
         BigDecimal interestAmount =
                 interestCalculationService.calculateDailyInterest(
-                        dailyBalance.closingBalance(),
+                        principal,
                         config.getInterestRate(),
                         config.getDayCountConvention()
                 );
@@ -64,7 +57,7 @@ public class AccrueCreditInterestHandler
                         .runId(command.runId())
                         .creditFacilityId(command.creditFacilityId())
                         .businessDate(command.businessDate())
-                        .principalAmount(dailyBalance.closingBalance())
+                        .principalAmount(principal)
                         .interestRate(config.getInterestRate())
                         .interestAmount(interestAmount)
                         .build()
@@ -106,6 +99,18 @@ public class AccrueCreditInterestHandler
 
         if (command.currency() == null) {
             throw new IllegalArgumentException("currency must not be null");
+        }
+
+        if (command.closingBalance() == null) {
+            throw new IllegalArgumentException(
+                    "closingBalance must not be null"
+            );
+        }
+
+        if (command.closingBalance().signum() < 0) {
+            throw new IllegalArgumentException(
+                    "closingBalance must not be negative"
+            );
         }
 
         if (command.businessDate() == null) {

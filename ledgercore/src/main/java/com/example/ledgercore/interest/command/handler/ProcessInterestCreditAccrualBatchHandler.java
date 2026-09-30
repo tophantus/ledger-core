@@ -70,6 +70,7 @@ public class ProcessInterestCreditAccrualBatchHandler
                             facility.creditFacilityId(),
                             facility.productId(),
                             facility.currency(),
+                            facility.closingBalance(),
                             businessDate
                     )
             );

@@ -44,7 +44,8 @@ public class InterestEligibleCreditFacilityQueryAdapter
         return new InterestEligibleCreditFacility(
                 eligibility.creditFacilityId(),
                 eligibility.productId(),
-                eligibility.currency()
+                eligibility.currency(),
+                eligibility.closingBalance()
         );
     }
 }
