@@ -57,7 +57,7 @@
     "TRANSFER": "Transfer",
     "DEPOSIT": "Deposit",
     "WITHDRAW": "Withdraw",
-    "CARD_PAYMENT": "Card Payment",
+    "CARD_PURCHASE": "Card Purchase",
     "CASH_ADVANCE": "Cash Advance",
     "CREDIT_PAYMENT": "Credit Payment",
     "FEE": "Fee",
