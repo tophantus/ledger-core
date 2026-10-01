@@ -25,6 +25,21 @@ public interface CreditStatementQueryRepository
     );
 
     @Query("""
+            SELECT s.id
+            FROM CreditStatement s
+            WHERE s.status IN :statuses
+              AND s.dueDate <= :businessDate
+            ORDER BY s.dueDate ASC, s.id ASC
+            """)
+    List<UUID> findDueStatementIds(
+            @Param("statuses")
+            List<CreditStatementStatus> statuses,
+            @Param("businessDate")
+            LocalDate businessDate,
+            Pageable pageable
+    );
+
+    @Query("""
         select new com.example.ledgercore.credit.query.dto.GetDueRepaymentCandidatesResult(
             s.id,
             s.creditFacilityId,
