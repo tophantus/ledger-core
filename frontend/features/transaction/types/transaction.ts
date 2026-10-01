@@ -4,8 +4,12 @@ export enum TransactionType {
     TRANSFER = "TRANSFER",
     DEPOSIT = "DEPOSIT",
     WITHDRAW = "WITHDRAW",
+    CARD_PAYMENT = "CARD_PAYMENT",
+    CASH_ADVANCE = "CASH_ADVANCE",
+    CREDIT_PAYMENT = "CREDIT_PAYMENT",
     FEE = "FEE",
     REFUND = "REFUND",
+    INTEREST = "INTEREST",
 }
 
 export enum TransactionStatus {
@@ -32,6 +36,7 @@ export interface Transaction {
 
 export interface TransactionFilters {
     accountId?: string;
+    creditFacilityId?: string;
     status?: TransactionStatus;
     type?: TransactionType;
     currency?: Currency;

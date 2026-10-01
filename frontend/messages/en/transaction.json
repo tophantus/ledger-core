@@ -4,6 +4,8 @@
   "userTransactions": "All transactions across your accounts.",
   "accountTitle": "Account transactions",
   "accountTransactions": "Transaction history for this account.",
+  "creditFacilityTitle": "Credit facility transactions",
+  "creditFacilityTransactions": "Transaction history for this credit facility.",
   "recent": {
     "title": "Recent transactions",
     "viewAll": "View all",

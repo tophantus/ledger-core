@@ -140,7 +140,9 @@ export default function AccountDetailsPage() {
             />
 
             <RecentTransactionList
-                accountId={account.id}
+                target={{
+                    type: "account",
+                    id: accountId}}
             />
         </section>
     );
