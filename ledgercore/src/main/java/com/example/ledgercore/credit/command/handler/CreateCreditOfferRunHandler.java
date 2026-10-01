@@ -21,6 +21,12 @@ public class CreateCreditOfferRunHandler
     @Override
     @Transactional
     public void execute(LocalDate businessDate) {
+
+        if (creditOfferRunCommandRepository
+                .existsByBusinessDate(businessDate)) {
+            return;
+        }
+
         CreditOfferRun run = CreditOfferRun.builder()
                 .businessDate(businessDate)
                 .status(CreditOfferRunStatus.PENDING)
