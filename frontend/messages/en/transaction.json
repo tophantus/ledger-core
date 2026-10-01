@@ -4,6 +4,8 @@
   "userTransactions": "All transactions across your accounts.",
   "accountTitle": "Account transactions",
   "accountTransactions": "Transaction history for this account.",
+  "creditFacilityTitle": "Credit facility transactions",
+  "creditFacilityTransactions": "Transaction history for this credit facility.",
   "recent": {
     "title": "Recent transactions",
     "viewAll": "View all",
@@ -55,7 +57,7 @@
     "TRANSFER": "Transfer",
     "DEPOSIT": "Deposit",
     "WITHDRAW": "Withdraw",
-    "CARD_PAYMENT": "Card Payment",
+    "CARD_PURCHASE": "Card Purchase",
     "CASH_ADVANCE": "Cash Advance",
     "CREDIT_PAYMENT": "Credit Payment",
     "FEE": "Fee",

@@ -8,6 +8,7 @@ import {CreditFacilityMeta} from "./credit-facility-meta";
 import {CreditFacilitySummary} from "./credit-facility-summary";
 import {CreditRepaymentMandate} from "./credit-repayment-mandate";
 import { CreditStatements } from "./credit-statements";
+import {RecentTransactionList} from "@/features/transaction/components/recent-transaction-list";
 
 interface CreditFacilityProps {
     facility: GetUserCreditFacilityResult | null;
@@ -70,6 +71,16 @@ export function CreditFacility({
                     <CreditStatements
                         facility={facility}
                     />
+
+                    <div
+                        className={"pt-4"}
+                    >
+                        <RecentTransactionList
+                            target={{
+                                type: "creditFacility",
+                                id: facility.id}}
+                        />
+                    </div>
 
                     <CreditFacilityMeta
                         openedAt={facility.openedAt}

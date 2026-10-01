@@ -4,6 +4,8 @@
   "userTransactions": "Tất cả giao dịch của các tài khoản.",
   "accountTitle": "Giao dịch tài khoản",
   "accountTransactions": "Lịch sử giao dịch của tài khoản này.",
+  "creditFacilityTitle": "Giao dịch khoản tín dụng",
+  "creditFacilityTransactions": "Lịch sử giao dịch của khoản tín dụng này.",
   "recent": {
     "title": "Giao dịch gần đây",
     "viewAll": "Xem tất cả",
@@ -55,7 +57,7 @@
     "TRANSFER": "Chuyển tiền",
     "DEPOSIT": "Nạp tiền",
     "WITHDRAW": "Rút tiền",
-    "CARD_PAYMENT": "Thanh toán thẻ",
+    "CARD_PURCHASE": "Chi tiêu bằng thẻ",
     "CASH_ADVANCE": "Ứng tiền mặt",
     "CREDIT_PAYMENT": "Thanh toán tín dụng",
     "FEE": "Phí",

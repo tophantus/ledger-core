@@ -5,10 +5,7 @@ import com.example.ledgercore.common.dto.PageResponse;
 import com.example.ledgercore.common.response.ApiResponse;
 import com.example.ledgercore.transaction.adapter.inbound.rest.dto.TransactionFilterRequest;
 import com.example.ledgercore.transaction.query.dto.*;
-import com.example.ledgercore.transaction.query.port.inbound.GetAccountTransactionsUseCase;
-import com.example.ledgercore.transaction.query.port.inbound.GetTransactionByReferenceUseCase;
-import com.example.ledgercore.transaction.query.port.inbound.GetTransactionUseCase;
-import com.example.ledgercore.transaction.query.port.inbound.GetUserTransactionsUseCase;
+import com.example.ledgercore.transaction.query.port.inbound.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -28,10 +25,15 @@ import java.util.UUID;
 public class TransactionController {
 
     private final GetTransactionUseCase getTransactionUseCase;
+
     private final GetTransactionByReferenceUseCase
             getTransactionByReferenceUseCase;
+
     private final GetAccountTransactionsUseCase
             getAccountTransactionsUseCase;
+
+    private final GetCreditFacilityTransactionsUseCase
+            getCreditFacilityTransactionsUseCase;
 
     private final GetUserTransactionsUseCase
             getUserTransactionsUseCase;
@@ -106,6 +108,21 @@ public class TransactionController {
                             new GetAccountTransactionsQuery(
                                     principal.getUserId(),
                                     request.getAccountId(),
+                                    request.getStatus(),
+                                    request.getType(),
+                                    request.getCurrency(),
+                                    request.getFrom(),
+                                    request.getTo(),
+                                    request.getPage(),
+                                    request.getSize()
+                            )
+                    );
+        } else if (request.getCreditFacilityId() != null) {
+            response =
+                    getCreditFacilityTransactionsUseCase.execute(
+                            new GetCreditFacilityTransactionsQuery(
+                                    principal.getUserId(),
+                                    request.getCreditFacilityId(),
                                     request.getStatus(),
                                     request.getType(),
                                     request.getCurrency(),

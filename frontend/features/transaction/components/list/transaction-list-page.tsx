@@ -58,6 +58,12 @@ export default function TransactionListPage() {
         searchParams.get("accountId")
         ?? undefined;
 
+    const creditFacilityId =
+        accountId
+            ? undefined
+            : searchParams.get("creditFacilityId")
+            ?? undefined;
+
     const type =
         (searchParams.get(
             "type",
@@ -102,6 +108,7 @@ export default function TransactionListPage() {
         useMemo(
             () => ({
                 accountId,
+                creditFacilityId,
                 type,
                 status,
                 currency,
@@ -112,6 +119,7 @@ export default function TransactionListPage() {
             }),
             [
                 accountId,
+                creditFacilityId,
                 type,
                 status,
                 currency,
@@ -233,6 +241,11 @@ export default function TransactionListPage() {
                 "accountId",
                 nextFilters.accountId,
             );
+        } else if (nextFilters.creditFacilityId) {
+            params.set(
+                "creditFacilityId",
+                nextFilters.creditFacilityId,
+            );
         }
 
         if (nextFilters.type) {
@@ -320,7 +333,9 @@ export default function TransactionListPage() {
                     ">
                         {accountId
                             ? t("accountTitle")
-                            : t("title")}
+                            : creditFacilityId
+                                ? t("creditFacilityTitle")
+                                : t("title")}
                     </h1>
 
                     <p className="
@@ -330,7 +345,9 @@ export default function TransactionListPage() {
                     ">
                         {accountId
                             ? t("accountTransactions")
-                            : t("userTransactions")}
+                            : creditFacilityId
+                                ? t("creditFacilityTransactions")
+                                : t("userTransactions")}
                     </p>
                 </div>
             </div>

@@ -31,16 +31,63 @@ public final class TransactionSpecifications {
                 );
     }
 
-    public static Specification<MoneyTransaction> accounts(
-            List<UUID> accountIds
+    public static Specification<MoneyTransaction> creditFacility(
+            UUID creditFacilityId
     ) {
         return (root, query, criteriaBuilder) ->
                 criteriaBuilder.or(
-                        root.get("sourceAccountId")
-                                .in(accountIds),
-                        root.get("destinationAccountId")
-                                .in(accountIds)
+                        criteriaBuilder.equal(
+                                root.get("sourceCreditFacilityId"),
+                                creditFacilityId
+                        ),
+                        criteriaBuilder.equal(
+                                root.get("destinationCreditFacilityId"),
+                                creditFacilityId
+                        )
                 );
+    }
+
+    public static Specification<MoneyTransaction> ownedBy(
+            List<UUID> accountIds,
+            UUID creditFacilityId
+    ) {
+        return (root, query, criteriaBuilder) -> {
+            var predicates = new java.util.ArrayList<
+                    jakarta.persistence.criteria.Predicate
+                    >();
+
+            if (!accountIds.isEmpty()) {
+                predicates.add(
+                        criteriaBuilder.or(
+                                root.get("sourceAccountId")
+                                        .in(accountIds),
+                                root.get("destinationAccountId")
+                                        .in(accountIds)
+                        )
+                );
+            }
+
+            if (creditFacilityId != null) {
+                predicates.add(
+                        criteriaBuilder.or(
+                                criteriaBuilder.equal(
+                                        root.get("sourceCreditFacilityId"),
+                                        creditFacilityId
+                                ),
+                                criteriaBuilder.equal(
+                                        root.get("destinationCreditFacilityId"),
+                                        creditFacilityId
+                                )
+                        )
+                );
+            }
+
+            return criteriaBuilder.or(
+                    predicates.toArray(
+                            new jakarta.persistence.criteria.Predicate[0]
+                    )
+            );
+        };
     }
 
     public static Specification<MoneyTransaction> status(

@@ -19,7 +19,7 @@ public class GetCreditPurchasesAmountHandler
         implements GetCreditPurchasesAmountUseCase {
 
     private static final List<TransactionType> PURCHASE_TYPES = List.of(
-            TransactionType.CARD_PAYMENT,
+            TransactionType.CARD_PURCHASE,
             TransactionType.CASH_ADVANCE
     );
 

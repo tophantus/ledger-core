@@ -4,12 +4,11 @@ import com.example.ledgercore.common.dto.PageResponse;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.transaction.entity.MoneyTransaction;
-import com.example.ledgercore.transaction.query.dto.GetUserTransactionsQuery;
+import com.example.ledgercore.transaction.query.dto.GetCreditFacilityTransactionsQuery;
 import com.example.ledgercore.transaction.query.dto.TransactionResponse;
 import com.example.ledgercore.transaction.query.mapper.TransactionQueryMapper;
-import com.example.ledgercore.transaction.query.port.inbound.GetUserTransactionsUseCase;
-import com.example.ledgercore.transaction.query.port.outbound.AccountQueryPort;
-import com.example.ledgercore.transaction.query.port.outbound.TransactionCreditFacilityQueryPort;
+import com.example.ledgercore.transaction.query.port.inbound.GetCreditFacilityTransactionsUseCase;
+import com.example.ledgercore.transaction.query.port.outbound.CreditFacilityAccessPort;
 import com.example.ledgercore.transaction.query.repository.TransactionQueryRepository;
 import com.example.ledgercore.transaction.query.specification.TransactionSpecifications;
 import lombok.RequiredArgsConstructor;
@@ -21,48 +20,30 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class GetUserTransactionsHandler
-        implements GetUserTransactionsUseCase {
+public class GetCreditFacilityTransactionsHandler
+        implements GetCreditFacilityTransactionsUseCase {
 
     private final TransactionQueryRepository transactionQueryRepository;
-    private final AccountQueryPort accountQueryPort;
-    private final TransactionCreditFacilityQueryPort transactionCreditFacilityQueryPort;
+
+    private final CreditFacilityAccessPort creditFacilityAccessPort;
+
     private final TransactionQueryMapper transactionQueryMapper;
 
     @Override
     @Transactional(readOnly = true)
     public PageResponse<TransactionResponse> execute(
-            GetUserTransactionsQuery query
+            GetCreditFacilityTransactionsQuery query
     ) {
         validateQuery(query);
 
-        List<UUID> accountIds =
-                accountQueryPort.findAccountIdsByUserId(
-                        query.userId()
-                );
-
-        UUID creditFacilityId =
-                transactionCreditFacilityQueryPort
-                        .findCreditFacilityIdByUserId(query.userId())
-                        .orElse(null);
-
-
-        if (accountIds.isEmpty() && creditFacilityId == null) {
-            return new PageResponse<>(
-                    List.of(),
-                    query.page(),
-                    query.size(),
-                    0,
-                    0
-            );
-        }
+        creditFacilityAccessPort.verifyAccess(
+                query.userId(),
+                query.creditFacilityId()
+        );
 
         Pageable pageable = PageRequest.of(
                 query.page(),
@@ -74,11 +55,7 @@ public class GetUserTransactionsHandler
         );
 
         Specification<MoneyTransaction> specification =
-                buildSpecification(
-                        accountIds,
-                        creditFacilityId,
-                        query
-                );
+                buildSpecification(query);
 
         Page<MoneyTransaction> transactionPage =
                 transactionQueryRepository.findAll(
@@ -86,18 +63,15 @@ public class GetUserTransactionsHandler
                         pageable
                 );
 
-        Set<UUID> accountIdSet = new HashSet<>(accountIds);
-
         return new PageResponse<>(
                 transactionPage.getContent()
                         .stream()
                         .map(transaction ->
                                 transactionQueryMapper.toResponse(
                                         transaction,
-                                        resolveIncoming(
+                                        isIncoming(
                                                 transaction,
-                                                accountIdSet,
-                                                creditFacilityId
+                                                query.creditFacilityId()
                                         )
                                 )
                         )
@@ -109,94 +83,60 @@ public class GetUserTransactionsHandler
         );
     }
 
-    private Boolean resolveIncoming(
+    private boolean isIncoming(
             MoneyTransaction transaction,
-            Set<UUID> accountIds,
             UUID creditFacilityId
     ) {
-        boolean sourceOwned =
-                transaction.getSourceAccountId() != null
-                        && accountIds.contains(
-                        transaction.getSourceAccountId()
-                );
-
-        boolean destinationOwned =
-                transaction.getDestinationAccountId() != null
-                        && accountIds.contains(
-                        transaction.getDestinationAccountId()
-                );
-
-        boolean sourceCreditOwned =
-                creditFacilityId != null
-                        && creditFacilityId.equals(
-                        transaction.getSourceCreditFacilityId()
-                );
-
-        boolean destinationCreditOwned =
-                creditFacilityId != null
-                        && creditFacilityId.equals(
-                        transaction.getDestinationCreditFacilityId()
-                );
-
-        boolean ownedAsSource =
-                sourceOwned || sourceCreditOwned;
-
-        boolean ownedAsDestination =
-                destinationOwned || destinationCreditOwned;
-
-        if (ownedAsSource && ownedAsDestination) {
-            return null;
-        }
-
-        if (ownedAsDestination) {
-            return true;
-        }
-
-        if (ownedAsSource) {
-            return false;
-        }
-
-        return null;
+        return creditFacilityId.equals(
+                transaction.getDestinationCreditFacilityId()
+        );
     }
 
     private Specification<MoneyTransaction> buildSpecification(
-            List<UUID> accountIds,
-            UUID creditFacilityId,
-            GetUserTransactionsQuery query
+            GetCreditFacilityTransactionsQuery query
     ) {
         Specification<MoneyTransaction> specification =
-                TransactionSpecifications.ownedBy(
-                        accountIds,
-                        creditFacilityId
+                TransactionSpecifications.creditFacility(
+                        query.creditFacilityId()
                 );
 
         if (query.status() != null) {
             specification = specification.and(
-                    TransactionSpecifications.status(query.status())
+                    TransactionSpecifications.status(
+                            query.status()
+                    )
             );
         }
 
         if (query.type() != null) {
             specification = specification.and(
-                    TransactionSpecifications.type(query.type())
+                    TransactionSpecifications.type(
+                            query.type()
+                    )
             );
         }
 
         if (query.currency() != null) {
             specification = specification.and(
-                    TransactionSpecifications.currency(query.currency())
+                    TransactionSpecifications.currency(
+                            query.currency()
+                    )
             );
         }
 
         if (query.from() != null) {
             specification = specification.and(
-                    TransactionSpecifications.createdAtFrom(query.from())
+                    TransactionSpecifications.createdAtFrom(
+                            query.from()
+                    )
             );
         }
 
         if (query.to() != null) {
             specification = specification.and(
-                    TransactionSpecifications.createdAtTo(query.to())
+                    TransactionSpecifications.createdAtTo(
+                            query.to()
+                    )
             );
         }
 
@@ -204,10 +144,11 @@ public class GetUserTransactionsHandler
     }
 
     private void validateQuery(
-            GetUserTransactionsQuery query
+            GetCreditFacilityTransactionsQuery query
     ) {
         if (query == null
-                || query.userId() == null) {
+                || query.userId() == null
+                || query.creditFacilityId() == null) {
 
             throw new BusinessException(
                     ErrorCode.INVALID_REQUEST

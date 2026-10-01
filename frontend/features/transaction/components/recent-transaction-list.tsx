@@ -16,12 +16,22 @@ import type {Transaction} from "../types/transaction";
 import {TransactionRow} from "./list/transaction-row";
 import {TransactionSkeleton} from "./transaction-skeleton";
 
+type RecentTransactionTarget =
+    | {
+    type: "account";
+    id: string;
+}
+    | {
+    type: "creditFacility";
+    id: string;
+};
+
 interface RecentTransactionListProps {
-    accountId: string;
+    target: RecentTransactionTarget;
 }
 
 export function RecentTransactionList({
-                                          accountId,
+                                          target,
                                       }: RecentTransactionListProps) {
     const t = useTranslations("transaction");
     const tErrors = useTranslations("errors");
@@ -62,11 +72,12 @@ export function RecentTransactionList({
             try {
                 const response =
                     await getTransactions({
-                        accountId,
+                        ...(target.type === "account"
+                            ? {accountId: target.id}
+                            : {creditFacilityId: target.id}),
                         page: 0,
                         size: 5,
                     });
-
                 if (!mounted) {
                     return;
                 }
@@ -103,14 +114,17 @@ export function RecentTransactionList({
             mounted = false;
         };
     }, [
-        accountId,
+        target.type,
+        target.id,
         getTransactions,
         getErrorMessage,
         tErrors,
     ]);
 
     const href =
-        `${ROUTES.TRANSACTION.LIST}?accountId=${accountId}`;
+        target.type === "account"
+            ? `${ROUTES.TRANSACTION.LIST}?accountId=${target.id}`
+            : `${ROUTES.TRANSACTION.LIST}?creditFacilityId=${target.id}`;
 
     return (
         <section className="
