@@ -30,7 +30,6 @@ public class GetDueRepaymentCandidatesHandler
     @Override
     @Transactional(readOnly = true)
     public List<GetDueRepaymentCandidatesResult> execute(
-            LocalDate businessDate,
             Instant now,
             int batchSize
     ) {
@@ -43,7 +42,6 @@ public class GetDueRepaymentCandidatesHandler
                 ELIGIBLE_STATUSES,
                 RepaymentType.FULL_BALANCE,
                 RepaymentType.MINIMUM_PAYMENT,
-                businessDate,
                 now,
                 PageRequest.of(0, batchSize)
         );

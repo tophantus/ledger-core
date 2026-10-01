@@ -36,7 +36,6 @@ public interface CreditStatementQueryRepository
             on m.creditFacilityId = s.creditFacilityId
         where m.status = :mandateStatus
           and s.status in :statementStatuses
-          and s.dueDate <= :businessDate
           and (
               s.nextRepaymentAttemptAt is null
               or s.nextRepaymentAttemptAt <= :now
@@ -59,7 +58,6 @@ public interface CreditStatementQueryRepository
             @Param("statementStatuses") List<CreditStatementStatus> statementStatuses,
             @Param("fullBalance") RepaymentType fullBalance,
             @Param("minimumPayment") RepaymentType minimumPayment,
-            @Param("businessDate") LocalDate businessDate,
             @Param("now") Instant now,
             Pageable pageable
     );

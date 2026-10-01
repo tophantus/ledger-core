@@ -9,7 +9,6 @@ import java.util.List;
 public interface GetDueRepaymentCandidatesUseCase {
 
     List<GetDueRepaymentCandidatesResult> execute(
-            LocalDate businessDate,
             Instant now,
             int batchSize
     );
