@@ -4,13 +4,13 @@ package com.example.ledgercore.credit.command.service.impl;
 import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
-import com.example.ledgercore.credit.command.service.dto.CreateCreditStatementCommand;
 import com.example.ledgercore.credit.command.port.outbound.CreditStatementAmountsPort;
 import com.example.ledgercore.credit.command.port.outbound.dto.CreditStatementAmounts;
 import com.example.ledgercore.credit.command.repository.CreditDailyBalanceCommandRepository;
 import com.example.ledgercore.credit.command.repository.CreditFacilityCommandRepository;
 import com.example.ledgercore.credit.command.repository.CreditStatementCommandRepository;
 import com.example.ledgercore.credit.command.service.CreditMinimumPaymentService;
+import com.example.ledgercore.credit.command.service.dto.CreateCreditStatementCommand;
 import com.example.ledgercore.credit.entity.CreditDailyBalance;
 import com.example.ledgercore.credit.entity.CreditFacility;
 import com.example.ledgercore.credit.entity.CreditStatement;
@@ -72,8 +72,13 @@ class CreateCreditStatementServiceImplTest {
     private static final BigDecimal PAYMENTS = new BigDecimal("300.00");
     private static final BigDecimal FEES = new BigDecimal("50.00");
     private static final BigDecimal INTEREST = new BigDecimal("20.00");
-    private static final BigDecimal CLOSING_BALANCE = new BigDecimal("770.00");
-    private static final BigDecimal MINIMUM_PAYMENT = new BigDecimal("50.00");
+
+    // Service không cộng interest vào expected closing balance.
+    private static final BigDecimal CLOSING_BALANCE =
+            new BigDecimal("750.00");
+
+    private static final BigDecimal MINIMUM_PAYMENT =
+            new BigDecimal("50.00");
 
     @BeforeEach
     void setUp() {
@@ -120,14 +125,38 @@ class CreateCreditStatementServiceImplTest {
         assertEquals(statementDate, statement.getStatementDate());
         assertEquals(dueDate, statement.getDueDate());
 
-        assertBigDecimalEquals(BigDecimal.ZERO, statement.getOpeningBalance());
-        assertBigDecimalEquals(PURCHASES, statement.getPurchasesAmount());
-        assertBigDecimalEquals(PAYMENTS, statement.getPaymentsAmount());
-        assertBigDecimalEquals(FEES, statement.getFeesAmount());
-        assertBigDecimalEquals(INTEREST, statement.getInterestAmount());
-        assertBigDecimalEquals(CLOSING_BALANCE, statement.getClosingBalance());
-        assertBigDecimalEquals(MINIMUM_PAYMENT, statement.getMinimumPayment());
-        assertBigDecimalEquals(BigDecimal.ZERO, statement.getPaidAmount());
+        assertBigDecimalEquals(
+                BigDecimal.ZERO,
+                statement.getOpeningBalance()
+        );
+        assertBigDecimalEquals(
+                PURCHASES,
+                statement.getPurchasesAmount()
+        );
+        assertBigDecimalEquals(
+                PAYMENTS,
+                statement.getPaymentsAmount()
+        );
+        assertBigDecimalEquals(
+                FEES,
+                statement.getFeesAmount()
+        );
+        assertBigDecimalEquals(
+                INTEREST,
+                statement.getInterestAmount()
+        );
+        assertBigDecimalEquals(
+                CLOSING_BALANCE,
+                statement.getClosingBalance()
+        );
+        assertBigDecimalEquals(
+                MINIMUM_PAYMENT,
+                statement.getMinimumPayment()
+        );
+        assertBigDecimalEquals(
+                BigDecimal.ZERO,
+                statement.getPaidAmount()
+        );
 
         assertEquals(CreditStatementStatus.ISSUED, statement.getStatus());
         assertNotNull(statement.getCreatedAt());
@@ -140,7 +169,7 @@ class CreateCreditStatementServiceImplTest {
     }
 
     @Test
-    void execute_shouldCreateClosedStatement_whenClosingBalanceIsZero() {
+    void execute_shouldCreateNoPaymentDueStatement_whenClosingBalanceIsZero() {
         CreateCreditStatementCommand command = validCommand();
 
         CreditStatementAmounts zeroBalanceAmounts =
@@ -163,9 +192,22 @@ class CreateCreditStatementServiceImplTest {
 
         CreditStatement statement = captureSavedStatement();
 
-        assertBigDecimalEquals(BigDecimal.ZERO, statement.getClosingBalance());
-        assertBigDecimalEquals(BigDecimal.ZERO, statement.getMinimumPayment());
-        assertEquals(CreditStatementStatus.NO_PAYMENT_DUE, statement.getStatus());
+        assertBigDecimalEquals(
+                BigDecimal.ZERO,
+                statement.getOpeningBalance()
+        );
+        assertBigDecimalEquals(
+                BigDecimal.ZERO,
+                statement.getClosingBalance()
+        );
+        assertBigDecimalEquals(
+                BigDecimal.ZERO,
+                statement.getMinimumPayment()
+        );
+        assertEquals(
+                CreditStatementStatus.NO_PAYMENT_DUE,
+                statement.getStatus()
+        );
 
         verify(minimumPaymentService)
                 .calculate(BigDecimal.ZERO, Currency.VND);
@@ -177,7 +219,8 @@ class CreateCreditStatementServiceImplTest {
         CreditStatement previousStatement = mock(CreditStatement.class);
 
         BigDecimal openingBalance = new BigDecimal("500.00");
-        BigDecimal closingBalance = new BigDecimal("1270.00");
+        BigDecimal closingBalance = new BigDecimal("1250.00");
+        BigDecimal minimumPayment = new BigDecimal("62.50");
 
         givenActiveFacility();
         givenFacilityCurrency();
@@ -194,14 +237,24 @@ class CreateCreditStatementServiceImplTest {
 
         givenDailyBalance(closingBalance);
         givenAmounts(amounts);
-        givenMinimumPayment(closingBalance, new BigDecimal("63.50"));
+        givenMinimumPayment(closingBalance, minimumPayment);
 
         handler.execute(command);
 
         CreditStatement statement = captureSavedStatement();
 
-        assertBigDecimalEquals(openingBalance, statement.getOpeningBalance());
-        assertBigDecimalEquals(closingBalance, statement.getClosingBalance());
+        assertBigDecimalEquals(
+                openingBalance,
+                statement.getOpeningBalance()
+        );
+        assertBigDecimalEquals(
+                closingBalance,
+                statement.getClosingBalance()
+        );
+        assertBigDecimalEquals(
+                minimumPayment,
+                statement.getMinimumPayment()
+        );
 
         verify(statementRepository)
                 .findFirstByCreditFacilityIdAndPeriodEndLessThanOrderByPeriodEndDesc(
@@ -226,7 +279,14 @@ class CreateCreditStatementServiceImplTest {
 
         CreditStatement statement = captureSavedStatement();
 
-        assertBigDecimalEquals(BigDecimal.ZERO, statement.getOpeningBalance());
+        assertBigDecimalEquals(
+                BigDecimal.ZERO,
+                statement.getOpeningBalance()
+        );
+        assertBigDecimalEquals(
+                CLOSING_BALANCE,
+                statement.getClosingBalance()
+        );
     }
 
     // -------------------------------------------------------------------------
@@ -254,64 +314,108 @@ class CreateCreditStatementServiceImplTest {
     @Test
     void execute_shouldThrowInvalidRequest_whenRunIdIsNull() {
         assertInvalidCommand(new CreateCreditStatementCommand(
-                null, creditFacilityId, periodStart, periodEnd, statementDate, dueDate
+                null,
+                creditFacilityId,
+                periodStart,
+                periodEnd,
+                statementDate,
+                dueDate
         ));
     }
-
 
     @Test
     void execute_shouldThrowInvalidRequest_whenCreditFacilityIdIsNull() {
         assertInvalidCommand(new CreateCreditStatementCommand(
-                runId, null, periodStart, periodEnd, statementDate, dueDate
+                runId,
+                null,
+                periodStart,
+                periodEnd,
+                statementDate,
+                dueDate
         ));
     }
 
     @Test
     void execute_shouldThrowInvalidRequest_whenPeriodStartIsNull() {
         assertInvalidCommand(new CreateCreditStatementCommand(
-                runId, creditFacilityId, null, periodEnd, statementDate, dueDate
+                runId,
+                creditFacilityId,
+                null,
+                periodEnd,
+                statementDate,
+                dueDate
         ));
     }
 
     @Test
     void execute_shouldThrowInvalidRequest_whenPeriodEndIsNull() {
         assertInvalidCommand(new CreateCreditStatementCommand(
-                runId, creditFacilityId, periodStart, null, statementDate, dueDate
+                runId,
+                creditFacilityId,
+                periodStart,
+                null,
+                statementDate,
+                dueDate
         ));
     }
 
     @Test
     void execute_shouldThrowInvalidRequest_whenStatementDateIsNull() {
         assertInvalidCommand(new CreateCreditStatementCommand(
-                runId, creditFacilityId, periodStart, periodEnd, null, dueDate
+                runId,
+                creditFacilityId,
+                periodStart,
+                periodEnd,
+                null,
+                dueDate
         ));
     }
 
     @Test
     void execute_shouldThrowInvalidRequest_whenDueDateIsNull() {
         assertInvalidCommand(new CreateCreditStatementCommand(
-                runId, creditFacilityId, periodStart, periodEnd, statementDate, null
+                runId,
+                creditFacilityId,
+                periodStart,
+                periodEnd,
+                statementDate,
+                null
         ));
     }
 
     @Test
     void execute_shouldThrowInvalidRequest_whenPeriodStartIsAfterPeriodEnd() {
         assertInvalidCommand(new CreateCreditStatementCommand(
-                runId, creditFacilityId, periodEnd, periodStart, statementDate, dueDate
+                runId,
+                creditFacilityId,
+                periodEnd,
+                periodStart,
+                statementDate,
+                dueDate
         ));
     }
 
     @Test
     void execute_shouldThrowInvalidRequest_whenPeriodEndIsAfterStatementDate() {
         assertInvalidCommand(new CreateCreditStatementCommand(
-                runId, creditFacilityId, periodStart, periodEnd, periodStart, dueDate
+                runId,
+                creditFacilityId,
+                periodStart,
+                periodEnd,
+                periodStart,
+                dueDate
         ));
     }
 
     @Test
     void execute_shouldThrowInvalidRequest_whenStatementDateIsAfterDueDate() {
         assertInvalidCommand(new CreateCreditStatementCommand(
-                runId, creditFacilityId, periodStart, periodEnd, dueDate, statementDate
+                runId,
+                creditFacilityId,
+                periodStart,
+                periodEnd,
+                dueDate,
+                statementDate
         ));
     }
 
@@ -479,21 +583,30 @@ class CreateCreditStatementServiceImplTest {
                         new BigDecimal("20.000")
                 );
 
+        BigDecimal scaledClosingBalance = new BigDecimal("750.0000");
+
         givenActiveFacility();
         givenFacilityCurrency();
         givenNoExistingStatement();
         givenNoPreviousStatement();
-        givenDailyBalance(new BigDecimal("770.0000"));
+        givenDailyBalance(scaledClosingBalance);
         givenAmounts(scaledAmounts);
-        givenMinimumPayment(new BigDecimal("770.0000"), MINIMUM_PAYMENT);
+        givenMinimumPayment(
+                scaledClosingBalance,
+                MINIMUM_PAYMENT
+        );
 
         assertDoesNotThrow(() -> handler.execute(command));
 
         CreditStatement statement = captureSavedStatement();
 
         assertBigDecimalEquals(
-                new BigDecimal("770.0000"),
+                scaledClosingBalance,
                 statement.getClosingBalance()
+        );
+        assertBigDecimalEquals(
+                scaledAmounts.interestAmount(),
+                statement.getInterestAmount()
         );
     }
 
@@ -568,7 +681,9 @@ class CreateCreditStatementServiceImplTest {
         );
     }
 
-    private void assertInvalidCommand(CreateCreditStatementCommand command) {
+    private void assertInvalidCommand(
+            CreateCreditStatementCommand command
+    ) {
         BusinessException exception = assertThrows(
                 BusinessException.class,
                 () -> handler.execute(command)

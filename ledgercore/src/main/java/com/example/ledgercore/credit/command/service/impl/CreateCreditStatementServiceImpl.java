@@ -1,5 +1,6 @@
 package com.example.ledgercore.credit.command.service.impl;
 
+import com.example.ledgercore.common.currency.CurrencyAmountPolicy;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.credit.command.service.dto.CreateCreditStatementCommand;
@@ -88,10 +89,14 @@ public class CreateCreditStatementServiceImpl
 
         BigDecimal closingBalance = dailyBalance.getClosingBalance();
 
+        BigDecimal interestAmount = CurrencyAmountPolicy.round(
+                amounts.interestAmount(),
+                facility.getCurrency()
+        );
+
         BigDecimal expectedClosingBalance = openingBalance
                 .add(amounts.purchasesAmount())
                 .add(amounts.feesAmount())
-                .add(amounts.interestAmount())
                 .subtract(amounts.paymentsAmount());
 
         if (expectedClosingBalance.compareTo(closingBalance) != 0) {
@@ -125,7 +130,7 @@ public class CreateCreditStatementServiceImpl
                         .purchasesAmount(amounts.purchasesAmount())
                         .paymentsAmount(amounts.paymentsAmount())
                         .feesAmount(amounts.feesAmount())
-                        .interestAmount(amounts.interestAmount())
+                        .interestAmount(interestAmount)
                         .closingBalance(closingBalance)
                         .minimumPayment(minimumPayment)
                         .paidAmount(BigDecimal.ZERO)
