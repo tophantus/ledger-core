@@ -178,6 +178,12 @@ interest:
     lease-duration: 5m
 
 credit:
+
+  fee:
+    overdue-fees:
+      VND: 50000
+      USD: 5
+
   statement:
     minimum-payment:
       rate: 0.05

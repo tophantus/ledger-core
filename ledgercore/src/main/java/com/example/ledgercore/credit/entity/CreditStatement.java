@@ -208,6 +208,18 @@ public class CreditStatement {
         }
     }
 
+    public void markOverdue() {
+        if (status != CreditStatementStatus.ISSUED
+                && status != CreditStatementStatus.PARTIALLY_PAID) {
+            throw new IllegalStateException(
+                    "Statement cannot be marked overdue from status: "
+                            + status
+            );
+        }
+
+        this.status = CreditStatementStatus.OVERDUE;
+    }
+
     public void scheduleNextRepaymentAttempt(Instant nextAttemptAt) {
         this.nextRepaymentAttemptAt = nextAttemptAt;
     }
