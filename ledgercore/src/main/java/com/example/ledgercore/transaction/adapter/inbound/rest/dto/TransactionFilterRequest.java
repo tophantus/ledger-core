@@ -16,6 +16,8 @@ public class TransactionFilterRequest {
 
     private UUID accountId;
 
+    private UUID creditFacilityId;
+
     private TransactionStatus status;
 
     private TransactionType type;
