@@ -55,8 +55,12 @@
     "TRANSFER": "Chuyển tiền",
     "DEPOSIT": "Nạp tiền",
     "WITHDRAW": "Rút tiền",
+    "CARD_PAYMENT": "Thanh toán thẻ",
+    "CASH_ADVANCE": "Ứng tiền mặt",
+    "CREDIT_PAYMENT": "Thanh toán tín dụng",
     "FEE": "Phí",
-    "REFUND": "Hoàn tiền"
+    "REFUND": "Hoàn tiền",
+    "INTEREST": "Lãi"
   },
   "statuses": {
     "PENDING": "Đang xử lý",
