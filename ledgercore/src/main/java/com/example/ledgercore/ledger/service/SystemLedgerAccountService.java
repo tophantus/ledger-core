@@ -50,6 +50,37 @@ public class SystemLedgerAccountService {
         );
     }
 
+    @Transactional(readOnly = true)
+    public LedgerAccount getFeeIncomeAccount(
+            Currency currency
+    ) {
+        return getAccount(
+                systemLedgerAccountProperties.getFeeIncomeCodes(),
+                currency
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public LedgerAccount getInterestIncomeAccount(
+            Currency currency
+    ) {
+        return getAccount(
+                systemLedgerAccountProperties.getInterestIncomeCodes(),
+                currency
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public LedgerAccount getInterestReceivableAccount(
+            Currency currency
+    ) {
+        return getAccount(
+                systemLedgerAccountProperties
+                        .getInterestReceivableCodes(),
+                currency
+        );
+    }
+
     private LedgerAccount getAccount(
             Map<Currency, String> accountCodes,
             Currency currency
