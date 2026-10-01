@@ -50,7 +50,7 @@ public class TransferCreditCardToProviderHandler
         MoneyTransaction transaction =
                 MoneyTransaction.builder()
                         .reference(command.reference())
-                        .type(TransactionType.CARD_PAYMENT)
+                        .type(TransactionType.CARD_PURCHASE)
                         .status(TransactionStatus.PENDING)
                         .businessDate(businessDate)
                         .sourceCreditFacilityId(

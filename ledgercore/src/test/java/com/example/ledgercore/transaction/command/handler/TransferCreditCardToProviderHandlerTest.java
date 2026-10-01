@@ -108,7 +108,7 @@ class TransferCreditCardToProviderHandlerTest {
                 response.reference()
         );
         assertEquals(
-                TransactionType.CARD_PAYMENT,
+                TransactionType.CARD_PURCHASE,
                 response.type()
         );
         assertEquals(
@@ -193,7 +193,7 @@ class TransferCreditCardToProviderHandlerTest {
                 transaction.getReference()
         );
         assertEquals(
-                TransactionType.CARD_PAYMENT,
+                TransactionType.CARD_PURCHASE,
                 transaction.getType()
         );
         assertEquals(
