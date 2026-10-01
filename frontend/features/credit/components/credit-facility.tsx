@@ -7,6 +7,7 @@ import {CreditFacilityHeader} from "./credit-facility-header";
 import {CreditFacilityMeta} from "./credit-facility-meta";
 import {CreditFacilitySummary} from "./credit-facility-summary";
 import {CreditRepaymentMandate} from "./credit-repayment-mandate";
+import { CreditStatements } from "./credit-statements";
 
 interface CreditFacilityProps {
     facility: GetUserCreditFacilityResult | null;
@@ -63,6 +64,10 @@ export function CreditFacility({
                     />
 
                     <CreditRepaymentMandate
+                        facility={facility}
+                    />
+
+                    <CreditStatements
                         facility={facility}
                     />
 

@@ -65,5 +65,41 @@
         }
       }
     }
+  },
+  "statements": {
+    "title": "Sao kê tín dụng",
+    "description": "Xem sao kê tín dụng và lịch sử thanh toán.",
+    "statementDate": "Ngày sao kê:",
+    "dueDate": "Ngày đến hạn",
+    "openingBalance": "Dư nợ đầu kỳ",
+    "purchasesAmount": "Chi tiêu",
+    "paymentsAmount": "Thanh toán",
+    "feesAmount": "Phí",
+    "interestAmount": "Tiền lãi",
+    "closingBalance": "Dư nợ cuối kỳ",
+    "minimumPayment": "Thanh toán tối thiểu",
+    "paidAmount": "Đã thanh toán",
+
+    "interestWaived": "Được miễn",
+
+    "loadFailed": "Không thể tải sao kê tín dụng.",
+    "status": "Trạng thái",
+    "statuses": {
+      "OPEN": "Đang mở",
+      "ISSUED": "Đã phát hành",
+      "PARTIALLY_PAID": "Đã thanh toán một phần",
+      "PAID": "Đã thanh toán",
+      "OVERDUE": "Quá hạn",
+      "NO_PAYMENT_DUE": "Không có khoản thanh toán"
+    },
+    "empty": {
+      "title": "Chưa có sao kê",
+      "description": "Chưa có sao kê tín dụng nào cho khoản tín dụng này."
+    },
+    "pagination": {
+      "previous": "Trước",
+      "next": "Sau",
+      "summary": "Trang {page} / {totalPages} · {totalElements} sao kê"
+    }
   }
 }
