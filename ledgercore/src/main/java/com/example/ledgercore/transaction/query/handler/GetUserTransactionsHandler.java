@@ -9,6 +9,7 @@ import com.example.ledgercore.transaction.query.dto.TransactionResponse;
 import com.example.ledgercore.transaction.query.mapper.TransactionQueryMapper;
 import com.example.ledgercore.transaction.query.port.inbound.GetUserTransactionsUseCase;
 import com.example.ledgercore.transaction.query.port.outbound.AccountQueryPort;
+import com.example.ledgercore.transaction.query.port.outbound.TransactionCreditFacilityQueryPort;
 import com.example.ledgercore.transaction.query.repository.TransactionQueryRepository;
 import com.example.ledgercore.transaction.query.specification.TransactionSpecifications;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,7 @@ public class GetUserTransactionsHandler
 
     private final TransactionQueryRepository transactionQueryRepository;
     private final AccountQueryPort accountQueryPort;
+    private final TransactionCreditFacilityQueryPort transactionCreditFacilityQueryPort;
     private final TransactionQueryMapper transactionQueryMapper;
 
     @Override
@@ -46,7 +48,13 @@ public class GetUserTransactionsHandler
                         query.userId()
                 );
 
-        if (accountIds.isEmpty()) {
+        UUID creditFacilityId =
+                transactionCreditFacilityQueryPort
+                        .findCreditFacilityIdByUserId(query.userId())
+                        .orElse(null);
+
+
+        if (accountIds.isEmpty() && creditFacilityId == null) {
             return new PageResponse<>(
                     List.of(),
                     query.page(),
@@ -68,6 +76,7 @@ public class GetUserTransactionsHandler
         Specification<MoneyTransaction> specification =
                 buildSpecification(
                         accountIds,
+                        creditFacilityId,
                         query
                 );
 
@@ -87,7 +96,8 @@ public class GetUserTransactionsHandler
                                         transaction,
                                         resolveIncoming(
                                                 transaction,
-                                                accountIdSet
+                                                accountIdSet,
+                                                creditFacilityId
                                         )
                                 )
                         )
@@ -101,7 +111,8 @@ public class GetUserTransactionsHandler
 
     private Boolean resolveIncoming(
             MoneyTransaction transaction,
-            Set<UUID> accountIds
+            Set<UUID> accountIds,
+            UUID creditFacilityId
     ) {
         boolean sourceOwned =
                 transaction.getSourceAccountId() != null
@@ -115,15 +126,33 @@ public class GetUserTransactionsHandler
                         transaction.getDestinationAccountId()
                 );
 
-        if (sourceOwned && destinationOwned) {
+        boolean sourceCreditOwned =
+                creditFacilityId != null
+                        && creditFacilityId.equals(
+                        transaction.getSourceCreditFacilityId()
+                );
+
+        boolean destinationCreditOwned =
+                creditFacilityId != null
+                        && creditFacilityId.equals(
+                        transaction.getDestinationCreditFacilityId()
+                );
+
+        boolean ownedAsSource =
+                sourceOwned || sourceCreditOwned;
+
+        boolean ownedAsDestination =
+                destinationOwned || destinationCreditOwned;
+
+        if (ownedAsSource && ownedAsDestination) {
             return null;
         }
 
-        if (destinationOwned) {
+        if (ownedAsDestination) {
             return true;
         }
 
-        if (sourceOwned) {
+        if (ownedAsSource) {
             return false;
         }
 
@@ -132,10 +161,14 @@ public class GetUserTransactionsHandler
 
     private Specification<MoneyTransaction> buildSpecification(
             List<UUID> accountIds,
+            UUID creditFacilityId,
             GetUserTransactionsQuery query
     ) {
         Specification<MoneyTransaction> specification =
-                TransactionSpecifications.accounts(accountIds);
+                TransactionSpecifications.ownedBy(
+                        accountIds,
+                        creditFacilityId
+                );
 
         if (query.status() != null) {
             specification = specification.and(
