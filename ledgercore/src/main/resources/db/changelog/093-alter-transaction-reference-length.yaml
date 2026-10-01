@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: 093-alter-transaction-reference-length
+      author: tophantu
+      changes:
+        - modifyDataType:
+            tableName: transactions
+            columnName: reference
+            newDataType: varchar(100)
