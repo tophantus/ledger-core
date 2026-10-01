@@ -13,11 +13,21 @@ public class CreditStatementProperties {
 
     private MinimumPayment minimumPayment = new MinimumPayment();
 
+    private Overdue overdue = new Overdue();
+
     @Getter
     @Setter
     public static class MinimumPayment {
 
         private BigDecimal rate;
+
         private BigDecimal fixedMinimum;
+    }
+
+    @Getter
+    @Setter
+    public static class Overdue {
+
+        private int batchSize = 100;
     }
 }

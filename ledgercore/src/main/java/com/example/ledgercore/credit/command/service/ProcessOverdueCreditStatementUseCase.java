@@ -1,4 +1,4 @@
-package com.example.ledgercore.credit.command.port.inbound;
+package com.example.ledgercore.credit.command.service;
 
 import java.util.UUID;
 

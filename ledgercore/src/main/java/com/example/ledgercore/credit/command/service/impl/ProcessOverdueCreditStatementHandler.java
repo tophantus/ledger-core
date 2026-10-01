@@ -1,7 +1,7 @@
-package com.example.ledgercore.credit.command.handler;
+package com.example.ledgercore.credit.command.service.impl;
 
 import com.example.ledgercore.common.currency.Currency;
-import com.example.ledgercore.credit.command.port.inbound.ProcessOverdueCreditStatementUseCase;
+import com.example.ledgercore.credit.command.service.ProcessOverdueCreditStatementUseCase;
 import com.example.ledgercore.credit.command.port.outbound.CreditBusinessDatePort;
 import com.example.ledgercore.credit.command.port.outbound.CreditFacilityFeePort;
 import com.example.ledgercore.credit.command.port.outbound.CreditInterestTransactionPort;

@@ -189,6 +189,12 @@ credit:
       rate: 0.05
       fixed-minimum: 50000
 
+    overdue:
+      batch-size: 100
+      scheduler:
+        enabled: true
+        fixed-delay: 300000
+
     scheduler:
       enabled: true
       fixed-delay: 1000
