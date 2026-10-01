@@ -1,7 +1,7 @@
 package com.example.ledgercore.interest.command.service.impl;
 
+import com.example.ledgercore.interest.command.port.outbound.CreditInterestJournalPort;
 import com.example.ledgercore.interest.command.service.dto.AccrueCreditInterestCommand;
-import com.example.ledgercore.interest.command.port.outbound.InterestJournalPort;
 import com.example.ledgercore.interest.command.repository.CreditInterestAccrualCommandRepository;
 import com.example.ledgercore.interest.command.service.AccrueCreditInterestUseCase;
 import com.example.ledgercore.interest.entity.CreditInterestAccrual;
@@ -23,7 +23,7 @@ public class AccrueCreditInterestHandler
     private final InterestConfigService interestConfigService;
     private final InterestCalculationService interestCalculationService;
     private final CreditInterestAccrualCommandRepository repository;
-    private final InterestJournalPort interestJournalPort;
+    private final CreditInterestJournalPort interestJournalPort;
 
     @Override
     @Transactional

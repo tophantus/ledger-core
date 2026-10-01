@@ -2,7 +2,7 @@
 package com.example.ledgercore.interest.command.service.impl;
 
 import com.example.ledgercore.common.currency.Currency;
-import com.example.ledgercore.interest.command.port.outbound.InterestJournalPort;
+import com.example.ledgercore.interest.command.port.outbound.CreditInterestJournalPort;
 import com.example.ledgercore.interest.command.repository.CreditInterestAccrualCommandRepository;
 import com.example.ledgercore.interest.command.service.dto.AccrueCreditInterestCommand;
 import com.example.ledgercore.interest.entity.CreditInterestAccrual;
@@ -40,7 +40,7 @@ class AccrueCreditInterestHandlerTest {
     private CreditInterestAccrualCommandRepository repository;
 
     @Mock
-    private InterestJournalPort interestJournalPort;
+    private CreditInterestJournalPort interestJournalPort;
 
     private AccrueCreditInterestHandler handler;
 
