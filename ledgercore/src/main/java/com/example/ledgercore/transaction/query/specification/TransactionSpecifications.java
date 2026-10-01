@@ -31,6 +31,22 @@ public final class TransactionSpecifications {
                 );
     }
 
+    public static Specification<MoneyTransaction> creditFacility(
+            UUID creditFacilityId
+    ) {
+        return (root, query, criteriaBuilder) ->
+                criteriaBuilder.or(
+                        criteriaBuilder.equal(
+                                root.get("sourceCreditFacilityId"),
+                                creditFacilityId
+                        ),
+                        criteriaBuilder.equal(
+                                root.get("destinationCreditFacilityId"),
+                                creditFacilityId
+                        )
+                );
+    }
+
     public static Specification<MoneyTransaction> ownedBy(
             List<UUID> accountIds,
             UUID creditFacilityId
@@ -72,22 +88,6 @@ public final class TransactionSpecifications {
                     )
             );
         };
-    }
-
-    public static Specification<MoneyTransaction> creditFacility(
-            UUID creditFacilityId
-    ) {
-        return (root, query, criteriaBuilder) ->
-                criteriaBuilder.or(
-                        criteriaBuilder.equal(
-                                root.get("sourceCreditFacilityId"),
-                                creditFacilityId
-                        ),
-                        criteriaBuilder.equal(
-                                root.get("destinationCreditFacilityId"),
-                                creditFacilityId
-                        )
-                );
     }
 
     public static Specification<MoneyTransaction> status(
