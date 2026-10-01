@@ -1,6 +1,6 @@
 package com.example.ledgercore.interest.command.handler;
 
-import com.example.ledgercore.interest.command.dto.PostInterestCommand;
+import com.example.ledgercore.interest.command.service.dto.PostInterestCommand;
 import com.example.ledgercore.interest.command.service.PostInterestUseCase;
 import com.example.ledgercore.interest.command.port.inbound.ProcessInterestPostingBatchUseCase;
 import com.example.ledgercore.interest.query.repository.InterestAccrualQueryRepository;

@@ -1,6 +1,6 @@
 package com.example.ledgercore.interest.command.service;
 
-import com.example.ledgercore.interest.command.dto.PostInterestCommand;
+import com.example.ledgercore.interest.command.service.dto.PostInterestCommand;
 
 public interface PostInterestUseCase {
 

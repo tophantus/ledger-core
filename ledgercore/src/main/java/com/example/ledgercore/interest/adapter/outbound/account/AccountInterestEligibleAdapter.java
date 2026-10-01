@@ -42,7 +42,8 @@ public class AccountInterestEligibleAdapter
         return new InterestEligibleAccount(
                 account.accountId(),
                 account.productId(),
-                account.currency()
+                account.currency(),
+                account.closingBalance()
         );
     }
 }

@@ -4,7 +4,7 @@ import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.transaction.command.dto.TransferCreditCardToProviderCommand;
-import com.example.ledgercore.transaction.command.port.outbound.CreditPaymentLedgerPort;
+import com.example.ledgercore.transaction.command.port.outbound.CreditPurchaseLedgerPort;
 import com.example.ledgercore.transaction.command.port.outbound.TransactionBusinessDayPort;
 import com.example.ledgercore.transaction.command.port.outbound.TransactionEventPort;
 import com.example.ledgercore.transaction.command.port.outbound.TransferCreditFacilityToProviderPort;
@@ -42,7 +42,7 @@ class TransferCreditCardToProviderHandlerTest {
             transferCreditFacilityToProviderPort;
 
     @Mock
-    private CreditPaymentLedgerPort creditPaymentLedgerPort;
+    private CreditPurchaseLedgerPort creditPurchaseLedgerPort;
 
     @Mock
     private TransactionBusinessDayPort transactionBusinessDayPort;
@@ -67,7 +67,7 @@ class TransferCreditCardToProviderHandlerTest {
         handler = new TransferCreditCardToProviderHandler(
                 transactionCommandRepository,
                 transferCreditFacilityToProviderPort,
-                creditPaymentLedgerPort,
+                creditPurchaseLedgerPort,
                 transactionBusinessDayPort,
                 transactionEventPort
         );
@@ -134,7 +134,7 @@ class TransferCreditCardToProviderHandlerTest {
         assertNotNull(response.completedAt());
 
         verify(transferCreditFacilityToProviderPort)
-                .decreaseCreditFacilityOutstandingBalance(
+                .increaseCreditFacilityOutstandingBalance(
                         creditFacilityId,
                         amount,
                         currency,
@@ -149,7 +149,7 @@ class TransferCreditCardToProviderHandlerTest {
                         businessDate
                 );
 
-        verify(creditPaymentLedgerPort)
+        verify(creditPurchaseLedgerPort)
                 .recordCreditPayment(
                         transactionId,
                         creditFacilityId,
@@ -238,7 +238,7 @@ class TransferCreditCardToProviderHandlerTest {
                 transactionBusinessDayPort,
                 transactionCommandRepository,
                 transferCreditFacilityToProviderPort,
-                creditPaymentLedgerPort,
+                creditPurchaseLedgerPort,
                 transactionEventPort
         );
 
@@ -251,7 +251,7 @@ class TransferCreditCardToProviderHandlerTest {
                 .save(any(MoneyTransaction.class));
 
         inOrder.verify(transferCreditFacilityToProviderPort)
-                .decreaseCreditFacilityOutstandingBalance(
+                .increaseCreditFacilityOutstandingBalance(
                         creditFacilityId,
                         amount,
                         currency,
@@ -266,7 +266,7 @@ class TransferCreditCardToProviderHandlerTest {
                         businessDate
                 );
 
-        inOrder.verify(creditPaymentLedgerPort)
+        inOrder.verify(creditPurchaseLedgerPort)
                 .recordCreditPayment(
                         transactionId,
                         creditFacilityId,
@@ -517,7 +517,7 @@ class TransferCreditCardToProviderHandlerTest {
         verifyNoInteractions(
                 transactionCommandRepository,
                 transferCreditFacilityToProviderPort,
-                creditPaymentLedgerPort,
+                creditPurchaseLedgerPort,
                 transactionBusinessDayPort,
                 transactionEventPort
         );
@@ -549,7 +549,7 @@ class TransferCreditCardToProviderHandlerTest {
         verifyNoInteractions(
                 transactionCommandRepository,
                 transferCreditFacilityToProviderPort,
-                creditPaymentLedgerPort,
+                creditPurchaseLedgerPort,
                 transactionBusinessDayPort,
                 transactionEventPort
         );
@@ -575,7 +575,7 @@ class TransferCreditCardToProviderHandlerTest {
         verifyNoInteractions(
                 transactionCommandRepository,
                 transferCreditFacilityToProviderPort,
-                creditPaymentLedgerPort,
+                creditPurchaseLedgerPort,
                 transactionBusinessDayPort,
                 transactionEventPort
         );
@@ -603,7 +603,7 @@ class TransferCreditCardToProviderHandlerTest {
         verifyNoInteractions(
                 transactionCommandRepository,
                 transferCreditFacilityToProviderPort,
-                creditPaymentLedgerPort,
+                creditPurchaseLedgerPort,
                 transactionEventPort
         );
     }
@@ -635,7 +635,7 @@ class TransferCreditCardToProviderHandlerTest {
 
         verifyNoInteractions(
                 transferCreditFacilityToProviderPort,
-                creditPaymentLedgerPort,
+                creditPurchaseLedgerPort,
                 transactionEventPort
         );
     }
@@ -652,7 +652,7 @@ class TransferCreditCardToProviderHandlerTest {
 
         doThrow(exception)
                 .when(transferCreditFacilityToProviderPort)
-                .decreaseCreditFacilityOutstandingBalance(
+                .increaseCreditFacilityOutstandingBalance(
                         creditFacilityId,
                         amount,
                         currency,
@@ -668,7 +668,7 @@ class TransferCreditCardToProviderHandlerTest {
         assertSame(exception, thrown);
 
         verify(transferCreditFacilityToProviderPort)
-                .decreaseCreditFacilityOutstandingBalance(
+                .increaseCreditFacilityOutstandingBalance(
                         creditFacilityId,
                         amount,
                         currency,
@@ -686,7 +686,7 @@ class TransferCreditCardToProviderHandlerTest {
         );
 
         verifyNoInteractions(
-                creditPaymentLedgerPort,
+                creditPurchaseLedgerPort,
                 transactionEventPort
         );
     }
@@ -719,7 +719,7 @@ class TransferCreditCardToProviderHandlerTest {
         assertSame(exception, thrown);
 
         verify(transferCreditFacilityToProviderPort)
-                .decreaseCreditFacilityOutstandingBalance(
+                .increaseCreditFacilityOutstandingBalance(
                         creditFacilityId,
                         amount,
                         currency,
@@ -735,7 +735,7 @@ class TransferCreditCardToProviderHandlerTest {
                 );
 
         verifyNoInteractions(
-                creditPaymentLedgerPort,
+                creditPurchaseLedgerPort,
                 transactionEventPort
         );
     }
@@ -751,7 +751,7 @@ class TransferCreditCardToProviderHandlerTest {
                 new RuntimeException("Ledger failed");
 
         doThrow(exception)
-                .when(creditPaymentLedgerPort)
+                .when(creditPurchaseLedgerPort)
                 .recordCreditPayment(
                         transactionId,
                         creditFacilityId,
@@ -770,7 +770,7 @@ class TransferCreditCardToProviderHandlerTest {
         assertSame(exception, thrown);
 
         verify(transferCreditFacilityToProviderPort)
-                .decreaseCreditFacilityOutstandingBalance(
+                .increaseCreditFacilityOutstandingBalance(
                         creditFacilityId,
                         amount,
                         currency,
@@ -785,7 +785,7 @@ class TransferCreditCardToProviderHandlerTest {
                         businessDate
                 );
 
-        verify(creditPaymentLedgerPort)
+        verify(creditPurchaseLedgerPort)
                 .recordCreditPayment(
                         transactionId,
                         creditFacilityId,
@@ -887,7 +887,7 @@ class TransferCreditCardToProviderHandlerTest {
         verifyNoInteractions(
                 transactionCommandRepository,
                 transferCreditFacilityToProviderPort,
-                creditPaymentLedgerPort,
+                creditPurchaseLedgerPort,
                 transactionBusinessDayPort,
                 transactionEventPort
         );

@@ -1,7 +1,7 @@
 package com.example.ledgercore.interest.command.service.impl;
 
 import com.example.ledgercore.common.currency.Currency;
-import com.example.ledgercore.interest.command.dto.PostInterestCommand;
+import com.example.ledgercore.interest.command.service.dto.PostInterestCommand;
 import com.example.ledgercore.interest.command.port.outbound.InterestTransactionPort;
 import com.example.ledgercore.interest.command.repository.InterestAccrualCommandRepository;
 import com.example.ledgercore.interest.command.repository.InterestPostingCommandRepository;

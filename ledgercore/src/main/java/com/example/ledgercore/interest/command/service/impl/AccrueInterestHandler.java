@@ -1,9 +1,7 @@
 package com.example.ledgercore.interest.command.service.impl;
 
-import com.example.ledgercore.interest.command.dto.AccrueInterestCommand;
+import com.example.ledgercore.interest.command.service.dto.AccrueInterestCommand;
 import com.example.ledgercore.interest.command.service.AccrueInterestUseCase;
-import com.example.ledgercore.interest.command.port.outbound.AccountDailyBalanceInfo;
-import com.example.ledgercore.interest.command.port.outbound.AccountDailyBalancePort;
 import com.example.ledgercore.interest.command.port.outbound.InterestJournalPort;
 import com.example.ledgercore.interest.command.repository.InterestAccrualCommandRepository;
 import com.example.ledgercore.interest.entity.InterestAccrual;
@@ -22,7 +20,6 @@ import java.util.UUID;
 public class AccrueInterestHandler
         implements AccrueInterestUseCase {
 
-    private final AccountDailyBalancePort accountDailyBalancePort;
     private final InterestConfigService interestConfigService;
     private final InterestCalculationService interestCalculationService;
     private final InterestAccrualCommandRepository interestAccrualCommandRepository;
@@ -47,14 +44,7 @@ public class AccrueInterestHandler
             return;
         }
 
-        AccountDailyBalanceInfo dailyBalance =
-                accountDailyBalancePort.findClosingBalance(
-                        command.accountId(),
-                        command.businessDate()
-                );
-
-        BigDecimal principal =
-                dailyBalance.closingBalance();
+        BigDecimal principal = command.closingBalance();
 
         InterestConfig config =
                 interestConfigService.getApplicableConfig(
@@ -134,6 +124,18 @@ public class AccrueInterestHandler
 
             throw new IllegalArgumentException(
                     "currency must not be blank"
+            );
+        }
+
+        if (command.closingBalance() == null) {
+            throw new IllegalArgumentException(
+                    "closingBalance must not be null"
+            );
+        }
+
+        if (command.closingBalance().signum() < 0) {
+            throw new IllegalArgumentException(
+                    "closingBalance must not be negative"
             );
         }
 

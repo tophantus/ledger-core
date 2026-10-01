@@ -1,11 +1,14 @@
 package com.example.ledgercore.credit.query.handler;
 
 import com.example.ledgercore.credit.entity.CreditFacility;
+import com.example.ledgercore.credit.entity.CreditRepaymentMandate;
 import com.example.ledgercore.credit.enums.CreditFacilityStatus;
+import com.example.ledgercore.credit.enums.CreditRepaymentMandateStatus;
 import com.example.ledgercore.credit.query.dto.GetUserCreditFacilityQuery;
 import com.example.ledgercore.credit.query.dto.GetUserCreditFacilityResult;
 import com.example.ledgercore.credit.query.port.inbound.GetUserCreditFacilityUseCase;
 import com.example.ledgercore.credit.query.repository.CreditFacilityQueryRepository;
+import com.example.ledgercore.credit.query.repository.CreditRepaymentMandateQueryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +21,7 @@ public class GetUserCreditFacilityHandler
         implements GetUserCreditFacilityUseCase {
 
     private final CreditFacilityQueryRepository creditFacilityQueryRepository;
+    private final CreditRepaymentMandateQueryRepository repaymentMandateQueryRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -35,6 +39,15 @@ public class GetUserCreditFacilityHandler
     private GetUserCreditFacilityResult toResult(
             CreditFacility facility
     ) {
+        GetUserCreditFacilityResult.RepaymentMandateResult mandate =
+                repaymentMandateQueryRepository
+                        .findByCreditFacilityIdAndStatus(
+                                facility.getId(),
+                                CreditRepaymentMandateStatus.ACTIVE
+                        )
+                        .map(this::toRepaymentMandateResult)
+                        .orElse(null);
+
         return new GetUserCreditFacilityResult(
                 facility.getId(),
                 facility.getCustomerId(),
@@ -45,7 +58,21 @@ public class GetUserCreditFacilityHandler
                 facility.getAvailableCredit().toPlainString(),
                 facility.getCurrency(),
                 facility.getStatus(),
-                facility.getOpenedAt()
+                facility.getOpenedAt(),
+                mandate
+        );
+    }
+
+    private GetUserCreditFacilityResult.RepaymentMandateResult
+    toRepaymentMandateResult(CreditRepaymentMandate mandate) {
+
+        return new GetUserCreditFacilityResult.RepaymentMandateResult(
+                mandate.getId(),
+                mandate.getAccountId(),
+                mandate.getRepaymentType(),
+                mandate.getStatus(),
+                mandate.getCreatedAt(),
+                mandate.getUpdatedAt()
         );
     }
 }

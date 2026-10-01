@@ -35,7 +35,7 @@ public class MoneyTransaction {
     @Column(name = "parent_transaction_id")
     private UUID parentTransactionId;
 
-    @Column(nullable = false, length = 50)
+    @Column(name = "reference", nullable = false, length = 100)
     private String reference;
 
     @Enumerated(EnumType.STRING)

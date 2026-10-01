@@ -1,11 +1,10 @@
+
 package com.example.ledgercore.interest.command.service.impl;
 
 import com.example.ledgercore.common.currency.Currency;
-import com.example.ledgercore.interest.command.dto.AccrueInterestCommand;
-import com.example.ledgercore.interest.command.port.outbound.AccountDailyBalanceInfo;
-import com.example.ledgercore.interest.command.port.outbound.AccountDailyBalancePort;
 import com.example.ledgercore.interest.command.port.outbound.InterestJournalPort;
 import com.example.ledgercore.interest.command.repository.InterestAccrualCommandRepository;
+import com.example.ledgercore.interest.command.service.dto.AccrueInterestCommand;
 import com.example.ledgercore.interest.entity.InterestAccrual;
 import com.example.ledgercore.interest.entity.InterestConfig;
 import com.example.ledgercore.interest.enums.DayCountConvention;
@@ -32,9 +31,6 @@ import static org.mockito.Mockito.*;
 class AccrueInterestHandlerTest {
 
     @Mock
-    private AccountDailyBalancePort accountDailyBalancePort;
-
-    @Mock
     private InterestConfigService interestConfigService;
 
     @Mock
@@ -54,13 +50,18 @@ class AccrueInterestHandlerTest {
     private UUID configId;
     private UUID journalEntryId;
     private LocalDate businessDate;
-
+    private BigDecimal closingBalance;
     private AccrueInterestCommand command;
+
+    private static final BigDecimal INTEREST_RATE =
+            new BigDecimal("0.030000");
+
+    private static final BigDecimal INTEREST_AMOUNT =
+            new BigDecimal("8219.1781");
 
     @BeforeEach
     void setUp() {
         handler = new AccrueInterestHandler(
-                accountDailyBalancePort,
                 interestConfigService,
                 interestCalculationService,
                 interestAccrualCommandRepository,
@@ -72,439 +73,357 @@ class AccrueInterestHandlerTest {
         productId = UUID.randomUUID();
         configId = UUID.randomUUID();
         journalEntryId = UUID.randomUUID();
+
+        closingBalance = new BigDecimal("100000000");
         businessDate = LocalDate.of(2026, 9, 7);
 
-        command = new AccrueInterestCommand(
-                runId,
-                accountId,
-                productId,
-                Currency.VND,
-                businessDate
-        );
+        command = validCommand();
     }
 
+    // -------------------------------------------------------------------------
+    // Success cases
+    // -------------------------------------------------------------------------
+
     @Test
-    void shouldAccrueInterestAndRecordJournal() {
-        BigDecimal principal =
-                new BigDecimal("100000000");
+    void execute_shouldAccrueInterestAndRecordJournal_whenInterestIsPositive() {
+        InterestConfig config = validConfig();
+        UUID accrualId = UUID.randomUUID();
 
-        BigDecimal interestAmount =
-                new BigDecimal("8219.1781");
+        InterestAccrual savedAccrual = InterestAccrual.builder()
+                .id(accrualId)
+                .runId(runId)
+                .accountId(accountId)
+                .currency(Currency.VND)
+                .businessDate(businessDate)
+                .interestConfigId(configId)
+                .principalAmount(closingBalance)
+                .interestRate(INTEREST_RATE)
+                .interestAmount(INTEREST_AMOUNT)
+                .build();
 
-        AccountDailyBalanceInfo dailyBalance =
-                new AccountDailyBalanceInfo(
-                        accountId,
-                        businessDate,
-                        principal
-                );
+        givenNoExistingAccrual();
+        givenApplicableConfig(config);
+        givenCalculatedInterest(
+                closingBalance,
+                config,
+                INTEREST_AMOUNT
+        );
+        when(interestAccrualCommandRepository.save(any(InterestAccrual.class)))
+                .thenReturn(savedAccrual);
 
-        InterestConfig config =
-                InterestConfig.builder()
-                        .id(configId)
-                        .productId(productId)
-                        .currency(Currency.VND)
-                        .interestRate(
-                                new BigDecimal("0.030000")
-                        )
-                        .dayCountConvention(
-                                DayCountConvention.ACTUAL_365
-                        )
-                        .effectiveFrom(
-                                LocalDate.of(2026, 1, 1)
-                        )
-                        .build();
-
-        InterestAccrual savedAccrual =
-                InterestAccrual.builder()
-                        .id(UUID.randomUUID())
-                        .runId(runId)
-                        .accountId(accountId)
-                        .currency(Currency.VND)
-                        .businessDate(businessDate)
-                        .interestConfigId(configId)
-                        .principalAmount(principal)
-                        .interestRate(
-                                new BigDecimal("0.030000")
-                        )
-                        .interestAmount(interestAmount)
-                        .build();
-
-        when(
-                interestAccrualCommandRepository
-                        .findByAccountIdAndBusinessDate(
-                                accountId,
-                                businessDate
-                        )
-        ).thenReturn(Optional.empty());
-
-        when(
-                accountDailyBalancePort.findClosingBalance(
-                        accountId,
-                        businessDate
-                )
-        ).thenReturn(dailyBalance);
-
-        when(
-                interestConfigService.getApplicableConfig(
-                        productId,
-                        Currency.VND,
-                        businessDate
-                )
-        ).thenReturn(config);
-
-        when(
-                interestCalculationService.calculateDailyInterest(
-                        principal,
-                        config.getInterestRate(),
-                        config.getDayCountConvention()
-                )
-        ).thenReturn(interestAmount);
-
-        when(
-                interestAccrualCommandRepository.save(
-                        any(InterestAccrual.class)
-                )
-        ).thenReturn(savedAccrual);
-
-        when(
-                interestJournalPort.recordAccrualJournal(
-                        savedAccrual.getId(),
-                        businessDate,
-                        Currency.VND,
-                        interestAmount
-                )
-        ).thenReturn(journalEntryId);
+        when(interestJournalPort.recordAccrualJournal(
+                accrualId,
+                businessDate,
+                Currency.VND,
+                INTEREST_AMOUNT
+        )).thenReturn(journalEntryId);
 
         handler.execute(command);
 
         ArgumentCaptor<InterestAccrual> captor =
                 ArgumentCaptor.forClass(InterestAccrual.class);
 
-        verify(
-                interestAccrualCommandRepository,
-                times(2)
-        ).save(captor.capture());
+        verify(interestAccrualCommandRepository, times(2))
+                .save(captor.capture());
 
-        InterestAccrual firstSaved =
-                captor.getAllValues().getFirst();
-
-        assertThat(firstSaved.getRunId())
-                .isEqualTo(runId);
-        assertThat(firstSaved.getAccountId())
-                .isEqualTo(accountId);
-        assertThat(firstSaved.getBusinessDate())
-                .isEqualTo(businessDate);
-        assertThat(firstSaved.getInterestConfigId())
-                .isEqualTo(configId);
+        InterestAccrual firstSaved = captor.getAllValues().get(0);
+        assertThat(firstSaved.getId()).isNull();
+        assertThat(firstSaved.getRunId()).isEqualTo(runId);
+        assertThat(firstSaved.getAccountId()).isEqualTo(accountId);
+        assertThat(firstSaved.getCurrency()).isEqualTo(Currency.VND);
+        assertThat(firstSaved.getBusinessDate()).isEqualTo(businessDate);
+        assertThat(firstSaved.getInterestConfigId()).isEqualTo(configId);
         assertThat(firstSaved.getPrincipalAmount())
-                .isEqualByComparingTo(principal);
+                .isEqualByComparingTo(closingBalance);
         assertThat(firstSaved.getInterestRate())
-                .isEqualByComparingTo("0.030000");
+                .isEqualByComparingTo(INTEREST_RATE);
         assertThat(firstSaved.getInterestAmount())
-                .isEqualByComparingTo(interestAmount);
+                .isEqualByComparingTo(INTEREST_AMOUNT);
 
-        verify(interestJournalPort)
-                .recordAccrualJournal(
-                        savedAccrual.getId(),
-                        businessDate,
-                        Currency.VND,
-                        interestAmount
-                );
+        verify(interestJournalPort).recordAccrualJournal(
+                accrualId,
+                businessDate,
+                Currency.VND,
+                INTEREST_AMOUNT
+        );
 
-        InterestAccrual secondSaved =
-                captor.getAllValues().get(1);
-
+        InterestAccrual secondSaved = captor.getAllValues().get(1);
+        assertThat(secondSaved).isSameAs(savedAccrual);
         assertThat(secondSaved.getJournalEntryId())
                 .isEqualTo(journalEntryId);
+
+        verify(interestAccrualCommandRepository)
+                .findByAccountIdAndBusinessDate(accountId, businessDate);
+        verify(interestConfigService)
+                .getApplicableConfig(productId, Currency.VND, businessDate);
+        verify(interestCalculationService)
+                .calculateDailyInterest(
+                        closingBalance,
+                        config.getInterestRate(),
+                        config.getDayCountConvention()
+                );
     }
 
     @Test
-    void shouldSaveZeroInterestWithoutRecordingJournal() {
+    void execute_shouldSaveZeroInterestWithoutRecordingJournal() {
         BigDecimal principal = BigDecimal.ZERO;
-        BigDecimal interestAmount = BigDecimal.ZERO;
+        BigDecimal zeroInterest = BigDecimal.ZERO;
+        InterestConfig config = validConfig();
 
-        AccountDailyBalanceInfo dailyBalance =
-                new AccountDailyBalanceInfo(
-                        accountId,
-                        businessDate,
-                        principal
-                );
+        InterestAccrual savedAccrual = InterestAccrual.builder()
+                .id(UUID.randomUUID())
+                .runId(runId)
+                .accountId(accountId)
+                .currency(Currency.VND)
+                .businessDate(businessDate)
+                .interestConfigId(configId)
+                .principalAmount(principal)
+                .interestRate(INTEREST_RATE)
+                .interestAmount(zeroInterest)
+                .build();
 
-        InterestConfig config =
-                InterestConfig.builder()
-                        .id(configId)
-                        .productId(productId)
-                        .currency(Currency.VND)
-                        .interestRate(
-                                new BigDecimal("0.030000")
-                        )
-                        .dayCountConvention(
-                                DayCountConvention.ACTUAL_365
-                        )
-                        .effectiveFrom(
-                                LocalDate.of(2026, 1, 1)
-                        )
-                        .build();
+        givenNoExistingAccrual();
+        givenApplicableConfig(config);
+        givenCalculatedInterest(principal, config, zeroInterest);
+        when(interestAccrualCommandRepository.save(any(InterestAccrual.class)))
+                .thenReturn(savedAccrual);
 
-        UUID accrualId = UUID.randomUUID();
+        handler.execute(commandWithBalance(principal));
 
-        InterestAccrual savedAccrual =
-                InterestAccrual.builder()
-                        .id(accrualId)
-                        .runId(runId)
-                        .accountId(accountId)
-                        .currency(Currency.VND)
-                        .businessDate(businessDate)
-                        .interestConfigId(configId)
-                        .principalAmount(principal)
-                        .interestRate(
-                                new BigDecimal("0.030000")
-                        )
-                        .interestAmount(interestAmount)
-                        .build();
+        ArgumentCaptor<InterestAccrual> captor =
+                ArgumentCaptor.forClass(InterestAccrual.class);
 
-        when(
-                interestAccrualCommandRepository
-                        .findByAccountIdAndBusinessDate(
-                                accountId,
-                                businessDate
-                        )
-        ).thenReturn(Optional.empty());
+        verify(interestAccrualCommandRepository)
+                .save(captor.capture());
 
-        when(
-                accountDailyBalancePort.findClosingBalance(
-                        accountId,
-                        businessDate
-                )
-        ).thenReturn(dailyBalance);
-
-        when(
-                interestConfigService.getApplicableConfig(
-                        productId,
-                        Currency.VND,
-                        businessDate
-                )
-        ).thenReturn(config);
-
-        when(
-                interestCalculationService.calculateDailyInterest(
-                        principal,
-                        config.getInterestRate(),
-                        config.getDayCountConvention()
-                )
-        ).thenReturn(interestAmount);
-
-        when(
-                interestAccrualCommandRepository.save(
-                        any(InterestAccrual.class)
-                )
-        ).thenReturn(savedAccrual);
-
-        handler.execute(command);
-
-        verify(
-                interestAccrualCommandRepository
-        ).save(any(InterestAccrual.class));
-
-        verify(
-                interestAccrualCommandRepository,
-                times(1)
-        ).save(any(InterestAccrual.class));
+        InterestAccrual saved = captor.getValue();
+        assertThat(saved.getRunId()).isEqualTo(runId);
+        assertThat(saved.getAccountId()).isEqualTo(accountId);
+        assertThat(saved.getPrincipalAmount()).isEqualByComparingTo(BigDecimal.ZERO);
+        assertThat(saved.getInterestAmount()).isEqualByComparingTo(BigDecimal.ZERO);
+        assertThat(saved.getJournalEntryId()).isNull();
 
         verifyNoInteractions(interestJournalPort);
     }
 
     @Test
-    void shouldSkipWhenAccrualAlreadyExists() {
-        InterestAccrual existing =
-                InterestAccrual.builder()
-                        .id(UUID.randomUUID())
-                        .runId(runId)
-                        .accountId(accountId)
-                        .businessDate(businessDate)
-                        .build();
+    void execute_shouldSkip_whenAccrualAlreadyExists() {
+        InterestAccrual existing = InterestAccrual.builder()
+                .id(UUID.randomUUID())
+                .runId(runId)
+                .accountId(accountId)
+                .businessDate(businessDate)
+                .build();
 
-        when(
-                interestAccrualCommandRepository
-                        .findByAccountIdAndBusinessDate(
-                                accountId,
-                                businessDate
-                        )
-        ).thenReturn(Optional.of(existing));
+        when(interestAccrualCommandRepository
+                .findByAccountIdAndBusinessDate(accountId, businessDate))
+                .thenReturn(Optional.of(existing));
 
         handler.execute(command);
 
-        verify(
-                interestAccrualCommandRepository
-        ).findByAccountIdAndBusinessDate(
+        verify(interestAccrualCommandRepository)
+                .findByAccountIdAndBusinessDate(accountId, businessDate);
+
+        verifyNoInteractions(
+                interestConfigService,
+                interestCalculationService,
+                interestJournalPort
+        );
+
+        verify(interestAccrualCommandRepository, never())
+                .save(any(InterestAccrual.class));
+    }
+
+    // -------------------------------------------------------------------------
+    // Command validation
+    // -------------------------------------------------------------------------
+
+    @Test
+    void execute_shouldRejectNullCommand() {
+        assertInvalidCommand(
+                null,
+                "command must not be null"
+        );
+    }
+
+    @Test
+    void execute_shouldRejectNullRunId() {
+        assertInvalidCommand(
+                new AccrueInterestCommand(
+                        null,
+                        accountId,
+                        productId,
+                        Currency.VND,
+                        closingBalance,
+                        businessDate
+                ),
+                "runId must not be null"
+        );
+    }
+
+    @Test
+    void execute_shouldRejectNullAccountId() {
+        assertInvalidCommand(
+                new AccrueInterestCommand(
+                        runId,
+                        null,
+                        productId,
+                        Currency.VND,
+                        closingBalance,
+                        businessDate
+                ),
+                "accountId must not be null"
+        );
+    }
+
+    @Test
+    void execute_shouldRejectNullProductId() {
+        assertInvalidCommand(
+                new AccrueInterestCommand(
+                        runId,
+                        accountId,
+                        null,
+                        Currency.VND,
+                        closingBalance,
+                        businessDate
+                ),
+                "productId must not be null"
+        );
+    }
+
+    @Test
+    void execute_shouldRejectNullCurrency() {
+        assertInvalidCommand(
+                new AccrueInterestCommand(
+                        runId,
+                        accountId,
+                        productId,
+                        null,
+                        closingBalance,
+                        businessDate
+                ),
+                "currency must not be blank"
+        );
+    }
+
+    @Test
+    void execute_shouldRejectNullClosingBalance() {
+        assertInvalidCommand(
+                new AccrueInterestCommand(
+                        runId,
+                        accountId,
+                        productId,
+                        Currency.VND,
+                        null,
+                        businessDate
+                ),
+                "closingBalance must not be null"
+        );
+    }
+
+    @Test
+    void execute_shouldRejectNegativeClosingBalance() {
+        assertInvalidCommand(
+                new AccrueInterestCommand(
+                        runId,
+                        accountId,
+                        productId,
+                        Currency.VND,
+                        new BigDecimal("-0.01"),
+                        businessDate
+                ),
+                "closingBalance must not be negative"
+        );
+    }
+
+    @Test
+    void execute_shouldRejectNullBusinessDate() {
+        assertInvalidCommand(
+                new AccrueInterestCommand(
+                        runId,
+                        accountId,
+                        productId,
+                        Currency.VND,
+                        closingBalance,
+                        null
+                ),
+                "businessDate must not be null"
+        );
+    }
+
+    // -------------------------------------------------------------------------
+    // Helper methods
+    // -------------------------------------------------------------------------
+
+    private AccrueInterestCommand validCommand() {
+        return new AccrueInterestCommand(
+                runId,
                 accountId,
+                productId,
+                Currency.VND,
+                closingBalance,
                 businessDate
         );
-
-        verifyNoInteractions(
-                accountDailyBalancePort,
-                interestConfigService,
-                interestCalculationService,
-                interestJournalPort
-        );
-
-        verify(
-                interestAccrualCommandRepository,
-                never()
-        ).save(any(InterestAccrual.class));
     }
 
-    @Test
-    void shouldRejectNullCommand() {
-        assertThatThrownBy(
-                () -> handler.execute(null)
-        )
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("command must not be null");
-
-        verifyNoInteractions(
-                interestAccrualCommandRepository,
-                accountDailyBalancePort,
-                interestConfigService,
-                interestCalculationService,
-                interestJournalPort
+    private AccrueInterestCommand commandWithBalance(BigDecimal balance) {
+        return new AccrueInterestCommand(
+                runId,
+                accountId,
+                productId,
+                Currency.VND,
+                balance,
+                businessDate
         );
     }
 
-    @Test
-    void shouldRejectNullRunId() {
-        AccrueInterestCommand invalidCommand =
-                new AccrueInterestCommand(
-                        null,
-                        accountId,
-                        productId,
-                        Currency.VND,
-                        businessDate
-                );
+    private InterestConfig validConfig() {
+        return InterestConfig.builder()
+                .id(configId)
+                .productId(productId)
+                .currency(Currency.VND)
+                .interestRate(INTEREST_RATE)
+                .dayCountConvention(DayCountConvention.ACTUAL_365)
+                .effectiveFrom(LocalDate.of(2026, 1, 1))
+                .build();
+    }
 
-        assertThatThrownBy(
-                () -> handler.execute(invalidCommand)
-        )
+    private void givenNoExistingAccrual() {
+        when(interestAccrualCommandRepository
+                .findByAccountIdAndBusinessDate(accountId, businessDate))
+                .thenReturn(Optional.empty());
+    }
+
+    private void givenApplicableConfig(InterestConfig config) {
+        when(interestConfigService.getApplicableConfig(
+                productId,
+                Currency.VND,
+                businessDate
+        )).thenReturn(config);
+    }
+
+    private void givenCalculatedInterest(
+            BigDecimal principal,
+            InterestConfig config,
+            BigDecimal interest
+    ) {
+        when(interestCalculationService.calculateDailyInterest(
+                principal,
+                config.getInterestRate(),
+                config.getDayCountConvention()
+        )).thenReturn(interest);
+    }
+
+    private void assertInvalidCommand(
+            AccrueInterestCommand invalidCommand,
+            String expectedMessage
+    ) {
+        assertThatThrownBy(() -> handler.execute(invalidCommand))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("runId must not be null");
+                .hasMessage(expectedMessage);
 
         verifyNoInteractions(
                 interestAccrualCommandRepository,
-                accountDailyBalancePort,
-                interestConfigService,
-                interestCalculationService,
-                interestJournalPort
-        );
-    }
-
-    @Test
-    void shouldRejectNullAccountId() {
-        AccrueInterestCommand invalidCommand =
-                new AccrueInterestCommand(
-                        runId,
-                        null,
-                        productId,
-                        Currency.VND,
-                        businessDate
-                );
-
-        assertThatThrownBy(
-                () -> handler.execute(invalidCommand)
-        )
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("accountId must not be null");
-
-        verifyNoInteractions(
-                interestAccrualCommandRepository,
-                accountDailyBalancePort,
-                interestConfigService,
-                interestCalculationService,
-                interestJournalPort
-        );
-    }
-
-    @Test
-    void shouldRejectNullProductId() {
-        AccrueInterestCommand invalidCommand =
-                new AccrueInterestCommand(
-                        runId,
-                        accountId,
-                        null,
-                        Currency.VND,
-                        businessDate
-                );
-
-        assertThatThrownBy(
-                () -> handler.execute(invalidCommand)
-        )
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("productId must not be null");
-
-        verifyNoInteractions(
-                interestAccrualCommandRepository,
-                accountDailyBalancePort,
-                interestConfigService,
-                interestCalculationService,
-                interestJournalPort
-        );
-    }
-
-    @Test
-    void shouldRejectNullProductCode() {
-        AccrueInterestCommand invalidCommand =
-                new AccrueInterestCommand(
-                        runId,
-                        accountId,
-                        null,
-                        Currency.VND,
-                        businessDate
-                );
-
-        assertThatThrownBy(
-                () -> handler.execute(invalidCommand)
-        )
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("productId must not be null");
-    }
-
-    @Test
-    void shouldRejectNullCurrency() {
-        AccrueInterestCommand invalidCommand =
-                new AccrueInterestCommand(
-                        runId,
-                        accountId,
-                        productId,
-                        null,
-                        businessDate
-                );
-
-        assertThatThrownBy(
-                () -> handler.execute(invalidCommand)
-        )
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("currency must not be blank");
-    }
-
-    @Test
-    void shouldRejectNullBusinessDate() {
-        AccrueInterestCommand invalidCommand =
-                new AccrueInterestCommand(
-                        runId,
-                        accountId,
-                        productId,
-                        Currency.VND,
-                        null
-                );
-
-        assertThatThrownBy(
-                () -> handler.execute(invalidCommand)
-        )
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("businessDate must not be null");
-
-        verifyNoInteractions(
-                interestAccrualCommandRepository,
-                accountDailyBalancePort,
                 interestConfigService,
                 interestCalculationService,
                 interestJournalPort

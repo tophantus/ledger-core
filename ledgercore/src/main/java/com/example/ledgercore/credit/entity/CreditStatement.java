@@ -53,6 +53,9 @@ public class CreditStatement {
     @Id
     private UUID id;
 
+    @Column(name = "run_id", nullable = false)
+    private UUID runId;
+
     @Column(name = "credit_facility_id", nullable = false)
     private UUID creditFacilityId;
 
@@ -137,6 +140,9 @@ public class CreditStatement {
     @Column(name = "status", nullable = false, length = 20)
     private CreditStatementStatus status;
 
+    @Column(name = "next_repayment_attempt_at")
+    private Instant nextRepaymentAttemptAt;
+
     @Version
     @Column(name = "version", nullable = false)
     private Long version;
@@ -171,6 +177,20 @@ public class CreditStatement {
             );
         }
 
+        if (status == CreditStatementStatus.PAID
+                || status == CreditStatementStatus.NO_PAYMENT_DUE
+                || status == CreditStatementStatus.OVERDUE) {
+            throw new IllegalStateException(
+                    "Statement does not accept payment"
+            );
+        }
+
+        if (status == CreditStatementStatus.OPEN) {
+            throw new IllegalStateException(
+                    "Statement has not been issued"
+            );
+        }
+
         BigDecimal remainingAmount = getRemainingAmount();
 
         if (amount.compareTo(remainingAmount) > 0) {
@@ -180,5 +200,31 @@ public class CreditStatement {
         }
 
         this.paidAmount = this.paidAmount.add(amount);
+
+        if (isPaid()) {
+            this.status = CreditStatementStatus.PAID;
+        } else {
+            this.status = CreditStatementStatus.PARTIALLY_PAID;
+        }
+    }
+
+    public void markOverdue() {
+        if (status != CreditStatementStatus.ISSUED
+                && status != CreditStatementStatus.PARTIALLY_PAID) {
+            throw new IllegalStateException(
+                    "Statement cannot be marked overdue from status: "
+                            + status
+            );
+        }
+
+        this.status = CreditStatementStatus.OVERDUE;
+    }
+
+    public void scheduleNextRepaymentAttempt(Instant nextAttemptAt) {
+        this.nextRepaymentAttemptAt = nextAttemptAt;
+    }
+
+    public void clearNextRepaymentAttempt() {
+        this.nextRepaymentAttemptAt = null;
     }
 }

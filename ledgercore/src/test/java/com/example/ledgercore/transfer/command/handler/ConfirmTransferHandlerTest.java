@@ -3,7 +3,7 @@ package com.example.ledgercore.transfer.command.handler;
 import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
-import com.example.ledgercore.transaction.command.port.outbound.TransferOtpPort;
+import com.example.ledgercore.transfer.command.port.outbound.TransferOtpPort;
 import com.example.ledgercore.transaction.query.dto.TransactionResponse;
 import com.example.ledgercore.transfer.command.dto.ConfirmTransferCommand;
 import com.example.ledgercore.transfer.command.repository.TransferIntentCommandRepository;

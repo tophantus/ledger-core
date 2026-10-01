@@ -4,8 +4,8 @@ import com.example.ledgercore.common.currency.Currency;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
 import com.example.ledgercore.transaction.command.dto.TransferMoneyCommand;
-import com.example.ledgercore.transaction.command.port.outbound.TransferUserAccountPort;
 import com.example.ledgercore.transaction.query.dto.TransactionResponse;
+import com.example.ledgercore.transfer.command.port.outbound.TransferAccountPort;
 import com.example.ledgercore.transfer.command.port.outbound.TransferTransactionPort;
 import com.example.ledgercore.transfer.command.repository.TransferIntentCommandRepository;
 import com.example.ledgercore.transfer.entity.TransferIntent;
@@ -42,8 +42,8 @@ class ConfirmTransferExecutionServiceTest {
             transferIntentCommandRepository;
 
     @Mock
-    private TransferUserAccountPort
-            transferUserAccountPort;
+    private TransferAccountPort
+            transferAccountPort;
 
     @Mock
     private TransferTransactionPort
@@ -88,7 +88,7 @@ class ConfirmTransferExecutionServiceTest {
         service =
                 new ConfirmTransferExecutionService(
                         transferIntentCommandRepository,
-                        transferUserAccountPort,
+                        transferAccountPort,
                         transferTransactionPort,
                         clock
                 );
@@ -228,7 +228,7 @@ class ConfirmTransferExecutionServiceTest {
         execute();
 
         verify(
-                transferUserAccountPort
+                transferAccountPort
         ).getTransferInfo(
                 userId,
                 sourceAccountId,
@@ -332,7 +332,7 @@ class ConfirmTransferExecutionServiceTest {
         );
 
         verifyNoInteractions(
-                transferUserAccountPort,
+                transferAccountPort,
                 transferTransactionPort
         );
     }
@@ -359,7 +359,7 @@ class ConfirmTransferExecutionServiceTest {
         );
 
         verifyNoInteractions(
-                transferUserAccountPort,
+                transferAccountPort,
                 transferTransactionPort
         );
     }
@@ -393,7 +393,7 @@ class ConfirmTransferExecutionServiceTest {
         );
 
         verifyNoInteractions(
-                transferUserAccountPort,
+                transferAccountPort,
                 transferTransactionPort
         );
     }
@@ -427,7 +427,7 @@ class ConfirmTransferExecutionServiceTest {
         );
 
         verifyNoInteractions(
-                transferUserAccountPort,
+                transferAccountPort,
                 transferTransactionPort
         );
     }
@@ -458,7 +458,7 @@ class ConfirmTransferExecutionServiceTest {
         );
 
         verifyNoInteractions(
-                transferUserAccountPort,
+                transferAccountPort,
                 transferTransactionPort
         );
     }
@@ -493,7 +493,7 @@ class ConfirmTransferExecutionServiceTest {
         );
 
         verifyNoInteractions(
-                transferUserAccountPort,
+                transferAccountPort,
                 transferTransactionPort
         );
     }
@@ -519,7 +519,7 @@ class ConfirmTransferExecutionServiceTest {
         );
 
         verifyNoInteractions(
-                transferUserAccountPort,
+                transferAccountPort,
                 transferTransactionPort
         );
     }
@@ -545,7 +545,7 @@ class ConfirmTransferExecutionServiceTest {
         );
 
         verifyNoInteractions(
-                transferUserAccountPort,
+                transferAccountPort,
                 transferTransactionPort
         );
     }
@@ -560,7 +560,7 @@ class ConfirmTransferExecutionServiceTest {
         mockIntent(intent);
 
         when(
-                transferUserAccountPort.getTransferInfo(
+                transferAccountPort.getTransferInfo(
                         userId,
                         sourceAccountId,
                         destinationAccountId
@@ -584,7 +584,7 @@ class ConfirmTransferExecutionServiceTest {
         );
 
         verify(
-                transferUserAccountPort
+                transferAccountPort
         ).getTransferInfo(
                 userId,
                 sourceAccountId,
@@ -606,7 +606,7 @@ class ConfirmTransferExecutionServiceTest {
         mockIntent(intent);
 
         when(
-                transferUserAccountPort.getTransferInfo(
+                transferAccountPort.getTransferInfo(
                         userId,
                         sourceAccountId,
                         destinationAccountId
@@ -630,7 +630,7 @@ class ConfirmTransferExecutionServiceTest {
         );
 
         verify(
-                transferUserAccountPort
+                transferAccountPort
         ).getTransferInfo(
                 userId,
                 sourceAccountId,
@@ -811,7 +811,7 @@ class ConfirmTransferExecutionServiceTest {
 
     private void mockTransferInfo() {
         when(
-                transferUserAccountPort.getTransferInfo(
+                transferAccountPort.getTransferInfo(
                         userId,
                         sourceAccountId,
                         destinationAccountId
@@ -851,12 +851,12 @@ class ConfirmTransferExecutionServiceTest {
                 .build();
     }
 
-    private TransferUserAccountPort.TransferAccountInfo
+    private TransferAccountPort.TransferAccountInfo
     createTransferInfo(
             BigDecimal sourceAvailableBalance,
             Currency currency
     ) {
-        return new TransferUserAccountPort.TransferAccountInfo(
+        return new TransferAccountPort.TransferAccountInfo(
                 sourceAccountId,
                 destinationAccountId,
                 currency,

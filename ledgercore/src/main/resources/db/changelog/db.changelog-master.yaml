@@ -173,3 +173,17 @@ databaseChangeLog:
       file: db/changelog/086-add-destination-credit-facility-id-to-transactions.yaml
   - include:
       file: db/changelog/087-add-parent-transaction-id-to-transactions.yaml
+  - include:
+      file: db/changelog/088-add-updated-at-to-credit-repayment-mandates.yaml
+  - include:
+      file: db/changelog/089-create-credit-statement-runs.yaml
+  - include:
+      file: db/changelog/090-add-run-id-to-credit-statements.yaml
+  - include:
+      file: db/changelog/091-drop-transactions-type-check-constraint.yaml
+  - include:
+      file: db/changelog/092-add-next-repayment-attempt-to-credit-statements.yaml
+  - include:
+      file: db/changelog/093-alter-transaction-reference-length.yaml
+  - include:
+      file: db/changelog/094-seed-credit-system-ledger-accounts.yaml

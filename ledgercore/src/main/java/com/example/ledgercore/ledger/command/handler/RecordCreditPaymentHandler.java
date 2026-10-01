@@ -48,9 +48,9 @@ public class RecordCreditPaymentHandler
                         command.creditFacilityId()
                 );
 
-        UUID providerLedgerAccountId =
+        UUID accountLedgerAccountId =
                 accountLedgerMappingPort.getLedgerAccountId(
-                        command.providerAccountId()
+                        command.accountId()
                 );
 
         JournalEntry journalEntry =
@@ -66,7 +66,7 @@ public class RecordCreditPaymentHandler
         JournalEntryLine debitLine =
                 JournalEntryLine.builder()
                         .journalEntryId(savedJournalEntry.getId())
-                        .ledgerAccountId(providerLedgerAccountId)
+                        .ledgerAccountId(creditLedgerAccountId)
                         .entryType(EntryType.DEBIT)
                         .amount(command.amount())
                         .currency(command.currency())
@@ -75,7 +75,7 @@ public class RecordCreditPaymentHandler
         JournalEntryLine creditLine =
                 JournalEntryLine.builder()
                         .journalEntryId(savedJournalEntry.getId())
-                        .ledgerAccountId(creditLedgerAccountId)
+                        .ledgerAccountId(accountLedgerAccountId)
                         .entryType(EntryType.CREDIT)
                         .amount(command.amount())
                         .currency(command.currency())
@@ -91,7 +91,7 @@ public class RecordCreditPaymentHandler
         if (command == null
                 || command.transactionId() == null
                 || command.creditFacilityId() == null
-                || command.providerAccountId() == null
+                || command.accountId() == null
                 || command.currency() == null
                 || command.businessDate() == null) {
 

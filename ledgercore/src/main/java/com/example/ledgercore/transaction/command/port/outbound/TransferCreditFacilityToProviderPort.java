@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public interface TransferCreditFacilityToProviderPort {
 
-    void decreaseCreditFacilityOutstandingBalance(
+    void increaseCreditFacilityOutstandingBalance(
             UUID creditFacilityId,
             BigDecimal amount,
             Currency currency,

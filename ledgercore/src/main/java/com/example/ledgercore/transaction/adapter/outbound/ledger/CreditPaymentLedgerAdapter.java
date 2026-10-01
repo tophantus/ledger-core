@@ -23,7 +23,7 @@ public class CreditPaymentLedgerAdapter
     public void recordCreditPayment(
             UUID transactionId,
             UUID creditFacilityId,
-            UUID providerAccountId,
+            UUID accountId,
             BigDecimal amount,
             Currency currency,
             LocalDate businessDate
@@ -32,7 +32,7 @@ public class CreditPaymentLedgerAdapter
                 new RecordCreditPaymentCommand(
                         transactionId,
                         creditFacilityId,
-                        providerAccountId,
+                        accountId,
                         amount,
                         currency,
                         businessDate

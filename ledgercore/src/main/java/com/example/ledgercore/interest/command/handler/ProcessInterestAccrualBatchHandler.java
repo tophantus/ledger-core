@@ -1,6 +1,6 @@
 package com.example.ledgercore.interest.command.handler;
 
-import com.example.ledgercore.interest.command.dto.AccrueInterestCommand;
+import com.example.ledgercore.interest.command.service.dto.AccrueInterestCommand;
 import com.example.ledgercore.interest.command.service.AccrueInterestUseCase;
 import com.example.ledgercore.interest.command.port.inbound.ProcessInterestAccrualBatchUseCase;
 import com.example.ledgercore.interest.command.port.outbound.account.InterestEligibleAccount;
@@ -70,6 +70,7 @@ public class ProcessInterestAccrualBatchHandler
                             account.accountId(),
                             account.productId(),
                             account.currency(),
+                            account.closingBalance(),
                             businessDate
                     )
             );

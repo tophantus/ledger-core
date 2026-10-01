@@ -9,7 +9,7 @@ import java.util.UUID;
 public record RecordCreditPaymentCommand(
         UUID transactionId,
         UUID creditFacilityId,
-        UUID providerAccountId,
+        UUID accountId,
         BigDecimal amount,
         Currency currency,
         LocalDate businessDate

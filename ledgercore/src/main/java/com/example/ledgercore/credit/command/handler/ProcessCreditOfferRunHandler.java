@@ -1,0 +1,91 @@
+package com.example.ledgercore.credit.command.handler;
+
+import com.example.ledgercore.credit.command.dto.run.ClaimedCreditOfferRun;
+import com.example.ledgercore.credit.command.port.inbound.run.CompleteCreditOfferRunUseCase;
+import com.example.ledgercore.credit.command.service.ProcessCreditOfferBatchService;
+import com.example.ledgercore.credit.command.port.inbound.run.UpdateCreditOfferRunProgressUseCase;
+import com.example.ledgercore.credit.command.port.inbound.ProcessCreditOfferRunUseCase;
+import com.example.ledgercore.credit.config.CreditOfferRunProperties;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+import java.time.Instant;
+import java.util.UUID;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class ProcessCreditOfferRunHandler
+        implements ProcessCreditOfferRunUseCase {
+
+    private final ProcessCreditOfferBatchService
+            processBatchUseCase;
+
+    private final UpdateCreditOfferRunProgressUseCase
+            updateProgressUseCase;
+
+    private final CompleteCreditOfferRunUseCase
+            completeRunUseCase;
+
+    private final CreditOfferRunProperties
+            creditOfferRunProperties;
+
+    @Override
+    public void process(ClaimedCreditOfferRun run) {
+
+        UUID runId = run.runId();
+        UUID lastProcessedId = run.lastProcessedId();
+
+        log.info(
+                "Starting credit offer run: runId={}, businessDate={}, lastProcessedId={}",
+                runId,
+                run.businessDate(),
+                lastProcessedId
+        );
+
+        while (true) {
+
+            ProcessCreditOfferBatchService.BatchResult result =
+                    processBatchUseCase.execute(
+                            runId,
+                            run.businessDate(),
+                            lastProcessedId,
+                            creditOfferRunProperties.getBatchSize()
+                    );
+
+            log.info(
+                    "Processed credit offer batch: runId={}, businessDate={}, lastProcessedId={}, completed={}",
+                    runId,
+                    run.businessDate(),
+                    result.lastProcessedId(),
+                    result.completed()
+            );
+
+            updateProgressUseCase.execute(
+                    runId,
+                    result.lastProcessedId(),
+                    Instant.now()
+            );
+
+            if (result.completed()) {
+
+                completeRunUseCase.execute(
+                        runId,
+                        Instant.now()
+                );
+
+                log.info(
+                        "Completed credit offer run: runId={}, businessDate={}",
+                        runId,
+                        run.businessDate()
+                );
+
+                return;
+            }
+
+            lastProcessedId =
+                    result.lastProcessedId();
+        }
+    }
+}

@@ -1,6 +1,6 @@
 package com.example.ledgercore.interest.command.service;
 
-import com.example.ledgercore.interest.command.dto.AccrueCreditInterestCommand;
+import com.example.ledgercore.interest.command.service.dto.AccrueCreditInterestCommand;
 
 public interface AccrueCreditInterestUseCase {
 

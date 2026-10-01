@@ -90,4 +90,8 @@ public class Account {
     protected void preUpdate() {
         updatedAt = Instant.now();
     }
+
+    public BigDecimal getAvailableBalance() {
+        return balance.subtract(holdAmount);
+    }
 }

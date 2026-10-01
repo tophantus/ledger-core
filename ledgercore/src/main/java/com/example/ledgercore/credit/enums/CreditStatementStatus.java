@@ -6,5 +6,5 @@ public enum CreditStatementStatus {
     PARTIALLY_PAID,
     PAID,
     OVERDUE,
-    CLOSED
+    NO_PAYMENT_DUE
 }

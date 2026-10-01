@@ -84,12 +84,27 @@ ledger:
     cash-codes:
       VND: CASH_VND
       USD: CASH_USD
+
     interest-expense-codes:
       VND: INTEREST_EXPENSE_VND
       USD: INTEREST_EXPENSE_USD
+
     interest-payable-codes:
       VND: INTEREST_PAYABLE_VND
       USD: INTEREST_PAYABLE_USD
+
+    fee-income-codes:
+      VND: FEE_INCOME_VND
+      USD: FEE_INCOME_USD
+
+    interest-income-codes:
+      VND: INTEREST_INCOME_VND
+      USD: INTEREST_INCOME_USD
+
+    interest-receivable-codes:
+      VND: INTEREST_RECEIVABLE_VND
+      USD: INTEREST_RECEIVABLE_USD
+
 
 auth:
   refresh-token:
@@ -163,10 +178,35 @@ interest:
     lease-duration: 5m
 
 credit:
+
+  fee:
+    overdue-fees:
+      VND: 50000
+      USD: 5
+
   statement:
     minimum-payment:
       rate: 0.05
       fixed-minimum: 50000
+
+    overdue:
+      batch-size: 100
+      scheduler:
+        enabled: true
+        fixed-delay: 300000
+
+    scheduler:
+      enabled: true
+      fixed-delay: 1000
+
+    run:
+      batch-size: 100
+
+  repayment:
+    scheduler:
+      enabled: true
+      fixed-delay: 300000
+      batch-size: 100
 
   offer:
     scheduler:

@@ -31,7 +31,7 @@ public class TransferCreditCardToProviderHandler
     private final TransferCreditFacilityToProviderPort
             transferCreditFacilityToProviderPort;
 
-    private final CreditPaymentLedgerPort creditPaymentLedgerPort;
+    private final CreditPurchaseLedgerPort creditPurchaseLedgerPort;
 
     private final TransactionBusinessDayPort transactionBusinessDayPort;
 
@@ -67,7 +67,7 @@ public class TransferCreditCardToProviderHandler
         transactionCommandRepository.save(transaction);
 
         transferCreditFacilityToProviderPort
-                .decreaseCreditFacilityOutstandingBalance(
+                .increaseCreditFacilityOutstandingBalance(
                         command.creditFacilityId(),
                         command.amount(),
                         command.currency(),
@@ -82,7 +82,7 @@ public class TransferCreditCardToProviderHandler
                         businessDate
                 );
 
-        creditPaymentLedgerPort.recordCreditPayment(
+        creditPurchaseLedgerPort.recordCreditPayment(
                 transaction.getId(),
                 command.creditFacilityId(),
                 command.providerAccountId(),

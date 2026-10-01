@@ -3,10 +3,8 @@ package com.example.ledgercore.transaction.adapter.outbound;
 import com.example.ledgercore.account.command.dto.IncreaseAccountBalanceCommand;
 import com.example.ledgercore.account.command.port.inbound.IncreaseAccountBalanceUseCase;
 import com.example.ledgercore.common.currency.Currency;
-import com.example.ledgercore.credit.command.dto
-        .DecreaseCreditFacilityOutstandingBalanceCommand;
-import com.example.ledgercore.credit.command.port.inbound
-        .DecreaseCreditFacilityOutstandingBalanceUseCase;
+import com.example.ledgercore.credit.command.dto.IncreaseCreditFacilityOutstandingBalanceCommand;
+import com.example.ledgercore.credit.command.port.inbound.IncreaseCreditFacilityOutstandingBalanceUseCase;
 import com.example.ledgercore.transaction.command.port.outbound
         .TransferCreditFacilityToProviderPort;
 import lombok.RequiredArgsConstructor;
@@ -21,21 +19,21 @@ import java.util.UUID;
 public class TransferCreditFacilityToProviderAdapter
         implements TransferCreditFacilityToProviderPort {
 
-    private final DecreaseCreditFacilityOutstandingBalanceUseCase
-            decreaseCreditFacilityOutstandingBalanceUseCase;
+    private final IncreaseCreditFacilityOutstandingBalanceUseCase
+            increaseCreditFacilityOutstandingBalanceUseCase;
 
     private final IncreaseAccountBalanceUseCase
             increaseAccountBalanceUseCase;
 
     @Override
-    public void decreaseCreditFacilityOutstandingBalance(
+    public void increaseCreditFacilityOutstandingBalance(
             UUID creditFacilityId,
             BigDecimal amount,
             Currency currency,
             LocalDate businessDate
     ) {
-        decreaseCreditFacilityOutstandingBalanceUseCase.execute(
-                new DecreaseCreditFacilityOutstandingBalanceCommand(
+        increaseCreditFacilityOutstandingBalanceUseCase.execute(
+                new IncreaseCreditFacilityOutstandingBalanceCommand(
                         creditFacilityId,
                         amount,
                         currency,

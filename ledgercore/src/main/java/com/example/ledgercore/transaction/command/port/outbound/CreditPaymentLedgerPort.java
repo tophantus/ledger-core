@@ -11,7 +11,7 @@ public interface CreditPaymentLedgerPort {
     void recordCreditPayment(
             UUID transactionId,
             UUID creditFacilityId,
-            UUID providerAccountId,
+            UUID accountId,
             BigDecimal amount,
             Currency currency,
             LocalDate businessDate

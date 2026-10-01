@@ -1,0 +1,24 @@
+databaseChangeLog:
+  - changeSet:
+      id: 092-add-next-repayment-attempt-to-credit-statements
+      author: tophantus
+      changes:
+        - addColumn:
+            tableName: credit_statements
+            columns:
+              - column:
+                  name: next_repayment_attempt_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: true
+
+        - createIndex:
+            tableName: credit_statements
+            indexName: idx_credit_statements_repayment_attempt
+            columns:
+              - column:
+                  name: status
+              - column:
+                  name: due_date
+              - column:
+                  name: next_repayment_attempt_at

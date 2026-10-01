@@ -7,8 +7,8 @@ import com.example.ledgercore.otp.enums.OtpPurpose;
 import com.example.ledgercore.transfer.command.dto.CreateTransferIntentCommand;
 import com.example.ledgercore.transfer.command.dto.CreateTransferIntentResult;
 import com.example.ledgercore.transfer.command.port.inbound.CreateTransferIntentUseCase;
-import com.example.ledgercore.transaction.command.port.outbound.TransferUserAccountPort;
-import com.example.ledgercore.transaction.command.port.outbound.TransferOtpPort;
+import com.example.ledgercore.transfer.command.port.outbound.TransferOtpPort;
+import com.example.ledgercore.transfer.command.port.outbound.TransferAccountPort;
 import com.example.ledgercore.transfer.command.repository.TransferIntentCommandRepository;
 import com.example.ledgercore.transfer.entity.TransferIntent;
 import com.example.ledgercore.transfer.enums.TransferIntentStatus;
@@ -25,7 +25,7 @@ import java.util.UUID;
 public class CreateTransferIntentHandler
         implements CreateTransferIntentUseCase {
 
-    private final TransferUserAccountPort transferUserAccountPort;
+    private final TransferAccountPort transferAccountPort;
     private final TransferIntentCommandRepository
             transferIntentCommandRepository;
     private final TransferOtpPort transferOtpPort;
@@ -51,7 +51,7 @@ public class CreateTransferIntentHandler
         validateAmount(command);
 
         UUID destinationAccountId =
-                transferUserAccountPort.getAccountIdByAccountNo(
+                transferAccountPort.getAccountIdByAccountNo(
                         command.destinationAccountNo()
                 );
 
@@ -63,8 +63,8 @@ public class CreateTransferIntentHandler
             );
         }
 
-        TransferUserAccountPort.TransferAccountInfo transferInfo =
-                transferUserAccountPort.getTransferInfo(
+        TransferAccountPort.TransferAccountInfo transferInfo =
+                transferAccountPort.getTransferInfo(
                         userId,
                         command.sourceAccountId(),
                         destinationAccountId
@@ -144,7 +144,7 @@ public class CreateTransferIntentHandler
 
     private void validateTransfer(
             CreateTransferIntentCommand command,
-            TransferUserAccountPort.TransferAccountInfo transferInfo
+            TransferAccountPort.TransferAccountInfo transferInfo
     ) {
         if (transferInfo.currency() != command.currency()) {
 

@@ -1,0 +1,187 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 094-seed-credit-system-ledger-accounts
+      author: tu
+
+      changes:
+
+        # Fee Income - VND
+
+        - insert:
+            tableName: ledger_accounts
+            columns:
+              - column:
+                  name: id
+                  valueComputed: gen_random_uuid()
+              - column:
+                  name: code
+                  value: FEE_INCOME_VND
+              - column:
+                  name: name
+                  value: Fee Income VND
+              - column:
+                  name: type
+                  value: REVENUE
+              - column:
+                  name: currency
+                  value: VND
+              - column:
+                  name: status
+                  value: ACTIVE
+              - column:
+                  name: created_at
+                  valueDate: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_at
+                  valueDate: CURRENT_TIMESTAMP
+
+        # Fee Income - USD
+
+        - insert:
+            tableName: ledger_accounts
+            columns:
+              - column:
+                  name: id
+                  valueComputed: gen_random_uuid()
+              - column:
+                  name: code
+                  value: FEE_INCOME_USD
+              - column:
+                  name: name
+                  value: Fee Income USD
+              - column:
+                  name: type
+                  value: REVENUE
+              - column:
+                  name: currency
+                  value: USD
+              - column:
+                  name: status
+                  value: ACTIVE
+              - column:
+                  name: created_at
+                  valueDate: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_at
+                  valueDate: CURRENT_TIMESTAMP
+
+        # Interest Income - VND
+
+        - insert:
+            tableName: ledger_accounts
+            columns:
+              - column:
+                  name: id
+                  valueComputed: gen_random_uuid()
+              - column:
+                  name: code
+                  value: INTEREST_INCOME_VND
+              - column:
+                  name: name
+                  value: Interest Income VND
+              - column:
+                  name: type
+                  value: REVENUE
+              - column:
+                  name: currency
+                  value: VND
+              - column:
+                  name: status
+                  value: ACTIVE
+              - column:
+                  name: created_at
+                  valueDate: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_at
+                  valueDate: CURRENT_TIMESTAMP
+
+        # Interest Income - USD
+
+        - insert:
+            tableName: ledger_accounts
+            columns:
+              - column:
+                  name: id
+                  valueComputed: gen_random_uuid()
+              - column:
+                  name: code
+                  value: INTEREST_INCOME_USD
+              - column:
+                  name: name
+                  value: Interest Income USD
+              - column:
+                  name: type
+                  value: REVENUE
+              - column:
+                  name: currency
+                  value: USD
+              - column:
+                  name: status
+                  value: ACTIVE
+              - column:
+                  name: created_at
+                  valueDate: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_at
+                  valueDate: CURRENT_TIMESTAMP
+
+        # Interest Receivable - VND
+
+        - insert:
+            tableName: ledger_accounts
+            columns:
+              - column:
+                  name: id
+                  valueComputed: gen_random_uuid()
+              - column:
+                  name: code
+                  value: INTEREST_RECEIVABLE_VND
+              - column:
+                  name: name
+                  value: Interest Receivable VND
+              - column:
+                  name: type
+                  value: ASSET
+              - column:
+                  name: currency
+                  value: VND
+              - column:
+                  name: status
+                  value: ACTIVE
+              - column:
+                  name: created_at
+                  valueDate: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_at
+                  valueDate: CURRENT_TIMESTAMP
+
+        # Interest Receivable - USD
+
+        - insert:
+            tableName: ledger_accounts
+            columns:
+              - column:
+                  name: id
+                  valueComputed: gen_random_uuid()
+              - column:
+                  name: code
+                  value: INTEREST_RECEIVABLE_USD
+              - column:
+                  name: name
+                  value: Interest Receivable USD
+              - column:
+                  name: type
+                  value: ASSET
+              - column:
+                  name: currency
+                  value: USD
+              - column:
+                  name: status
+                  value: ACTIVE
+              - column:
+                  name: created_at
+                  valueDate: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_at
+                  valueDate: CURRENT_TIMESTAMP

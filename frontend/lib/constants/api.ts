@@ -81,6 +81,16 @@ export const API_ENDPOINTS = {
 
         FACILITY:
             "/api/v1/credit/facilities",
+
+        FACILITY_STATEMENTS: (creditFacilityId: string) =>
+            `/api/v1/credit/facilities/${creditFacilityId}/statements`,
+
+        REPAYMENT_MANDATES: {
+            BASE: "/api/v1/credit/repayment-mandates",
+
+            BY_ID: (mandateId: string) =>
+                `/api/v1/credit/repayment-mandates/${mandateId}`,
+        },
     },
     CARD: {
         BASE: "/api/v1/cards",

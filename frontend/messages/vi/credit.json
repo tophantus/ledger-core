@@ -14,21 +14,92 @@
     }
   },
   "facility": {
-    "title": "Hạn mức tín dụng",
-    "description": "Xem hạn mức tín dụng và số dư tín dụng hiện tại.",
-    "empty": "Bạn chưa có hạn mức tín dụng đang hoạt động.",
-    "cardTitle": "Tài khoản tín dụng",
-    "cardDescription": "Hạn mức tín dụng hiện tại của bạn",
+    "title": "Khoản tín dụng",
+    "description": "Xem thông tin khoản tín dụng và thiết lập thanh toán.",
+    "empty": "Bạn chưa có khoản tín dụng đang hoạt động.",
+    "cardTitle": "Khoản tín dụng",
+    "cardDescription": "Thông tin khoản tín dụng hiện tại của bạn.",
+    "availableCredit": "Hạn mức khả dụng",
     "creditLimit": "Hạn mức tín dụng",
     "outstandingBalance": "Dư nợ",
     "holdAmount": "Số tiền tạm giữ",
-    "availableCredit": "Tín dụng khả dụng",
-    "status": "Trạng thái",
     "openedAt": "Ngày mở",
+
     "statuses": {
       "ACTIVE": "Đang hoạt động",
       "SUSPENDED": "Tạm ngưng",
       "CLOSED": "Đã đóng"
+    },
+
+    "repaymentMandate": {
+      "title": "Ủy quyền thanh toán",
+      "description": "Thiết lập tài khoản và phương thức dùng để thanh toán dư nợ tín dụng.",
+      "notConfigured": "Khoản tín dụng này chưa được thiết lập ủy quyền thanh toán.",
+      "account": "Tài khoản thanh toán",
+      "accountPlaceholder": "Chọn tài khoản",
+      "repaymentType": "Phương thức thanh toán",
+
+      "types": {
+        "FULL_BALANCE": "Thanh toán toàn bộ dư nợ",
+        "MINIMUM_PAYMENT": "Thanh toán tối thiểu"
+      },
+
+      "statuses": {
+        "ACTIVE": "Đang hoạt động",
+        "REVOKED": "Đã thu hồi"
+      },
+
+      "actions": {
+        "register": "Đăng ký ủy quyền thanh toán",
+        "edit": "Chỉnh sửa",
+        "save": "Lưu thay đổi",
+        "saving": "Đang lưu...",
+        "revoke": "Thu hồi",
+        "revoking": "Đang thu hồi...",
+        "cancel": "Hủy"
+      },
+
+      "validation": {
+        "account": {
+          "required": "Vui lòng chọn tài khoản thanh toán."
+        }
+      }
+    }
+  },
+  "statements": {
+    "title": "Sao kê tín dụng",
+    "description": "Xem sao kê tín dụng và lịch sử thanh toán.",
+    "statementDate": "Ngày sao kê:",
+    "dueDate": "Ngày đến hạn",
+    "openingBalance": "Dư nợ đầu kỳ",
+    "purchasesAmount": "Chi tiêu",
+    "paymentsAmount": "Thanh toán",
+    "feesAmount": "Phí",
+    "interestAmount": "Tiền lãi",
+    "closingBalance": "Dư nợ cuối kỳ",
+    "minimumPayment": "Thanh toán tối thiểu",
+    "paidAmount": "Đã thanh toán",
+
+    "interestWaived": "Được miễn",
+
+    "loadFailed": "Không thể tải sao kê tín dụng.",
+    "status": "Trạng thái",
+    "statuses": {
+      "OPEN": "Đang mở",
+      "ISSUED": "Đã phát hành",
+      "PARTIALLY_PAID": "Đã thanh toán một phần",
+      "PAID": "Đã thanh toán",
+      "OVERDUE": "Quá hạn",
+      "NO_PAYMENT_DUE": "Không có khoản thanh toán"
+    },
+    "empty": {
+      "title": "Chưa có sao kê",
+      "description": "Chưa có sao kê tín dụng nào cho khoản tín dụng này."
+    },
+    "pagination": {
+      "previous": "Trước",
+      "next": "Sau",
+      "summary": "Trang {page} / {totalPages} · {totalElements} sao kê"
     }
   }
 }

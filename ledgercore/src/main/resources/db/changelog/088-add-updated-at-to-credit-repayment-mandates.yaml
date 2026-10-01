@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - changeSet:
+      id: 088-add-updated-at-to-credit-repayment-mandates
+      author: tophantus
+      changes:
+        - addColumn:
+            tableName: credit_repayment_mandates
+            columns:
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  defaultValueDate: now()
+
+        - addNotNullConstraint:
+            tableName: credit_repayment_mandates
+            columnName: updated_at
+            columnDataType: TIMESTAMP WITH TIME ZONE

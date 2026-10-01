@@ -1,6 +1,7 @@
 package com.example.ledgercore.account.query.repository;
 
 import com.example.ledgercore.account.entity.AccountDailyBalance;
+import com.example.ledgercore.account.query.projection.AccountInterestBalanceProjection;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -16,6 +17,23 @@ public interface AccountDailyBalanceQueryRepository
         extends JpaRepository<
         AccountDailyBalance,
         AccountDailyBalance.AccountDailyBalanceId> {
+
+    @Query(
+            value = """
+            SELECT DISTINCT ON (account_id)
+                account_id,
+                closing_balance
+            FROM account_daily_balances
+            WHERE account_id IN (:accountIds)
+              AND business_date <= :businessDate
+            ORDER BY account_id, business_date DESC
+            """,
+            nativeQuery = true
+    )
+    List<AccountInterestBalanceProjection> findEffectiveClosingBalances(
+            @Param("accountIds") List<UUID> accountIds,
+            @Param("businessDate") LocalDate businessDate
+    );
 
     @Query(
             value = """

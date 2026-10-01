@@ -17,4 +17,10 @@ public class SystemLedgerAccountProperties {
     private Map<Currency, String> interestExpenseCodes;
 
     private Map<Currency, String> interestPayableCodes;
+
+    private Map<Currency, String> feeIncomeCodes;
+
+    private Map<Currency, String> interestIncomeCodes;
+
+    private Map<Currency, String> interestReceivableCodes;
 }

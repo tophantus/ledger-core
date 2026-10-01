@@ -55,8 +55,12 @@
     "TRANSFER": "Transfer",
     "DEPOSIT": "Deposit",
     "WITHDRAW": "Withdraw",
+    "CARD_PAYMENT": "Card Payment",
+    "CASH_ADVANCE": "Cash Advance",
+    "CREDIT_PAYMENT": "Credit Payment",
     "FEE": "Fee",
-    "REFUND": "Refund"
+    "REFUND": "Refund",
+    "INTEREST": "Interest"
   },
   "statuses": {
     "PENDING": "Pending",
