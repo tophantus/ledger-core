@@ -14,4 +14,6 @@ public class BusinessDayProperties {
     private String timezone;
 
     private LocalTime closingStart;
+
+    private boolean closingValidationEnabled;
 }

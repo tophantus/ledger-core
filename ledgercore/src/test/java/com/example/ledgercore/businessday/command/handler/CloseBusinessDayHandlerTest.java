@@ -5,11 +5,13 @@ import com.example.ledgercore.businessday.command.repository.BusinessDayCommandR
 import com.example.ledgercore.businessday.config.BusinessDayProperties;
 import com.example.ledgercore.businessday.entity.BusinessDay;
 import com.example.ledgercore.businessday.enums.BusinessDayStatus;
+import com.example.ledgercore.businessday.event.BusinessDayClosedEvent;
 import com.example.ledgercore.common.exception.BusinessException;
 import com.example.ledgercore.common.exception.ErrorCode;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -26,316 +28,106 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class CloseBusinessDayHandlerTest {
 
-    private static final ZoneId ZONE_ID =
-            ZoneId.of("Asia/Ho_Chi_Minh");
-
-    private static final LocalTime CLOSING_START =
-            LocalTime.of(23, 30);
-
-    private static final LocalDate BUSINESS_DATE =
-            LocalDate.of(2026, 8, 27);
-
-    /*
-     * 23:30 Asia/Ho_Chi_Minh
-     */
-    private static final Instant CLOSING_TIME =
-            Instant.parse("2026-08-27T16:30:00Z");
-
-    /*
-     * 23:29 Asia/Ho_Chi_Minh
-     */
-    private static final Instant BEFORE_CLOSING_TIME =
-            Instant.parse("2026-08-27T16:29:00Z");
-
-    /*
-     * 08:00 Asia/Ho_Chi_Minh on next day.
-     */
-    private static final Instant RECOVERY_TIME =
-            Instant.parse("2026-08-28T01:00:00Z");
+    @Mock
+    private BusinessDayCommandRepository businessDayCommandRepository;
 
     @Mock
-    private BusinessDayCommandRepository
-            businessDayCommandRepository;
-
-    @Mock
-    private BusinessDayProperties
-            businessDayProperties;
+    private BusinessDayProperties businessDayProperties;
 
     @Mock
     private BusinessDayEventPort businessDayEventPort;
 
+    @Mock
+    private Clock clock;
+
+    @Mock
+    private BusinessDay businessDay;
+
+    @InjectMocks
     private CloseBusinessDayHandler handler;
 
-    @BeforeEach
-    void setUp() {
-        handler = new CloseBusinessDayHandler(
-                businessDayCommandRepository,
-                businessDayProperties,
-                businessDayEventPort,
-                Clock.fixed(
-                        CLOSING_TIME,
-                        ZONE_ID
-                )
-        );
-    }
-
     @Test
-    void shouldCloseBusinessDayAndOpenNextBusinessDay() {
+    void execute_shouldCloseBusinessDayAndOpenNextDay() {
 
-        BusinessDay businessDay =
-                openBusinessDay(BUSINESS_DATE);
+        ZoneId zoneId = ZoneId.of("Asia/Ho_Chi_Minh");
+        Instant now = Instant.parse("2026-09-04T16:40:00Z");
 
-        stubTimezone();
+        LocalDate businessDate = LocalDate.of(2026, 9, 4);
 
-        stubClosingStart();
+        when(businessDayProperties.getTimezone())
+                .thenReturn("Asia/Ho_Chi_Minh");
 
-        when(businessDayCommandRepository
-                .findByStatusForUpdate(
-                        BusinessDayStatus.OPEN
-                ))
-                .thenReturn(Optional.of(businessDay));
+        when(clock.instant())
+                .thenReturn(now);
 
-        when(businessDayCommandRepository
-                .existsById(
-                        BUSINESS_DATE.plusDays(1)
-                ))
-                .thenReturn(false);
+        when(businessDayCommandRepository.findByStatusForUpdate(
+                BusinessDayStatus.OPEN
+        )).thenReturn(Optional.of(businessDay));
+
+        when(businessDay.getBusinessDate())
+                .thenReturn(businessDate);
+
+        when(businessDayProperties.isClosingValidationEnabled())
+                .thenReturn(true);
+
+        when(businessDayProperties.getClosingStart())
+                .thenReturn(LocalTime.of(23, 30));
+
+        when(businessDayCommandRepository.existsById(
+                businessDate.plusDays(1)
+        )).thenReturn(false);
 
         handler.execute();
 
-        assertEquals(
-                BusinessDayStatus.CLOSED,
-                businessDay.getStatus()
-        );
+        verify(businessDay).close(now);
 
-        assertEquals(
-                CLOSING_TIME,
-                businessDay.getClosedAt()
-        );
+        ArgumentCaptor<BusinessDay> captor =
+                ArgumentCaptor.forClass(BusinessDay.class);
 
         verify(businessDayCommandRepository)
-                .findByStatusForUpdate(
-                        BusinessDayStatus.OPEN
-                );
+                .save(captor.capture());
 
-        verify(businessDayCommandRepository)
-                .existsById(
-                        BUSINESS_DATE.plusDays(1)
-                );
-
-        verify(businessDayCommandRepository)
-                .save(argThat(nextBusinessDay ->
-                        nextBusinessDay.getBusinessDate()
-                                .equals(BUSINESS_DATE.plusDays(1))
-                                && nextBusinessDay.getStatus()
-                                == BusinessDayStatus.OPEN
-                                && nextBusinessDay.getOpenedAt()
-                                .equals(CLOSING_TIME)
-                                && nextBusinessDay.getClosedAt()
-                                == null
-                ));
-
-        verifyNoMoreInteractions(
-                businessDayCommandRepository
-        );
-    }
-
-    @Test
-    void shouldAllowCloseExactlyAtClosingStart() {
-
-        BusinessDay businessDay =
-                openBusinessDay(BUSINESS_DATE);
-
-        stubTimezone();
-
-        stubClosingStart();
-
-        when(businessDayCommandRepository
-                .findByStatusForUpdate(
-                        BusinessDayStatus.OPEN
-                ))
-                .thenReturn(Optional.of(businessDay));
-
-        when(businessDayCommandRepository
-                .existsById(
-                        BUSINESS_DATE.plusDays(1)
-                ))
-                .thenReturn(false);
-
-        assertDoesNotThrow(
-                () -> handler.execute()
-        );
+        BusinessDay nextBusinessDay = captor.getValue();
 
         assertEquals(
-                BusinessDayStatus.CLOSED,
-                businessDay.getStatus()
-        );
-
-        assertEquals(
-                CLOSING_TIME,
-                businessDay.getClosedAt()
-        );
-
-        verify(businessDayCommandRepository)
-                .findByStatusForUpdate(
-                        BusinessDayStatus.OPEN
-                );
-
-        verify(businessDayCommandRepository)
-                .existsById(
-                        BUSINESS_DATE.plusDays(1)
-                );
-
-        verify(businessDayCommandRepository)
-                .save(any(BusinessDay.class));
-
-        verifyNoMoreInteractions(
-                businessDayCommandRepository
-        );
-    }
-
-    @Test
-    void shouldRejectCloseBeforeClosingStart() {
-
-        handler = new CloseBusinessDayHandler(
-                businessDayCommandRepository,
-                businessDayProperties,
-                businessDayEventPort,
-                Clock.fixed(
-                        BEFORE_CLOSING_TIME,
-                        ZONE_ID
-                )
-        );
-
-        BusinessDay businessDay =
-                openBusinessDay(BUSINESS_DATE);
-
-        stubTimezone();
-
-        stubClosingStart();
-
-        when(businessDayCommandRepository
-                .findByStatusForUpdate(
-                        BusinessDayStatus.OPEN
-                ))
-                .thenReturn(Optional.of(businessDay));
-
-        BusinessException exception =
-                assertThrows(
-                        BusinessException.class,
-                        () -> handler.execute()
-                );
-
-        assertEquals(
-                ErrorCode.BUSINESS_DAY_CLOSE_NOT_ALLOWED,
-                exception.getErrorCode()
+                businessDate.plusDays(1),
+                nextBusinessDay.getBusinessDate()
         );
 
         assertEquals(
                 BusinessDayStatus.OPEN,
-                businessDay.getStatus()
+                nextBusinessDay.getStatus()
         );
 
-        assertNull(
-                businessDay.getClosedAt()
+        assertEquals(
+                now,
+                nextBusinessDay.getOpenedAt()
         );
 
-        verify(businessDayCommandRepository)
-                .findByStatusForUpdate(
-                        BusinessDayStatus.OPEN
-                );
+        ArgumentCaptor<BusinessDayClosedEvent> eventCaptor =
+                ArgumentCaptor.forClass(BusinessDayClosedEvent.class);
 
-        verifyNoMoreInteractions(
-                businessDayCommandRepository
+        verify(businessDayEventPort)
+                .publishBusinessDayClosed(eventCaptor.capture());
+
+        assertEquals(
+                businessDate,
+                eventCaptor.getValue().businessDate()
         );
     }
 
     @Test
-    void shouldCloseMissedBusinessDayDuringRecovery() {
+    void execute_shouldThrow_whenBusinessDayNotFound() {
 
-        handler = new CloseBusinessDayHandler(
-                businessDayCommandRepository,
-                businessDayProperties,
-                businessDayEventPort,
-                Clock.fixed(
-                        RECOVERY_TIME,
-                        ZONE_ID
-                )
-        );
+        when(businessDayProperties.getTimezone())
+                .thenReturn("Asia/Ho_Chi_Minh");
 
-        BusinessDay businessDay =
-                openBusinessDay(BUSINESS_DATE);
+        when(clock.instant())
+                .thenReturn(Instant.parse("2026-09-04T16:40:00Z"));
 
-        stubTimezone();
-
-        /*
-         * ClosingStart is still required by the
-         * current implementation because validateClosingTime()
-         * reads it before checking the date.
-         */
-        stubClosingStart();
-
-        when(businessDayCommandRepository
-                .findByStatusForUpdate(
-                        BusinessDayStatus.OPEN
-                ))
-                .thenReturn(Optional.of(businessDay));
-
-        when(businessDayCommandRepository
-                .existsById(
-                        BUSINESS_DATE.plusDays(1)
-                ))
-                .thenReturn(false);
-
-        assertDoesNotThrow(
-                () -> handler.execute()
-        );
-
-        assertEquals(
-                BusinessDayStatus.CLOSED,
-                businessDay.getStatus()
-        );
-
-        assertEquals(
-                RECOVERY_TIME,
-                businessDay.getClosedAt()
-        );
-
-        verify(businessDayCommandRepository)
-                .findByStatusForUpdate(
-                        BusinessDayStatus.OPEN
-                );
-
-        verify(businessDayCommandRepository)
-                .existsById(
-                        BUSINESS_DATE.plusDays(1)
-                );
-
-        verify(businessDayCommandRepository)
-                .save(argThat(nextBusinessDay ->
-                        nextBusinessDay.getBusinessDate()
-                                .equals(BUSINESS_DATE.plusDays(1))
-                                && nextBusinessDay.getStatus()
-                                == BusinessDayStatus.OPEN
-                                && nextBusinessDay.getOpenedAt()
-                                .equals(RECOVERY_TIME)
-                ));
-
-        verifyNoMoreInteractions(
-                businessDayCommandRepository
-        );
-    }
-
-    @Test
-    void shouldThrowWhenNoOpenBusinessDayExists() {
-
-        stubTimezone();
-
-        when(businessDayCommandRepository
-                .findByStatusForUpdate(
-                        BusinessDayStatus.OPEN
-                ))
-                .thenReturn(Optional.empty());
+        when(businessDayCommandRepository.findByStatusForUpdate(
+                BusinessDayStatus.OPEN
+        )).thenReturn(Optional.empty());
 
         BusinessException exception =
                 assertThrows(
@@ -348,41 +140,177 @@ class CloseBusinessDayHandlerTest {
                 exception.getErrorCode()
         );
 
-        verify(businessDayProperties)
-                .getTimezone();
+        verify(businessDayCommandRepository, never())
+                .save(any());
 
-        verifyNoMoreInteractions(
-                businessDayProperties
-        );
-
-        verify(businessDayCommandRepository)
-                .findByStatusForUpdate(
-                        BusinessDayStatus.OPEN
-                );
-
-        verifyNoMoreInteractions(
-                businessDayCommandRepository
-        );
+        verify(businessDayEventPort, never())
+                .publishBusinessDayClosed(any());
     }
 
     @Test
-    void shouldRejectFutureBusinessDay() {
+    void execute_shouldThrow_whenClosingTimeHasNotStarted() {
 
-        LocalDate futureBusinessDate =
-                BUSINESS_DATE.plusDays(1);
+        ZoneId zoneId = ZoneId.of("Asia/Ho_Chi_Minh");
 
-        BusinessDay businessDay =
-                openBusinessDay(futureBusinessDate);
+        // 2026-09-04 22:40 Vietnam time
+        Instant now = Instant.parse("2026-09-04T15:40:00Z");
 
-        stubTimezone();
+        LocalDate businessDate = LocalDate.of(2026, 9, 4);
 
-        stubClosingStart();
+        when(businessDayProperties.getTimezone())
+                .thenReturn(zoneId.getId());
 
-        when(businessDayCommandRepository
-                .findByStatusForUpdate(
-                        BusinessDayStatus.OPEN
-                ))
-                .thenReturn(Optional.of(businessDay));
+        when(clock.instant())
+                .thenReturn(now);
+
+        when(businessDayCommandRepository.findByStatusForUpdate(
+                BusinessDayStatus.OPEN
+        )).thenReturn(Optional.of(businessDay));
+
+        when(businessDay.getBusinessDate())
+                .thenReturn(businessDate);
+
+        when(businessDayProperties.isClosingValidationEnabled())
+                .thenReturn(true);
+
+        when(businessDayProperties.getClosingStart())
+                .thenReturn(LocalTime.of(23, 30));
+
+        BusinessException exception =
+                assertThrows(
+                        BusinessException.class,
+                        () -> handler.execute()
+                );
+
+        assertEquals(
+                ErrorCode.BUSINESS_DAY_CLOSE_NOT_ALLOWED,
+                exception.getErrorCode()
+        );
+
+        verify(businessDay, never())
+                .close(any());
+
+        verify(businessDayCommandRepository, never())
+                .existsById(any());
+
+        verify(businessDayCommandRepository, never())
+                .save(any());
+
+        verify(businessDayEventPort, never())
+                .publishBusinessDayClosed(any());
+    }
+
+    @Test
+    void execute_shouldClose_whenCurrentTimeEqualsClosingStart() {
+
+        // 2026-09-04 23:30 Vietnam time
+        Instant now = Instant.parse("2026-09-04T16:30:00Z");
+
+        LocalDate businessDate = LocalDate.of(2026, 9, 4);
+
+        when(businessDayProperties.getTimezone())
+                .thenReturn("Asia/Ho_Chi_Minh");
+
+        when(clock.instant())
+                .thenReturn(now);
+
+        when(businessDayCommandRepository.findByStatusForUpdate(
+                BusinessDayStatus.OPEN
+        )).thenReturn(Optional.of(businessDay));
+
+        when(businessDay.getBusinessDate())
+                .thenReturn(businessDate);
+
+        when(businessDayProperties.isClosingValidationEnabled())
+                .thenReturn(true);
+
+        when(businessDayProperties.getClosingStart())
+                .thenReturn(LocalTime.of(23, 30));
+
+        when(businessDayCommandRepository.existsById(
+                businessDate.plusDays(1)
+        )).thenReturn(false);
+
+        assertDoesNotThrow(() -> handler.execute());
+
+        verify(businessDay).close(now);
+
+        verify(businessDayCommandRepository)
+                .save(any(BusinessDay.class));
+
+        verify(businessDayEventPort)
+                .publishBusinessDayClosed(any(BusinessDayClosedEvent.class));
+    }
+
+    @Test
+    void execute_shouldClose_whenBusinessDateIsYesterday() {
+
+        // 2026-09-05 10:00 Vietnam time
+        Instant now = Instant.parse("2026-09-05T03:00:00Z");
+
+        LocalDate businessDate = LocalDate.of(2026, 9, 4);
+
+        when(businessDayProperties.getTimezone())
+                .thenReturn("Asia/Ho_Chi_Minh");
+
+        when(clock.instant())
+                .thenReturn(now);
+
+        when(businessDayCommandRepository.findByStatusForUpdate(
+                BusinessDayStatus.OPEN
+        )).thenReturn(Optional.of(businessDay));
+
+        when(businessDay.getBusinessDate())
+                .thenReturn(businessDate);
+
+        when(businessDayProperties.isClosingValidationEnabled())
+                .thenReturn(true);
+
+        when(businessDayProperties.getClosingStart())
+                .thenReturn(LocalTime.of(23, 30));
+
+        when(businessDayCommandRepository.existsById(
+                businessDate.plusDays(1)
+        )).thenReturn(false);
+
+        assertDoesNotThrow(() -> handler.execute());
+
+        verify(businessDay).close(now);
+
+        verify(businessDayCommandRepository)
+                .save(any(BusinessDay.class));
+
+        verify(businessDayEventPort)
+                .publishBusinessDayClosed(any());
+    }
+
+    @Test
+    void execute_shouldThrow_whenBusinessDateIsInFuture() {
+
+        // Current date: Sep 4
+        Instant now = Instant.parse("2026-09-04T16:40:00Z");
+
+        // Business day: Sep 5
+        LocalDate businessDate = LocalDate.of(2026, 9, 5);
+
+        when(businessDayProperties.getTimezone())
+                .thenReturn("Asia/Ho_Chi_Minh");
+
+        when(clock.instant())
+                .thenReturn(now);
+
+        when(businessDayCommandRepository.findByStatusForUpdate(
+                BusinessDayStatus.OPEN
+        )).thenReturn(Optional.of(businessDay));
+
+        when(businessDay.getBusinessDate())
+                .thenReturn(businessDate);
+
+        when(businessDayProperties.isClosingValidationEnabled())
+                .thenReturn(true);
+
+        when(businessDayProperties.getClosingStart())
+                .thenReturn(LocalTime.of(23, 30));
 
         BusinessException exception =
                 assertThrows(
@@ -395,46 +323,48 @@ class CloseBusinessDayHandlerTest {
                 exception.getErrorCode()
         );
 
-        assertEquals(
-                BusinessDayStatus.OPEN,
-                businessDay.getStatus()
-        );
+        verify(businessDay, never())
+                .close(any());
 
-        assertNull(
-                businessDay.getClosedAt()
-        );
+        verify(businessDayCommandRepository, never())
+                .existsById(any());
 
-        verify(businessDayCommandRepository)
-                .findByStatusForUpdate(
-                        BusinessDayStatus.OPEN
-                );
+        verify(businessDayCommandRepository, never())
+                .save(any());
 
-        verifyNoMoreInteractions(
-                businessDayCommandRepository
-        );
+        verify(businessDayEventPort, never())
+                .publishBusinessDayClosed(any());
     }
 
     @Test
-    void shouldRejectWhenNextBusinessDayAlreadyExists() {
+    void execute_shouldThrow_whenNextBusinessDayAlreadyExists() {
 
-        BusinessDay businessDay =
-                openBusinessDay(BUSINESS_DATE);
+        Instant now = Instant.parse("2026-09-04T16:40:00Z");
 
-        stubTimezone();
+        LocalDate businessDate = LocalDate.of(2026, 9, 4);
 
-        stubClosingStart();
+        when(businessDayProperties.getTimezone())
+                .thenReturn("Asia/Ho_Chi_Minh");
 
-        when(businessDayCommandRepository
-                .findByStatusForUpdate(
-                        BusinessDayStatus.OPEN
-                ))
-                .thenReturn(Optional.of(businessDay));
+        when(clock.instant())
+                .thenReturn(now);
 
-        when(businessDayCommandRepository
-                .existsById(
-                        BUSINESS_DATE.plusDays(1)
-                ))
+        when(businessDayCommandRepository.findByStatusForUpdate(
+                BusinessDayStatus.OPEN
+        )).thenReturn(Optional.of(businessDay));
+
+        when(businessDay.getBusinessDate())
+                .thenReturn(businessDate);
+
+        when(businessDayProperties.isClosingValidationEnabled())
                 .thenReturn(true);
+
+        when(businessDayProperties.getClosingStart())
+                .thenReturn(LocalTime.of(23, 30));
+
+        when(businessDayCommandRepository.existsById(
+                businessDate.plusDays(1)
+        )).thenReturn(true);
 
         BusinessException exception =
                 assertThrows(
@@ -448,57 +378,54 @@ class CloseBusinessDayHandlerTest {
         );
 
         /*
-         * The entity is mutated before the exception.
-         *
-         * In production, @Transactional rollback will
-         * prevent this state from being committed.
+         * close() happens before openNextBusinessDay().
+         * The transaction will roll back if this is a real Spring transaction.
          */
-        assertEquals(
-                BusinessDayStatus.CLOSED,
-                businessDay.getStatus()
-        );
+        verify(businessDay).close(now);
 
-        assertEquals(
-                CLOSING_TIME,
-                businessDay.getClosedAt()
-        );
+        verify(businessDayCommandRepository, never())
+                .save(any());
 
-        verify(businessDayCommandRepository)
-                .findByStatusForUpdate(
-                        BusinessDayStatus.OPEN
-                );
-
-        verify(businessDayCommandRepository)
-                .existsById(
-                        BUSINESS_DATE.plusDays(1)
-                );
-
-        verifyNoMoreInteractions(
-                businessDayCommandRepository
-        );
+        verify(businessDayEventPort, never())
+                .publishBusinessDayClosed(any());
     }
 
-    private void stubTimezone() {
+    @Test
+    void execute_shouldSkipClosingTimeValidation_whenValidationDisabled() {
+
+        // 2026-09-04 10:00 Vietnam time
+        Instant now = Instant.parse("2026-09-04T03:00:00Z");
+
+        LocalDate businessDate = LocalDate.of(2026, 9, 4);
+
         when(businessDayProperties.getTimezone())
-                .thenReturn(ZONE_ID.getId());
-    }
+                .thenReturn("Asia/Ho_Chi_Minh");
 
-    private void stubClosingStart() {
-        when(businessDayProperties.getClosingStart())
-                .thenReturn(CLOSING_START);
-    }
+        when(clock.instant())
+                .thenReturn(now);
 
-    private BusinessDay openBusinessDay(
-            LocalDate businessDate
-    ) {
-        return BusinessDay.builder()
-                .businessDate(businessDate)
-                .status(BusinessDayStatus.OPEN)
-                .openedAt(
-                        Instant.parse(
-                                "2026-08-26T16:00:00Z"
-                        )
-                )
-                .build();
+        when(businessDayCommandRepository.findByStatusForUpdate(
+                BusinessDayStatus.OPEN
+        )).thenReturn(Optional.of(businessDay));
+
+        when(businessDay.getBusinessDate())
+                .thenReturn(businessDate);
+
+        when(businessDayProperties.isClosingValidationEnabled())
+                .thenReturn(false);
+
+        when(businessDayCommandRepository.existsById(
+                businessDate.plusDays(1)
+        )).thenReturn(false);
+
+        assertDoesNotThrow(() -> handler.execute());
+
+        verify(businessDay).close(now);
+
+        verify(businessDayCommandRepository)
+                .save(any(BusinessDay.class));
+
+        verify(businessDayEventPort)
+                .publishBusinessDayClosed(any());
     }
 }
