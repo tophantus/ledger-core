@@ -194,7 +194,7 @@ credit:
       batch-size: 100
       scheduler:
         enabled: true
-        fixed-delay: 300000
+        fixed-delay: 30000
 
     scheduler:
       enabled: true
@@ -206,7 +206,7 @@ credit:
   repayment:
     scheduler:
       enabled: true
-      fixed-delay: 300000
+      fixed-delay: 30000
       batch-size: 100
 
   offer:
