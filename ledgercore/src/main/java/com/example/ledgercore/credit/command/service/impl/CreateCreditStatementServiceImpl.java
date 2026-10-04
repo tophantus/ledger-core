@@ -17,6 +17,7 @@ import com.example.ledgercore.credit.entity.CreditStatement;
 import com.example.ledgercore.credit.enums.CreditFacilityStatus;
 import com.example.ledgercore.credit.enums.CreditStatementStatus;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +25,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CreateCreditStatementServiceImpl
@@ -98,6 +100,15 @@ public class CreateCreditStatementServiceImpl
                 .add(amounts.purchasesAmount())
                 .add(amounts.feesAmount())
                 .subtract(amounts.paymentsAmount());
+
+        log.debug("Opening balance: {}, Purchases: {}, Fees: {}, Payments: {}, Interest: {}",
+                openingBalance,
+                amounts.purchasesAmount(),
+                amounts.feesAmount(),
+                amounts.paymentsAmount(),
+                interestAmount
+        );
+
 
         if (expectedClosingBalance.compareTo(closingBalance) != 0) {
             throw new IllegalStateException(
