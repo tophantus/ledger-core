@@ -180,6 +180,7 @@
       "quickLinks": "Truy cập nhanh",
       "runType": {
         "ACCRUAL": "Tích lũy lãi",
+        "CREDIT_ACCRUAL": "Tích lũy lãi tín dụng",
         "POSTING": "Hạch toán lãi"
       },
       "status": {
@@ -229,6 +230,7 @@
       },
       "runTypes": {
         "ACCRUAL": "Trích trước lãi",
+        "CREDIT_ACCRUAL": "Tích lũy lãi tín dụng",
         "POSTING": "Hạch toán lãi"
       },
       "statuses": {

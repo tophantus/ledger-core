@@ -7,6 +7,13 @@
     "description": "Bạn có một đề nghị tín dụng mới.",
     "approvedLimit": "Hạn mức được duyệt",
     "status": "Trạng thái",
+    "statuses": {
+      "OFFERED": "Đang đề nghị",
+      "ACCEPTED": "Đã chấp nhận",
+      "EXPIRED": "Đã hết hạn",
+      "REJECTED": "Đã từ chối",
+      "CANCELLED": "Đã hủy"
+    },
     "expiresAt": "Hết hạn vào",
     "actions": {
       "accept": "Chấp nhận",
@@ -24,13 +31,11 @@
     "outstandingBalance": "Dư nợ",
     "holdAmount": "Số tiền tạm giữ",
     "openedAt": "Ngày mở",
-
     "statuses": {
       "ACTIVE": "Đang hoạt động",
       "SUSPENDED": "Tạm ngưng",
       "CLOSED": "Đã đóng"
     },
-
     "repaymentMandate": {
       "title": "Ủy quyền thanh toán",
       "description": "Thiết lập tài khoản và phương thức dùng để thanh toán dư nợ tín dụng.",
@@ -38,17 +43,14 @@
       "account": "Tài khoản thanh toán",
       "accountPlaceholder": "Chọn tài khoản",
       "repaymentType": "Phương thức thanh toán",
-
       "types": {
         "FULL_BALANCE": "Thanh toán toàn bộ dư nợ",
         "MINIMUM_PAYMENT": "Thanh toán tối thiểu"
       },
-
       "statuses": {
         "ACTIVE": "Đang hoạt động",
         "REVOKED": "Đã thu hồi"
       },
-
       "actions": {
         "register": "Đăng ký ủy quyền thanh toán",
         "edit": "Chỉnh sửa",
@@ -58,7 +60,6 @@
         "revoking": "Đang thu hồi...",
         "cancel": "Hủy"
       },
-
       "validation": {
         "account": {
           "required": "Vui lòng chọn tài khoản thanh toán."
@@ -79,9 +80,7 @@
     "closingBalance": "Dư nợ cuối kỳ",
     "minimumPayment": "Thanh toán tối thiểu",
     "paidAmount": "Đã thanh toán",
-
     "interestWaived": "Được miễn",
-
     "loadFailed": "Không thể tải sao kê tín dụng.",
     "status": "Trạng thái",
     "statuses": {

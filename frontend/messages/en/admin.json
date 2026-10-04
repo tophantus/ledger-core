@@ -180,6 +180,7 @@
       "quickLinks": "Quick Links",
       "runType": {
         "ACCRUAL": "Accrual",
+        "CREDIT_ACCRUAL": "Credit Accrual",
         "POSTING": "Posting"
       },
       "status": {
@@ -229,6 +230,7 @@
       },
       "runTypes": {
         "ACCRUAL": "Accrual",
+        "CREDIT_ACCRUAL": "Credit Accrual",
         "POSTING": "Posting"
       },
       "statuses": {
