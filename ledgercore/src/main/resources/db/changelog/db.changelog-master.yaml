@@ -187,3 +187,7 @@ databaseChangeLog:
       file: db/changelog/093-alter-transaction-reference-length.yaml
   - include:
       file: db/changelog/094-seed-credit-system-ledger-accounts.yaml
+  - include:
+      file: db/changelog/095-seed-credit-products-and-interest-configs.yaml
+  - include:
+      file: db/changelog/096-add-posted-interest-amount-to-credit-statements.yaml

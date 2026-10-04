@@ -93,7 +93,7 @@ class CreateCreditFacilityFeeHandlerTest {
         assertEquals(businessDate, savedTransaction.getBusinessDate());
         assertEquals(
                 creditFacilityId,
-                savedTransaction.getDestinationCreditFacilityId()
+                savedTransaction.getSourceCreditFacilityId()
         );
         assertEquals(0, AMOUNT.compareTo(savedTransaction.getAmount()));
         assertEquals(Currency.VND, savedTransaction.getCurrency());

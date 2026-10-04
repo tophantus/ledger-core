@@ -28,9 +28,7 @@ public class InterestEligibleCreditFacilityQueryAdapter
         return getCreditFacilityEligibleForInterestUseCase
                 .getEligibleCreditFacilitiesForInterest(
                         businessDate,
-                        lastProcessedId != null
-                                ? lastProcessedId.toString()
-                                : null,
+                        lastProcessedId,
                         batchSize
                 )
                 .stream()

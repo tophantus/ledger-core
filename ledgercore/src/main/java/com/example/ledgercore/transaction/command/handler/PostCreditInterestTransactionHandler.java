@@ -48,7 +48,7 @@ public class PostCreditInterestTransactionHandler
                         .type(TransactionType.INTEREST)
                         .status(TransactionStatus.PENDING)
                         .businessDate(command.businessDate())
-                        .destinationCreditFacilityId(
+                        .sourceCreditFacilityId(
                                 command.creditFacilityId()
                         )
                         .amount(command.amount())

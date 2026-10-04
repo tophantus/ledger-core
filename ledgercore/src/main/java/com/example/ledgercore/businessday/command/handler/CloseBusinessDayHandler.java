@@ -65,11 +65,15 @@ public class CloseBusinessDayHandler
         LocalDate businessDate =
                 businessDay.getBusinessDate();
 
-        validateClosingTime(
-                businessDate,
-                currentDate,
-                currentTime
-        );
+        if (businessDayProperties
+                .isClosingValidationEnabled()) {
+
+            validateClosingTime(
+                    businessDate,
+                    currentDate,
+                    currentTime
+            );
+        }
 
         businessDay.close(now);
 

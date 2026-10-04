@@ -17,6 +17,7 @@ import com.example.ledgercore.credit.entity.CreditStatement;
 import com.example.ledgercore.credit.enums.CreditFacilityStatus;
 import com.example.ledgercore.credit.enums.CreditStatementStatus;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +25,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CreateCreditStatementServiceImpl
@@ -90,14 +92,24 @@ public class CreateCreditStatementServiceImpl
         BigDecimal closingBalance = dailyBalance.getClosingBalance();
 
         BigDecimal interestAmount = CurrencyAmountPolicy.round(
-                amounts.interestAmount(),
+                amounts.accruedInterestAmount(),
                 facility.getCurrency()
         );
 
         BigDecimal expectedClosingBalance = openingBalance
                 .add(amounts.purchasesAmount())
                 .add(amounts.feesAmount())
+                .add(amounts.postedInterestAmount())
                 .subtract(amounts.paymentsAmount());
+
+        log.debug("Opening balance: {}, Purchases: {}, Fees: {}, Payments: {}, Interest: {}",
+                openingBalance,
+                amounts.purchasesAmount(),
+                amounts.feesAmount(),
+                amounts.paymentsAmount(),
+                amounts.accruedInterestAmount()
+        );
+
 
         if (expectedClosingBalance.compareTo(closingBalance) != 0) {
             throw new IllegalStateException(
@@ -131,6 +143,7 @@ public class CreateCreditStatementServiceImpl
                         .paymentsAmount(amounts.paymentsAmount())
                         .feesAmount(amounts.feesAmount())
                         .interestAmount(interestAmount)
+                        .postedInterestAmount(amounts.postedInterestAmount())
                         .closingBalance(closingBalance)
                         .minimumPayment(minimumPayment)
                         .paidAmount(BigDecimal.ZERO)

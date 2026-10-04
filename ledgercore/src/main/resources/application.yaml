@@ -155,9 +155,10 @@ webhook:
         batch-size: 500
 
 business-day:
-  timezone: Asia/Ho_Chi_Minh
-  closing-cron: "0 30 23 * * *"
-  closing-start: "23:30"
+  timezone: ${BUSINESS_DAY_TIMEZONE:Asia/Ho_Chi_Minh}
+  closing-cron: ${BUSINESS_DAY_CLOSING_CRON:0 30 23 * * *}
+  closing-start: ${BUSINESS_DAY_CLOSING_START:23:30:00}
+  closing-validation-enabled: ${BUSINESS_DAY_CLOSING_VALIDATION_ENABLED:true}
 
 reconciliation:
   scheduler:
@@ -193,7 +194,7 @@ credit:
       batch-size: 100
       scheduler:
         enabled: true
-        fixed-delay: 300000
+        fixed-delay: 30000
 
     scheduler:
       enabled: true
@@ -205,7 +206,7 @@ credit:
   repayment:
     scheduler:
       enabled: true
-      fixed-delay: 300000
+      fixed-delay: 30000
       batch-size: 100
 
   offer:

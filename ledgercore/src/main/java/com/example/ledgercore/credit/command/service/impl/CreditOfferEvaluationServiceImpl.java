@@ -16,20 +16,36 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 @RequiredArgsConstructor
 public class CreditOfferEvaluationServiceImpl
         implements CreditOfferEvaluationService {
 
-    private static final String DEFAULT_PRODUCT_CODE =
-            "CREDIT_STANDARD";
-
-    private static final BigDecimal DEFAULT_APPROVED_LIMIT =
+    private static final BigDecimal STANDARD_MIN_LIMIT =
             new BigDecimal("10000000");
+
+    private static final BigDecimal STANDARD_MAX_LIMIT =
+            new BigDecimal("15000000");
+
+    private static final BigDecimal GOLD_MIN_LIMIT =
+            new BigDecimal("15000000");
+
+    private static final BigDecimal GOLD_MAX_LIMIT =
+            new BigDecimal("25000000");
+
+    private static final BigDecimal PLATINUM_MIN_LIMIT =
+            new BigDecimal("25000000");
+
+    private static final BigDecimal PLATINUM_MAX_LIMIT =
+            new BigDecimal("50000000");
 
     private static final BigDecimal MINIMUM_LIMIT_INCREASE_RATIO =
             new BigDecimal("0.15");
+
+    private static final BigDecimal LIMIT_STEP =
+            new BigDecimal("1000000");
 
     private final ActiveCreditProductsPort activeCreditProductsPort;
 
@@ -41,11 +57,14 @@ public class CreditOfferEvaluationServiceImpl
             EvaluateCreditOfferCommand command
     ) {
         ActiveCreditProductInfo product =
-                findDefaultProduct();
+                findRandomProduct();
 
         if (product == null) {
             return Optional.empty();
         }
+
+        BigDecimal approvedLimit =
+                generateApprovedLimit(product);
 
         Optional<CreditFacility> facility =
                 creditFacilityQueryRepository
@@ -58,7 +77,8 @@ public class CreditOfferEvaluationServiceImpl
             return Optional.of(
                     createNewFacilityEvaluation(
                             command,
-                            product
+                            product,
+                            approvedLimit
                     )
             );
         }
@@ -66,31 +86,85 @@ public class CreditOfferEvaluationServiceImpl
         return evaluateExistingFacility(
                 command,
                 product,
-                facility.get()
+                facility.get(),
+                approvedLimit
         );
     }
 
-    private ActiveCreditProductInfo findDefaultProduct() {
+    private ActiveCreditProductInfo findRandomProduct() {
         List<ActiveCreditProductInfo> products =
                 activeCreditProductsPort.getActiveCreditProducts();
 
-        return products.stream()
-                .filter(product ->
-                        DEFAULT_PRODUCT_CODE.equals(product.code())
+        if (products.isEmpty()) {
+            return null;
+        }
+
+        return products.get(
+                ThreadLocalRandom.current().nextInt(
+                        products.size()
                 )
-                .findFirst()
-                .orElse(null);
+        );
+    }
+
+    private BigDecimal generateApprovedLimit(
+            ActiveCreditProductInfo product
+    ) {
+        BigDecimal minimum;
+        BigDecimal maximum;
+
+        switch (product.code()) {
+            case "CREDIT_STANDARD" -> {
+                minimum = STANDARD_MIN_LIMIT;
+                maximum = STANDARD_MAX_LIMIT;
+            }
+            case "CREDIT_GOLD" -> {
+                minimum = GOLD_MIN_LIMIT;
+                maximum = GOLD_MAX_LIMIT;
+            }
+            case "CREDIT_PLATINUM" -> {
+                minimum = PLATINUM_MIN_LIMIT;
+                maximum = PLATINUM_MAX_LIMIT;
+            }
+            default -> {
+                return STANDARD_MIN_LIMIT;
+            }
+        }
+
+        long minimumUnits =
+                minimum.divide(
+                        LIMIT_STEP,
+                        0,
+                        RoundingMode.UNNECESSARY
+                ).longValue();
+
+        long maximumUnits =
+                maximum.divide(
+                        LIMIT_STEP,
+                        0,
+                        RoundingMode.UNNECESSARY
+                ).longValue();
+
+        long approvedUnits =
+                ThreadLocalRandom.current().nextLong(
+                        minimumUnits,
+                        maximumUnits + 1
+                );
+
+        return LIMIT_STEP.multiply(
+                BigDecimal.valueOf(approvedUnits)
+        );
     }
 
     private CreditOfferEvaluationResult createNewFacilityEvaluation(
             EvaluateCreditOfferCommand command,
-            ActiveCreditProductInfo product
+            ActiveCreditProductInfo product,
+            BigDecimal approvedLimit
     ) {
         return new CreditOfferEvaluationResult(
                 command.customerId(),
                 null,
                 product.id(),
-                DEFAULT_APPROVED_LIMIT,
+                approvedLimit,
                 Currency.VND
         );
     }
@@ -98,13 +172,10 @@ public class CreditOfferEvaluationServiceImpl
     private Optional<CreditOfferEvaluationResult> evaluateExistingFacility(
             EvaluateCreditOfferCommand command,
             ActiveCreditProductInfo product,
-            CreditFacility facility
+            CreditFacility facility,
+            BigDecimal approvedLimit
     ) {
-        BigDecimal currentLimit =
-                facility.getCreditLimit();
-
-        BigDecimal approvedLimit =
-                DEFAULT_APPROVED_LIMIT;
+        BigDecimal currentLimit = facility.getCreditLimit();
 
         BigDecimal limitIncrease =
                 approvedLimit.subtract(currentLimit);

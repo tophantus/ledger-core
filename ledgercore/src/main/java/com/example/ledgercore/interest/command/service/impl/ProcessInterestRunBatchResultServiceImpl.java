@@ -37,11 +37,13 @@ public class ProcessInterestRunBatchResultServiceImpl
             ClaimedInterestRun run,
             InterestRunBatchResult result
     ) {
-        updateProgressUseCase.execute(
-                run.runId(),
-                result.lastProcessedId(),
-                result.processedCount()
-        );
+        if (result.lastProcessedId() != null) {
+            updateProgressUseCase.execute(
+                    run.runId(),
+                    result.lastProcessedId(),
+                    result.processedCount()
+            );
+        }
 
         if (!result.completed()) {
             return;

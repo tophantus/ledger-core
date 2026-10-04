@@ -6,6 +6,7 @@ public record CreditStatementAmounts(
         BigDecimal purchasesAmount,
         BigDecimal paymentsAmount,
         BigDecimal feesAmount,
-        BigDecimal interestAmount
+        BigDecimal accruedInterestAmount,
+        BigDecimal postedInterestAmount
 ) {
 }

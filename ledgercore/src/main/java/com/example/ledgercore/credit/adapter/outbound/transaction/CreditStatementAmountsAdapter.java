@@ -5,9 +5,11 @@ import com.example.ledgercore.credit.command.port.outbound.dto.CreditStatementAm
 import com.example.ledgercore.interest.query.dto.GetCreditInterestAccrualTotalQuery;
 import com.example.ledgercore.interest.query.port.inbound.GetCreditInterestAccrualTotalUseCase;
 import com.example.ledgercore.transaction.query.dto.GetCreditFeeAmountQuery;
+import com.example.ledgercore.transaction.query.dto.GetCreditInterestAmountQuery;
 import com.example.ledgercore.transaction.query.dto.GetCreditPaymentAmountQuery;
 import com.example.ledgercore.transaction.query.dto.GetCreditPurchasesAmountQuery;
 import com.example.ledgercore.transaction.query.port.inbound.GetCreditFeeAmountUseCase;
+import com.example.ledgercore.transaction.query.port.inbound.GetCreditInterestAmountUseCase;
 import com.example.ledgercore.transaction.query.port.inbound.GetCreditPaymentAmountUseCase;
 import com.example.ledgercore.transaction.query.port.inbound.GetCreditPurchasesAmountUseCase;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +26,9 @@ public class CreditStatementAmountsAdapter
     private final GetCreditPurchasesAmountUseCase purchasesAmountUseCase;
     private final GetCreditPaymentAmountUseCase paymentsAmountUseCase;
     private final GetCreditFeeAmountUseCase feesAmountUseCase;
-    private final GetCreditInterestAccrualTotalUseCase interestAmountUseCase;
+    private final GetCreditInterestAccrualTotalUseCase
+            interestAccrualTotalUseCase;
+    private final GetCreditInterestAmountUseCase interestAmountUseCase;
 
     @Override
     public CreditStatementAmounts getAmounts(
@@ -48,11 +52,16 @@ public class CreditStatementAmountsAdapter
                                 creditFacilityId, periodStart, periodEnd
                         )
                 ).totalAmount(),
-                interestAmountUseCase.execute(
+                interestAccrualTotalUseCase.execute(
                         new GetCreditInterestAccrualTotalQuery(
                                 creditFacilityId, periodStart, periodEnd
                         )
-                ).totalInterestAmount()
+                ).totalInterestAmount(),
+                interestAmountUseCase.execute(
+                        new GetCreditInterestAmountQuery(
+                                creditFacilityId, periodStart, periodEnd
+                        )
+                ).totalAmount()
         );
     }
 }

@@ -46,34 +46,30 @@ export function CreditContentPage() {
             }
 
             try {
-                const offerResponse =
-                    await getLatestOffer();
+                const [
+                    offerResponse,
+                    facilityResponse,
+                ] = await Promise.all([
+                    getLatestOffer(),
+                    getFacility(),
+                ]);
 
-                if (
-                    offerResponse.success &&
-                    offerResponse.data
-                ) {
+                if (offerResponse.success) {
                     setOffer(
-                        offerResponse.data,
+                        offerResponse.data ?? null,
                     );
+                } else {
+                    setOffer(null);
+                }
+
+                if (facilityResponse.success) {
+                    setFacility(
+                        facilityResponse.data ?? null,
+                    );
+                } else {
                     setFacility(null);
-                    return;
-                }
-
-                const facilityResponse =
-                    await getFacility();
-
-                if (
-                    !facilityResponse.success
-                ) {
                     setHasError(true);
-                    return;
                 }
-
-                setOffer(null);
-                setFacility(
-                    facilityResponse.data,
-                );
             } catch {
                 setHasError(true);
             } finally {
@@ -119,20 +115,18 @@ export function CreditContentPage() {
         );
     }
 
-    if (offer) {
-        return (
-            <CreditOffer
-                offer={offer}
-                onCompleted={() =>
-                    loadCredit(true)
-                }
-            />
-        );
-    }
-
     return (
-        <CreditFacility
-            facility={facility}
-        />
+        <div className={"space-y-4"}>
+            {offer && (
+                <CreditOffer
+                    offer={offer}
+                    onCompleted={() => loadCredit(true)}
+                />
+            )}
+
+            <CreditFacility
+                facility={facility}
+            />
+        </div>
     );
 }

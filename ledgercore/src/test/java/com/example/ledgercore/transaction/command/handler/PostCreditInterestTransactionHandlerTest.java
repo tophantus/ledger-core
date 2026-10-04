@@ -87,7 +87,7 @@ class PostCreditInterestTransactionHandlerTest {
         assertEquals(businessDate, transaction.getBusinessDate());
         assertEquals(
                 creditFacilityId,
-                transaction.getDestinationCreditFacilityId()
+                transaction.getSourceCreditFacilityId()
         );
         assertBigDecimalEquals(amount, transaction.getAmount());
         assertEquals(Currency.VND, transaction.getCurrency());

@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: 096-add-posted-interest-amount-to-credit-statements
+      author: tophantus
+      changes:
+        - addColumn:
+            tableName: credit_statements
+            columns:
+              - column:
+                  name: posted_interest_amount
+                  type: DECIMAL(19,2)
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false

@@ -32,22 +32,17 @@ public class GetCreditFacilityEligibleForInterestHandler
     public List<CreditFacilityInterestEligibility>
     getEligibleCreditFacilitiesForInterest(
             LocalDate businessDate,
-            String lastProcessedId,
+            UUID lastProcessedId,
             int batchSize
     ) {
         validate(
                 businessDate,
-                lastProcessedId,
                 batchSize
         );
 
-        UUID cursor = lastProcessedId == null
-                ? null
-                : UUID.fromString(lastProcessedId);
-
         List<CreditFacility> facilities =
                 creditFacilityQueryRepository.findBatch(
-                        cursor,
+                        lastProcessedId,
                         CreditFacilityStatus.ACTIVE,
                         PageRequest.of(0, batchSize)
                 );
@@ -100,24 +95,12 @@ public class GetCreditFacilityEligibleForInterestHandler
 
     private void validate(
             LocalDate businessDate,
-            String lastProcessedId,
             int batchSize
     ) {
         if (businessDate == null) {
             throw new IllegalArgumentException(
                     "businessDate must not be null"
             );
-        }
-
-        if (lastProcessedId != null) {
-            try {
-                UUID.fromString(lastProcessedId);
-            } catch (IllegalArgumentException exception) {
-                throw new IllegalArgumentException(
-                        "lastProcessedId must be a valid UUID",
-                        exception
-                );
-            }
         }
 
         if (batchSize <= 0) {

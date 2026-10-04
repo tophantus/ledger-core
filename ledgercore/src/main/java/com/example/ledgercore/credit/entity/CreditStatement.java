@@ -112,6 +112,14 @@ public class CreditStatement {
     private BigDecimal interestAmount;
 
     @Column(
+            name = "posted_interest_amount",
+            nullable = false,
+            precision = 19,
+            scale = 2
+    )
+    private BigDecimal postedInterestAmount;
+
+    @Column(
             name = "closing_balance",
             nullable = false,
             precision = 19,

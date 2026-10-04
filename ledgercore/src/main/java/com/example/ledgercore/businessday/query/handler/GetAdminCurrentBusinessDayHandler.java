@@ -82,6 +82,10 @@ public class GetAdminCurrentBusinessDayHandler
             LocalDate currentDate,
             LocalTime currentTime
     ) {
+        if (!businessDayProperties.isClosingValidationEnabled()) {
+            return true;
+        }
+
         if (businessDate.isBefore(currentDate)) {
             return true;
         }
