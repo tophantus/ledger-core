@@ -38,7 +38,7 @@ public class EvaluateAndCreateCreditOfferHandler
                                 new CreateCreditOfferCommand(
                                         evaluation.customerId(),
                                         runId,
-                                        null,
+                                        evaluation.creditFacilityId(),
                                         evaluation.productId(),
                                         evaluation.approvedLimit(),
                                         evaluation.currency(),
