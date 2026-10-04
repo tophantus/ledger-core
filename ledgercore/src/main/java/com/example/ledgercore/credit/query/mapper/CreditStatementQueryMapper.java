@@ -23,6 +23,7 @@ public final class CreditStatementQueryMapper {
                 statement.getPaymentsAmount().toPlainString(),
                 statement.getFeesAmount().toPlainString(),
                 statement.getInterestAmount().toPlainString(),
+                statement.getPostedInterestAmount().toPlainString(),
                 statement.getClosingBalance().toPlainString(),
                 statement.getMinimumPayment().toPlainString(),
                 statement.getPaidAmount().toPlainString(),

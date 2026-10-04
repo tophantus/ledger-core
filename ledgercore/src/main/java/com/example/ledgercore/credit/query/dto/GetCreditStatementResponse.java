@@ -17,6 +17,7 @@ public record GetCreditStatementResponse(
         String paymentsAmount,
         String feesAmount,
         String interestAmount,
+        String postedInterestAmount,
         String closingBalance,
         String minimumPayment,
         String paidAmount,
