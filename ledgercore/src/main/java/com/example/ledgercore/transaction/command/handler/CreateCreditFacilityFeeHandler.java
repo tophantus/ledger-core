@@ -53,7 +53,7 @@ public class CreateCreditFacilityFeeHandler
                         .type(TransactionType.FEE)
                         .status(TransactionStatus.PENDING)
                         .businessDate(businessDate)
-                        .destinationCreditFacilityId(
+                        .sourceCreditFacilityId(
                                 command.creditFacilityId()
                         )
                         .amount(command.amount())
