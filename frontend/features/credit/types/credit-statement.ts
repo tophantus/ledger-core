@@ -22,6 +22,7 @@ export interface CreditStatement {
     paymentsAmount: string;
     feesAmount: string;
     interestAmount: string;
+    postedInterestAmount: string;
     closingBalance: string;
     minimumPayment: string;
     paidAmount: string;

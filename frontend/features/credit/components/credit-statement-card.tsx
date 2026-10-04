@@ -211,6 +211,17 @@ export function CreditStatementCard(
                 />
 
                 <StatementAmount
+                    label={t(
+                        "statements.postedInterestAmount",
+                    )}
+                    value={formatMoney(
+                        statement.postedInterestAmount,
+                        currency,
+                        locale,
+                    )}
+                />
+
+                <StatementAmount
                     label={t("statements.interestAmount")}
                     value={formatMoney(
                         statement.interestAmount,
