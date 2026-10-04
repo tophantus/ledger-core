@@ -16,14 +16,12 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 @RequiredArgsConstructor
 public class CreditOfferEvaluationServiceImpl
         implements CreditOfferEvaluationService {
-
-    private static final String DEFAULT_PRODUCT_CODE =
-            "CREDIT_STANDARD";
 
     private static final BigDecimal DEFAULT_APPROVED_LIMIT =
             new BigDecimal("10000000");
@@ -41,7 +39,7 @@ public class CreditOfferEvaluationServiceImpl
             EvaluateCreditOfferCommand command
     ) {
         ActiveCreditProductInfo product =
-                findDefaultProduct();
+                findRandomProduct();
 
         if (product == null) {
             return Optional.empty();
@@ -70,16 +68,19 @@ public class CreditOfferEvaluationServiceImpl
         );
     }
 
-    private ActiveCreditProductInfo findDefaultProduct() {
+    private ActiveCreditProductInfo findRandomProduct() {
         List<ActiveCreditProductInfo> products =
                 activeCreditProductsPort.getActiveCreditProducts();
 
-        return products.stream()
-                .filter(product ->
-                        DEFAULT_PRODUCT_CODE.equals(product.code())
+        if (products.isEmpty()) {
+            return null;
+        }
+
+        return products.get(
+                ThreadLocalRandom.current().nextInt(
+                        products.size()
                 )
-                .findFirst()
-                .orElse(null);
+        );
     }
 
     private CreditOfferEvaluationResult createNewFacilityEvaluation(
@@ -100,11 +101,9 @@ public class CreditOfferEvaluationServiceImpl
             ActiveCreditProductInfo product,
             CreditFacility facility
     ) {
-        BigDecimal currentLimit =
-                facility.getCreditLimit();
+        BigDecimal currentLimit = facility.getCreditLimit();
 
-        BigDecimal approvedLimit =
-                DEFAULT_APPROVED_LIMIT;
+        BigDecimal approvedLimit = DEFAULT_APPROVED_LIMIT;
 
         BigDecimal limitIncrease =
                 approvedLimit.subtract(currentLimit);
