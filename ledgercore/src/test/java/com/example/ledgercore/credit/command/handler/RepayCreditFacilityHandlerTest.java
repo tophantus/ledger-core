@@ -113,7 +113,7 @@ class RepayCreditFacilityHandlerTest {
                 facilityId,
                 remaining,
                 Currency.VND,
-                "CREDIT_REPAYMENT-" + statementId,
+                "CREDIT_REPAYMENT-FULL_BALANCE-" + statementId,
                 "Automatic repayment for credit statement " + statementId
         );
         verify(statement).applyPayment(remaining);
@@ -170,7 +170,7 @@ class RepayCreditFacilityHandlerTest {
                 facilityId,
                 expectedRepayment,
                 Currency.VND,
-                "CREDIT_REPAYMENT-" + statementId,
+                "CREDIT_REPAYMENT-MINIMUM_PAYMENT-" + statementId,
                 "Automatic repayment for credit statement " + statementId
         );
         verify(statement).applyPayment(expectedRepayment);
@@ -226,7 +226,7 @@ class RepayCreditFacilityHandlerTest {
                 facilityId,
                 remaining,
                 Currency.VND,
-                "CREDIT_REPAYMENT-" + statementId,
+                "CREDIT_REPAYMENT-MINIMUM_PAYMENT-" + statementId,
                 "Automatic repayment for credit statement " + statementId
         );
         verify(statement).applyPayment(remaining);
@@ -452,14 +452,25 @@ class RepayCreditFacilityHandlerTest {
                 .thenReturn(Optional.of(statement));
         when(statement.getStatus())
                 .thenReturn(CreditStatementStatus.PAID);
+        when(statement.getCreditFacilityId())
+                .thenReturn(facilityId);
+        when(creditRepaymentMandateCommandRepository
+                .findByCreditFacilityIdAndStatus(
+                        facilityId,
+                        CreditRepaymentMandateStatus.ACTIVE
+                ))
+                .thenReturn(Optional.of(mandate));
+        when(mandate.getRepaymentType())
+                .thenReturn(RepaymentType.FULL_BALANCE);
+        when(statement.getRemainingAmount())
+                .thenReturn(BigDecimal.ZERO);
 
-        assertThatThrownBy(() -> handler.execute(statementId))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("Credit statement is not eligible for repayment");
+        handler.execute(statementId);
 
-        verifyNoInteractions(creditRepaymentMandateCommandRepository);
         verifyNoInteractions(creditAccountBalancePort);
         verifyNoInteractions(repaymentTransactionPort);
+        verify(statement, never()).applyPayment(any());
+        verify(statement, never()).clearNextRepaymentAttempt();
     }
 
     @Test
@@ -569,7 +580,7 @@ class RepayCreditFacilityHandlerTest {
                 facilityId,
                 remaining,
                 Currency.VND,
-                "CREDIT_REPAYMENT-" + statementId,
+                "CREDIT_REPAYMENT-FULL_BALANCE-" + statementId,
                 "Automatic repayment for credit statement " + statementId
         );
 

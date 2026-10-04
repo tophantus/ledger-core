@@ -86,7 +86,7 @@ public class RepayCreditFacilityHandler
                 statement.getCreditFacilityId(),
                 repaymentAmount,
                 account.currency(),
-                buildReference(statement),
+                buildReference(statement, mandate.getRepaymentType()),
                 buildDescription(statement)
         );
 
@@ -100,9 +100,7 @@ public class RepayCreditFacilityHandler
                 && statement.getStatus()
                 != CreditStatementStatus.PARTIALLY_PAID) {
 
-            throw new IllegalStateException(
-                    "Credit statement is not eligible for repayment"
-            );
+            return;
         }
 
         if (statement.isPaid()) {
@@ -137,8 +135,14 @@ public class RepayCreditFacilityHandler
         );
     }
 
-    private String buildReference(CreditStatement statement) {
-        return "CREDIT_REPAYMENT-" + statement.getId();
+    private String buildReference(
+            CreditStatement statement,
+            RepaymentType repaymentType
+    ) {
+        return "CREDIT_REPAYMENT-"
+                + repaymentType.name()
+                + "-"
+                + statement.getId();
     }
 
     private String buildDescription(CreditStatement statement) {
