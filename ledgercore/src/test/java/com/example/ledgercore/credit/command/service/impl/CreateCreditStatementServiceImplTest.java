@@ -71,11 +71,13 @@ class CreateCreditStatementServiceImplTest {
     private static final BigDecimal PURCHASES = new BigDecimal("1000.00");
     private static final BigDecimal PAYMENTS = new BigDecimal("300.00");
     private static final BigDecimal FEES = new BigDecimal("50.00");
-    private static final BigDecimal INTEREST = new BigDecimal("20.00");
+    private static final BigDecimal ACCRUED_INTEREST =
+            new BigDecimal("20.00");
+    private static final BigDecimal POSTED_INTEREST =
+            new BigDecimal("20.00");
 
-    // Service không cộng interest vào expected closing balance.
     private static final BigDecimal CLOSING_BALANCE =
-            new BigDecimal("750.00");
+            new BigDecimal("770.00");
 
     private static final BigDecimal MINIMUM_PAYMENT =
             new BigDecimal("50.00");
@@ -94,7 +96,8 @@ class CreateCreditStatementServiceImplTest {
                 PURCHASES,
                 PAYMENTS,
                 FEES,
-                INTEREST
+                ACCRUED_INTEREST,
+                POSTED_INTEREST
         );
     }
 
@@ -142,7 +145,7 @@ class CreateCreditStatementServiceImplTest {
                 statement.getFeesAmount()
         );
         assertBigDecimalEquals(
-                INTEREST,
+                ACCRUED_INTEREST,
                 statement.getInterestAmount()
         );
         assertBigDecimalEquals(
@@ -176,6 +179,7 @@ class CreateCreditStatementServiceImplTest {
                 new CreditStatementAmounts(
                         new BigDecimal("300.00"),
                         new BigDecimal("300.00"),
+                        BigDecimal.ZERO,
                         BigDecimal.ZERO,
                         BigDecimal.ZERO
                 );
@@ -219,7 +223,7 @@ class CreateCreditStatementServiceImplTest {
         CreditStatement previousStatement = mock(CreditStatement.class);
 
         BigDecimal openingBalance = new BigDecimal("500.00");
-        BigDecimal closingBalance = new BigDecimal("1250.00");
+        BigDecimal closingBalance = new BigDecimal("1270.00");
         BigDecimal minimumPayment = new BigDecimal("62.50");
 
         givenActiveFacility();
@@ -584,10 +588,11 @@ class CreateCreditStatementServiceImplTest {
                         new BigDecimal("1000.0"),
                         new BigDecimal("300.00"),
                         new BigDecimal("50"),
+                        new BigDecimal("20.000"),
                         new BigDecimal("20.000")
                 );
 
-        BigDecimal scaledClosingBalance = new BigDecimal("750.0000");
+        BigDecimal scaledClosingBalance = new BigDecimal("770.0000");
 
         givenActiveFacility();
         givenFacilityCurrency();
@@ -609,7 +614,7 @@ class CreateCreditStatementServiceImplTest {
                 statement.getClosingBalance()
         );
         assertBigDecimalEquals(
-                scaledAmounts.interestAmount(),
+                scaledAmounts.accruedInterestAmount(),
                 statement.getInterestAmount()
         );
     }

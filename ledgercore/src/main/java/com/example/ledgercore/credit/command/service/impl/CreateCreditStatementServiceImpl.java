@@ -92,13 +92,14 @@ public class CreateCreditStatementServiceImpl
         BigDecimal closingBalance = dailyBalance.getClosingBalance();
 
         BigDecimal interestAmount = CurrencyAmountPolicy.round(
-                amounts.interestAmount(),
+                amounts.accruedInterestAmount(),
                 facility.getCurrency()
         );
 
         BigDecimal expectedClosingBalance = openingBalance
                 .add(amounts.purchasesAmount())
                 .add(amounts.feesAmount())
+                .add(amounts.postedInterestAmount())
                 .subtract(amounts.paymentsAmount());
 
         log.debug("Opening balance: {}, Purchases: {}, Fees: {}, Payments: {}, Interest: {}",
@@ -106,7 +107,7 @@ public class CreateCreditStatementServiceImpl
                 amounts.purchasesAmount(),
                 amounts.feesAmount(),
                 amounts.paymentsAmount(),
-                interestAmount
+                amounts.accruedInterestAmount()
         );
 
 
