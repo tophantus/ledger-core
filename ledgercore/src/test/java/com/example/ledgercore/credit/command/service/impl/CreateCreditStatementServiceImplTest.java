@@ -550,6 +550,10 @@ class CreateCreditStatementServiceImplTest {
         CreateCreditStatementCommand command = validCommand();
 
         givenActiveFacility();
+
+        when(facility.getCurrency())
+                .thenReturn(Currency.VND);
+
         givenNoExistingStatement();
         givenNoPreviousStatement();
         givenDailyBalance(new BigDecimal("800.00"));
