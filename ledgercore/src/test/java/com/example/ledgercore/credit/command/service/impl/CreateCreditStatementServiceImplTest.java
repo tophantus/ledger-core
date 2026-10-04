@@ -149,6 +149,10 @@ class CreateCreditStatementServiceImplTest {
                 statement.getInterestAmount()
         );
         assertBigDecimalEquals(
+                POSTED_INTEREST,
+                statement.getPostedInterestAmount()
+        );
+        assertBigDecimalEquals(
                 CLOSING_BALANCE,
                 statement.getClosingBalance()
         );
@@ -212,6 +216,10 @@ class CreateCreditStatementServiceImplTest {
                 CreditStatementStatus.NO_PAYMENT_DUE,
                 statement.getStatus()
         );
+        assertBigDecimalEquals(
+                BigDecimal.ZERO,
+                statement.getPostedInterestAmount()
+        );
 
         verify(minimumPaymentService)
                 .calculate(BigDecimal.ZERO, Currency.VND);
@@ -256,6 +264,10 @@ class CreateCreditStatementServiceImplTest {
                 statement.getClosingBalance()
         );
         assertBigDecimalEquals(
+                POSTED_INTEREST,
+                statement.getPostedInterestAmount()
+        );
+        assertBigDecimalEquals(
                 minimumPayment,
                 statement.getMinimumPayment()
         );
@@ -290,6 +302,10 @@ class CreateCreditStatementServiceImplTest {
         assertBigDecimalEquals(
                 CLOSING_BALANCE,
                 statement.getClosingBalance()
+        );
+        assertBigDecimalEquals(
+                POSTED_INTEREST,
+                statement.getPostedInterestAmount()
         );
     }
 
@@ -616,6 +632,10 @@ class CreateCreditStatementServiceImplTest {
         assertBigDecimalEquals(
                 scaledAmounts.accruedInterestAmount(),
                 statement.getInterestAmount()
+        );
+        assertBigDecimalEquals(
+                scaledAmounts.postedInterestAmount(),
+                statement.getPostedInterestAmount()
         );
     }
 

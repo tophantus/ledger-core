@@ -143,6 +143,7 @@ public class CreateCreditStatementServiceImpl
                         .paymentsAmount(amounts.paymentsAmount())
                         .feesAmount(amounts.feesAmount())
                         .interestAmount(interestAmount)
+                        .postedInterestAmount(amounts.postedInterestAmount())
                         .closingBalance(closingBalance)
                         .minimumPayment(minimumPayment)
                         .paidAmount(BigDecimal.ZERO)
